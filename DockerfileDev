@@ -1,0 +1,11 @@
+FROM node:14 AS builder
+WORKDIR /app
+COPY . .
+
+RUN npm ci
+RUN npm run build --if-present
+RUN npm test
+
+FROM nginx:latest
+EXPOSE 80
+COPY --from=builder /app/dist /usr/share/nginx/html
