@@ -61,6 +61,15 @@ jobs:
       - name: Print Build
         run: echo "This build creates a container with tag $APP_BUILD"
 
+      - name: Setting CONTAINER_PROJECT_NAME
+        run: |
+          export NAME=$(grep CONTAINER_PROJECT_NAME= .env | cut -d '=' -f2)
+          echo "CONTAINER_PROJECT_NAME=$NAME" >> $GITHUB_ENV
+      - name: Setting CONTAINER_REGISTRY_BASE
+        run: |
+          export NAME=$(grep CONTAINER_REGISTRY_BASE= .env | cut -d '=' -f2)
+          echo "CONTAINER_REGISTRY_BASE=$NAME" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: docker-compose -f docker-compose.deploy.yaml build --build-arg APP_ENV=$APP_ENV --build-arg APP_BUILD=$APP_BUILD
 
