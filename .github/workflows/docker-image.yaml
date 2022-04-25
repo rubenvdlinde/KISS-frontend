@@ -41,19 +41,19 @@ jobs:
           echo "RELEASE=$RELEASE" >> $GITHUB_ENV
           echo "##[set-output name=releasename]$RELEASE"
       - name: Set APP_BUILD to dev
-        if: contains( github.ref, 'development') | contains(github.base_ref, 'development')
+        if: contains( github.ref, 'development') || contains(github.base_ref, 'development')
         run: |
           echo "APP_ENV=dev">> $GITHUB_ENV
           echo "APP_BUILD=dev">> $GITHUB_ENV
           echo "set APP_ENV to $APP_ENV"
       - name: Set APP_BUILD to acceptance
-        if: contains( github.ref, 'acceptance') | contains(github.base_ref, 'acceptance')
+        if: contains( github.ref, 'acceptance') || contains(github.base_ref, 'acceptance')
         run: |
           echo "APP_ENV=accp">> $GITHUB_ENV
           echo "APP_BUILD=acceptance">> $GITHUB_ENV
           echo "set APP_ENV to $APP_ENV"
       - name: Set APP_BUILD to latest
-        if: contains( github.ref, 'main') | contains(github.base_ref, 'main')
+        if: contains( github.ref, 'main') || contains(github.base_ref, 'main')
         run: |
           echo "APP_ENV=prod">> $GITHUB_ENV
           echo "APP_BUILD=latest">> $GITHUB_ENV
