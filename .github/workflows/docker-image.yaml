@@ -79,12 +79,12 @@ jobs:
         run: sleep 10
 
       - name: Show docker logs
-        run: docker-compose logs
+        run: docker-compose -f docker-compose.deploy.yaml logs
 
       - name: Add docker tags
         if: github.ref == 'refs/heads/master'
         run: |
-          images=$(docker-compose images -q | xargs docker inspect --format='{{ index .RepoTags 0}}' | cut -d':' -f1 | grep $CONTAINER_PROJECT_NAME)
+          images=$(docker-compose -f docker-compose.deploy.yaml images -q | xargs docker inspect --format='{{ index .RepoTags 0}}' | cut -d':' -f1 | grep $CONTAINER_PROJECT_NAME)
           for image in $images
           do
            docker tag "${image}":latest "${image}":"${APP_BUILD}"
