@@ -107,7 +107,7 @@ jobs:
         name: Push versioned containers to Container Registry
         id: version-push
         run: |
-         images=$(docker-compose images -q | xargs docker inspect --format='{{ index .RepoTags 0}}' | cut -d':' -f1 | grep $CONTAINER_PROJECT_NAME)
+         images=$(docker-compose -f docker-compose.deploy.yaml images -q | xargs docker inspect --format='{{ index .RepoTags 0}}' | cut -d':' -f1 | grep $CONTAINER_PROJECT_NAME)
          for image in $images
          do
            docker push "${image}":"${APP_BUILD}"
