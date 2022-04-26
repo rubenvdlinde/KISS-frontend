@@ -1,7 +1,7 @@
 name: Deploy
 on:
   workflow_run:
-    workflows: ["Docker Image CI"]
+    workflows: ["Docker CI"]
     branches: [development]
     types:
       - completed
