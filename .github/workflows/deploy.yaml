@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Add helm repository to helm
-        run: helm repo add kiss-frontend https://raw.githubusercontent.com/ConductionNL/KISS-frontend/main/helm
+        run: helm repo add kiss-frontend https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/KISS-frontend/main/helm
       - name: Set kubeconfig
         id: kubeconfig
         run: |
@@ -24,7 +24,7 @@ jobs:
           fi
       - name: Upgrade helm installation
         if: steps.kubeconfig.outputs.success == 'true' && success()
-        run: helm upgrade --install kiss-frontend kiss-frontend/kiss-frontend --reuse-values --kubeconfig="kubeconfig.yaml" --namespace=frontend --description https://raw.githubusercontent.com/ConductionNL/KISS-frontend/main/helm
+        run: helm upgrade --install kiss-frontend kiss-frontend/kiss-frontend --reuse-values --kubeconfig="kubeconfig.yaml" --namespace=frontend --description https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/KISS-frontend/main/helm
       - name: Rollout new containers
         if: steps.kubeconfig.outputs.success == 'true' && success()
         run: kubectl rollout restart deployment/kiss-frontend --kubeconfig="kubeconfig.yaml"  --namespace=frontend
