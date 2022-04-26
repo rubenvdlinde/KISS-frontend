@@ -1,0 +1,35 @@
+name: Deploy
+on:
+  workflow_run:
+    workflows: ["Docker Image CI"]
+    branches: [development]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Add helm repository to helm
+        run: helm repo add kiss-frontend https://raw.githubusercontent.com/ConductionNL/KISS-frontend/main/helm
+      - name: Set kubeconfig
+        id: kubeconfig
+        run: |
+          if [ "${{ secrets.KISS-DEV-KUBECONFIG }}" != "" ]; then
+            printf "${{ secrets.KISS-DEV-KUBECONFIG }}" > kubeconfig.yaml
+            echo "##[set-output name=success]true"
+          else
+            echo "##[set-output name=success]false"
+          fi
+      - name: Upgrade helm installation
+        if: steps.kubeconfig.outputs.success == 'true' && success()
+        run: helm upgrade --install kiss-frontend kiss-frontend/kiss-frontend --reuse-values --kubeconfig="kubeconfig.yaml" --namespace=frontend --description https://raw.githubusercontent.com/ConductionNL/KISS-frontend/main/helm
+      - name: Rollout new containers
+        if: steps.kubeconfig.outputs.success == 'true' && success()
+        run: kubectl rollout restart deployment/kiss-frontend --kubeconfig="kubeconfig.yaml"  --namespace=frontend
+      - name: Cleanup
+        run: |
+          helm repo remove kiss-frontend
+          rm -rf ~/.helm/cache/archive/*
+          rm -rf ~/.helm/repository/cache/*
