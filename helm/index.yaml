@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  kiss-frontend:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-04-26T10:42:44.548836162+02:00"
+    description: A Helm chart for Kubernetes
+    digest: 22f17ce8e9fee7cf100082a31a6eadea85025a130a79a6022ba49138923875e6
+    name: kiss-frontend
+    type: application
+    urls:
+    - kiss-frontend-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-04-26T10:42:44.545516732+02:00"
