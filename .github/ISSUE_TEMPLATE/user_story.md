@@ -8,6 +8,10 @@ assignees: ''
 ---
 ...zodat 
 
-**Projectcode**:
+## toelichting
 
-# Acceptatie criteria
+**Projectcode**: 
+
+## Acceptatie criteria
+- [ ]
+- [ ]
