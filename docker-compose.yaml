@@ -8,7 +8,7 @@ services:
             - "8080:80"
 
     admin-ui:
-        image: ${CONTAINER_REGISTRY_BASE}/commonground-gateway-frontend:dev
+        image: ghcr.io/conductionnl/commonground-gateway-frontend:dev
         depends_on:
             - php
         ports:
@@ -16,7 +16,7 @@ services:
 
     php:
         &php
-        image: ${CONTAINER_REGISTRY_BASE}/commonground-gateway-php:cleanup
+        image: ghcr.io/conductionnl/commonground-gateway-php:cleanup
         depends_on:
             - db
         volumes:
@@ -37,7 +37,7 @@ services:
 
     api:
         &nginx
-        image: ${CONTAINER_REGISTRY_BASE}/commonground-gateway-nginx:cleanup
+        image: ghcr.io/conductionnl/commonground-gateway-nginx:cleanup
         depends_on:
             - php
         ports:
