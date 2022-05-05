@@ -15,4 +15,4 @@ Here is an overview of all API's used for KISS.
 | Producten en diensten              |               |                |
 | Medewerkers                        |               |https://github.com/ConductionNL/MRC_publiccode/blob/main/publiccode.yaml                |
 | Besluiten                          |https://besluiten-api.vng.cloud/api/v1/schema/ |https://github.com/ConductionNL/brc_publiccode/blob/main/publiccode.yaml |
-| HC BRP                             |https://vng-realisatie.github.io/Haal-Centraal-BRP-bevragen/redoc               |                |
+| HC BRP                             |https://vng-realisatie.github.io/Haal-Centraal-BRP-bevragen/redoc               | https://github.com/ConductionNL/brp_publiccode/blob/main/publiccode.yaml |
