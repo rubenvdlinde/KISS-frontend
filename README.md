@@ -6,7 +6,7 @@ This template should help get you started developing with Vue 3 in Vite.
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
-You will need [Docker desktop](https://www.docker.com/get-started/) if you want to run the gateway.
+You will need [Docker desktop](https://www.docker.com/get-started/) if you want to run the frontend and the gateway in docker.
 
 ## Type Support for `.vue` Imports in TS
 
