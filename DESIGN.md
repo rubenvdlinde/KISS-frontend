@@ -15,7 +15,7 @@
   - Base this on ISO standards
   - Contact the VNG to standardize our API
 
-# We follow applicable design rules
+## We follow applicable design rules
 And order these from international to local, we always apply (in this order)
 
 - [W3C](https://www.w3.org) 
@@ -25,3 +25,7 @@ And order these from international to local, we always apply (in this order)
 - [NL API Strategie](https://docs.geostandaarden.nl/api/API-Strategie/)
 - [VNG GEMMA](https://vng.nl/projecten/gemeentelijke-model-architectuur-gemma)
 - [De Common Ground principes](https://commonground.nl/cms/view/12f73f0d-ae26-4021-ba52-849eef37d11f/de-common-ground-principes)
+
+## We use sprints as milestone's
+
+## We hold our discions in seperate discusions (deepdives)

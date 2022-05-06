@@ -7,7 +7,6 @@ To meet the criteria of the standard of public code, we compare our repository t
 ### Code in the open
 Our [repository](https://github.com/Klantinteractie-Servicesysteem/KISS-frontend) is publicly availabe to all, as are our [issues](https://github.com/Klantinteractie-Servicesysteem/KISS-frontend/issues) and project [managment](https://github.com/Klantinteractie-Servicesysteem/KISS-frontend/projects/1). 
 
-
 ### Bundle policy and source code
 For our policy that all the source code is based on we use a few standards, such as [W3C](https://www.w3.org) and [schema](https://schema.org/). More about our standards can be found in the [design desicions](DESIGN.md). 
 
