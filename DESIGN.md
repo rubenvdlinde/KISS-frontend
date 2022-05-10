@@ -29,3 +29,6 @@ And order these from international to local, we always apply (in this order)
 ## We use sprints as milestone's
 
 ## We hold our discions in seperate discusions (deepdives)
+
+## We only use Elastich search in search components
+For al other components we use the API's directly

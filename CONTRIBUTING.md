@@ -74,8 +74,26 @@ You can read more about this here:
 To ensure your changes work we can test this using [postman](https://www.postman.com/).
 Make sure to provide a working postman test script in your pull request.
 
-### Unit tests
-- TODO
+### Testing and acceptence
+For all branches, when a pull request is started
+- Codebase is checker for vulnerablities trough [dependabot](https://github.com/dependabot)
+- [Style CI](https://styleci.io/) is run to determine the quality of psr-02 compliance
+- [Better code hub](https://www.bettercodehub.com/) is run to determine codebase quallity
+- Containers are build from the codebase
+- Containers are checked for vulnerablities trough [snyk](https://snyk.io/)
+
+PR’s can only be accepted when all of the above checks are completed succesfully
+
+Only for development and acceptation afther PR acceptence
+- The (symanthic) version number is upped
+- The changelog is filled with the released features
+- Containers are published as artifact on github
+- After each succefull container build the container is  deployed to the appropriate environment. (dev fot  developement and Demodamfor acceptation)
+- After the containers  are deployed to the appropriate envirnoment an Pen Test tool (insert link) is activated. The results of the pen test are mailed to the senior developer.
+- After each deployment the API’s are tested trough the “api test voorziening”, the results of these test are visable as a badge on de repositories readme.
+- After each deployment the frontend is checked for WCAG compliance
+- Helm files are publsiched to artifacthub
+
 
 ## Prepare your Pull Request
 
