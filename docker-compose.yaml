@@ -3,7 +3,8 @@ version: "3.4"
 services:
     frontend:
         image: ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}:${APP_ENV}
-        build: DockerfileDev
+        build:
+            dockerfile: dockerDockerfileDev
         ports:
             - "8080:80"
 
