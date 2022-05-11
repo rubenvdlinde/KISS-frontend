@@ -1,125 +1,79 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "@/components/HelloWorld.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <header></header>
+  <main><router-view /></main>
 </template>
 
-<style>
-@import "@/assets/base.css";
+<style lang="scss">
+@import "@/assets/reset.css";
+@import "@/assets/fonts/fonts.css";
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+:root {
+  // colors
+  --color-primary: #415a77;
+  --color-secondary: #eceff1;
+  --color-tertiary: #778da9;
 
-  font-weight: normal;
+  // spacing
+  --container-width: 69.375rem;
+  --section-width: 30.75rem;
+  --spacing-default: 1rem;
+  --header-height: 6rem;
+  --text-margin: 1.5rem;
+}
+
+html {
+  font-family: "Open Sans", sans-serif;
 }
 
 header {
-  line-height: 1.5;
-  max-height: 100vh;
+  min-height: var(--header-height);
+  background-color: var(--color-primary);
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+main {
+  max-width: var(--container-width);
+  padding: 2rem var(--spacing-default);
+  gap: var(--spacing-default);
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right: auto;
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+  > * {
+    flex-basis: 100%;
   }
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: #1b263b;
+  font-weight: 600;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+h1 {
+  font-size: 2.5rem;
+  line-height: 4.25rem;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+h3 {
+  font-size: 1.25rem;
+  line-height: 2rem;
 }
 
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+p {
+  line-height: 1.5rem;
 }
 </style>
