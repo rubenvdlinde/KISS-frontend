@@ -1,3 +1,45 @@
+<template>
+  <h1>Startscherm</h1>
+  <section>
+    <h2>Werkinstructies</h2>
+    <ul>
+      <li
+        v-for="({ title, date, content }, i) in werkInstructies"
+        :key="`werkinstructies_${i}`"
+      >
+        <article>
+          <h3>{{ title }}</h3>
+          <time :datetime="date.toISOString()" pubdate>{{
+            localeString(date)
+          }}</time>
+          <p>
+            {{ content }}
+          </p>
+        </article>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Nieuws</h2>
+    <ul>
+      <li
+        v-for="({ title, date, content }, i) in nieuwsBerichten"
+        :key="`nieuws_${i}`"
+      >
+        <article>
+          <h3>{{ title }}</h3>
+          <time :datetime="date.toISOString()" pubdate>{{
+            localeString(date)
+          }}</time>
+          <p>
+            {{ content }}
+          </p>
+        </article>
+      </li>
+    </ul>
+  </section>
+</template>
+
 <script setup lang="ts">
 import type WerkBericht from "@/types/werk-bericht";
 import { ref } from "vue";
@@ -41,48 +83,6 @@ const nieuwsBerichten = ref<WerkBericht[]>([
   },
 ]);
 </script>
-
-<template>
-  <h1>Startscherm</h1>
-  <section>
-    <h2>Werkinstructies</h2>
-    <ul>
-      <li
-        v-for="({ title, date, content }, key) in werkInstructies"
-        :key="`werkinstructies_${key}`"
-      >
-        <article>
-          <h3>{{ title }}</h3>
-          <time :datetime="date.toISOString()" pubdate>{{
-            localeString(date)
-          }}</time>
-          <p>
-            {{ content }}
-          </p>
-        </article>
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>Nieuws</h2>
-    <ul>
-      <li
-        v-for="({ title, date, content }, key) in nieuwsBerichten"
-        :key="`nieuws_${key}`"
-      >
-        <article>
-          <h3>{{ title }}</h3>
-          <time :datetime="date.toISOString()" pubdate>{{
-            localeString(date)
-          }}</time>
-          <p>
-            {{ content }}
-          </p>
-        </article>
-      </li>
-    </ul>
-  </section>
-</template>
 
 <style scoped lang="scss">
 main > section {

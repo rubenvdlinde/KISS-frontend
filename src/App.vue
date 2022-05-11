@@ -1,11 +1,11 @@
-<script setup lang="ts">
-import { RouterView } from "vue-router";
-</script>
-
 <template>
   <header></header>
   <main><router-view /></main>
 </template>
+
+<script setup lang="ts">
+import { RouterView } from "vue-router";
+</script>
 
 <style lang="scss">
 @import "@/assets/reset.css";
