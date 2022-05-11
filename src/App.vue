@@ -23,10 +23,13 @@ import { RouterView } from "vue-router";
   --spacing-default: 1rem;
   --header-height: 6rem;
   --text-margin: 1.5rem;
+
+  // typography
+  --font-family: "Open Sans", sans-serif;
 }
 
 html {
-  font-family: "Open Sans", sans-serif;
+  font-family: var(--font-family);
 }
 
 header {

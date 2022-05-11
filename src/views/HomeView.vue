@@ -107,10 +107,6 @@ li > article {
   background-color: var(--color-secondary);
   padding: 0.75rem var(--text-margin);
 
-  > h3 {
-    font-size: 1.25rem;
-  }
-
   > time {
     color: var(--color-primary);
     display: block;
