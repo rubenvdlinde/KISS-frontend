@@ -1,54 +1,50 @@
 <template>
   <h1>Startscherm</h1>
-  <template v-if="search">
-    <router-link to="/">Terug</router-link>
-    <section>
-      <h2>Zoekresultaten</h2>
-      <p>{{ searchResults.length || "geen" }} resultaten gevonden</p>
-      <ul>
-        <li v-for="(bericht, i) in searchResults" :key="`werkinstructies_${i}`">
-          <werk-bericht :bericht="bericht" :type="bericht.type" />
-        </li>
-      </ul>
-    </section>
-  </template>
-  <template v-else>
-    <section>
-      <h2>Werkinstructies</h2>
-      <ul>
+  <section>
+    <h2>Werkinstructies</h2>
+    <p v-if="werkinstructies.state === 'error'">
+      {{ werkinstructies.error }}
+    </p>
+    <template v-else-if="werkinstructies.state === 'success'">
+      <ul v-if="werkinstructies.data.length">
         <li
-          v-for="(werkInstructie, i) in werkInstructies"
+          v-for="(werkInstructie, i) in werkinstructies.data"
           :key="`werkinstructies_${i}`"
         >
           <werk-bericht :bericht="werkInstructie" />
         </li>
       </ul>
-    </section>
-    <section>
-      <h2>Nieuws</h2>
-      <ul>
-        <li v-for="(nieuwsBericht, i) in nieuwsBerichten" :key="`nieuws_${i}`">
-          <werk-bericht :bericht="nieuwsBericht" />
+      <p v-else>Er zijn momenteel geen werkinstructies.</p>
+    </template>
+    <p v-else>Loading</p>
+  </section>
+  <section>
+    <h2>Nieuws</h2>
+    <p v-if="nieuwsberichten.state === 'error'">
+      {{ nieuwsberichten.error }}
+    </p>
+    <template v-else-if="nieuwsberichten.state === 'success'">
+      <ul v-if="nieuwsberichten.data.length">
+        <li
+          v-for="(nieuwsbericht, i) in nieuwsberichten.data"
+          :key="`nieuwsBerichten_${i}`"
+        >
+          <werk-bericht :bericht="nieuwsbericht" />
         </li>
       </ul>
-    </section>
-  </template>
+      <p v-else>Er zijn momenteel geen nieuwsberichten.</p>
+    </template>
+    <p v-else>Loading</p>
+  </section>
 </template>
 
 <script setup lang="ts">
 import WerkBericht from "@/components/WerkBericht.vue";
-import { computed } from "vue";
-import { useRoute } from "vue-router";
 import { useLatestNews } from "@/services/news-service";
 import { useLatestWorkInstructions } from "@/services/work-instructions-service";
-import { useSearchWorkMessages } from "@/services/search-service";
 
-const route = useRoute();
-const search = computed(() => route.query.search?.toString());
-
-const { data: werkInstructies } = useLatestWorkInstructions();
-const { data: nieuwsBerichten } = useLatestNews();
-const { data: searchResults } = useSearchWorkMessages(search);
+const werkinstructies = useLatestWorkInstructions();
+const nieuwsberichten = useLatestNews();
 </script>
 
 <style scoped lang="scss">

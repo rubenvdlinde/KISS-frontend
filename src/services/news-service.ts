@@ -1,24 +1,28 @@
-import type { ServiceData } from "@/types/service";
-import type WerkBericht from "@/types/werk-bericht";
-import { ref } from "vue";
+import type Werkbericht from "@/types/werk-bericht";
+import { ServiceResult } from "./service-result";
 
-export function useLatestNews(): ServiceData<WerkBericht[]> {
+function parse(o: any): Werkbericht {
+  if (
+    typeof o?.title !== "string" ||
+    typeof o?.content !== "string" ||
+    typeof o?.date !== "string"
+  ) {
+    throw new Error("invalid werkbericht: " + JSON.stringify(o));
+  }
   return {
-    loading: ref(false),
-    error: ref(),
-    data: ref([
-      {
-        title: "Daphne Jubilaris",
-        date: new Date(2022, 1, 2, 12),
-        content:
-          "Daphne werkt vandaag alweer 10 jaar bij het KCC team. Gefeliciteerd met het jubileum! Er staat taart bij de koffieautomaat.",
-      },
-      {
-        title: "Aanpak wateroverlast",
-        date: new Date(2022, 1, 1, 12),
-        content:
-          "In de week van maandag 30 mei gaat Weg- en Waterbouw aan de slag in de Voorstraat, om de oorzaak van de wateroverlast te verhelpen. Er zijn bewonersbrieven rondgestuurd, die staan ook op onze website.",
-      },
-    ]),
+    title: o.title,
+    content: o.content,
+    date: new Date(o.date),
   };
+}
+
+export function useLatestNews() {
+  const promise: Promise<Werkbericht[]> = fetch("http://localhost/api/nieuws")
+    .then((r) => r.json())
+    .then((json) => {
+      const results = json?.results;
+      if (!Array.isArray(results)) return [];
+      return results.map(parse);
+    });
+  return ServiceResult.fromPromise(promise);
 }

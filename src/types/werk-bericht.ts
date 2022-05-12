@@ -1,7 +1,7 @@
-interface WerkBericht {
+interface Werkbericht {
   title: string;
   date: Date;
   content: string;
 }
 
-export default WerkBericht;
+export default Werkbericht;

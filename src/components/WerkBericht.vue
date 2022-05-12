@@ -6,19 +6,17 @@
         localeString(bericht.date)
       }}</time>
     </header>
-    <p>
-      {{ bericht.content }}
-    </p>
+    <section v-html="bericht.content" />
   </article>
 </template>
 
 <script lang="ts" setup>
 import type { PropType } from "vue";
-import type WerkBericht from "@/types/werk-bericht";
+import type Werkbericht from "@/types/werk-bericht";
 
 defineProps({
   bericht: {
-    type: Object as PropType<WerkBericht>,
+    type: Object as PropType<Werkbericht>,
     required: true,
   },
   level: {
@@ -49,10 +47,26 @@ article {
     color: var(--color-primary);
     display: block;
     margin-top: var(--spacing-default);
+    margin-bottom: 1.25rem;
   }
 
-  > p {
-    margin-top: 1.25rem;
+  :deep(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    list-style-type: disc;
+    padding-left: var(--text-margin);
+    line-height: 1.5rem;
+  }
+
+  :deep(p) {
+    &:not(:first-child) {
+      margin-top: 1em;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 1em;
+    }
   }
 }
 </style>
