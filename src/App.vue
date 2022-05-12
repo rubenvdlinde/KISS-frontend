@@ -32,7 +32,7 @@ html {
   font-family: var(--font-family);
 }
 
-header {
+#app > header {
   min-height: var(--header-height);
   background-color: var(--color-primary);
 }
