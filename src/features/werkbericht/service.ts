@@ -16,14 +16,18 @@ function parse(o: any): Werkbericht {
   };
 }
 
-export function useLatestNews(): ServiceData<Werkbericht[]> {
-  const promise = fetch("http://localhost/api/nieuws")
+const fetchLatestNews = () =>
+  fetch("http://localhost/api/nieuws")
     .then((r) => r.json())
     .then((json) => {
       const results = json?.results;
-      if (!Array.isArray(results)) return [];
+      if (!Array.isArray(results))
+        throw new Error("unexpected json result: " + JSON.stringify(json));
       return results.map(parse);
     });
+
+export function useLatestNews(): ServiceData<Werkbericht[]> {
+  const promise = fetchLatestNews();
   return ServiceResult.fromPromise(promise);
 }
 
