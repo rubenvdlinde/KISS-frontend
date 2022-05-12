@@ -12,7 +12,7 @@
 
 <script lang="ts" setup>
 import type { PropType } from "vue";
-import type Werkbericht from "@/types/werk-bericht";
+import type { Werkbericht } from "./types";
 
 defineProps({
   bericht: {

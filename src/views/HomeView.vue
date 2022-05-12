@@ -39,9 +39,11 @@
 </template>
 
 <script setup lang="ts">
-import WerkBericht from "@/components/WerkBericht.vue";
-import { useLatestNews } from "@/services/news-service";
-import { useLatestWorkInstructions } from "@/services/work-instructions-service";
+import {
+  useLatestNews,
+  useLatestWorkInstructions,
+  WerkBericht,
+} from "@/features/werkbericht";
 
 const werkinstructies = useLatestWorkInstructions();
 const nieuwsberichten = useLatestNews();
