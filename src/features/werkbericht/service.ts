@@ -1,4 +1,4 @@
-import type Werkbericht from "@/types/werk-bericht";
+import type { Werkbericht } from "./types";
 import { ServiceResult, type ServiceData } from "@/services/service-result";
 
 function parse(o: any): Werkbericht {
