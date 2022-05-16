@@ -6,22 +6,22 @@
         localeString(bericht.date)
       }}</time>
     </header>
-    <!-- TODO: html sanitiation -->
-    <section v-html="bericht.content" />
+    <section v-html="sanitized" />
   </article>
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from "vue";
+import { computed, type PropType } from "vue";
 import type { Werkbericht } from "./types";
+import DOMPurify from "dompurify";
 
-defineProps({
+const props = defineProps({
   bericht: {
     type: Object as PropType<Werkbericht>,
     required: true,
   },
   level: {
-    type: Number as PropType<number>,
+    type: Number as PropType<1 | 2 | 3 | 4 | 5 | 6>,
     default: 3,
     validator: (val) => typeof val === "number" && val >= 1 && val <= 6,
   },
@@ -35,6 +35,8 @@ const localeString = (d: Date) =>
     hour: "2-digit",
     minute: "2-digit",
   });
+
+const sanitized = computed(() => DOMPurify.sanitize(props.bericht.content));
 </script>
 
 <style lang="scss" scoped>
