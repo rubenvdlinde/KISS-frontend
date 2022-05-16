@@ -6,6 +6,7 @@
         localeString(bericht.date)
       }}</time>
     </header>
+    <!-- TODO: html sanitiation -->
     <section v-html="bericht.content" />
   </article>
 </template>
