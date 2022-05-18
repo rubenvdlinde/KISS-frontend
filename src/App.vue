@@ -11,6 +11,9 @@ import { RouterView } from "vue-router";
 @import "@/assets/reset.css";
 @import "@/assets/fonts/fonts.css";
 
+/* Design Tokens */
+@import "@gemeente-denhaag/design-tokens-components/dist/index.css";
+
 :root {
   // colors
   --color-primary: #415a77;

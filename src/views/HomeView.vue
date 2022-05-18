@@ -1,10 +1,10 @@
 <template>
-  <h1>Startscherm</h1>
+  <heading :level="1">Startscherm</heading>
   <section>
-    <h2>Werkinstructies</h2>
-    <p v-if="werkinstructies.state === 'error'">
+    <heading :level="2">Werkinstructies</heading>
+    <paragraph v-if="werkinstructies.state === 'error'">
       {{ werkinstructies.error }}
-    </p>
+    </paragraph>
     <template v-else-if="werkinstructies.state === 'success'">
       <ul v-if="werkinstructies.data.length">
         <li
@@ -14,15 +14,15 @@
           <werk-bericht :bericht="werkInstructie" />
         </li>
       </ul>
-      <p v-else>Er zijn momenteel geen werkinstructies.</p>
+      <paragraph v-else>Er zijn momenteel geen werkinstructies.</paragraph>
     </template>
-    <p v-else>Loading</p>
+    <paragraph v-else>Loading</paragraph>
   </section>
   <section>
-    <h2>Nieuws</h2>
-    <p v-if="nieuwsberichten.state === 'error'">
+    <heading :level="2">Nieuws</heading>
+    <paragraph v-if="nieuwsberichten.state === 'error'">
       {{ nieuwsberichten.error }}
-    </p>
+    </paragraph>
     <template v-else-if="nieuwsberichten.state === 'success'">
       <ul v-if="nieuwsberichten.data.length">
         <li
@@ -32,19 +32,20 @@
           <werk-bericht :bericht="nieuwsbericht" />
         </li>
       </ul>
-      <p v-else>Er zijn momenteel geen nieuwsberichten.</p>
+      <paragraph v-else>Er zijn momenteel geen nieuwsberichten.</paragraph>
     </template>
-    <p v-else>Loading</p>
+    <paragraph v-else>Loading</paragraph>
   </section>
 </template>
 
 <script setup lang="ts">
+import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import {
   useLatestNews,
   useLatestWorkInstructions,
   WerkBericht,
 } from "@/features/werkbericht";
-
+import Heading from "@/nl-design-system/components/Heading.vue";
 const werkinstructies = useLatestWorkInstructions();
 const nieuwsberichten = useLatestNews();
 </script>

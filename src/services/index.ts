@@ -61,3 +61,27 @@ export const ServiceResult = {
     return result;
   },
 };
+
+function parseValidInt(input: unknown): number | undefined {
+  if (typeof input === "number") {
+    return isFinite(input) ? input : undefined;
+  }
+  if (typeof input !== "string") return undefined;
+  const parsed = Number.parseInt(input, 10);
+  return isFinite(parsed) ? parsed : undefined;
+}
+
+export function parseDutchDate(dateTimeStr: string): Date {
+  const [dateStr, timeStr] = dateTimeStr.split(" ");
+  const [year, day, month] = dateStr.split("-");
+  const [hour, minute, second] = timeStr.split(":");
+
+  const dateInput = [year, month, day, hour, minute, second].map(
+    parseValidInt
+  ) as [number, number, number, number, number, number];
+
+  //correct 0-based month
+  dateInput[1] = dateInput[1] - 1;
+
+  return new Date(...dateInput);
+}

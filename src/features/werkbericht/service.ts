@@ -1,5 +1,6 @@
 import type { Werkbericht } from "./types";
-import { ServiceResult, type ServiceData } from "@/services/service-result";
+import { ServiceResult, type ServiceData } from "@/services";
+import { parseDutchDate } from "@/services";
 
 function parse(o: any): Werkbericht {
   if (
@@ -9,10 +10,11 @@ function parse(o: any): Werkbericht {
   ) {
     throw new Error("invalid werkbericht: " + JSON.stringify(o));
   }
+
   return {
     title: o.title,
     content: o.content,
-    date: new Date(o.date),
+    date: parseDutchDate(o.date),
   };
 }
 

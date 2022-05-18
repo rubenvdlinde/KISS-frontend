@@ -1,8 +1,8 @@
 <template>
   <article>
     <header>
-      <component :is="`h${level}`">{{ bericht.title }}</component>
-      <time :datetime="bericht.date.toISOString()" pubdate>{{
+      <heading :level="level">{{ bericht.title }}</heading>
+      <time :datetime="bericht.date?.toISOString()" pubdate>{{
         localeString(bericht.date)
       }}</time>
     </header>
@@ -14,7 +14,7 @@
 import { computed, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import DOMPurify from "dompurify";
-
+import Heading from "@/nl-design-system/components/Heading.vue";
 const props = defineProps({
   bericht: {
     type: Object as PropType<Werkbericht>,
