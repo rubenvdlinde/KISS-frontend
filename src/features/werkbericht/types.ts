@@ -3,3 +3,11 @@ export interface Werkbericht {
   date: Date;
   content: string;
 }
+
+export type TaxonomyFilter =
+  | {
+      audience: string;
+    }
+  | {
+      type: string;
+    };

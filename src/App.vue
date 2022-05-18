@@ -29,6 +29,7 @@ import { RouterView } from "vue-router";
 
   // typography
   --font-family: "Open Sans", sans-serif;
+  --utrecht-heading-font-family: var(--font-family);
 }
 
 html {

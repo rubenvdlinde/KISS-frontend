@@ -72,4 +72,9 @@ article {
     }
   }
 }
+
+article > section :deep(h2),
+article > section :deep(h3) {
+  font-size: var(--utrecht-heading-4-font-size);
+}
 </style>

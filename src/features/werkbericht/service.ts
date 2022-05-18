@@ -1,4 +1,4 @@
-import type { Werkbericht } from "./types";
+import type { TaxonomyFilter, Werkbericht } from "./types";
 import { ServiceResult, type ServiceData } from "@/services";
 import { parseDutchDate } from "@/services";
 
@@ -18,8 +18,8 @@ function parse(o: any): Werkbericht {
   };
 }
 
-const fetchLatestNews = () =>
-  fetch("http://localhost/api/nieuws")
+const fetchBerichten = (url: string) =>
+  fetch(url)
     .then((r) => r.json())
     .then((json) => {
       const results = json?.results;
@@ -28,24 +28,25 @@ const fetchLatestNews = () =>
       return results.map(parse);
     });
 
+function usePub(...filters: TaxonomyFilter[]) {
+  let url = import.meta.env.VITE_API_BASE_URI;
+  if (filters.length) {
+    const params = new URLSearchParams(
+      filters.map((x) =>
+        "type" in x
+          ? ["taxonomies.openpubType.name", x.type]
+          : ["taxonomies.openpubAudience", x.audience]
+      )
+    );
+    url = `${url}?${params}`;
+  }
+  return ServiceResult.fromFetcher(url, fetchBerichten);
+}
+
 export function useLatestNews(): ServiceData<Werkbericht[]> {
-  const promise = fetchLatestNews();
-  return ServiceResult.fromPromise(promise);
+  return usePub({ type: "Nieuwsbericht" });
 }
 
 export function useLatestWorkInstructions(): ServiceData<Werkbericht[]> {
-  return ServiceResult.success([
-    {
-      title: "Mondkapjes",
-      date: new Date(2022, 1, 2, 12),
-      content:
-        "<p>Draag een mondkapje op de werkvloer bij verplaatsing door het gebouw en daar waar geen 1,5 meter afstand kan worden gehouden. Bijvoorbeeld als je naar een vergaderkamer gaat, of alf je koffie gaat halen.</p>",
-    },
-    {
-      title: "Let op Whatsapp",
-      date: new Date(2022, 1, 1, 12),
-      content:
-        "<p>Let vandaag goed op tijdige beantwoording van de Whatsapp-berichten. We krijgen steeds meer meldingen van burgers die meer dan 10 minuten moeten wachten op antwoord. We can do this! Groet, Marc</p>",
-    },
-  ]);
+  return usePub({ type: "Werkinstructie" });
 }

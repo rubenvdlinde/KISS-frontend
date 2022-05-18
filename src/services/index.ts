@@ -1,4 +1,5 @@
-import { reactive, type UnwrapNestedRefs } from "vue";
+import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
+import useSWRV from "swrv";
 
 type Result<T> =
   | {
@@ -37,26 +38,35 @@ export const ServiceResult = {
       error,
     });
   },
-  fromPromise<T>(promise: Promise<T>, initialData?: T): ServiceData<T> {
+  fromFetcher<T = unknown, S extends string = string>(
+    url: S,
+    fetcher: (url: S) => Promise<T>,
+    initialData?: T
+  ): ServiceData<T> {
     const result =
       initialData !== undefined
         ? ServiceResult.success<T>(initialData)
         : ServiceResult.loading<T>();
 
-    promise
-      .then((data) => {
+    const { data, error } = useSWRV<T, any>(url, fetcher, {
+      refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
+    });
+
+    const dispose = watch([data, error], ([d, e]) => {
+      if (e) {
+        const errorInstance = e instanceof Error ? e : new Error(e);
+        Object.assign(result, { state: "error", error: errorInstance });
+        return;
+      }
+      if (d) {
         Object.assign(result, {
-          data,
+          data: d,
           state: "success",
         });
-      })
-      .catch((reason) => {
-        const error = reason instanceof Error ? reason : new Error(reason);
-        Object.assign(result, {
-          state: "error",
-          error,
-        });
-      });
+      }
+    });
+
+    onUnmounted(dispose);
 
     return result;
   },
@@ -78,7 +88,14 @@ export function parseDutchDate(dateTimeStr: string): Date {
 
   const dateInput = [year, month, day, hour, minute, second].map(
     parseValidInt
-  ) as [number, number, number, number, number, number];
+  ) as [
+    number,
+    number,
+    number,
+    number | undefined,
+    number | undefined,
+    number | undefined
+  ];
 
   //correct 0-based month
   dateInput[1] = dateInput[1] - 1;
