@@ -53,6 +53,32 @@ main {
   }
 }
 
+main > section {
+  &:not(:only-of-type) {
+    max-width: var(--section-width);
+  }
+
+  > utrecht-heading:first-child {
+    padding-left: var(--text-margin);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-tertiary);
+    margin-bottom: var(--spacing-default);
+  }
+}
+
+section > ul {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  gap: 1.625rem;
+}
+
+main > section > p {
+  margin-left: var(--text-margin);
+  margin-bottom: var(--spacing-default);
+  color: var(--color-primary);
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);

@@ -1,6 +1,7 @@
 import type { TaxonomyFilter, Werkbericht } from "./types";
 import { ServiceResult, type ServiceData } from "@/services";
 import { parseDutchDate } from "@/services";
+import { ref, type Ref } from "vue";
 
 function parse(o: any): Werkbericht {
   if (
@@ -26,30 +27,41 @@ const fetchBerichten = (url: string) =>
     })
     .then((json) => {
       const results = json?.results;
-      if (!Array.isArray(results))
-        throw new Error("unexpected json result: " + JSON.stringify(json));
+      if (!Array.isArray(results)) return [];
       return results.map(parse);
     });
 
-function usePub(...filters: TaxonomyFilter[]) {
-  let url = import.meta.env.VITE_API_BASE_URI;
-  if (filters.length) {
-    const params = new URLSearchParams(
-      filters.map((x) =>
-        "type" in x
-          ? ["taxonomies.openpubType.name", x.type]
-          : ["taxonomies.openpubAudience", x.audience]
-      )
-    );
-    url = `${url}?${params}`;
-  }
-  return ServiceResult.fromFetcher(url, fetchBerichten);
+function usePub(filter?: Ref<TaxonomyFilter>) {
+  const getUrl = () => {
+    const url = import.meta.env.VITE_API_BASE_URI;
+    if (!filter) return url;
+    const params: [string, string][] = [];
+    const { audience, type, search } = filter.value;
+    if (audience) {
+      params.push(["taxonomies.openpubAudience.name", audience]);
+    }
+    if (type) {
+      params.push(["taxonomies.openpubType.name", type]);
+    }
+    if (search) {
+      params.push(["content", search]);
+    }
+    if (!params.length) {
+      return url;
+    }
+    return `${url}?${new URLSearchParams(params)}`;
+  };
+  return ServiceResult.fromFetcher(getUrl, fetchBerichten);
 }
 
 export function useLatestNews(): ServiceData<Werkbericht[]> {
-  return usePub({ type: "Nieuwsbericht" });
+  return usePub(ref({ type: "Nieuwsbericht" }));
 }
 
 export function useLatestWorkInstructions(): ServiceData<Werkbericht[]> {
-  return usePub({ type: "Werkinstructie" });
+  return usePub(ref({ type: "Werkinstructie" }));
+}
+
+export function useFiltered(filter: Ref<TaxonomyFilter>) {
+  return usePub(filter);
 }

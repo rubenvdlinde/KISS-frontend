@@ -4,10 +4,8 @@ export interface Werkbericht {
   content: string;
 }
 
-export type TaxonomyFilter =
-  | {
-      audience: string;
-    }
-  | {
-      type: string;
-    };
+export type TaxonomyFilter = {
+  audience?: string;
+  type?: string;
+  search?: string;
+};

@@ -43,9 +43,9 @@ export const ServiceResult = {
       error,
     });
   },
-  fromFetcher<T = unknown, S extends string = string>(
-    url: S,
-    fetcher: (url: S) => Promise<T>,
+  fromFetcher<T = unknown>(
+    url: string | (() => string),
+    fetcher: (url: string) => Promise<T>,
     initialData?: T
   ): ServiceData<T> {
     const result =
