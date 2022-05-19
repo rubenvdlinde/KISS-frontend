@@ -21,6 +21,8 @@
     "@types/dompurify": "^2.3.3",
     "@types/jsdom": "^16.2.14",
     "@types/node": "^16.11.27",
+    "@utrecht/web-component-library-stencil": "1.0.0-alpha.218",
+    "@utrecht/web-component-library-vue": "1.0.0-alpha.164",
     "@vitejs/plugin-vue": "^2.3.1",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^10.0.0",

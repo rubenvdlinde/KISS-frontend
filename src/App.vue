@@ -19,6 +19,7 @@ import { RouterView } from "vue-router";
   --color-primary: #415a77;
   --color-secondary: #eceff1;
   --color-tertiary: #778da9;
+  --utrecht-button-background-color: var(--color-primary);
 
   // spacing
   --container-width: 69.375rem;

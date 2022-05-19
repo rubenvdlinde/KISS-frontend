@@ -34,8 +34,9 @@
       </ul>
       <paragraph v-else>Er zijn momenteel geen nieuwsberichten.</paragraph>
     </template>
-    <paragraph v-else>Loading</paragraph>
+    <paragraph v-else>Loading</paragraph>   
   </section>
+   <contactmoment-starter/>
 </template>
 
 <script setup lang="ts">
@@ -46,6 +47,8 @@ import {
   WerkBericht,
 } from "@/features/werkbericht";
 import Heading from "@/nl-design-system/components/Heading.vue";
+import { Component } from "@utrecht/web-component-library-stencil/dist/types/stencil-public-runtime";
+import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue"
 const werkinstructies = useLatestWorkInstructions();
 const nieuwsberichten = useLatestNews();
 </script>
