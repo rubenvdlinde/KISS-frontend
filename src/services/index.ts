@@ -1,6 +1,11 @@
 import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
+const logError = import.meta.env.DEV
+  ? (e: unknown) => console.error(e)
+  : // eslint-disable-next-line @typescript-eslint/no-empty-function
+    () => {};
+
 type Result<T> =
   | {
       state: "loading";
@@ -54,6 +59,7 @@ export const ServiceResult = {
 
     const dispose = watch([data, error], ([d, e]) => {
       if (e) {
+        logError(e);
         const errorInstance = e instanceof Error ? e : new Error(e);
         Object.assign(result, { state: "error", error: errorInstance });
         return;

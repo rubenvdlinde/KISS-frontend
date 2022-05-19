@@ -5,4 +5,3 @@
     * Implementatie is gekoppeld aan Material UI
     * Niet genoeg vrijheidsgraden voor semantiek: `<article>` en header is een `<p>` ipv een <h...>
 * Paragraph: Alleen classes overgenomen, want maakt geen `<p>` maar een `<div>`
-* Heading: alleen classes overgenomen, want web component lijkt niet te werken

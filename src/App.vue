@@ -53,19 +53,17 @@ main {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  color: var(--color-headings);
-}
-
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
+  --utrecht-paragraph-color: black;
   --utrecht-heading-font-family: var(--font-family);
+  --utrecht-document-font-family: var(--font-family);
+  --utrecht-document-font-size: 1rem;
+  --utrecht-document-color: black;
+  --utrecht-heading-color: var(--color-headings);
   --utrecht-paragraph-font-size: 1rem;
+  --utrecht-heading-font-weight: 600;
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;

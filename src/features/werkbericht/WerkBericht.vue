@@ -1,12 +1,14 @@
 <template>
   <article>
     <header>
-      <heading :level="level">{{ bericht.title }}</heading>
-      <time :datetime="bericht.date?.toISOString()" pubdate>{{
+      <utrecht-heading :level="level">{{ bericht.title }}</utrecht-heading>
+      <time :datetime="bericht.date.toISOString()" pubdate>{{
         localeString(bericht.date)
       }}</time>
     </header>
-    <section v-html="sanitized" />
+    <utrecht-document class="correct-header">
+      <div v-html="sanitized" />
+    </utrecht-document>
   </article>
 </template>
 
@@ -14,14 +16,20 @@
 import { computed, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import DOMPurify from "dompurify";
-import Heading from "@/nl-design-system/components/Heading.vue";
+import {
+  UtrechtHeading,
+  UtrechtDocument,
+} from "@utrecht/web-component-library-vue";
+
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
 const props = defineProps({
   bericht: {
     type: Object as PropType<Werkbericht>,
     required: true,
   },
   level: {
-    type: Number as PropType<1 | 2 | 3 | 4 | 5 | 6>,
+    type: Number as PropType<HeadingLevel>,
     default: 3,
     validator: (val) => typeof val === "number" && val >= 1 && val <= 6,
   },
@@ -36,7 +44,20 @@ const localeString = (d: Date) =>
     minute: "2-digit",
   });
 
-const sanitized = computed(() => DOMPurify.sanitize(props.bericht.content));
+const headerRegex = /(<\/?h)([1-6])(>)/g;
+const increaseHeadings = (s: string, level: HeadingLevel) =>
+  s.replace(headerRegex, (_, open, l, close) => {
+    const newLevel = Number.parseInt(l, 10) + level - 1;
+    const classes = open.includes("/")
+      ? ""
+      : ` class="utrecht-heading-${newLevel}"`;
+    return `${open}${newLevel}${classes}${close}`;
+  });
+
+const sanitized = computed(() => {
+  const safeString = DOMPurify.sanitize(props.bericht.content);
+  return increaseHeadings(safeString, props.level);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -71,13 +92,5 @@ article {
       margin-bottom: 1em;
     }
   }
-}
-
-// TODO: wat doen we met het niveau van headings?
-// Semantisch nu niet correct
-article > section :deep(h1),
-article > section :deep(h2),
-article > section :deep(h3) {
-  font-size: var(--utrecht-heading-4-font-size);
 }
 </style>
