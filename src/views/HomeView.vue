@@ -1,9 +1,9 @@
 <template>
-  <heading :level="1">Startscherm</heading>
+  <utrecht-heading :level="1">Startscherm</utrecht-heading>
   <section>
-    <heading :level="2">Werkinstructies</heading>
+    <utrecht-heading :level="2">Werkinstructies</utrecht-heading>
     <paragraph v-if="werkinstructies.state === 'error'">
-      {{ werkinstructies.error }}
+      Er ging iets mis bij het laden van de werkinstructies.
     </paragraph>
     <template v-else-if="werkinstructies.state === 'success'">
       <ul v-if="werkinstructies.data.length">
@@ -16,12 +16,12 @@
       </ul>
       <paragraph v-else>Er zijn momenteel geen werkinstructies.</paragraph>
     </template>
-    <paragraph v-else>Loading</paragraph>
+    <simple-spinner v-else></simple-spinner>
   </section>
   <section>
-    <heading :level="2">Nieuws</heading>
+    <utrecht-heading :level="2">Nieuws</utrecht-heading>
     <paragraph v-if="nieuwsberichten.state === 'error'">
-      {{ nieuwsberichten.error }}
+      Er ging iets mis bij het laden van de nieuwbserichten
     </paragraph>
     <template v-else-if="nieuwsberichten.state === 'success'">
       <ul v-if="nieuwsberichten.data.length">
@@ -34,21 +34,24 @@
       </ul>
       <paragraph v-else>Er zijn momenteel geen nieuwsberichten.</paragraph>
     </template>
-    <paragraph v-else>Loading</paragraph>   
+    <simple-spinner v-else></simple-spinner>
   </section>
    <contactmoment-starter/>
 </template>
 
 <script setup lang="ts">
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import {
   useLatestNews,
   useLatestWorkInstructions,
   WerkBericht,
 } from "@/features/werkbericht";
-import Heading from "@/nl-design-system/components/Heading.vue";
-import { Component } from "@utrecht/web-component-library-stencil/dist/types/stencil-public-runtime";
+
+// import { Component } from "@utrecht/web-component-library-stencil/dist/types/stencil-public-runtime";
 import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue"
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+
 const werkinstructies = useLatestWorkInstructions();
 const nieuwsberichten = useLatestNews();
 </script>
@@ -59,7 +62,7 @@ main > section {
     max-width: var(--section-width);
   }
 
-  h2 {
+  > utrecht-heading:first-child {
     padding-left: var(--text-margin);
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--color-tertiary);

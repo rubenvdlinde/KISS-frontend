@@ -19,6 +19,7 @@ import { RouterView } from "vue-router";
   --color-primary: #415a77;
   --color-secondary: #eceff1;
   --color-tertiary: #778da9;
+  --color-headings: #1b263b;
   --utrecht-button-background-color: var(--color-primary);
 
   // spacing
@@ -27,14 +28,10 @@ import { RouterView } from "vue-router";
   --spacing-default: 1rem;
   --header-height: 6rem;
   --text-margin: 1.5rem;
-
-  // typography
-  --font-family: "Open Sans", sans-serif;
-  --utrecht-heading-font-family: var(--font-family);
 }
 
-html {
-  font-family: var(--font-family);
+body {
+  font-family: var(--utrecht-paragraph-font-family);
 }
 
 #app > header {
@@ -57,31 +54,28 @@ main {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  color: #1b263b;
-  font-weight: 600;
-}
+.kiss-theme {
+  --font-family: "Open Sans", sans-serif;
+  --utrecht-paragraph-font-family: var(--font-family);
+  --utrecht-paragraph-color: black;
+  --utrecht-heading-font-family: var(--font-family);
+  --utrecht-document-font-family: var(--font-family);
+  --utrecht-document-font-size: 1rem;
+  --utrecht-document-color: black;
+  --utrecht-heading-color: var(--color-headings);
+  --utrecht-paragraph-font-size: 1rem;
+  --utrecht-heading-font-weight: 600;
 
-h1 {
-  font-size: 2.5rem;
-  line-height: 4.25rem;
-}
+  /* h1 */
+  --utrecht-heading-1-line-height: 4.25rem;
+  --utrecht-heading-1-font-size: 2.5rem;
 
-h2 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
+  /* h2 */
+  --utrecht-heading-2-line-height: 2rem;
+  --utrecht-heading-2-font-size: 1.5rem;
 
-h3 {
-  font-size: 1.25rem;
-  line-height: 2rem;
-}
-
-p {
-  line-height: 1.5rem;
+  /* h3 */
+  --utrecht-heading-3-line-height: 2rem;
+  --utrecht-heading-3-font-size: 1.25rem;
 }
 </style>

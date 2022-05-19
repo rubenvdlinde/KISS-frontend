@@ -20,7 +20,10 @@ function parse(o: any): Werkbericht {
 
 const fetchBerichten = (url: string) =>
   fetch(url)
-    .then((r) => r.json())
+    .then((r) => {
+      if (!r.ok) throw new Error(r.status.toString());
+      return r.json();
+    })
     .then((json) => {
       const results = json?.results;
       if (!Array.isArray(results))

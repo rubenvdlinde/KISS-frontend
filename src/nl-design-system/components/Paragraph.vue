@@ -24,7 +24,8 @@ defineProps({
  * Copyright (c) 2021 The Knights Who Say NIH! B.V.
  */
 
-.utrecht-paragraph {
+.utrecht-paragraph,
+p {
   color: var(--utrecht-paragraph-color, var(--utrecht-document-color, inherit));
   font-family: var(
     --utrecht-paragraph-font-family,
@@ -66,7 +67,8 @@ defineProps({
   text-transform: var(--denhaag-posttypelabel-text-transform, uppercase);
 }
 
-.utrecht-paragraph + .utrecht-paragraph {
+.utrecht-paragraph + .utrecht-paragraph,
+p + p {
   --utrecht-paragraph-margin-block-start: var(
     --utrecht-paragraph-paragraph-margin-block-start,
     inherit
