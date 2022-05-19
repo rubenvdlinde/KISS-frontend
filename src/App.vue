@@ -19,6 +19,7 @@ import { RouterView } from "vue-router";
   --color-primary: #415a77;
   --color-secondary: #eceff1;
   --color-tertiary: #778da9;
+  --color-headings: #1b263b;
 
   // spacing
   --container-width: 69.375rem;
@@ -57,7 +58,7 @@ h2,
 h3,
 h4,
 h5 {
-  color: #1b263b;
+  color: var(--color-headings);
 }
 
 .kiss-theme {
