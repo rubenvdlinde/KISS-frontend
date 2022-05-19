@@ -18,7 +18,8 @@ defineProps<{ level: 1 | 2 | 3 | 4 | 5 | 6 }>();
  * Copyright (c) 2021 The Knights Who Say NIH! B.V.
  */
 
-.utrecht-heading-1 {
+.utrecht-heading-1,
+h1 {
   --utrecht-heading-1-color: var(--denhaag-heading-color);
   --utrecht-heading-1-line-height: var(--denhaag-heading-line-height);
 
@@ -56,7 +57,8 @@ defineProps<{ level: 1 | 2 | 3 | 4 | 5 | 6 }>();
   );
 }
 
-.utrecht-heading-2 {
+.utrecht-heading-2,
+h2 {
   --utrecht-heading-2-line-height: var(--denhaag-heading-line-height);
   --utrecht-heading-2-color: var(--denhaag-heading-color);
 
@@ -94,7 +96,8 @@ defineProps<{ level: 1 | 2 | 3 | 4 | 5 | 6 }>();
   );
 }
 
-.utrecht-heading-3 {
+.utrecht-heading-3,
+h3 {
   --utrecht-heading-3-line-height: var(--denhaag-heading-line-height);
   --utrecht-heading-3-color: var(--denhaag-heading-color);
 
@@ -132,7 +135,8 @@ defineProps<{ level: 1 | 2 | 3 | 4 | 5 | 6 }>();
   );
 }
 
-.utrecht-heading-4 {
+.utrecht-heading-4,
+h4 {
   --utrecht-heading-4-line-height: var(--denhaag-heading-line-height);
   --utrecht-heading-4-color: var(--denhaag-heading-color);
 

@@ -29,11 +29,10 @@ import { RouterView } from "vue-router";
 
   // typography
   --font-family: "Open Sans", sans-serif;
-  --utrecht-heading-font-family: var(--font-family);
 }
 
 html {
-  font-family: var(--font-family);
+  font-family: var(--utrecht-paragraph-font-family);
 }
 
 #app > header {
@@ -54,33 +53,5 @@ main {
   > * {
     flex-basis: 100%;
   }
-}
-
-h1,
-h2,
-h3,
-h4,
-h5 {
-  color: #1b263b;
-  font-weight: 600;
-}
-
-h1 {
-  font-size: 2.5rem;
-  line-height: 4.25rem;
-}
-
-h2 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
-
-h3 {
-  font-size: 1.25rem;
-  line-height: 2rem;
-}
-
-p {
-  line-height: 1.5rem;
 }
 </style>

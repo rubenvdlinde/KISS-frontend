@@ -73,6 +73,9 @@ article {
   }
 }
 
+// TODO: wat doen we met het niveau van headings?
+// Semantisch nu niet correct
+article > section :deep(h1),
 article > section :deep(h2),
 article > section :deep(h3) {
   font-size: var(--utrecht-heading-4-font-size);
