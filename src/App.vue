@@ -1,125 +1,80 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "@/components/HelloWorld.vue";
-</script>
-
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <header></header>
+  <main><router-view /></main>
 </template>
 
-<style>
-@import "@/assets/base.css";
+<script setup lang="ts">
+import { RouterView } from "vue-router";
+</script>
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+<style lang="scss">
+@import "@/assets/reset.css";
+@import "@/assets/fonts/fonts.css";
 
-  font-weight: normal;
+/* Design Tokens */
+@import "@gemeente-denhaag/design-tokens-components/dist/index.css";
+
+:root {
+  // colors
+  --color-primary: #415a77;
+  --color-secondary: #eceff1;
+  --color-tertiary: #778da9;
+  --color-headings: #1b263b;
+
+  // spacing
+  --container-width: 69.375rem;
+  --section-width: 30.75rem;
+  --spacing-default: 1rem;
+  --header-height: 6rem;
+  --text-margin: 1.5rem;
 }
 
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+body {
+  font-family: var(--utrecht-paragraph-font-family);
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+#app > header {
+  min-height: var(--header-height);
+  background-color: var(--color-primary);
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
+main {
+  max-width: var(--container-width);
+  padding: 2rem var(--spacing-default);
+  gap: var(--spacing-default);
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right: auto;
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+  > * {
+    flex-basis: 100%;
   }
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
+.kiss-theme {
+  --font-family: "Open Sans", sans-serif;
+  --utrecht-paragraph-font-family: var(--font-family);
+  --utrecht-paragraph-color: black;
+  --utrecht-heading-font-family: var(--font-family);
+  --utrecht-document-font-family: var(--font-family);
+  --utrecht-document-font-size: 1rem;
+  --utrecht-document-color: black;
+  --utrecht-heading-color: var(--color-headings);
+  --utrecht-paragraph-font-size: 1rem;
+  --utrecht-heading-font-weight: 600;
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
+  /* h1 */
+  --utrecht-heading-1-line-height: 4.25rem;
+  --utrecht-heading-1-font-size: 2.5rem;
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
+  /* h2 */
+  --utrecht-heading-2-line-height: 2rem;
+  --utrecht-heading-2-font-size: 1.5rem;
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+  /* h3 */
+  --utrecht-heading-3-line-height: 2rem;
+  --utrecht-heading-3-font-size: 1.25rem;
 }
 </style>

@@ -5,6 +5,7 @@ services:
         image: ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}:${APP_ENV}
         build:
             dockerfile: dockerDockerfileDev
+            context: .
         ports:
             - "8080:80"
 
