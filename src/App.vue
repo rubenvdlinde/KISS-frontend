@@ -26,12 +26,9 @@ import { RouterView } from "vue-router";
   --spacing-default: 1rem;
   --header-height: 6rem;
   --text-margin: 1.5rem;
-
-  // typography
-  --font-family: "Open Sans", sans-serif;
 }
 
-html {
+body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
@@ -53,5 +50,32 @@ main {
   > * {
     flex-basis: 100%;
   }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: #1b263b;
+}
+
+.kiss-theme {
+  --font-family: "Open Sans", sans-serif;
+  --utrecht-paragraph-font-family: var(--font-family);
+  --utrecht-heading-font-family: var(--font-family);
+  --utrecht-paragraph-font-size: 1rem;
+
+  /* h1 */
+  --utrecht-heading-1-line-height: 4.25rem;
+  --utrecht-heading-1-font-size: 2.5rem;
+
+  /* h2 */
+  --utrecht-heading-2-line-height: 2rem;
+  --utrecht-heading-2-font-size: 1.5rem;
+
+  /* h3 */
+  --utrecht-heading-3-line-height: 2rem;
+  --utrecht-heading-3-font-size: 1.25rem;
 }
 </style>
