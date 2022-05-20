@@ -9,7 +9,6 @@ App\Entity\Group:
             - '@admin_read'
             - '@admin_remove'
             - '@admin_update'
-
     anonymous:
         description: the anonymous group
         name: ANONYMOUS
