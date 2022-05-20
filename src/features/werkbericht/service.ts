@@ -32,7 +32,7 @@ const fetchBerichten = (url: string) =>
     });
 
 function usePub(...filters: TaxonomyFilter[]) {
-  let url = import.meta.env.VITE_API_BASE_URI;
+  let url = window.openPubBaseUri;
   if (filters.length) {
     const params = new URLSearchParams(
       filters.map((x) =>
