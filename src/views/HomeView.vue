@@ -36,7 +36,7 @@
     </template>
     <simple-spinner v-else></simple-spinner>
   </section>
-   <contactmoment-starter/>
+  <contactmoment-starter />
 </template>
 
 <script setup lang="ts">
@@ -49,7 +49,7 @@ import {
 } from "@/features/werkbericht";
 
 // import { Component } from "@utrecht/web-component-library-stencil/dist/types/stencil-public-runtime";
-import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue"
+import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 
 const werkinstructies = useLatestWorkInstructions();

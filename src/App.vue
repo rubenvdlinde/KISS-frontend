@@ -1,10 +1,24 @@
 <template>
-  <header></header>
+  <header :class="contactmomentClass"></header>
   <main><router-view /></main>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { RouterView } from "vue-router";
+import { useContactmomentStore } from "@/stores/contactmoment";
+
+const contactmoment = useContactmomentStore();
+const contactmomentClass = ref("");
+
+watch(
+  () => contactmoment.contactmomentLoopt,
+  (contactmomentLooptValue) => {
+    contactmomentClass.value = contactmomentLooptValue
+      ? "contactmomentLoopt"
+      : "";
+  }
+);
 </script>
 
 <style lang="scss">
@@ -20,7 +34,7 @@ import { RouterView } from "vue-router";
   --color-secondary: #eceff1;
   --color-tertiary: #778da9;
   --color-headings: #1b263b;
-  --utrecht-button-background-color: var(--color-primary);
+  --color-accent: #58af23;
 
   // spacing
   --container-width: 69.375rem;
@@ -34,9 +48,19 @@ body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
+#app {
+}
+
 #app > header {
   min-height: var(--header-height);
   background-color: var(--color-primary);
+  border-style: solid;
+  border-top-width: 6px;
+  border-top-color: var(--color-primary);
+}
+
+#app > header.contactmomentLoopt {
+  border-top-color: var(--color-accent);
 }
 
 main {
@@ -77,5 +101,8 @@ main {
   /* h3 */
   --utrecht-heading-3-line-height: 2rem;
   --utrecht-heading-3-font-size: 1.25rem;
+
+  /* button */
+  --utrecht-button-background-color: var(--color-primary);
 }
 </style>
