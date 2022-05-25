@@ -62,7 +62,6 @@ main > section {
     padding-left: var(--text-margin);
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--color-tertiary);
-    margin-bottom: var(--spacing-default);
   }
 }
 

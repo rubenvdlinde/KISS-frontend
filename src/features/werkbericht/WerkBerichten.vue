@@ -22,7 +22,10 @@
           />
         </li>
       </ul>
-      <pagination :pagination="berichten.data" />
+      <pagination
+        v-show="berichten.data.page.length"
+        :pagination="berichten.data"
+      />
     </template>
     <simple-spinner v-else></simple-spinner>
   </section>
@@ -76,7 +79,13 @@ const berichten = useWerkberichten(wbParams);
 </script>
 
 <style lang="scss" scoped>
+section {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
 ul + nav {
-  margin-block-start: 0.5em;
+  justify-self: center;
 }
 </style>

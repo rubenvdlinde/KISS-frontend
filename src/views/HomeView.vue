@@ -11,12 +11,15 @@
         <select name="type" id="werkberichtTypeInput">
           <option value="">Alle</option>
           <option
-            value="Werkinstructies"
-            :selected="currentType === 'Werkinstructies'"
+            value="Werkinstructie"
+            :selected="currentType === 'Werkinstructie'"
           >
             Werkinstructies
           </option>
-          <option value="Nieuws" :selected="currentType === 'Nieuws'">
+          <option
+            value="Nieuwsbericht"
+            :selected="currentType === 'Nieuwsbericht'"
+          >
             Nieuws
           </option>
         </select>
