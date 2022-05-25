@@ -92,8 +92,13 @@ function submitSearch(e: Event) {
   }
 }
 
-function handleSearch(e: any) {
-  if (!e.currentTarget.value) {
+function handleSearch(e: Event) {
+  const { currentTarget } = e;
+  if (
+    currentSearch.value &&
+    currentTarget instanceof HTMLInputElement &&
+    !currentTarget.value
+  ) {
     router.push("/");
   }
 }
