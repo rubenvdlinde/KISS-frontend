@@ -1,7 +1,7 @@
-import type { TaxonomyFilter, Werkbericht } from "./types";
+import type { WerkberichtFilter, Werkbericht } from "./types";
 import { ServiceResult, type ServiceData } from "@/services";
 import { parseDutchDate } from "@/services";
-import { ref, type Ref } from "vue";
+import type { Ref } from "vue";
 
 function parse(o: any): Werkbericht {
   if (
@@ -16,6 +16,7 @@ function parse(o: any): Werkbericht {
     title: o.title,
     content: o.content,
     date: parseDutchDate(o.date),
+    type: o?.taxonomies?.openpubType?.[0]?.name,
   };
 }
 
@@ -30,13 +31,14 @@ const fetchBerichten = (url: string) =>
       if (!Array.isArray(results)) return [];
       return results.map(parse);
     });
-
-function usePub(filter?: Ref<TaxonomyFilter>) {
+export function useWerkberichten(
+  filter?: Ref<WerkberichtFilter>
+): ServiceData<Werkbericht[]> {
   const getUrl = () => {
     const url = import.meta.env.VITE_API_BASE_URI;
-    if (!filter) return url;
-    const params: [string, string][] = [];
+    if (!filter?.value) return url;
     const { audience, type, search } = filter.value;
+    const params: [string, string][] = [];
     if (audience) {
       params.push(["taxonomies.openpubAudience.name", audience]);
     }
@@ -52,16 +54,4 @@ function usePub(filter?: Ref<TaxonomyFilter>) {
     return `${url}?${new URLSearchParams(params)}`;
   };
   return ServiceResult.fromFetcher(getUrl, fetchBerichten);
-}
-
-export function useLatestNews(): ServiceData<Werkbericht[]> {
-  return usePub(ref({ type: "Nieuwsbericht" }));
-}
-
-export function useLatestWorkInstructions(): ServiceData<Werkbericht[]> {
-  return usePub(ref({ type: "Werkinstructie" }));
-}
-
-export function useFiltered(filter: Ref<TaxonomyFilter>) {
-  return usePub(filter);
 }

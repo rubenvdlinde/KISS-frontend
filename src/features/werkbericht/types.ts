@@ -2,10 +2,19 @@ export interface Werkbericht {
   title: string;
   date: Date;
   content: string;
+  type?: string;
 }
 
-export type TaxonomyFilter = {
+const werkberichtTypes = ["Werkinstructie", "Nieuwsbericht"] as const;
+
+export type WerkberichtType = typeof werkberichtTypes[number];
+export function parseWerkberichtType(i: unknown): WerkberichtType | undefined {
+  if ((werkberichtTypes as unknown as unknown[]).includes(i))
+    return i as WerkberichtType;
+}
+
+export type WerkberichtFilter = {
   audience?: string;
-  type?: string;
+  type?: WerkberichtType;
   search?: string;
 };
