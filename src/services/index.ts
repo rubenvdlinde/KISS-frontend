@@ -21,6 +21,13 @@ type Result<T> =
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
 
+export interface Paginated<T> {
+  pageSize: number;
+  pageNumber: number;
+  totalPages: number;
+  page: T[];
+}
+
 export const ServiceResult = {
   success<T>(data: T): ServiceData<T> {
     return reactive({

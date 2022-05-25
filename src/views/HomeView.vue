@@ -66,7 +66,6 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
-import { parseWerkberichtType } from "@/features/werkbericht/types";
 const router = useRouter();
 const route = useRoute();
 const currentSearch = computed(() => route.query.search?.toString());
@@ -75,7 +74,7 @@ const filter = computed(() =>
   currentSearch.value
     ? {
         search: currentSearch.value,
-        type: parseWerkberichtType(currentType.value),
+        type: currentType.value,
       }
     : undefined
 );

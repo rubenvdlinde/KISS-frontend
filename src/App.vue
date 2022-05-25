@@ -79,6 +79,15 @@ main > section > p {
   color: var(--color-primary);
 }
 
+a[aria-current="page"] {
+  color: inherit;
+  pointer-events: none;
+
+  &:hover {
+    cursor: none;
+  }
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -90,6 +99,8 @@ main > section > p {
   --utrecht-heading-color: var(--color-headings);
   --utrecht-paragraph-font-size: 1rem;
   --utrecht-heading-font-weight: 600;
+  --denhaag-pagination-color: var(--color-primary);
+  --denhaag-pagination-link-current-color: var(--color-headings);
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;

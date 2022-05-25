@@ -5,6 +5,7 @@
     * Implementatie is gekoppeld aan Material UI
     * Niet genoeg vrijheidsgraden voor semantiek: `<article>` en header is een `<p>` ipv een <h...>
 * Paragraph: Alleen classes overgenomen, want maakt geen `<p>` maar een `<div>`
+* Pagination: Utrecht biedt geen ruimte voor client-side navigation. Den Haag CSS variant genomen
 
 
 # Bevindingen

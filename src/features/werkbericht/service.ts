@@ -1,7 +1,15 @@
-import type { WerkberichtFilter, Werkbericht } from "./types";
-import { ServiceResult, type ServiceData } from "@/services";
+import type { Werkbericht } from "./types";
+import { ServiceResult, type Paginated, type ServiceData } from "@/services";
 import { parseDutchDate } from "@/services";
 import type { Ref } from "vue";
+
+export type WerkberichtParams = {
+  audience?: string;
+  type?: string;
+  search?: string;
+  page?: number;
+  pagesize?: number;
+};
 
 function parse(o: any): Werkbericht {
   if (
@@ -20,24 +28,37 @@ function parse(o: any): Werkbericht {
   };
 }
 
-const fetchBerichten = (url: string) =>
-  fetch(url)
+function fetchBerichten(url: string): Promise<Paginated<Werkbericht>> {
+  return fetch(url)
     .then((r) => {
       if (!r.ok) throw new Error(r.status.toString());
       return r.json();
     })
     .then((json) => {
-      const results = json?.results;
-      if (!Array.isArray(results)) return [];
-      return results.map(parse);
+      const {
+        results,
+        page: pageNumber,
+        pages: totalPages,
+        limit: pageSize,
+      } = json;
+
+      const page = Array.isArray(results) ? results.map(parse) : [];
+
+      return {
+        page,
+        pageSize,
+        pageNumber,
+        totalPages,
+      };
     });
+}
 export function useWerkberichten(
-  filter?: Ref<WerkberichtFilter>
-): ServiceData<Werkbericht[]> {
+  filter?: Ref<WerkberichtParams>
+): ServiceData<Paginated<Werkbericht>> {
   const getUrl = () => {
     const url = import.meta.env.VITE_API_BASE_URI;
     if (!filter?.value) return url;
-    const { audience, type, search } = filter.value;
+    const { audience, type, search, page } = filter.value;
     const params: [string, string][] = [];
     if (audience) {
       params.push(["taxonomies.openpubAudience.name", audience]);
@@ -47,6 +68,9 @@ export function useWerkberichten(
     }
     if (search) {
       params.push(["content", search]);
+    }
+    if (page) {
+      params.push(["page", page.toString()]);
     }
     if (!params.length) {
       return url;
