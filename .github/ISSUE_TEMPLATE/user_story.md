@@ -8,10 +8,30 @@ assignees: ''
 ---
 ...zodat 
 
-## toelichting
+### toelichting
 
 **Projectcode**: 
 
-## Acceptatie criteria
+### Acceptatiecriteria
 - [ ]
-- [ ]
+
+### Functionele teststappen
+
+### Taken Conduction
+- [ ] Test invullen
+- [ ] 
+
+### Taken ICAT
+- [ ] Test invullen
+- [ ] 
+
+### Taken DIMPACT
+- [ ] Test invullen
+- [ ] 
+
+### Tijdinschatting 
+- *Conduction* 8
+- *ICATT* v
+
+### Discussie
+- [ ] type hekje om te linken
