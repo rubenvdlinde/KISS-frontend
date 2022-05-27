@@ -24,7 +24,7 @@ const contactmoment = useContactmomentStore();
 
 const onStartContactMoment = () => contactmoment.start();
 
-const onStopContactMoment = () => router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig. 
+const onStopContactMoment = () => router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 </script>
 
 <style scoped lang="scss">

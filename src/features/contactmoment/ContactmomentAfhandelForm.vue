@@ -1,6 +1,10 @@
 <template>
   <form>
-    <select class="utrecht-select utrecht-select--html-select">
+    <label>kanaal</label>
+    <select
+      v-model="contactmoment.kanaal"
+      class="utrecht-select utrecht-select--html-select"
+    >
       <option>telefoon</option>
       <option>e-mail</option>
       <option>contactformulier</option>
@@ -19,16 +23,22 @@
 </template>
 
 <script lang="ts" setup>
+import { reactive } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
+import type { Contactmoment } from "./types";
 
-const contactmoment = useContactmomentStore();
-const x = useContactmomentService();
+const contactmomentStore = useContactmomentStore();
+const service = useContactmomentService();
 
-const onAnnuleren = () => contactmoment.cancel();
+const contactmoment: Contactmoment = reactive({});
 
-const onOpslaan = () => x.save();
+const onAnnuleren = () => contactmomentStore.cancel();
+
+const onOpslaan = () => {
+  service.save(contactmoment);
+};
 </script>
 
 <style lang="scss" scoped>
