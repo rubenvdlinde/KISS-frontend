@@ -32,11 +32,41 @@ import type { Contactmoment } from "./types";
 const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
 
-const contactmoment: Contactmoment = reactive({});
+const contactmoment: Contactmoment = reactive({
+  vorigContactmoment: null,
+  bronorganisatie: "999990639", //environment var? kunnen er eventueel meerdere zijn bij een shared contactcenter, moet het beheerd kunnen worden of onderdeel van de installatie?
+  //registratiedatum: op moment van opslaan
+  //kanaal: string; wordt in het formulier gekozen
+  voorkeurskanaal: "",
+  voorkeurstaal: "",
+  tekst: "",
+  onderwerpLinks: [],
+  initiatiefnemer: "klant", //enum "gemeente" of "klant"
+  medewerker: "",
+  medewerkerIdentificatie: null,
+});
 
 const onAnnuleren = () => contactmomentStore.cancel();
 
+const getFormattedDate = () => {
+  const formatDateTimeElement = (x) => ("0" + x).slice(-2);
+
+  var now = new Date(); //2005-12-30UTC01:02:03
+
+  return `${now.getFullYear()}-${formatDateTimeElement(
+    now.getMonth() + 1
+  )}-${now.getDate()}UTC${formatDateTimeElement(
+    now.getHours()
+  )}:${formatDateTimeElement(now.getMinutes())}:${formatDateTimeElement(
+    now.getSeconds()
+  )}`;
+};
+
 const onOpslaan = () => {
+  contactmoment.registratiedatum = getFormattedDate();
+  contactmoment.registratiedatum = "2005-12-30UTC01:02:03"; //zo zou het volgens de validatie melding moeten
+  contactmoment.registratiedatum = "2022-04-06 13:53:00"; //maar alleen dit wordt geaccepteerd
+
   service.save(contactmoment);
 };
 </script>
