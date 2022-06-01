@@ -1,5 +1,12 @@
 <template>
   <utrecht-heading :level="1">Startscherm</utrecht-heading>
+  <a
+    href="https://gateway.kiss-dev.commonground.nu/"
+    rel="noopener noreferrer"
+    target="_blank"
+    class="admin-link"
+    >Items beheren</a
+  >
   <form
     enctype="application/x-www-form-urlencoded"
     method="get"
@@ -109,46 +116,58 @@ function handleSearch(e: Event) {
 <style scoped lang="scss">
 form > section {
   display: inline-flex;
+  align-items: stretch;
+  border-radius: 1.5rem;
+  border: 1px solid black;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  > *:not(:last-child) {
+    border-inline-end: 1px solid grey;
+  }
 }
 
 label[for="werkberichtTypeInput"],
 label[for="searchInput"] {
   font-size: 0;
   display: flex;
+  align-items: stretch;
 }
 
 input,
 select {
-  border-radius: 0;
-  border-width: 1px;
+  border: none;
   padding: 0.5rem;
-  border-color: black;
 }
 
 #werkberichtTypeInput {
-  border-radius: 1.5rem 0 0 1.5rem;
   background-color: #e8e4dc;
 }
 
 #searchInput {
   min-width: 40ch;
   max-width: 100%;
-  border-right: 0;
   padding-left: 1rem;
 }
 
 button {
   --utrecht-icon-size: 1rem;
 
-  border-radius: 0 1.5rem 1.5rem 0;
-  border-left: none;
-  border-width: 1px;
-  background: none;
+  border: none;
+  background: white;
   font-size: 0;
   padding-right: 1rem;
 }
 
 utrecht-icon-loupe {
   pointer-events: none;
+}
+
+.admin-link {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  margin-top: 3.75rem;
+  color: var(--color-headings);
 }
 </style>

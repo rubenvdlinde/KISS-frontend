@@ -47,6 +47,7 @@ main {
   justify-content: space-between;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 
   > * {
     flex-basis: 100%;
