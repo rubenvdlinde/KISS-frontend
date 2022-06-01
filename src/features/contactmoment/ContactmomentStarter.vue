@@ -34,9 +34,7 @@ nav {
   right: var(--utrecht-space-column-2xl);
 }
 
-utrecht-button {
-  --utrecht-button-border-radius: 100px;
-}
+
 
 utrecht-button.contactmomentLoopt {
   --utrecht-button-background-color: var(--color-accent);

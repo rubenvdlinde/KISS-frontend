@@ -104,6 +104,11 @@ main {
 
   /* button */
   --utrecht-button-background-color: var(--color-primary);
+  --utrecht-button-border-color: var(--color-primary);
+  --utrecht-button-secondary-action-border-color: var(
+    --utrecht-button-border-color
+  );
+  --utrecht-button-secondary-action-color: var(--color-primary);
 
   /* forms */
   --utrecht-form-fieldset-legend-font-size: 1.5rem;
@@ -111,5 +116,10 @@ main {
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
   --utrecht-form-label-font-size: 1rem;
+}
+
+utrecht-button {
+  --utrecht-button-border-radius: 100px;
+  --utrecht-button-min-inline-size:150px;
 }
 </style>

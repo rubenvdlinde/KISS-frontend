@@ -1,5 +1,15 @@
 <template>
-  <form>
+  <article v-if="saveFailed && !saving">
+    <p>
+      Er is een probleem opgetreden. Het contactmoment is niet opgeslagen.
+      Probeer het opnieuw
+    </p>
+  </article>
+
+  <form
+    v-if="contactmomentStore.contactmomentLoopt && !saving"
+    @submit.prevent="submitDialog.reveal"
+  >
     <fieldset class="utrecht-form-fieldset">
       <legend
         class="utrecht-form-fieldset__legend utrecht-form-fieldset__legend--distanced"
@@ -25,35 +35,85 @@
       </select>
     </fieldset>
     <nav>
-      <utrecht-button type="button" @click="onAnnuleren"
+      <utrecht-button
+        type="button"
+        @click="cancelDialog.reveal"
+        appearance="secondary-action-button"
         >Annuleren</utrecht-button
       >
-      <utrecht-button v type="button" @click="onOpslaan"
-        >Opslaan</utrecht-button
-      >
+      <utrecht-button type="submit">Opslaan</utrecht-button>
     </nav>
   </form>
+
+  <simple-spinner v-else-if="saving"></simple-spinner>
+
+  <article v-else-if="saved">
+    <p>Het contactmoment is opgeslagen.</p>
+  </article>
+  <!-- Annuleer Dialog -->
+
+  <div v-if="cancelDialogRevealed" class="modal-layout">
+    <div class="modal">
+      <div>
+        <p>
+          Weet u zeker dat u het contactmoment wilt annuleren? Alle gegevens
+          worden verwijderd.
+        </p>
+      </div>
+      <nav>
+        <utrecht-button
+          @click="cancelDialog.cancel"
+          appearance="secondary-action-button"
+          >Nee</utrecht-button
+        >
+        <utrecht-button @click="cancelDialog.confirm">Ja</utrecht-button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Submit Dialog -->
+
+  <div v-if="submitDialogRevealed" class="modal-layout">
+    <div class="modal">
+      <div>
+        <p>Weet u zeker dat u het contactmoment wilt opslaan?</p>
+      </div>
+      <nav>
+        <utrecht-button
+          @click="submitDialog.cancel"
+          appearance="secondary-action-button"
+          >Nee</utrecht-button
+        >
+        <utrecht-button @click="submitDialog.confirm">Ja</utrecht-button>
+      </nav>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
 import type { Contactmoment } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
+import { useConfirmDialog } from "@vueuse/core";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 
 const router = useRouter();
 const user = useUserStore();
 const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
-
+const saved = ref(false);
+const saving = ref(false);
+const saveFailed = ref(false);
+const cancelDialogRevealed = ref(false);
+const submitDialogRevealed = ref(false);
+const cancelDialog = useConfirmDialog(cancelDialogRevealed);
+const submitDialog = useConfirmDialog(submitDialogRevealed);
 const contactmoment: Contactmoment = reactive({
   vorigContactmoment: null,
-  bronorganisatie: "999990639", //environment var? kunnen er eventueel meerdere zijn bij een shared contactcenter, moet het beheerd kunnen worden of onderdeel van de installatie?
-  //registratiedatum: op moment van opslaan
-  //kanaal: string; wordt in het formulier gekozen
   voorkeurskanaal: "",
   voorkeurstaal: "",
   tekst: "",
@@ -63,6 +123,58 @@ const contactmoment: Contactmoment = reactive({
   medewerkerIdentificatie: null,
 });
 
+cancelDialog.onConfirm(() => annuleren());
+
+submitDialog.onConfirm(() => submit());
+
+// voorkeurs kanaal voorselecteren
+// organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste
+onMounted(() => {
+  contactmoment.bronorganisatie =
+    Array.isArray(window.organisatieIds) && window.organisatieIds[0]
+      ? window.organisatieIds[0]
+      : "";
+  contactmoment.kanaal = user.preferences.kanaal;
+});
+
+//contactmoment opslaan
+//user preferences bijwerken
+//contactmoment stoppen
+//terug naar home
+//confirmation tonen
+const submit = () => {
+  saveFailed.value = false;
+  saving.value = true;
+  saved.value = false;
+
+  // todo na fix validatie issues op de api
+  contactmoment.registratiedatum = getFormattedDate();
+  contactmoment.registratiedatum = "2005-12-30UTC01:02:03"; //zo zou het volgens de validatie melding moeten
+  contactmoment.registratiedatum = "2022-04-06 13:53:00"; //maar alleen dit wordt geaccepteerd
+
+  service.save(contactmoment).then((x) => {
+    saving.value = false;
+
+    user.setKanaal(contactmoment.kanaal);
+
+    if (x) {
+      saved.value = true;
+      contactmomentStore.stop();
+    } else {
+      saveFailed.value = true;
+    }
+  });
+
+
+};
+
+//stop het contactmoment en ga terug naar home
+const annuleren = () => {
+  contactmomentStore.stop();
+  router.push({ name: "home" });
+};
+
+//date format helper
 const getFormattedDate = () => {
   const formatDateTimeElement = (x) => ("0" + x).slice(-2);
 
@@ -75,36 +187,6 @@ const getFormattedDate = () => {
   )}:${formatDateTimeElement(now.getMinutes())}:${formatDateTimeElement(
     now.getSeconds()
   )}`;
-};
-
-// voorkeurs contactmoment voorselecteren
-onMounted(() => {
-  contactmoment.kanaal = user.preferences.kanaal;
-});
-
-//contactmoment opslaan
-//user preferences bijwerken
-//contactmoment stoppen
-//terug naar home
-const onOpslaan = () => {
-  // todo na fix validatie issues op de api
-  contactmoment.registratiedatum = getFormattedDate();
-  contactmoment.registratiedatum = "2005-12-30UTC01:02:03"; //zo zou het volgens de validatie melding moeten
-  contactmoment.registratiedatum = "2022-04-06 13:53:00"; //maar alleen dit wordt geaccepteerd
-
-  service.save(contactmoment);
-
-  user.setKanaal(contactmoment.kanaal);
-
-  contactmomentStore.stop();
-
-  router.push({ name: "home" });
-};
-
-//stop het contactmoment en ga terug naar home
-const onAnnuleren = () => {
-  contactmomentStore.stop();
-  router.push({ name: "home" });
 };
 </script>
 
@@ -132,5 +214,27 @@ nav {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+/* modals */
+.modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 2rem;
+  border: 1px solid var(--color-primary);
+  z-index: 10;
+  border-radius: 10px;
+}
+.modal-layout {
+  z-index: 20;
+  left: 0;
+  top: 0;
+  position: fixed;
+  background-color: #666666cc;
+  width: 100%;
+  height: 100%;
 }
 </style>
