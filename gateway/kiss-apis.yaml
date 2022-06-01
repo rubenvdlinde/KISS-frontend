@@ -94,3 +94,11 @@ App\Entity\CollectionEntity:
         testDataLocation: https://github.com/ConductionNL/logging-verwerking-read_publiccode/raw/main/data/logging-verwerking-read.yml
         loadTestData: true
         autoLoad: true
+
+    referentielijstenCollection:
+        name: Referentielijsten collection
+        sourceType: GitHub
+        locationOAS: https://raw.githubusercontent.com/VNG-Realisatie/VNG-referentielijsten/master/src/openapi.yaml
+        testDataLocation: https://raw.githubusercontent.com/ConductionNL/referentielijsten_publiccode/main/data/referentielijsten.json
+        loadTestData: true
+        autoLoad: true
