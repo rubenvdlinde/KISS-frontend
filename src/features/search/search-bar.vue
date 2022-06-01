@@ -12,7 +12,18 @@
 
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-function submit() {}
+import { useRouter } from "vue-router";
+const router = useRouter();
+function submit({ currentTarget }: Event) {
+  if (currentTarget instanceof HTMLFormElement) {
+    const formData = new FormData(currentTarget);
+    const query = Object.fromEntries(formData) as Record<string, string>;
+    router.push({
+      path: "/search",
+      query,
+    });
+  }
+}
 </script>
 
 <style lang="scss" scoped>
