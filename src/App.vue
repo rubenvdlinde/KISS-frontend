@@ -1,10 +1,11 @@
 <template>
-  <header></header>
+  <header><search-bar /></header>
   <main><router-view /></main>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import SearchBar from "./features/search/search-bar.vue";
 </script>
 
 <style lang="scss">
@@ -36,6 +37,9 @@ body {
 #app > header {
   min-height: var(--header-height);
   background-color: var(--color-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 main {

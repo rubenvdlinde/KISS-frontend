@@ -124,7 +124,6 @@ form > section {
   border-radius: 1.5rem;
   border: 1px solid black;
   overflow: hidden;
-  box-sizing: border-box;
 
   > *:not(:last-child) {
     border-inline-end: 1px solid grey;
