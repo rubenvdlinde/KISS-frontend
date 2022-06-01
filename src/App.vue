@@ -1,11 +1,11 @@
 <template>
-  <header><search-bar /></header>
+  <header><global-search /></header>
   <main><router-view /></main>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import SearchBar from "./features/search/search-bar.vue";
+import GlobalSearch from "./features/search/global-search.vue";
 </script>
 
 <style lang="scss">
@@ -32,14 +32,6 @@ import SearchBar from "./features/search/search-bar.vue";
 
 body {
   font-family: var(--utrecht-paragraph-font-family);
-}
-
-#app > header {
-  min-height: var(--header-height);
-  background-color: var(--color-primary);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 main {
