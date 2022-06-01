@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@vueuse/core": "^8.6.0",
     "dompurify": "^2.3.8",
     "pinia": "^2.0.14",
     "swrv": "^1.0.0-beta.8",

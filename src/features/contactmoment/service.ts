@@ -1,5 +1,5 @@
 export function useContactmomentService(): ServiceData {
-  //  fetch("http://localhost/api/contactmomenten")
+  // fetch("http://localhost/api/contactmomenten")
   //   .then((r) => {
   //     if (!r.ok) console.log(r);
   //     return r.json();
@@ -31,7 +31,7 @@ export function useContactmomentService(): ServiceData {
       .then((json) => {
         console.log(json);
 
-//even controleeren of hij opgeslagen is...
+        //even controleeren of hij opgeslagen is...
         fetch(url)
           .then((r) => {
             if (!r.ok) throw new Error(r.status.toString());
@@ -40,8 +40,6 @@ export function useContactmomentService(): ServiceData {
           .then((json) => {
             console.log(json);
           });
-
-
       });
   };
   return {

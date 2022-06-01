@@ -105,8 +105,11 @@ main {
   /* button */
   --utrecht-button-background-color: var(--color-primary);
 
+  /* forms */
+  --utrecht-form-fieldset-legend-font-size: 1.5rem;
+  --utrecht-form-fieldset-legend-font-weight: bold;
+  --utrecht-form-fieldset-legend-line-height: 2rem;
 
-
-  
+  --utrecht-form-label-font-size: 1rem;
 }
 </style>
