@@ -114,6 +114,10 @@ function handleSearch(e: Event) {
 </script>
 
 <style scoped lang="scss">
+form {
+  margin-block-end: 2rem;
+}
+
 form > section {
   display: inline-flex;
   align-items: stretch;
@@ -156,7 +160,7 @@ button {
   border: none;
   background: white;
   font-size: 0;
-  padding-right: 1rem;
+  padding-right: var(--spacing-default);
 }
 
 utrecht-icon-loupe {
@@ -167,7 +171,8 @@ utrecht-icon-loupe {
   position: absolute;
   inset-inline-end: 0;
   inset-block-start: 0;
-  margin-top: 3.75rem;
+  margin-block-start: 3.75rem;
+  margin-inline-end: var(--spacing-default);
   color: var(--color-headings);
 }
 </style>
