@@ -38,10 +38,10 @@
         <a class="back-to-results" href="#">Alle zoekresultaten</a>
         <article>
           <header>
-            <h2>{{ title }}</h2>
+            <utrecht-heading :level="2">{{ title }}</utrecht-heading>
             <small :class="`category-${source}`">{{ source }}</small>
           </header>
-          <section v-if="content" v-html="content"></section>
+          <section v-if="content" v-html="cleanHtml(content, 2)"></section>
         </article>
       </li>
     </ul>
@@ -50,7 +50,11 @@
 
 <script lang="ts" setup>
 import { bindQueryForm } from "@/helpers/forms";
-import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
+import { cleanHtml } from "@/helpers/html";
+import {
+  UtrechtIconLoupe,
+  UtrechtHeading,
+} from "@utrecht/web-component-library-vue";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useGlobalSearch } from "./service";
@@ -71,7 +75,7 @@ const isViewingArticle = computed(() => {
   const { hash } = router.currentRoute.value;
   const link = hash && hash.split("#")[1];
   const id = link && link.split(searchResultPrefix)[1];
-  return id && searchResults.data.some((x) => x.id === id);
+  return !!id && searchResults.data.some((x) => x.id === id);
 });
 </script>
 
@@ -159,5 +163,26 @@ nav ul {
 
 .back-to-results::before {
   content: "< ";
+}
+
+article {
+  display: grid;
+  gap: 0.5rem;
+
+  header {
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+  }
+
+  :deep(p) {
+    &:not(:first-child) {
+      margin-top: 1em;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 1em;
+    }
+  }
 }
 </style>

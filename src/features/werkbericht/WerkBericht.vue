@@ -21,6 +21,7 @@ import {
   UtrechtHeading,
   UtrechtDocument,
 } from "@utrecht/web-component-library-vue";
+import { cleanHtml } from "@/helpers/html";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -49,20 +50,7 @@ const localeString = (d: Date) =>
     minute: "2-digit",
   });
 
-const headerRegex = /(<\/?h)([1-6])(>)/g;
-const increaseHeadings = (s: string, level: HeadingLevel) =>
-  s.replace(headerRegex, (_, open, l, close) => {
-    const newLevel = Number.parseInt(l, 10) + level - 1;
-    const classes = open.includes("/")
-      ? ""
-      : ` class="utrecht-heading-${newLevel}"`;
-    return `${open}${newLevel}${classes}${close}`;
-  });
-
-const sanitized = computed(() => {
-  const safeString = DOMPurify.sanitize(props.bericht.content);
-  return increaseHeadings(safeString, props.level);
-});
+const sanitized = computed(() => cleanHtml(props.bericht.content, props.level));
 </script>
 
 <style lang="scss" scoped>
