@@ -58,9 +58,9 @@ App\Entity\CollectionEntity:
     pdcCollection:
         name: producten en diensten collection
         sourceType: GitHub
-        locationOAS: https://raw.githubusercontent.com/ConductionNL/PDC_publiccode/main/PDC_OAS.json
-        testDataLocation: https://raw.githubusercontent.com/ConductionNL/PDC_publiccode/main/data/PDC.json
-        loadTestData: true
+        locationOAS: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/pdc-component/main/OAS.yaml
+        # testDataLocation: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/pdc-component/main/data/pdc.json
+        # loadTestData: true
         autoLoad: true
 
     pubCollection:
