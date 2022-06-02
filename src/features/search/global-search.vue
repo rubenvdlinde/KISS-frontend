@@ -140,7 +140,7 @@ nav ul {
     display: grid;
     grid-template-columns: 20ch 1fr 2ch;
     gap: 0.5rem;
-    align-items: baseline;
+    align-items: center;
     justify-items: start;
     padding-block: 0.5rem;
 
