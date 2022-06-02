@@ -16,5 +16,6 @@ export interface Contactmoment {
   onderwerpLinks: Array<string>;
   initiatiefnemer: string;
   medewerker: string;
+  resultaat: string;
   medewerkerIdentificatie: MedewerkerIdentificatie;
 }
