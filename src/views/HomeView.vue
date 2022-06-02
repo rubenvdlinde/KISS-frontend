@@ -93,7 +93,6 @@ form > section {
   border-radius: 1.5rem;
   border: 1px solid black;
   overflow: hidden;
-  box-sizing: border-box;
 }
 
 label[for="werkberichtTypeInput"],
