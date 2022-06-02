@@ -1,9 +1,8 @@
 <template>
   <form
-    action="/search"
     method="get"
     enctype="application/x-www-form-urlencoded"
-    @submit.prevent="submit"
+    ref="globalSearchForm"
   >
     <section>
       <label
@@ -16,63 +15,64 @@
       <button><span>Zoeken</span><utrecht-icon-loupe /></button>
     </section>
   </form>
-  <template v-if="currentSearch">
-    <nav>
+  <section class="search-results" v-if="searchResults.state === 'success'">
+    <nav v-show="!isViewingArticle">
       <ul>
-        <li v-for="{ id, title, source } in searchResults" :key="'nav_' + id">
-          <a :href="`#${id}`">{{ source }} - {{ title }}</a>
+        <li
+          v-for="{ id, title, source } in searchResults.data"
+          :key="'nav_' + id"
+        >
+          <a :href="`#${searchResultPrefix}${id}`"
+            ><span :class="`category-${source}`">{{ source }}</span
+            ><span>{{ title }}</span></a
+          >
         </li>
       </ul>
     </nav>
     <ul>
       <li
-        v-for="{ id, title, source, content } in searchResults"
-        :key="'article_' + id"
+        v-for="{ id, title, source, content } in searchResults.data"
+        :key="searchResultPrefix + id"
+        :id="searchResultPrefix + id"
       >
-        <article :id="'article_' + id">
+        <a class="back-to-results" href="#">Alle zoekresultaten</a>
+        <article>
           <header>
-            <h1>{{ title }}</h1>
-            <small>{{ source }}</small>
+            <h2>{{ title }}</h2>
+            <small :class="`category-${source}`">{{ source }}</small>
           </header>
           <section v-if="content" v-html="content"></section>
         </article>
       </li>
     </ul>
-  </template>
+  </section>
 </template>
 
 <script lang="ts" setup>
+import { bindQueryForm } from "@/helpers/forms";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useGlobalSearch } from "./service";
 const queryParamName = "globalSearch";
+const searchResultPrefix = "global-search-result-";
 const router = useRouter();
-const currentSearch = computed(
-  () => router.currentRoute.value.query?.[queryParamName]
+const currentSearch = computed(() =>
+  router.currentRoute.value.query?.[queryParamName]?.toString()
 );
-function submit({ currentTarget }: Event) {
-  if (currentTarget instanceof HTMLFormElement) {
-    const formData = new FormData(currentTarget);
-    const query = Object.fromEntries(formData) as Record<string, string>;
-    router.push({
-      query,
-    });
-  }
-}
-type SearchResults = {
-  id: string;
-  title: string;
-  source: string;
-  content: string;
-};
-const searchResults: SearchResults[] = [
-  {
-    id: "1234",
-    title: "Hoe vraag ik toeslag aan",
-    source: "Kennisbank",
-    content: "",
-  },
-];
+
+const globalSearchForm = ref();
+bindQueryForm(globalSearchForm);
+
+const searchResults = useGlobalSearch(currentSearch);
+
+const isViewingArticle = computed(() => {
+  if (searchResults.state !== "success") return false;
+  const { hash } = router.currentRoute.value;
+  const link = hash && hash.split("#")[1];
+  const id = link && link.split(searchResultPrefix)[1];
+  return id && searchResults.data.some((x) => x.id === id);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -82,6 +82,7 @@ form {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-inline: var(--spacing-default);
 }
 
 form > section {
@@ -110,12 +111,53 @@ input {
   border: none;
 }
 
-ul {
+.search-results {
+  --search-results-width: calc(var(--container-width) * 0.75);
   --container-padding: max(
     var(--spacing-default),
-    calc(50vw - var(--container-width) / 2)
+    calc(50vw - var(--search-results-width) / 2)
   );
   padding-inline: var(--container-padding);
   background-color: var(--color-secondary);
+
+  > ul li {
+    padding-block: 2rem;
+    display: grid;
+    gap: 1rem;
+
+    &:not(:target) {
+      display: none;
+    }
+  }
+}
+
+nav ul {
+  display: grid;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    display: grid;
+    grid-template-columns: 20ch 1fr 2ch;
+    gap: 0.5rem;
+    align-items: baseline;
+    justify-items: start;
+    padding-block: 0.5rem;
+
+    &:after {
+      content: " >";
+    }
+  }
+
+  li {
+    padding-block: 0.5rem;
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--color-tertiary);
+    }
+  }
+}
+
+.back-to-results::before {
+  content: "< ";
 }
 </style>

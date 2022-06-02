@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import GlobalSearch from "./features/search/global-search.vue";
+import { GlobalSearch } from "./features/search";
 </script>
 
 <style lang="scss">
@@ -48,6 +48,14 @@ main {
   > * {
     flex-basis: 100%;
   }
+}
+
+utrecht-icon-loupe {
+  pointer-events: none;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 main > section {
@@ -109,5 +117,13 @@ a[aria-current="page"] {
   /* h3 */
   --utrecht-heading-3-line-height: 2rem;
   --utrecht-heading-3-font-size: 1.25rem;
+}
+
+// categories
+[class^="category-"] {
+  border-radius: 1.5rem;
+  padding: 0.5em;
+  background-color: hsl(184, 54%, 70%);
+  display: inline-block;
 }
 </style>
