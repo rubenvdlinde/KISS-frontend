@@ -94,10 +94,6 @@ form > section {
   border: 1px solid black;
   overflow: hidden;
   box-sizing: border-box;
-
-  > *:not(:last-child) {
-    border-inline-end: 1px solid grey;
-  }
 }
 
 label[for="werkberichtTypeInput"],
@@ -115,12 +111,17 @@ select {
 
 #werkberichtTypeInput {
   background-color: #e8e4dc;
+  border-inline-end: 1px solid grey;
 }
 
 #searchInput {
   min-width: 40ch;
   max-width: 100%;
   padding-left: 1rem;
+
+  &::placeholder {
+    color: black;
+  }
 }
 
 button {
