@@ -15,37 +15,46 @@
       <button><span>Zoeken</span><utrecht-icon-loupe /></button>
     </section>
   </form>
-  <section class="search-results" v-if="searchResults.state === 'success'">
-    <nav v-show="!isViewingArticle">
+  <template v-if="currentSearch && searchResults.state === 'success'">
+    <section :class="['search-results', { isExpanded }]">
+      <nav v-show="!isViewingArticle">
+        <ul>
+          <li
+            v-for="{ id, title, source } in searchResults.data"
+            :key="'nav_' + id"
+          >
+            <a :href="`#${searchResultPrefix}${id}`"
+              ><span :class="`category-${source}`">{{ source }}</span
+              ><span>{{ title }}</span></a
+            >
+          </li>
+        </ul>
+      </nav>
       <ul>
         <li
-          v-for="{ id, title, source } in searchResults.data"
-          :key="'nav_' + id"
+          v-for="{ id, title, source, content } in searchResults.data"
+          :key="searchResultPrefix + id"
+          :id="searchResultPrefix + id"
         >
-          <a :href="`#${searchResultPrefix}${id}`"
-            ><span :class="`category-${source}`">{{ source }}</span
-            ><span>{{ title }}</span></a
-          >
+          <a class="back-to-results" href="#">Alle zoekresultaten</a>
+          <article>
+            <header>
+              <utrecht-heading :level="2">{{ title }}</utrecht-heading>
+              <small :class="`category-${source}`">{{ source }}</small>
+            </header>
+            <section v-if="content" v-html="cleanHtml(content, 2)"></section>
+          </article>
         </li>
       </ul>
-    </nav>
-    <ul>
-      <li
-        v-for="{ id, title, source, content } in searchResults.data"
-        :key="searchResultPrefix + id"
-        :id="searchResultPrefix + id"
-      >
-        <a class="back-to-results" href="#">Alle zoekresultaten</a>
-        <article>
-          <header>
-            <utrecht-heading :level="2">{{ title }}</utrecht-heading>
-            <small :class="`category-${source}`">{{ source }}</small>
-          </header>
-          <section v-if="content" v-html="cleanHtml(content, 2)"></section>
-        </article>
-      </li>
-    </ul>
-  </section>
+    </section>
+    <button
+      type="button"
+      :class="{ isExpanded }"
+      @click="isExpanded = !isExpanded"
+    >
+      {{ buttonText }}
+    </button>
+  </template>
 </template>
 
 <script lang="ts" setup>
@@ -77,6 +86,11 @@ const isViewingArticle = computed(() => {
   const id = link && link.split(searchResultPrefix)[1];
   return !!id && searchResults.data.some((x) => x.id === id);
 });
+
+const isExpanded = ref(true);
+const buttonText = computed(() =>
+  isExpanded.value ? "Inklappen" : "Uitklappen"
+);
 </script>
 
 <style lang="scss" scoped>
@@ -103,7 +117,7 @@ label,
 button {
   font-size: 0;
 }
-button {
+button:not([type="button"]) {
   background: white;
   border: none;
   padding-inline-end: var(--spacing-default);
@@ -121,8 +135,11 @@ input {
     var(--spacing-default),
     calc(50vw - var(--search-results-width) / 2)
   );
+  display: grid;
   padding-inline: var(--container-padding);
   background-color: var(--color-secondary);
+  overflow-y: hidden;
+  position: relative;
 
   > ul li {
     padding-block: 2rem;
@@ -132,6 +149,31 @@ input {
     &:not(:target) {
       display: none;
     }
+  }
+
+  &:not(.isExpanded) {
+    max-height: 4rem;
+    > * {
+      opacity: 50%;
+    }
+  }
+}
+
+button[type="button"] {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border: none;
+  white-space: nowrap;
+  &::after {
+    transform: rotate(-90deg);
+    display: block;
+    content: ">";
+    font-size: 1rem;
+  }
+
+  &.isExpanded::after {
+    transform: rotate(90deg);
   }
 }
 
