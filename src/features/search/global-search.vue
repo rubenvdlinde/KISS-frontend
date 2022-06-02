@@ -161,19 +161,24 @@ input {
 
 button[type="button"] {
   width: 100%;
+  height: 1rem;
   display: flex;
   justify-content: center;
   border: none;
   white-space: nowrap;
   &::after {
-    transform: rotate(-90deg);
     display: block;
-    content: ">";
-    font-size: 1rem;
+    content: "";
+    width: 1rem;
+    height: 0.5rem;
+    background-color: currentColor;
+    mask-image: url("@/assets/icons/chevron-down.svg");
+    mask-repeat: no-repeat;
+    display: block;
   }
 
   &.isExpanded::after {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
   }
 }
 
@@ -189,9 +194,17 @@ nav ul {
     align-items: center;
     justify-items: start;
     padding-block: 0.5rem;
+    padding-inline-end: 1rem;
 
     &:after {
-      content: " >";
+      content: "";
+      display: block;
+      height: 0.5rem;
+      width: 1rem;
+      background-color: currentColor;
+      mask-image: url("@/assets/icons/chevron-down.svg");
+      mask-repeat: no-repeat;
+      transform: rotate(-90deg);
     }
   }
 
