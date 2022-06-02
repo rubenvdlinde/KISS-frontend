@@ -1,4 +1,8 @@
-export function useContactmomentService(): ServiceData {
+import type { Contactmoment } from "./types";
+
+export function useContactmomentService(): {
+  save: (data: Contactmoment) => Promise<void>;
+} {
   // fetch("http://localhost/api/contactmomenten")
   //   .then((r) => {
   //     if (!r.ok) console.log(r);
@@ -9,7 +13,7 @@ export function useContactmomentService(): ServiceData {
   //   });
 
   if (!window.contactmomentenBaseUri) {
-    console.console.error("contactmomentenBaseUri missing");
+    console.error("contactmomentenBaseUri missing");
   }
 
   const url = window.contactmomentenBaseUri;
@@ -23,7 +27,9 @@ export function useContactmomentService(): ServiceData {
       },
       body: JSON.stringify(data),
     }).then((r) => {
-      return r.ok;
+      if (!r.ok) {
+        throw new Error();
+      }
     });
   };
   return {

@@ -35,12 +35,13 @@
     </fieldset>
     <menu>
       <utrecht-button
+        modelValue
         type="button"
         @click="cancelDialog.reveal"
         appearance="secondary-action-button"
         >Annuleren</utrecht-button
       >
-      <utrecht-button type="submit">Opslaan</utrecht-button>
+      <utrecht-button modelValue type="submit">Opslaan</utrecht-button>
     </menu>
   </form>
 
@@ -64,11 +65,14 @@
 
     <template #menu>
       <utrecht-button
+        modelValue
         @click="cancelDialog.cancel"
         appearance="secondary-action-button"
         >Nee</utrecht-button
       >
-      <utrecht-button @click="cancelDialog.confirm">Ja</utrecht-button>
+      <utrecht-button modelValue @click="cancelDialog.confirm"
+        >Ja</utrecht-button
+      >
     </template>
   </modal-template>
 
@@ -80,11 +84,14 @@
     </template>
     <template #menu>
       <utrecht-button
+        modelValue
         @click="submitDialog.cancel"
         appearance="secondary-action-button"
         >Nee</utrecht-button
       >
-      <utrecht-button @click="submitDialog.confirm">Ja</utrecht-button>
+      <utrecht-button modelValue @click="submitDialog.confirm"
+        >Ja</utrecht-button
+      >
     </template>
     >
   </modal-template>
@@ -124,6 +131,12 @@ const contactmoment: Contactmoment = reactive({
   initiatiefnemer: "klant", //enum "gemeente" of "klant"
   medewerker: "",
   medewerkerIdentificatie: null,
+  kanaal: "",
+  bronorganisatie:
+    Array.isArray(window.organisatieIds) && window.organisatieIds[0]
+      ? window.organisatieIds[0]
+      : "",
+  registratiedatum: "",
 });
 
 cancelDialog.onConfirm(() => annuleren());
@@ -133,10 +146,6 @@ submitDialog.onConfirm(() => submit());
 // voorkeurs kanaal voorselecteren
 // organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste
 onMounted(() => {
-  contactmoment.bronorganisatie =
-    Array.isArray(window.organisatieIds) && window.organisatieIds[0]
-      ? window.organisatieIds[0]
-      : "";
   contactmoment.kanaal = user.preferences.kanaal;
 });
 
@@ -153,15 +162,11 @@ const submit = () => {
 
   service
     .save(contactmoment)
-    .then((x) => {
+    .then(() => {
       user.setKanaal(contactmoment.kanaal);
 
-      if (x) {
-        saved.value = true;
-        contactmomentStore.stop();
-      } else {
-        saveFailed.value = true;
-      }
+      saved.value = true;
+      contactmomentStore.stop();
     })
     .catch(() => {
       saveFailed.value = true;
@@ -179,7 +184,7 @@ const annuleren = () => {
 
 //date format helper: 2005-12-30UTC01:02:03
 const getFormattedUtcDate = () => {
-  const formatDateTimeElement = (x) => ("0" + x).slice(-2);
+  const formatDateTimeElement = (x: number) => ("0" + x).slice(-2);
 
   var now = new Date();
 
@@ -187,7 +192,7 @@ const getFormattedUtcDate = () => {
     now.getMonth() + 1
   )}-${formatDateTimeElement(now.getDate())}UTC${formatDateTimeElement(
     now.getUTCHours()
-  )}:${formatDateTimeElement(now.getMinutes())}:${formatDateTimeElement(
+  )}:${formatDateTimeElement(now.getUTCMinutes())}:${formatDateTimeElement(
     now.getSeconds()
   )}`;
 };

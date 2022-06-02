@@ -4,7 +4,7 @@
   </article>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { defineProps, toRefs } from "vue";
 
 const props = defineProps({
