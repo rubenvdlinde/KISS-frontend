@@ -8,27 +8,17 @@
     >Items beheren</a
   >
   <form
+    ref="searchForm"
     enctype="application/x-www-form-urlencoded"
     method="get"
-    @submit.prevent="submitSearch"
   >
     <section>
       <label for="werkberichtTypeInput">
         Naar welk type bericht ben je op zoek?
         <select name="type" id="werkberichtTypeInput">
           <option value="">Alle</option>
-          <option
-            value="Werkinstructie"
-            :selected="currentType === 'Werkinstructie'"
-          >
-            Werkinstructies
-          </option>
-          <option
-            value="Nieuwsbericht"
-            :selected="currentType === 'Nieuwsbericht'"
-          >
-            Nieuws
-          </option>
+          <option value="Werkinstructie">Werkinstructies</option>
+          <option value="Nieuwsbericht">Nieuws</option>
         </select>
       </label>
       <label for="searchInput"
@@ -36,9 +26,7 @@
         <input
           type="search"
           name="search"
-          @search="handleSearch"
           id="searchInput"
-          :value="currentSearch"
           placeholder="Zoek een werkinstructie of nieuwsbericht"
       /></label>
       <button title="Zoeken"><span>Zoeken</span><utrecht-icon-loupe /></button>
@@ -74,10 +62,12 @@ import {
   UtrechtHeading,
   UtrechtIconLoupe,
 } from "@utrecht/web-component-library-vue";
-import { useRoute, useRouter } from "vue-router";
-import { computed } from "vue";
-const router = useRouter();
+import { useRoute } from "vue-router";
+import { computed, ref } from "vue";
+import { bindQueryForm } from "@/helpers/forms";
 const route = useRoute();
+const searchForm = ref();
+bindQueryForm(searchForm);
 const currentSearch = computed(() => route.query.search?.toString());
 const currentType = computed(() => route.query.type?.toString());
 const filter = computed(() =>
@@ -88,29 +78,6 @@ const filter = computed(() =>
       }
     : undefined
 );
-
-function submitSearch(e: Event) {
-  if (e.currentTarget instanceof HTMLFormElement) {
-    const formData = new FormData(e.currentTarget);
-    const entries = Array.from(formData.entries()).map(([k, v]) => [
-      k,
-      v.toString(),
-    ]);
-    const urlParams = new URLSearchParams(entries);
-    router.push("/?" + urlParams.toString());
-  }
-}
-
-function handleSearch(e: Event) {
-  const { currentTarget } = e;
-  if (
-    currentSearch.value &&
-    currentTarget instanceof HTMLInputElement &&
-    !currentTarget.value
-  ) {
-    router.push("/");
-  }
-}
 </script>
 
 <style scoped lang="scss">
