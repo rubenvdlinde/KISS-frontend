@@ -17,6 +17,5 @@ export interface Contactmoment {
   initiatiefnemer: string;
   medewerker: string;
   resultaat: string;
-  medewerkerIdentificatie: MedewerkerIdentificatie;
   medewerkerIdentificatie: MedewerkerIdentificatie | null;
 }

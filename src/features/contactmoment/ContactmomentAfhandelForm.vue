@@ -33,18 +33,17 @@
         <option>WhatsApp</option>
       </select>
 
-       <label for="kanaal" class="utrecht-form-label">gespreksresultaat</label>
+      <label for="gespreksresultaat" class="utrecht-form-label"
+        >gespreksresultaat</label
+      >
       <select
-        id="kanaal"
+        id="gespreksresultaat"
         v-model="contactmoment.resultaat"
         class="utrecht-select utrecht-select--html-select"
       >
         <option>zelfstandig</option>
         <option>doorverbonden</option>
-       
       </select>
-
-
     </fieldset>
     <menu>
       <utrecht-button
@@ -224,6 +223,7 @@ const getFormattedUtcDate = () => {
 fieldset {
   display: grid;
   align-items: center;
+  grid-gap: 2rem;
   grid-template-columns: 1fr 2fr;
 }
 
