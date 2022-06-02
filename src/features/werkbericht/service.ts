@@ -56,7 +56,7 @@ export function useWerkberichten(
   filter?: Ref<WerkberichtParams>
 ): ServiceData<Paginated<Werkbericht>> {
   const getUrl = () => {
-    const url = import.meta.env.VITE_API_BASE_URI;
+    const url = window.openPubBaseUri;
     if (!filter?.value) return url;
     const { audience, type, search, page } = filter.value;
     const params: [string, string][] = [];

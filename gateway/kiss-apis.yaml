@@ -50,7 +50,7 @@ App\Entity\CollectionEntity:
     contactmomentenCollection:
         name: contactmomenten collection
         sourceType: GitHub
-        locationOAS: https://raw.githubusercontent.com/VNG-Realisatie/contactmomenten-api/master/src/openapi.yaml
+        locationOAS: https://raw.githubusercontent.com/ConductionNL/contactmomenten_publiccode/main/OAS.yaml
         testDataLocation: https://github.com/ConductionNL/contactmomenten_publiccode/raw/main/data/contactmomenten.json
         loadTestData: true
         autoLoad: true
@@ -58,9 +58,9 @@ App\Entity\CollectionEntity:
     pdcCollection:
         name: producten en diensten collection
         sourceType: GitHub
-        locationOAS: https://raw.githubusercontent.com/ConductionNL/PDC_publiccode/main/PDC_OAS.json
-        testDataLocation: https://raw.githubusercontent.com/ConductionNL/PDC_publiccode/main/data/PDC.json
-        loadTestData: true
+        locationOAS: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/pdc-component/main/OAS.yaml
+        # testDataLocation: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/pdc-component/main/data/pdc.json
+        # loadTestData: true
         autoLoad: true
 
     pubCollection:
@@ -92,5 +92,13 @@ App\Entity\CollectionEntity:
         sourceType: GitHub
         locationOAS: https://raw.githubusercontent.com/VNG-Realisatie/gemma-verwerkingenlogging/master/docs/api-read/oas-specification/logging-verwerkingen-api/openapi.yaml
         testDataLocation: https://github.com/ConductionNL/logging-verwerking-read_publiccode/raw/main/data/logging-verwerking-read.yml
+        loadTestData: true
+        autoLoad: true
+
+    referentielijstenCollection:
+        name: Referentielijsten collection
+        sourceType: GitHub
+        locationOAS: https://raw.githubusercontent.com/VNG-Realisatie/VNG-referentielijsten/master/src/openapi.yaml
+        testDataLocation: https://raw.githubusercontent.com/ConductionNL/referentielijsten_publiccode/main/data/referentielijsten.json
         loadTestData: true
         autoLoad: true
