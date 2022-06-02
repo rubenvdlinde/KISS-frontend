@@ -54,10 +54,12 @@
       }"
     />
   </template>
+  <contactmoment-starter />
 </template>
 
 <script setup lang="ts">
 import { WerkBerichten } from "@/features/werkbericht";
+import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
 import {
   UtrechtHeading,
   UtrechtIconLoupe,
