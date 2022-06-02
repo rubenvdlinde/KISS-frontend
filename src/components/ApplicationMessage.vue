@@ -8,7 +8,12 @@
 import { defineProps, toRefs } from "vue";
 
 const props = defineProps({
-  messageType: String,
+  messageType: {
+    type: String,
+    validator: (value) => {
+      return value == "error" || value == "confirm";
+    },
+  },
   message: String,
 });
 
@@ -26,7 +31,7 @@ article {
   background-color: var(--color-error);
 }
 
-.confirm{
-   background-color: var(--color-accent);
+.confirm {
+  background-color: var(--color-accent);
 }
 </style>

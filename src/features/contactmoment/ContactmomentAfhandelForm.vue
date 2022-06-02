@@ -33,7 +33,7 @@
         <option>WhatsApp</option>
       </select>
     </fieldset>
-    <nav>
+    <menu>
       <utrecht-button
         type="button"
         @click="cancelDialog.reveal"
@@ -41,7 +41,7 @@
         >Annuleren</utrecht-button
       >
       <utrecht-button type="submit">Opslaan</utrecht-button>
-    </nav>
+    </menu>
   </form>
 
   <simple-spinner v-else-if="saving"></simple-spinner>
@@ -54,42 +54,40 @@
 
   <!-- Annuleer Dialog -->
 
-  <div v-if="cancelDialogRevealed" class="modal-layout">
-    <div class="modal">
-      <div>
-        <paragraph>
-          Weet u zeker dat u het contactmoment wilt annuleren? Alle gegevens
-          worden verwijderd.
-        </paragraph>
-      </div>
-      <nav>
-        <utrecht-button
-          @click="cancelDialog.cancel"
-          appearance="secondary-action-button"
-          >Nee</utrecht-button
-        >
-        <utrecht-button @click="cancelDialog.confirm">Ja</utrecht-button>
-      </nav>
-    </div>
-  </div>
+  <modal-template v-if="cancelDialogRevealed">
+    <template #message>
+      <paragraph>
+        Weet u zeker dat u het contactmoment wilt annuleren? Alle gegevens
+        worden verwijderd.
+      </paragraph>
+    </template>
+
+    <template #menu>
+      <utrecht-button
+        @click="cancelDialog.cancel"
+        appearance="secondary-action-button"
+        >Nee</utrecht-button
+      >
+      <utrecht-button @click="cancelDialog.confirm">Ja</utrecht-button>
+    </template>
+  </modal-template>
 
   <!-- Submit Dialog -->
 
-  <div v-if="submitDialogRevealed" class="modal-layout">
-    <div class="modal">
-      <div>
-        <p>Weet u zeker dat u het contactmoment wilt opslaan?</p>
-      </div>
-      <nav>
-        <utrecht-button
-          @click="submitDialog.cancel"
-          appearance="secondary-action-button"
-          >Nee</utrecht-button
-        >
-        <utrecht-button @click="submitDialog.confirm">Ja</utrecht-button>
-      </nav>
-    </div>
-  </div>
+  <modal-template v-if="submitDialogRevealed">
+    <template #message>
+      <p>Weet u zeker dat u het contactmoment wilt opslaan?</p>
+    </template>
+    <template #menu>
+      <utrecht-button
+        @click="submitDialog.cancel"
+        appearance="secondary-action-button"
+        >Nee</utrecht-button
+      >
+      <utrecht-button @click="submitDialog.confirm">Ja</utrecht-button>
+    </template>
+    >
+  </modal-template>
 </template>
 
 <script lang="ts" setup>
@@ -104,6 +102,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import ModalTemplate from "@/components/ModalTemplate.vue";
 
 const router = useRouter();
 const user = useUserStore();
@@ -144,17 +143,13 @@ onMounted(() => {
 //contactmoment opslaan
 //user preferences bijwerken
 //contactmoment stoppen
-//terug naar home
 //confirmation tonen
 const submit = () => {
   saveFailed.value = false;
   saving.value = true;
   saved.value = false;
 
-  // todo na fix validatie issues op de api
-  contactmoment.registratiedatum = getFormattedDate();
-  contactmoment.registratiedatum = "2005-12-30UTC01:02:03"; //zo zou het volgens de validatie melding moeten
-  contactmoment.registratiedatum = "2022-04-06 13:53:00"; //maar alleen dit wordt geaccepteerd
+  contactmoment.registratiedatum = getFormattedUtcDate();
 
   service
     .save(contactmoment)
@@ -182,16 +177,16 @@ const annuleren = () => {
   router.push({ name: "home" });
 };
 
-//date format helper
-const getFormattedDate = () => {
+//date format helper: 2005-12-30UTC01:02:03
+const getFormattedUtcDate = () => {
   const formatDateTimeElement = (x) => ("0" + x).slice(-2);
 
-  var now = new Date(); //2005-12-30UTC01:02:03
+  var now = new Date();
 
   return `${now.getFullYear()}-${formatDateTimeElement(
     now.getMonth() + 1
-  )}-${now.getDate()}UTC${formatDateTimeElement(
-    now.getHours()
+  )}-${formatDateTimeElement(now.getDate())}UTC${formatDateTimeElement(
+    now.getUTCHours()
   )}:${formatDateTimeElement(now.getMinutes())}:${formatDateTimeElement(
     now.getSeconds()
   )}`;
@@ -217,32 +212,10 @@ label {
   grid-column: 1 / 2;
 }
 
-nav {
+menu {
   margin-top: 2rem;
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-}
-
-/* modals */
-.modal {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 2rem;
-  border: 1px solid var(--color-primary);
-  z-index: 10;
-  border-radius: var(--radius-default);
-}
-.modal-layout {
-  z-index: 20;
-  left: 0;
-  top: 0;
-  position: fixed;
-  background-color: #666666cc;
-  width: 100%;
-  height: 100%;
 }
 </style>
