@@ -64,20 +64,24 @@ export const ServiceResult = {
       refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
     });
 
-    const dispose = watch([data, error], ([d, e]) => {
-      if (e) {
-        logError(e);
-        const errorInstance = e instanceof Error ? e : new Error(e);
-        Object.assign(result, { state: "error", error: errorInstance });
-        return;
-      }
-      if (d) {
-        Object.assign(result, {
-          data: d,
-          state: "success",
-        });
-      }
-    });
+    const dispose = watch(
+      [data, error],
+      ([d, e]) => {
+        if (e) {
+          logError(e);
+          const errorInstance = e instanceof Error ? e : new Error(e);
+          Object.assign(result, { state: "error", error: errorInstance });
+          return;
+        }
+        if (d !== undefined) {
+          Object.assign(result, {
+            data: d,
+            state: "success",
+          });
+        }
+      },
+      { immediate: true }
+    );
 
     onUnmounted(dispose);
 
