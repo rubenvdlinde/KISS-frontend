@@ -34,7 +34,10 @@ nav {
   right: var(--utrecht-space-column-2xl);
 }
 
-
+utrecht-button {
+  --utrecht-button-min-block-size: 3.5rem;
+  --utrecht-button-min-inline-size: 15rem;
+}
 
 utrecht-button.contactmomentLoopt {
   --utrecht-button-background-color: var(--color-accent);

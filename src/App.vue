@@ -35,6 +35,8 @@ watch(
   --color-tertiary: #778da9;
   --color-headings: #1b263b;
   --color-accent: #58af23;
+  --color-error: #d44;
+
 
   // spacing
   --container-width: 69.375rem;
@@ -42,6 +44,9 @@ watch(
   --spacing-default: 1rem;
   --header-height: 6rem;
   --text-margin: 1.5rem;
+
+  // other
+  --radius-default: 0.5rem;
 }
 
 body {

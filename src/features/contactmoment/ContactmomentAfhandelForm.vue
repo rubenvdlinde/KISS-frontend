@@ -1,10 +1,9 @@
 <template>
-  <article v-if="saveFailed && !saving">
-    <p>
-      Er is een probleem opgetreden. Het contactmoment is niet opgeslagen.
-      Probeer het opnieuw
-    </p>
-  </article>
+  <application-message
+    v-if="saveFailed && !saving"
+    messageType="error"
+    message="Er is een probleem opgetreden. Het contactmoment is niet opgeslagen."
+  ></application-message>
 
   <form
     v-if="contactmomentStore.contactmomentLoopt && !saving"
@@ -47,18 +46,21 @@
 
   <simple-spinner v-else-if="saving"></simple-spinner>
 
-  <article v-else-if="saved">
-    <p>Het contactmoment is opgeslagen.</p>
-  </article>
+  <application-message
+    v-else-if="saved"
+    messageType="confirm"
+    message="Het contactmoment is opgeslagen."
+  ></application-message>
+
   <!-- Annuleer Dialog -->
 
   <div v-if="cancelDialogRevealed" class="modal-layout">
     <div class="modal">
       <div>
-        <p>
+        <paragraph>
           Weet u zeker dat u het contactmoment wilt annuleren? Alle gegevens
           worden verwijderd.
-        </p>
+        </paragraph>
       </div>
       <nav>
         <utrecht-button
@@ -91,7 +93,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
@@ -100,6 +102,8 @@ import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
 const router = useRouter();
 const user = useUserStore();
@@ -152,20 +156,24 @@ const submit = () => {
   contactmoment.registratiedatum = "2005-12-30UTC01:02:03"; //zo zou het volgens de validatie melding moeten
   contactmoment.registratiedatum = "2022-04-06 13:53:00"; //maar alleen dit wordt geaccepteerd
 
-  service.save(contactmoment).then((x) => {
-    saving.value = false;
+  service
+    .save(contactmoment)
+    .then((x) => {
+      user.setKanaal(contactmoment.kanaal);
 
-    user.setKanaal(contactmoment.kanaal);
-
-    if (x) {
-      saved.value = true;
-      contactmomentStore.stop();
-    } else {
+      if (x) {
+        saved.value = true;
+        contactmomentStore.stop();
+      } else {
+        saveFailed.value = true;
+      }
+    })
+    .catch(() => {
       saveFailed.value = true;
-    }
-  });
-
-
+    })
+    .finally(() => {
+      saving.value = false;
+    });
 };
 
 //stop het contactmoment en ga terug naar home
@@ -226,7 +234,7 @@ nav {
   padding: 2rem;
   border: 1px solid var(--color-primary);
   z-index: 10;
-  border-radius: 10px;
+  border-radius: var(--radius-default);
 }
 .modal-layout {
   z-index: 20;

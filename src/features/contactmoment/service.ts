@@ -1,5 +1,3 @@
-//import { ref } from "vue";
-
 export function useContactmomentService(): ServiceData {
   // fetch("http://localhost/api/contactmomenten")
   //   .then((r) => {
@@ -16,9 +14,6 @@ export function useContactmomentService(): ServiceData {
 
   const url = window.contactmomentenBaseUri;
 
-  // const saving = ref(false);
-  // const saved = ref(false);
-
   const save = (data: Contactmoment) => {
     return fetch(url, {
       method: "POST",
@@ -28,32 +23,10 @@ export function useContactmomentService(): ServiceData {
       },
       body: JSON.stringify(data),
     }).then((r) => {
-      // saving.value = false;
-      // if (!r.ok) throw new Error(r.status.toString());
-      // saved.value = true;
-      // return r.json();
-
-  
       return r.ok;
     });
-    // .then((json) => {
-    //   //console.log(json);
-
-    //   return json;
-    //   //even controleeren of hij opgeslagen is...
-    //   // fetch(url)
-    //   //   .then((r) => {
-    //   //     if (!r.ok) throw new Error(r.status.toString());
-    //   //     return r.json();
-    //   //   })
-    //   //   .then((json) => {
-    //   //     console.log(json);
-    //   //   });
-    // });
   };
   return {
     save,
-    // saving,
-    // saved,
   };
 }
