@@ -32,6 +32,19 @@
         <option>Instagram</option>
         <option>WhatsApp</option>
       </select>
+
+       <label for="kanaal" class="utrecht-form-label">gespreksresultaat</label>
+      <select
+        id="kanaal"
+        v-model="contactmoment.resultaat"
+        class="utrecht-select utrecht-select--html-select"
+      >
+        <option>zelfstandig</option>
+        <option>doorverbonden</option>
+       
+      </select>
+
+
     </fieldset>
     <menu>
       <utrecht-button
@@ -124,6 +137,7 @@ const contactmoment: Contactmoment = reactive({
   initiatiefnemer: "klant", //enum "gemeente" of "klant"
   medewerker: "",
   medewerkerIdentificatie: null,
+  resultaat: "",
 });
 
 cancelDialog.onConfirm(() => annuleren());
