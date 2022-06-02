@@ -6,9 +6,9 @@ export interface MedewerkerIdentificatie {
 }
 
 export interface Contactmoment {
-  vorigContactmoment: string;
+  vorigContactmoment: string | null;
   bronorganisatie: string;
-  registratiedatum: Date;
+  registratiedatum: string;
   kanaal: string;
   voorkeurskanaal: string;
   voorkeurstaal: string;
@@ -18,4 +18,5 @@ export interface Contactmoment {
   medewerker: string;
   resultaat: string;
   medewerkerIdentificatie: MedewerkerIdentificatie;
+  medewerkerIdentificatie: MedewerkerIdentificatie | null;
 }

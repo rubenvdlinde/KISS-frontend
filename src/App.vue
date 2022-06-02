@@ -1,24 +1,26 @@
 <template>
-  <header :class="contactmomentClass"></header>
+  <header
+    :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
+  ></header>
   <main><router-view /></main>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+//import { ref, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const contactmoment = useContactmomentStore();
-const contactmomentClass = ref("");
+//const contactmomentClass = ref("");
 
-watch(
-  () => contactmoment.contactmomentLoopt,
-  (contactmomentLooptValue) => {
-    contactmomentClass.value = contactmomentLooptValue
-      ? "contactmomentLoopt"
-      : "";
-  }
-);
+// watch(
+//   () => contactmoment.contactmomentLoopt,
+//   (contactmomentLooptValue) => {
+//     contactmomentClass.value = contactmomentLooptValue
+//       ? "contactmomentLoopt"
+//       : "";
+//   }
+// );
 </script>
 
 <style lang="scss">
@@ -37,7 +39,6 @@ watch(
   --color-accent: #58af23;
   --color-error: #d44;
 
-
   // spacing
   --container-width: 69.375rem;
   --section-width: 30.75rem;
@@ -51,9 +52,6 @@ watch(
 
 body {
   font-family: var(--utrecht-paragraph-font-family);
-}
-
-#app {
 }
 
 #app > header {
@@ -125,6 +123,6 @@ main {
 
 utrecht-button {
   --utrecht-button-border-radius: 100px;
-  --utrecht-button-min-inline-size:150px;
+  --utrecht-button-min-inline-size: 150px;
 }
 </style>
