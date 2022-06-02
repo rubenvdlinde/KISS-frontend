@@ -127,6 +127,9 @@ input {
   padding-inline-start: var(--spacing-default);
   width: 100%;
   border: none;
+  &::placeholder {
+    color: black;
+  }
 }
 
 .search-results {
@@ -152,7 +155,7 @@ input {
   }
 
   &:not(.isExpanded) {
-    max-height: 4rem;
+    max-height: 2.5rem;
     > * {
       opacity: 50%;
     }
