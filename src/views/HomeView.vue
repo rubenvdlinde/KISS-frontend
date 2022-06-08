@@ -17,8 +17,8 @@
         Naar welk type bericht ben je op zoek?
         <select name="type" id="werkberichtTypeInput">
           <option value="">Alle</option>
-          <option value="Werkinstructie">Werkinstructies</option>
-          <option value="Nieuwsbericht">Nieuws</option>
+          <option :value="werkinstructie">Werkinstructies</option>
+          <option :value="nieuws">Nieuws</option>
         </select>
       </label>
       <label for="searchInput"
@@ -43,14 +43,14 @@
       :level="2"
       header="Nieuws"
       :filter="{
-        type: 'Nieuwsbericht',
+        type: nieuws,
       }"
     />
     <werk-berichten
       :level="2"
       header="Werkinstructies"
       :filter="{
-        type: 'Werkinstructie',
+        type: werkinstructie,
       }"
     />
   </template>
@@ -67,6 +67,10 @@ import {
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import { bindQueryForm } from "@/helpers/forms";
+
+const werkinstructie = "werkinstructie";
+const nieuws = "nieuws";
+
 const route = useRoute();
 const searchForm = ref();
 bindQueryForm(searchForm);
