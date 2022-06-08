@@ -18,7 +18,6 @@
 <script lang="ts" setup>
 import { computed, type PropType } from "vue";
 import type { Werkbericht } from "./types";
-import DOMPurify from "dompurify";
 import {
   UtrechtHeading,
   UtrechtDocument,
