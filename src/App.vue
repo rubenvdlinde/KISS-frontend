@@ -38,6 +38,7 @@ const contactmoment = useContactmomentStore();
   --color-headings: #1b263b;
   --color-accent: #58af23;
   --color-error: #d44;
+  --color-grey: #e0e1dd;
 
   // spacing
   --container-width: 69.375rem;
