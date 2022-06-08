@@ -98,7 +98,7 @@ App\Entity\CollectionEntity:
     referentielijstenCollection:
         name: Referentielijsten collection
         sourceType: GitHub
-        locationOAS: https://raw.githubusercontent.com/VNG-Realisatie/VNG-referentielijsten/master/src/openapi.yaml
+        locationOAS: https://raw.githubusercontent.com/ConductionNL/referentielijsten_publiccode/main/OAS.yaml
         testDataLocation: https://raw.githubusercontent.com/ConductionNL/referentielijsten_publiccode/main/data/referentielijsten.json
         loadTestData: true
         autoLoad: true
