@@ -1,5 +1,6 @@
 <template>
   <utrecht-button
+    model-value
     v-if="contactmoment.contactmomentLoopt"
     type="button"
     class="contactmomentLoopt"
@@ -7,7 +8,7 @@
     >Einde contactmoment</utrecht-button
   >
 
-  <utrecht-button v-else type="button" @click="onStartContactMoment"
+  <utrecht-button model-value v-else type="button" @click="onStartContactMoment"
     >Start contactmoment</utrecht-button
   >
 </template>
@@ -20,7 +21,10 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const contactmoment = useContactmomentStore();
 
-const onStartContactMoment = () => contactmoment.start();
+const onStartContactMoment = () => {
+  contactmoment.start();
+  router.push({ name: "contactmoment" });
+};
 
 const onStopContactMoment = () => router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 </script>
