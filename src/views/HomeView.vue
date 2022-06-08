@@ -1,40 +1,42 @@
 <template>
   <utrecht-heading :level="1">Startscherm</utrecht-heading>
-  <section>
-    <utrecht-heading :level="2">Werkinstructies</utrecht-heading>
-    <paragraph v-if="werkinstructies.state === 'error'">
-      Er ging iets mis bij het laden van de werkinstructies.
-    </paragraph>
-    <template v-else-if="werkinstructies.state === 'success'">
-      <ul v-if="werkinstructies.data.length">
-        <li
-          v-for="(werkInstructie, i) in werkinstructies.data"
-          :key="`werkinstructies_${i}`"
-        >
-          <werk-bericht :bericht="werkInstructie" />
-        </li>
-      </ul>
-      <paragraph v-else>Er zijn momenteel geen werkinstructies.</paragraph>
-    </template>
-    <simple-spinner v-else></simple-spinner>
-  </section>
-  <section>
-    <utrecht-heading :level="2">Nieuws</utrecht-heading>
-    <paragraph v-if="nieuwsberichten.state === 'error'">
-      Er ging iets mis bij het laden van de nieuwbserichten
-    </paragraph>
-    <template v-else-if="nieuwsberichten.state === 'success'">
-      <ul v-if="nieuwsberichten.data.length">
-        <li
-          v-for="(nieuwsbericht, i) in nieuwsberichten.data"
-          :key="`nieuwsBerichten_${i}`"
-        >
-          <werk-bericht :bericht="nieuwsbericht" />
-        </li>
-      </ul>
-      <paragraph v-else>Er zijn momenteel geen nieuwsberichten.</paragraph>
-    </template>
-    <simple-spinner v-else></simple-spinner>
+  <section class="grid">
+    <section>
+      <utrecht-heading :level="2">Werkinstructies</utrecht-heading>
+      <paragraph v-if="werkinstructies.state === 'error'">
+        Er ging iets mis bij het laden van de werkinstructies.
+      </paragraph>
+      <template v-else-if="werkinstructies.state === 'success'">
+        <ul v-if="werkinstructies.data.length">
+          <li
+            v-for="(werkInstructie, i) in werkinstructies.data"
+            :key="`werkinstructies_${i}`"
+          >
+            <werk-bericht :bericht="werkInstructie" />
+          </li>
+        </ul>
+        <paragraph v-else>Er zijn momenteel geen werkinstructies.</paragraph>
+      </template>
+      <simple-spinner v-else></simple-spinner>
+    </section>
+    <section>
+      <utrecht-heading :level="2">Nieuws</utrecht-heading>
+      <paragraph v-if="nieuwsberichten.state === 'error'">
+        Er ging iets mis bij het laden van de nieuwbserichten
+      </paragraph>
+      <template v-else-if="nieuwsberichten.state === 'success'">
+        <ul v-if="nieuwsberichten.data.length">
+          <li
+            v-for="(nieuwsbericht, i) in nieuwsberichten.data"
+            :key="`nieuwsBerichten_${i}`"
+          >
+            <werk-bericht :bericht="nieuwsbericht" />
+          </li>
+        </ul>
+        <paragraph v-else>Er zijn momenteel geen nieuwsberichten.</paragraph>
+      </template>
+      <simple-spinner v-else></simple-spinner>
+    </section>
   </section>
   <contactmoment-starter />
 </template>
@@ -57,6 +59,13 @@ const nieuwsberichten = useLatestNews();
 </script>
 
 <style scoped lang="scss">
+.grid {
+  
+  display: grid;
+  gap: var(--spacing-large);
+  grid-template-columns: 1fr 1fr;
+}
+
 main > section {
   &:not(:only-of-type) {
     max-width: var(--section-width);
@@ -75,6 +84,7 @@ section ul {
   flex-flow: row wrap;
   justify-content: space-between;
   gap: 1.625rem;
+  margin-top: var(--spacing-default);
 }
 
 section > p {

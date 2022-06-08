@@ -43,6 +43,8 @@ const contactmoment = useContactmomentStore();
   --container-width: 69.375rem;
   --section-width: 30.75rem;
   --spacing-default: 1rem;
+  --spacing-small: 0.5rem;
+  --spacing-large: 2rem;
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
@@ -67,7 +69,8 @@ body {
 }
 
 main {
-  max-width: var(--container-width);
+  min-width: var(--container-width);
+  max-width: 80%;
   padding: 2rem var(--spacing-default);
   gap: var(--spacing-default);
   display: flex;
@@ -119,6 +122,12 @@ main {
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
   --utrecht-form-label-font-size: 1rem;
+
+  --utrecht-form-input-border-color: var(--color-primary);
+  --utrecht-form-input-border-radius: var(--radius-default);
+
+  --utrecht-form-input-padding-block-end: var(--spacing-small);
+  --utrecht-form-input-padding-block-start: var(--spacing-small);
 }
 
 utrecht-button {

@@ -65,7 +65,7 @@ article {
   border-radius: 1rem;
   background-color: var(--color-secondary);
   padding: 0.75rem var(--text-margin);
-  max-width: var(--section-width);
+  // max-width: var(--section-width);
 
   time {
     color: var(--color-primary);
