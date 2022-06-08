@@ -90,9 +90,31 @@ form {
 form > section {
   display: inline-flex;
   align-items: stretch;
-  border-radius: 1.5rem;
-  border: 1px solid black;
-  overflow: hidden;
+  --border-style: 1px solid var(--color-primary);
+
+  input,
+  select,
+  button {
+    border: none;
+    border-block: var(--border-style);
+
+    &:focus {
+      outline-color: var(--color-primary);
+    }
+  }
+
+  > :first-child {
+    input,
+    select {
+      border-radius: 1.5rem 0 0 1.5rem;
+      border-inline-start: var(--border-style);
+    }
+  }
+
+  > :last-child {
+    border-radius: 0 1.5rem 1.5rem 0;
+    border-inline-end: var(--border-style);
+  }
 }
 
 label[for="werkberichtTypeInput"],
@@ -104,13 +126,12 @@ label[for="searchInput"] {
 
 input,
 select {
-  border: none;
   padding: 0.5rem;
 }
 
 #werkberichtTypeInput {
-  background-color: #e8e4dc;
-  border-inline-end: 1px solid grey;
+  background-color: var(--color-grey);
+  border-inline-end: var(--border-style);
 }
 
 #searchInput {

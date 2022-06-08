@@ -61,13 +61,13 @@ export function useWerkberichten(
     const { audience, type, search, page } = filter.value;
     const params: [string, string][] = [];
     if (audience) {
-      params.push(["taxonomies.openpubAudience.name", audience]);
+      params.push(["openpub-audience", audience]);
     }
     if (type) {
-      params.push(["taxonomies.openpubType.name", type]);
+      params.push(["openpub-type", type]);
     }
     if (search) {
-      params.push(["content", search]);
+      params.push(["search", search]);
     }
     if (page) {
       params.push(["page", page.toString()]);
