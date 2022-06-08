@@ -1,5 +1,5 @@
 <template>
-  <utrecht-heading :level="1">Startscherm</utrecht-heading>
+  <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
   <a
     href="https://gateway.kiss-dev.commonground.nu/"
     rel="noopener noreferrer"
@@ -29,7 +29,9 @@
           id="searchInput"
           placeholder="Zoek een werkinstructie of nieuwsbericht"
       /></label>
-      <button title="Zoeken"><span>Zoeken</span><utrecht-icon-loupe /></button>
+      <button title="Zoeken">
+        <span>Zoeken</span><utrecht-icon-loupe model-value />
+      </button>
     </section>
   </form>
   <werk-berichten
