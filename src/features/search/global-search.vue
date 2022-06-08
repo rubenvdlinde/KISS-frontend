@@ -167,6 +167,7 @@ button[type="button"] {
   height: 1rem;
   display: flex;
   justify-content: center;
+  align-items: center;
   border: none;
   white-space: nowrap;
   &::after {
