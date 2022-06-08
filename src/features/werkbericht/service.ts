@@ -3,7 +3,6 @@ import { ServiceResult, type Paginated, type ServiceData } from "@/services";
 import type { Ref } from "vue";
 
 export type WerkberichtParams = {
-  audience?: string;
   type?: string;
   search?: string;
   page?: number;
@@ -67,15 +66,13 @@ export function useWerkberichten(
   filter?: Ref<WerkberichtParams>
 ): ServiceData<Paginated<Werkbericht>> {
   const typesResult = useTypes();
-  const getUrl = () => {
+
+  function getUrl() {
     if (typesResult.state !== "success") return "";
     const url = window.openPubBaseUri + "/kiss_openpub_pub";
     if (!filter?.value) return url;
-    const { audience, type, search, page } = filter.value;
+    const { type, search, page } = filter.value;
     const params: [string, string][] = [];
-    if (audience) {
-      params.push(["taxonomies.openpubAudience.name", audience]);
-    }
     const typeId = type && typesResult.data.fromVal(type);
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
@@ -90,33 +87,38 @@ export function useWerkberichten(
       return url;
     }
     return `${url}?${new URLSearchParams(params)}`;
-  };
+  }
+
   async function fetchBerichten(url: string): Promise<Paginated<Werkbericht>> {
     if (typesResult.state !== "success" || !url)
-      return Promise.reject(
-        new Error(
-          "this should never happen, we already check this in the url function"
-        )
+      throw new Error(
+        "this should never happen, we already check this in the url function"
       );
+
+    const parseArray = (arr: Array<any>) =>
+      arr.map((x) => parse(x, typesResult.data.fromKey));
+
     const r = await fetch(url);
     if (!r.ok) throw new Error(r.status.toString());
     const json = await r.json();
+
+    // HACK: de pagination is (tijdelijk?) van PUB afgehaald.
+    // door onderstaande check ondersteunen we zowel met als zonder pagination.
     if (Array.isArray(json))
       return {
-        page: json.map((x) => parse(x, typesResult.data.fromKey)),
+        page: parseArray(json),
         pageNumber: 1,
         totalPages: 1,
         pageSize: json.length,
       };
+
     const {
       results,
       page: pageNumber,
       pages: totalPages,
       limit: pageSize,
     } = json;
-    const page = Array.isArray(results)
-      ? results.map((x) => parse(x, typesResult.data.fromKey))
-      : [];
+    const page = Array.isArray(results) ? parseArray(results) : [];
     return {
       page,
       pageSize,
@@ -124,5 +126,6 @@ export function useWerkberichten(
       totalPages,
     };
   }
+
   return ServiceResult.fromFetcher(getUrl, fetchBerichten);
 }
