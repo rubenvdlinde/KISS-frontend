@@ -20,7 +20,7 @@
       <nav v-show="!isViewingArticle">
         <ul>
           <li
-            v-for="{ id, title, source } in searchResults.data"
+            v-for="{ id, title, source } in searchResults.data.page"
             :key="'nav_' + id"
           >
             <a :href="`#${searchResultPrefix}${id}`"
@@ -32,7 +32,7 @@
       </nav>
       <ul>
         <li
-          v-for="{ id, title, source, content } in searchResults.data"
+          v-for="{ id, title, source, content } in searchResults.data.page"
           :key="searchResultPrefix + id"
           :id="searchResultPrefix + id"
         >
@@ -84,7 +84,7 @@ const isViewingArticle = computed(() => {
   const { hash } = router.currentRoute.value;
   const link = hash && hash.split("#")[1];
   const id = link && link.split(searchResultPrefix)[1];
-  return !!id && searchResults.data.some((x) => x.id === id);
+  return !!id && searchResults.data.page.some((x) => x.id === id);
 });
 
 const isExpanded = ref(true);

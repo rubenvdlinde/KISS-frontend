@@ -1,4 +1,10 @@
-import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
+import {
+  onUnmounted,
+  reactive,
+  readonly,
+  watch,
+  type UnwrapNestedRefs,
+} from "vue";
 import useSWRV from "swrv";
 
 const logError = import.meta.env.DEV
@@ -21,12 +27,19 @@ type Result<T> =
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
 
-export interface Paginated<T> {
+export type Paginated<T> = Readonly<{
   pageSize: number;
   pageNumber: number;
   totalPages: number;
   page: T[];
-}
+}>;
+
+export const emptyPage: Paginated<any> = {
+  pageSize: 1,
+  pageNumber: 1,
+  totalPages: 1,
+  page: [],
+};
 
 export const ServiceResult = {
   success<T>(data: T): ServiceData<T> {
