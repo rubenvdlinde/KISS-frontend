@@ -1,6 +1,6 @@
 <template>
   <section>
-    <utrecht-heading :level="level">{{ header }}</utrecht-heading>
+    <utrecht-heading model-value :level="level">{{ header }}</utrecht-heading>
     <paragraph v-if="berichten.state === 'error'">{{
       onError(berichten.error)
     }}</paragraph>

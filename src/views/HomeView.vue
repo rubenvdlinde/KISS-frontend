@@ -1,5 +1,5 @@
 <template>
-  <utrecht-heading :level="1">Startscherm</utrecht-heading>
+  <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
   <a
     href="https://gateway.kiss-dev.commonground.nu/"
     rel="noopener noreferrer"
@@ -17,8 +17,8 @@
         Naar welk type bericht ben je op zoek?
         <select name="type" id="werkberichtTypeInput">
           <option value="">Alle</option>
-          <option value="Werkinstructie">Werkinstructies</option>
-          <option value="Nieuwsbericht">Nieuws</option>
+          <option :value="werkinstructie">Werkinstructies</option>
+          <option :value="nieuws">Nieuws</option>
         </select>
       </label>
       <label for="searchInput"
@@ -29,7 +29,9 @@
           id="searchInput"
           placeholder="Zoek een werkinstructie of nieuwsbericht"
       /></label>
-      <button title="Zoeken"><span>Zoeken</span><utrecht-icon-loupe /></button>
+      <button title="Zoeken">
+        <span>Zoeken</span><utrecht-icon-loupe model-value />
+      </button>
     </section>
   </form>
   <werk-berichten
@@ -43,14 +45,14 @@
       :level="2"
       header="Nieuws"
       :filter="{
-        type: 'Nieuwsbericht',
+        type: nieuws,
       }"
     />
     <werk-berichten
       :level="2"
       header="Werkinstructies"
       :filter="{
-        type: 'Werkinstructie',
+        type: werkinstructie,
       }"
     />
   </template>
@@ -67,6 +69,10 @@ import {
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import { bindQueryForm } from "@/helpers/forms";
+
+const werkinstructie = "werkinstructie";
+const nieuws = "nieuws";
+
 const route = useRoute();
 const searchForm = ref();
 bindQueryForm(searchForm);
