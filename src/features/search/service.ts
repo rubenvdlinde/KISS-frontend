@@ -9,13 +9,15 @@ export type SearchResult = {
 
 function mapSource(engine: unknown) {
   if (typeof engine !== "string") return "onbekend";
-  return engine.endsWith("-crawler") ? "Website" : "onbekend";
+  if (engine.endsWith("-crawler")) return "Website";
+  if (engine === "pdc") return "Kennisbank";
+  return "onbekend";
 }
 
 function mapResult(obj: any): SearchResult {
   const source = mapSource(obj?._meta?.engine);
   const id = obj?.id?.raw;
-  const title = obj?.headings?.raw?.[0];
+  const title = obj?.headings?.raw?.[0] ?? obj?.title?.raw;
   const content = obj?.body_content?.raw;
   return {
     source,

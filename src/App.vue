@@ -172,4 +172,8 @@ utrecht-button {
   background-color: hsl(184, 54%, 70%);
   display: inline-block;
 }
+
+.category-Website {
+  background-color: hsl(285, 56%, 83%);
+}
 </style>

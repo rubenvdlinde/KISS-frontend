@@ -42,7 +42,7 @@
               <utrecht-heading :level="2">{{ title }}</utrecht-heading>
               <small :class="`category-${source}`">{{ source }}</small>
             </header>
-            <section v-if="content" v-html="cleanHtml(content, 2)"></section>
+            <p v-if="content">{{ content }}</p>
           </article>
         </li>
       </ul>
