@@ -49,7 +49,10 @@ function fetchTypes(url: string) {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
-      if (!Array.isArray(json)) throw new Error();
+      if (!Array.isArray(json))
+        throw new Error(
+          "Invalide json, verwacht een lijst: " + JSON.stringify(json)
+        );
       return json
         .filter((x) => typeof x?.id === "number" && typeof x?.name === "string")
         .map((x) => [x.id, x.name] as [number, string]);
@@ -117,7 +120,7 @@ export function useWerkberichten(
       page: pageNumber,
       pages: totalPages,
       limit: pageSize,
-    } = json;
+    } = json || {};
     const page = Array.isArray(results) ? parseArray(results) : [];
     return {
       page,
