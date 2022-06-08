@@ -35,6 +35,7 @@
           v-for="{ id, title, source, content } in searchResults.data.page"
           :key="searchResultPrefix + id"
           :id="searchResultPrefix + id"
+          v-show="currentRoute.hash === '#' + searchResultPrefix + id"
         >
           <a class="back-to-results" href="#">Alle zoekresultaten</a>
           <article>
@@ -59,17 +60,17 @@
 
 <script lang="ts" setup>
 import { bindQueryForm } from "@/helpers/forms";
-import { cleanHtml } from "@/helpers/html";
 import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref, watch, nextTick } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useGlobalSearch } from "./service";
 const queryParamName = "globalSearch";
 const searchResultPrefix = "global-search-result-";
 const router = useRouter();
+const currentRoute = useRoute();
 const currentSearch = computed(() =>
   router.currentRoute.value.query?.[queryParamName]?.toString()
 );
@@ -148,14 +149,12 @@ input {
     padding-block: 2rem;
     display: grid;
     gap: 1rem;
-
-    &:not(:target) {
-      display: none;
-    }
   }
 
   &:not(.isExpanded) {
     max-height: 2.5rem;
+    pointer-events: none;
+    user-select: none;
     > * {
       opacity: 50%;
     }
