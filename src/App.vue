@@ -84,6 +84,32 @@ main {
   }
 }
 
+
+.tabs-component {
+  ul li.is-active {
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-default) var(--radius-default) 0 0;
+  }
+
+  ul li {
+    display: inline-block;
+    padding: var(--spacing-default);
+
+    a {
+      text-decoration: none;
+      font-size: var(--utrecht-typography-scale-lg);
+      color: var(--utrecht-document-color);
+    }
+  }
+
+  > div {
+    background-color: var(--color-secondary);
+  }
+}
+
+
+
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -106,7 +132,9 @@ main {
 
   /* h3 */
   --utrecht-heading-3-line-height: 2rem;
-  --utrecht-heading-3-font-size: 1.25rem;
+  --utrecht-heading-3-font-size: var(--utrecht-typography-scale-lg);
+
+  --utrecht-typography-scale-lg: 1.25rem;
 
   /* button */
   --utrecht-button-background-color: var(--color-primary);

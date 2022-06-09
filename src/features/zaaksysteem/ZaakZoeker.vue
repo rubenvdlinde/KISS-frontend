@@ -76,7 +76,7 @@ const zoek = () => {
 .grid {
   display: grid;
   grid-template-columns: 1fr 4fr;
-  background-color: var(--color-secondary);
+ 
   padding: var(--spacing-large);
   grid-gap: 2rem;
 }

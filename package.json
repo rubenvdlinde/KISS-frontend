@@ -16,7 +16,8 @@
     "swrv": "^1.0.0-beta.8",
     "vue": "^3.2.33",
     "vue-router": "^4.0.14",
-    "vue-toast-notification": "3.0"
+    "vue-toast-notification": "3.0",
+    "vue3-tabs-component": "^1.0.8"
   },
   "devDependencies": {
     "@gemeente-denhaag/design-tokens-components": "^0.2.3-alpha.205",
