@@ -117,6 +117,10 @@ form > section {
   width: 40rem;
 }
 
+button {
+  font-size: 0;
+}
+
 input,
 label {
   width: 100%;
