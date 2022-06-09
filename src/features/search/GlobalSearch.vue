@@ -2,28 +2,29 @@
   <form
     method="get"
     enctype="application/x-www-form-urlencoded"
-    ref="globalSearchForm"
+    @submit="handleSubmit"
   >
-    <section>
+    <section class="search-bar">
       <label
         ><input
           type="search"
-          :name="queryParamName"
+          :name="searchInputName"
           placeholder="Zoeken"
+          @search="handleSearch"
         />Zoekterm</label
       >
-      <button><span>Zoeken</span><utrecht-icon-loupe /></button>
+      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </section>
   </form>
   <template v-if="currentSearch && searchResults.state === 'success'">
     <section :class="['search-results', { isExpanded }]">
-      <nav v-show="!isViewingArticle">
+      <nav v-show="!currentId">
         <ul>
           <li
             v-for="{ id, title, source } in searchResults.data.page"
             :key="'nav_' + id"
           >
-            <a :href="`#${searchResultPrefix}${id}`"
+            <a href="#" @click="currentId = id"
               ><span :class="`category-${source}`">{{ source }}</span
               ><span>{{ title }}</span></a
             >
@@ -32,15 +33,18 @@
       </nav>
       <ul>
         <li
-          v-for="{ id, title, source, content } in searchResults.data.page"
-          :key="searchResultPrefix + id"
-          :id="searchResultPrefix + id"
-          v-show="currentRoute.hash === '#' + searchResultPrefix + id"
+          v-for="{ id, title, source, content } in searchResults.data"
+          :key="'searchResult_' + id"
+          v-show="id === currentId"
         >
-          <a class="back-to-results" href="#">Alle zoekresultaten</a>
+          <a class="back-to-results" href="#" @click="currentId = ''"
+            >Alle zoekresultaten</a
+          >
           <article>
             <header>
-              <utrecht-heading :level="2">{{ title }}</utrecht-heading>
+              <utrecht-heading model-value :level="2">{{
+                title
+              }}</utrecht-heading>
               <small :class="`category-${source}`">{{ source }}</small>
             </header>
             <p v-if="content">{{ content }}</p>
@@ -59,33 +63,38 @@
 </template>
 
 <script lang="ts" setup>
-import { bindQueryForm } from "@/helpers/forms";
+import { cleanHtml } from "@/helpers/html";
 import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { computed, ref, watch, nextTick } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { computed, ref, watch } from "vue";
 import { useGlobalSearch } from "./service";
-const queryParamName = "globalSearch";
-const searchResultPrefix = "global-search-result-";
-const router = useRouter();
-const currentRoute = useRoute();
-const currentSearch = computed(() =>
-  router.currentRoute.value.query?.[queryParamName]?.toString()
-);
+const searchInputName = "globalSearch";
 
-const globalSearchForm = ref();
-bindQueryForm(globalSearchForm);
-
+const currentSearch = ref("");
 const searchResults = useGlobalSearch(currentSearch);
 
-const isViewingArticle = computed(() => {
-  if (searchResults.state !== "success") return false;
-  const { hash } = router.currentRoute.value;
-  const link = hash && hash.split("#")[1];
-  const id = link && link.split(searchResultPrefix)[1];
-  return !!id && searchResults.data.page.some((x) => x.id === id);
+function handleSubmit(e: Event) {
+  const { currentTarget } = e;
+  if (!(currentTarget instanceof HTMLFormElement)) return;
+  e.preventDefault();
+  const formData = new FormData(currentTarget);
+  const obj = Object.fromEntries(formData);
+  currentSearch.value = obj?.[searchInputName]?.toString() || "";
+}
+
+function handleSearch(e: Event) {
+  const { currentTarget } = e;
+  if (!(currentTarget instanceof HTMLInputElement)) return;
+  e.preventDefault();
+  currentSearch.value = currentTarget.value;
+}
+
+const currentId = ref("");
+
+watch(currentSearch, () => {
+  currentId.value = "";
 });
 
 const isExpanded = ref(true);
@@ -105,32 +114,16 @@ form {
 }
 
 form > section {
-  display: grid;
-  grid-template-columns: 1fr min-content;
-  align-items: stretch;
-  justify-content: center;
-  border-radius: 1.5rem;
-  overflow: hidden;
-  width: min(40rem, 100%);
-  --utrecht-icon-size: 1rem;
+  width: 40rem;
 }
-label,
+
 button {
   font-size: 0;
 }
-button:not([type="button"]) {
-  background: white;
-  border: none;
-  padding-inline-end: var(--spacing-default);
-}
-input {
-  padding: 0.5rem;
-  padding-inline-start: var(--spacing-default);
+
+input,
+label {
   width: 100%;
-  border: none;
-  &::placeholder {
-    color: black;
-  }
 }
 
 .search-results {
