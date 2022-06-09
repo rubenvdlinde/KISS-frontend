@@ -1,51 +1,58 @@
 import type { Werkbericht } from "./types";
-import { ServiceResult, type Paginated, type ServiceData } from "@/services";
+import {
+  createLookupList as createLookupList,
+  parseValidInt,
+  ServiceResult,
+  type LookupList,
+  type Paginated,
+  type ServiceData,
+} from "@/services";
 import type { Ref } from "vue";
 
-export type WerkberichtParams = {
+export type UseWerkberichtenParams = {
   type?: string;
   search?: string;
   page?: number;
   pagesize?: number;
 };
 
-function twoWayMap<K, V>(data: [K, V][]) {
-  const there = new Map(data);
-  const back = new Map(data.map(([k, v]) => [v, k]));
-  return {
-    fromKey(key: K) {
-      return there.get(key);
-    },
-    fromVal(val: V) {
-      return back.get(val);
-    },
-  };
-}
-
-function parse(
-  o: any,
-  mapType: (id: number) => string | undefined
+/**
+ * Tries to parse a json object returned by the api as a Werkbericht
+ * @param jsonObject a json object
+ * @param getBerichtTypeNameById a function to get the name of a berichttype from it's id
+ */
+function parseWerkbericht(
+  jsonObject: any,
+  getBerichtTypeNameById: (id: number) => string | undefined
 ): Werkbericht {
   if (
-    typeof o?.title?.rendered !== "string" ||
-    typeof o?.content?.rendered !== "string" ||
-    typeof o?.date !== "string"
+    typeof jsonObject?.title?.rendered !== "string" ||
+    typeof jsonObject?.content?.rendered !== "string" ||
+    typeof jsonObject?.date !== "string"
   ) {
-    throw new Error("invalid werkbericht: " + JSON.stringify(o));
+    throw new Error(
+      "invalid werkbericht, required fields are missing. input: " +
+        JSON.stringify(jsonObject)
+    );
   }
 
-  const typeId = o?.["openpub-type"]?.[0];
-  const typeName = typeof typeId === "number" && mapType(typeId);
+  const berichtTypeId = jsonObject?.["openpub-type"]?.[0];
+  const typeName =
+    typeof berichtTypeId === "number" && getBerichtTypeNameById(berichtTypeId);
 
   return {
-    title: o.title.rendered,
-    content: o.content.rendered,
-    date: new Date(o.date),
+    title: jsonObject.title.rendered,
+    content: jsonObject.content.rendered,
+    date: new Date(jsonObject.date),
     type: typeName || "onbekend",
   };
 }
 
-function fetchTypes(url: string) {
+/**
+ * Fetches a lookuplist of BerichtTypes from the api
+ * @param url
+ */
+function fetchBerichtTypes(url: string): Promise<LookupList<number, string>> {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
@@ -57,26 +64,39 @@ function fetchTypes(url: string) {
         .filter((x) => typeof x?.id === "number" && typeof x?.name === "string")
         .map((x) => [x.id, x.name] as [number, string]);
     })
-    .then(twoWayMap);
+    .then(createLookupList);
 }
 
-function useTypes() {
+/**
+ * Returns a reactive ServiceData object promising a LookupList of berichttypes
+ */
+function useBerichtTypes(): ServiceData<LookupList<number, string>> {
   const url = window.openPubBaseUri + "/openpub-type";
-  return ServiceResult.fromFetcher(url, fetchTypes);
+  return ServiceResult.fromFetcher(url, fetchBerichtTypes);
 }
 
+/**
+ * Returns a reactive ServiceData object promising a paginated list of Werkberichten.
+ * This has a dependency on useBerichtTypes()
+ * @param parameters
+ */
 export function useWerkberichten(
-  filter?: Ref<WerkberichtParams>
+  parameters?: Ref<UseWerkberichtenParams>
 ): ServiceData<Paginated<Werkbericht>> {
-  const typesResult = useTypes();
+  const typesResult = useBerichtTypes();
 
   function getUrl() {
+    // we return a falsy value if we haven't received the berichttypes yet,
+    // because we need them to look up names of berichttypes by their id.
+    // a falsy value indicates to the SWRV library that it should not yet trigger a fetch
     if (typesResult.state !== "success") return "";
+
     const url = window.openPubBaseUri + "/kiss_openpub_pub";
-    if (!filter?.value) return url;
-    const { type, search, page } = filter.value;
+    if (!parameters?.value) return url;
+
+    const { type, search, page } = parameters.value;
     const params: [string, string][] = [];
-    const typeId = type && typesResult.data.fromVal(type);
+    const typeId = type && typesResult.data.fromValueToKey(type);
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
@@ -98,35 +118,26 @@ export function useWerkberichten(
         "this should never happen, we already check this in the url function"
       );
 
-    const parseArray = (arr: Array<any>) =>
-      arr.map((x) => parse(x, typesResult.data.fromKey));
-
     const r = await fetch(url);
     if (!r.ok) throw new Error(r.status.toString());
+
     const json = await r.json();
 
-    // HACK: de pagination is (tijdelijk?) van PUB afgehaald.
-    // door onderstaande check ondersteunen we zowel met als zonder pagination.
-    if (Array.isArray(json))
-      return {
-        page: parseArray(json),
-        pageNumber: 1,
-        totalPages: 1,
-        pageSize: json.length,
-      };
+    if (!Array.isArray(json))
+      throw new Error("expected a list, input: " + JSON.stringify(json));
 
-    const {
-      results,
-      page: pageNumber,
-      pages: totalPages,
-      limit: pageSize,
-    } = json || {};
-    const page = Array.isArray(results) ? parseArray(results) : [];
+    const pageNumber = parameters?.value.page || 1;
+    const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
+
+    const page = json.map((x) =>
+      parseWerkbericht(x, typesResult.data.fromKeyToValue)
+    );
+
     return {
       page,
-      pageSize,
       pageNumber,
       totalPages,
+      pageSize: 15,
     };
   }
 

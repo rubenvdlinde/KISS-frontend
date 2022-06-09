@@ -1,9 +1,11 @@
 <template>
   <section>
     <utrecht-heading model-value :level="level">{{ header }}</utrecht-heading>
+
     <paragraph v-if="berichten.state === 'error'">{{
-      onError(berichten.error)
+      getErrorMessage(berichten.error)
     }}</paragraph>
+
     <template v-else-if="berichten.state === 'success'">
       <paragraph v-if="filter.search"
         >{{ berichten.data.page.length }}
@@ -27,13 +29,14 @@
         :pagination="berichten.data"
       />
     </template>
+
     <simple-spinner v-else></simple-spinner>
   </section>
 </template>
 <script lang="ts" setup>
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
-import { useWerkberichten, type WerkberichtParams } from "./service";
+import { useWerkberichten, type UseWerkberichtenParams } from "./service";
 import WerkBericht from "./WerkBericht.vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { computed, type PropType } from "vue";
@@ -52,10 +55,10 @@ const props = defineProps({
     default: 2,
   },
   filter: {
-    type: Object as PropType<Pick<WerkberichtParams, "type" | "search">>,
+    type: Object as PropType<Pick<UseWerkberichtenParams, "type" | "search">>,
     required: true,
   },
-  onError: {
+  getErrorMessage: {
     type: Function as PropType<(e: Error) => string>,
     default: () => "Er ging iets mis. Probeer het later nog eens",
   },
