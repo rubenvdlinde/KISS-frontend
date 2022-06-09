@@ -102,7 +102,7 @@ export const ServiceResult = {
   },
 };
 
-function parseValidInt(input: unknown): number | undefined {
+export function parseValidInt(input: unknown): number | undefined {
   if (typeof input === "number") {
     return isFinite(input) ? input : undefined;
   }
@@ -131,4 +131,22 @@ export function parseDutchDate(dateTimeStr: string): Date {
   dateInput[1] = dateInput[1] - 1;
 
   return new Date(...dateInput);
+}
+
+export interface LookupList<K, V> {
+  fromKeyToValue: (key: K) => V | undefined;
+  fromValueToKey: (value: V) => K | undefined;
+}
+
+export function createLookupList<K, V>(data: [K, V][]): LookupList<K, V> {
+  const fromKeyToValueMap = new Map(data);
+  const FromValueToKeyMap = new Map(data.map(([k, v]) => [v, k]));
+  return {
+    fromKeyToValue(key: K) {
+      return fromKeyToValueMap.get(key);
+    },
+    fromValueToKey(val: V) {
+      return FromValueToKeyMap.get(val);
+    },
+  };
 }

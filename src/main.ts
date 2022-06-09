@@ -10,6 +10,7 @@ declare global {
     contactmomentenBaseUri: string;
     organisatieIds: string[];
     globalSearchBaseUri: string;
+    pubBeheerUrl: string;
   }
 }
 
