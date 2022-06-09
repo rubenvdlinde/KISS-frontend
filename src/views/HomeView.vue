@@ -1,7 +1,7 @@
 <template>
   <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
   <a
-    href="https://gateway.kiss-dev.commonground.nu/"
+    :href="pubBeheerUrl"
     rel="noopener noreferrer"
     target="_blank"
     class="admin-link"
@@ -11,6 +11,7 @@
     ref="searchForm"
     enctype="application/x-www-form-urlencoded"
     method="get"
+    @submit="handleSubmit"
   >
     <section>
       <label for="werkberichtTypeInput">
@@ -28,6 +29,7 @@
           name="search"
           id="searchInput"
           placeholder="Zoek een werkinstructie of nieuwsbericht"
+          @search="handleSearch"
       /></label>
       <button title="Zoeken">
         <span>Zoeken</span><utrecht-icon-loupe model-value />
@@ -37,6 +39,7 @@
   <werk-berichten
     v-if="filter"
     :level="2"
+    page-param-name="werkberichtsearchpage"
     :filter="filter"
     header="Zoekresultaten"
   />
@@ -44,6 +47,7 @@
     <werk-berichten
       :level="2"
       header="Nieuws"
+      page-param-name="nieuwspage"
       :filter="{
         type: nieuws,
       }"
@@ -51,6 +55,7 @@
     <werk-berichten
       :level="2"
       header="Werkinstructies"
+      page-param-name="werkinstructiepage"
       :filter="{
         type: werkinstructie,
       }"
@@ -60,24 +65,39 @@
 </template>
 
 <script setup lang="ts">
-import { WerkBerichten } from "@/features/werkbericht";
-import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
 import {
   UtrechtHeading,
   UtrechtIconLoupe,
 } from "@utrecht/web-component-library-vue";
-import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
-import { bindQueryForm } from "@/helpers/forms";
+import { WerkBerichten } from "@/features/werkbericht";
+import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
+
+const { pubBeheerUrl } = window;
 
 const werkinstructie = "werkinstructie";
 const nieuws = "nieuws";
 
-const route = useRoute();
-const searchForm = ref();
-bindQueryForm(searchForm);
-const currentSearch = computed(() => route.query.search?.toString());
-const currentType = computed(() => route.query.type?.toString());
+const currentSearch = ref("");
+const currentType = ref("");
+
+function handleSubmit(e: Event) {
+  const { currentTarget } = e;
+  if (!(currentTarget instanceof HTMLFormElement)) return;
+  e.preventDefault();
+  const formData = new FormData(currentTarget);
+  const obj = Object.fromEntries(formData);
+  currentSearch.value = obj?.search?.toString() || "";
+  currentType.value = obj?.type?.toString() || "";
+}
+
+function handleSearch(e: Event) {
+  const { currentTarget } = e;
+  if (!(currentTarget instanceof HTMLInputElement)) return;
+  e.preventDefault();
+  currentSearch.value = currentTarget.value;
+}
+
 const filter = computed(() =>
   currentSearch.value
     ? {
