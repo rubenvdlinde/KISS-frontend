@@ -1,7 +1,7 @@
 <template>
   <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
   <a
-    href="https://gateway.kiss-dev.commonground.nu/"
+    :href="pubBeheerUrl"
     rel="noopener noreferrer"
     target="_blank"
     class="admin-link"
@@ -37,6 +37,7 @@
   <werk-berichten
     v-if="filter"
     :level="2"
+    page-param-name="werkberichtsearchpage"
     :filter="filter"
     header="Zoekresultaten"
   />
@@ -44,6 +45,7 @@
     <werk-berichten
       :level="2"
       header="Nieuws"
+      page-param-name="nieuwspage"
       :filter="{
         type: nieuws,
       }"
@@ -51,6 +53,7 @@
     <werk-berichten
       :level="2"
       header="Werkinstructies"
+      page-param-name="werkinstructiepage"
       :filter="{
         type: werkinstructie,
       }"
@@ -69,6 +72,8 @@ import {
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import { bindQueryForm } from "@/helpers/forms";
+
+const { pubBeheerUrl } = window;
 
 const werkinstructie = "werkinstructie";
 const nieuws = "nieuws";

@@ -27,6 +27,7 @@
       <pagination
         v-show="berichten.data.page.length"
         :pagination="berichten.data"
+        :query-param-name="pageParamName"
       />
     </template>
 
@@ -61,6 +62,10 @@ const props = defineProps({
   getErrorMessage: {
     type: Function as PropType<(e: Error) => string>,
     default: () => "Er ging iets mis. Probeer het later nog eens",
+  },
+  pageParamName: {
+    type: String,
+    default: "page",
   },
 });
 
