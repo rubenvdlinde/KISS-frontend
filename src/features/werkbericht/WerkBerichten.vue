@@ -27,7 +27,7 @@
       <pagination
         v-show="berichten.data.page.length"
         :pagination="berichten.data"
-        :query-param-name="pageParamName"
+        @navigate="onNavigate"
       />
     </template>
 
@@ -35,16 +35,13 @@
   </section>
 </template>
 <script lang="ts" setup>
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { computed, ref, type PropType } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 import { useWerkberichten, type UseWerkberichtenParams } from "./service";
 import WerkBericht from "./WerkBericht.vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { computed, type PropType } from "vue";
-import Pagination from "../../nl-design-system/components/Pagination.vue";
-import { useRoute } from "vue-router";
-
-type HeadingLevel = 1 | 2 | 3 | 4 | 5;
 
 const props = defineProps({
   header: {
@@ -52,7 +49,7 @@ const props = defineProps({
     required: true,
   },
   level: {
-    type: Number as PropType<HeadingLevel>,
+    type: Number as PropType<1 | 2 | 3 | 4 | 5>,
     default: 2,
   },
   filter: {
@@ -69,21 +66,18 @@ const props = defineProps({
   },
 });
 
-const route = useRoute();
-const currentPage = computed(() => {
-  const pageQuery = route?.query?.page?.toString();
-  if (!pageQuery) return undefined;
-  const parsed = Number.parseInt(pageQuery, 10);
-  if (!Number.isFinite(parsed)) return undefined;
-  return parsed;
-});
+const currentPage = ref(1);
 
-const wbParams = computed(() => ({
+const onNavigate = (pageNum: number) => {
+  currentPage.value = pageNum;
+};
+
+const parameters = computed(() => ({
   ...props.filter,
   page: currentPage.value,
 }));
 
-const berichten = useWerkberichten(wbParams);
+const berichten = useWerkberichten(parameters);
 </script>
 
 <style lang="scss" scoped>

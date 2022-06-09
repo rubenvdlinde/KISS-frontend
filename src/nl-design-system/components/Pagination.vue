@@ -1,7 +1,7 @@
 <template>
   <nav class="denhaag-pagination">
-    <router-link
-      :to="previous"
+    <a
+      :href="previous.href"
       :class="[
         'denhaag-pagination__link',
         'denhaag-pagination__link--arrow',
@@ -10,6 +10,7 @@
       :rel="previous.rel"
       :aria-label="previous.ariaLabel"
       :aria-current="previous.isCurrent ? 'page' : false"
+      @click="previous.onClick"
     >
       <svg
         aria-hidden="true"
@@ -25,25 +26,26 @@
           fill="currentColor"
         />
       </svg>
-    </router-link>
+    </a>
     <span role="group" class="denhaag-pagination__links">
-      <router-link
-        v-for="(route, i) in otherLinks"
+      <a
+        v-for="(currentLink, i) in otherLinks"
         :key="i"
         :class="{
           'denhaag-pagination__link': true,
-          'denhaag-pagination__link--current': route.isCurrent,
+          'denhaag-pagination__link--current': currentLink.isCurrent,
         }"
-        :aria-current="route.isCurrent ? 'page' : false"
-        :to="route"
-        :rel="route.rel"
-        :aria-label="route.ariaLabel"
+        :aria-current="currentLink.isCurrent ? 'page' : false"
+        :href="currentLink.href"
+        :rel="currentLink.rel"
+        :aria-label="currentLink.ariaLabel"
+        @click="currentLink.onClick"
       >
-        {{ route.label }}
-      </router-link>
+        {{ currentLink.label }}
+      </a>
     </span>
-    <router-link
-      :to="next"
+    <a
+      :href="next.href"
       :class="[
         'denhaag-pagination__link',
         'denhaag-pagination__link--arrow',
@@ -52,6 +54,7 @@
       :rel="next.rel"
       :aria-label="next.ariaLabel"
       :aria-current="next.isCurrent ? 'page' : false"
+      @click="next.onClick"
     >
       <svg
         aria-hidden="true"
@@ -67,13 +70,12 @@
           fill="currentColor"
         />
       </svg>
-    </router-link>
+    </a>
   </nav>
 </template>
 
 <script lang="ts" setup>
-import { useRoute, useRouter } from "vue-router";
-import { computed, watchEffect, type PropType } from "vue";
+import { computed, type PropType } from "vue";
 import type { Paginated } from "@/services";
 const props = defineProps({
   pagination: {
@@ -85,14 +87,16 @@ const props = defineProps({
     default: "page",
   },
 });
-const route = useRoute();
-const router = useRouter();
-const appendToRoute = (n: number) => ({
-  ...route,
-  query: {
-    ...route.query,
-    [props.queryParamName]: n === 1 ? undefined : n,
+const emit = defineEmits(["navigate"]);
+
+const createLink = (n: number) => ({
+  onClick(e: Event) {
+    e.preventDefault();
+    if (this.isActive) {
+      emit("navigate", n);
+    }
   },
+  href: `?${props.queryParamName}=${n}`,
   ariaLabel: "Pagina " + n,
   label: n,
   isCurrent: n === props.pagination.pageNumber,
@@ -103,18 +107,21 @@ const appendToRoute = (n: number) => ({
     n > props.pagination.pageNumber + 1,
   rel: "",
 });
+
 const previous = computed(() => ({
-  ...appendToRoute(props.pagination.pageNumber - 1),
+  ...createLink(props.pagination.pageNumber - 1),
   rel: "prev",
   ariaLabel: "Vorige pagina",
   isActive: props.pagination.pageNumber > 1,
 }));
+
 const next = computed(() => ({
-  ...appendToRoute(props.pagination.pageNumber + 1),
+  ...createLink(props.pagination.pageNumber + 1),
   rel: "next",
   ariaLabel: "Volgende pagina",
   isActive: props.pagination.pageNumber < props.pagination.totalPages,
 }));
+
 const otherLinks = computed(() => {
   if (
     props.pagination.totalPages < 1 ||
@@ -125,30 +132,25 @@ const otherLinks = computed(() => {
 
   const result = [];
   if (props.pagination.pageNumber > 1) {
-    result.push(appendToRoute(1));
+    result.push(createLink(1));
   }
   if (props.pagination.pageNumber > 3) {
-    result.push(appendToRoute(props.pagination.pageNumber - 2));
+    result.push(createLink(props.pagination.pageNumber - 2));
   }
   if (previous.value?.isActive) {
     result.push(previous.value);
   }
-  result.push(appendToRoute(props.pagination.pageNumber));
+  result.push(createLink(props.pagination.pageNumber));
   if (next.value?.isActive) {
     result.push(next.value);
   }
   if (props.pagination.pageNumber < props.pagination.totalPages - 2) {
-    result.push(appendToRoute(props.pagination.totalPages - 1));
+    result.push(createLink(props.pagination.totalPages - 1));
   }
   if (props.pagination.totalPages > 1) {
-    result.push(appendToRoute(props.pagination.totalPages));
+    result.push(createLink(props.pagination.totalPages));
   }
   return result;
-});
-watchEffect(() => {
-  if (props.pagination.pageNumber > props.pagination.totalPages) {
-    router.push(appendToRoute(props.pagination.totalPages));
-  }
 });
 </script>
 
