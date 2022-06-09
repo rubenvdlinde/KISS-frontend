@@ -31,9 +31,15 @@
           </li>
         </ul>
       </nav>
+      <pagination
+        class="pagination"
+        :pagination="searchResults.data"
+        @navigate="handlePaginationNavigation"
+        v-show="!currentId"
+      />
       <ul>
         <li
-          v-for="{ id, title, source, content } in searchResults.data"
+          v-for="{ id, title, source, content } in searchResults.data.page"
           :key="'searchResult_' + id"
           v-show="id === currentId"
         >
@@ -63,17 +69,28 @@
 </template>
 
 <script lang="ts" setup>
-import { cleanHtml } from "@/helpers/html";
 import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
 import { useGlobalSearch } from "./service";
+import Pagination from "../../nl-design-system/components/Pagination.vue";
 const searchInputName = "globalSearch";
 
 const currentSearch = ref("");
-const searchResults = useGlobalSearch(currentSearch);
+const currentPage = ref(1);
+
+const searchParameters = computed(() => ({
+  search: currentSearch.value,
+  page: currentPage.value,
+}));
+
+const searchResults = useGlobalSearch(searchParameters);
+
+function handlePaginationNavigation(page: number) {
+  currentPage.value = page;
+}
 
 function handleSubmit(e: Event) {
   const { currentTarget } = e;
@@ -93,7 +110,7 @@ function handleSearch(e: Event) {
 
 const currentId = ref("");
 
-watch(currentSearch, () => {
+watch([currentSearch, currentPage], () => {
   currentId.value = "";
 });
 
@@ -235,5 +252,9 @@ article {
       margin-bottom: 1em;
     }
   }
+}
+
+.pagination {
+  margin-inline: auto;
 }
 </style>
