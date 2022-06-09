@@ -1,8 +1,8 @@
 import type { Contactmoment } from "./types";
 
-export function useContactmomentService(): {
-  save: (data: Contactmoment) => Promise<void>;
-} {
+export function useContactmomentService() {
+//   save: (data: Contactmoment) => Promise<void>;
+// } {
   // fetch("http://localhost/api/contactmomenten")
   //   .then((r) => {
   //     if (!r.ok) console.log(r);
@@ -16,10 +16,16 @@ export function useContactmomentService(): {
     console.error("contactmomentenBaseUri missing");
   }
 
-  const url = window.contactmomentenBaseUri;
+  if(!window.gespreksResultatenBaseUri){
+    console.error("gespreksResultatenBaseUri missing");
+  }
+
+  const contactmomentenBaseUri = window.contactmomentenBaseUri;
+  const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
+
 
   const save = (data: Contactmoment) => {
-    return fetch(url, {
+    return fetch(contactmomentenBaseUri, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -32,7 +38,17 @@ export function useContactmomentService(): {
       }
     });
   };
+
+  const getGespreksResultaten = () => {
+    return fetch(gespreksResultatenBaseUri).then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+    });
+  };
+
   return {
     save,
+    getGespreksResultaten,
   };
 }

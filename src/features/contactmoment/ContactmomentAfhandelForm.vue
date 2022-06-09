@@ -160,6 +160,19 @@ submitDialog.onConfirm(() => submit());
 // organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste
 onMounted(() => {
   contactmoment.kanaal = user.preferences.kanaal;
+
+  service
+    .getGespreksResultaten()
+    .then((x) => {
+      console.log(x);
+    })
+    .catch(() => {
+      // saveFailed.value = true;
+    })
+    .finally(() => {
+      //  saving.value = false;
+    });
+ 
 });
 
 //contactmoment opslaan
