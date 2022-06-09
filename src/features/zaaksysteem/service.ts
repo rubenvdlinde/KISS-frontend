@@ -30,9 +30,8 @@
 
 import type { Zaak } from "./types";
 
-export function useZaaksysteemService(): {
-  find: (zaaknummer: number) => Promise<Zaak>;
-} {
+export function useZaaksysteemService(){
+  
   //todo
   window.zaaksysteemBaseUri = "/api/zaaksysteem/";
 

@@ -41,6 +41,7 @@ import type { Zaak } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import { UtrechtButton } from "@utrecht/web-component-library-vue";
 
 const service = useZaaksysteemService();
 const zaaknummer = ref();
@@ -81,19 +82,28 @@ const zoek = () => {
   grid-gap: 2rem;
 }
 
-fieldset {
-  display: grid;
-  align-items: center;
-  grid-template-rows: 1fr 1fr;
+// fieldset {
+//   display: grid;
+//   align-items: center;
+//   grid-template-rows: 1fr 1fr;
 
-}
+// }
+
+// label {
+//   grid-column: 1 / 2;
+// }
 
 label {
-  grid-column: 1 / 2;
+  display: inline-block;
+  margin-top: var(--spacing-default);
+}
+
+input {
+  margin-top: var(--spacing-small);
 }
 
 menu {
-  margin-top: 2rem;
+  margin-top: var(--spacing-large);
   display: flex;
   gap: 1rem;
   justify-content: flex-end;

@@ -1,54 +1,54 @@
 <template>
   <section class="grid">
-    <section >
-    <form @submit.prevent="zoekOpNaam">
-      <label for="achternaam" class="utrecht-form-label">Achternaam</label>
-      <input
-        type="text"
-        id="achternaam"
-        v-model="achternaam"
-        class="utrecht-textbox utrecht-textbox--html-input"
-        v-on:keydown.enter.prevent="zoekOpNaam"
-      />
-      <label for="geboortedatum" class="utrecht-form-label"
-        >Geboortedatum</label
-      >
-      <input
-        type="text"
-        id="geboortedatum"
-        v-model="geboortedatum"
-        class="utrecht-textbox utrecht-textbox--html-input"
-        v-on:keydown.enter.prevent="zoekOpNaam"
-      />
+    <section>
+      <form @submit.prevent="zoekOpNaam">
+        <label for="achternaam" class="utrecht-form-label">Achternaam</label>
+        <input
+          type="text"
+          id="achternaam"
+          v-model="achternaam"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          v-on:keydown.enter.prevent="zoekOpNaam"
+        />
+        <label for="geboortedatum" class="utrecht-form-label"
+          >Geboortedatum</label
+        >
+        <input
+          type="text"
+          id="geboortedatum"
+          v-model="geboortedatum"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          v-on:keydown.enter.prevent="zoekOpNaam"
+        />
 
-      <menu>
-        <utrecht-button modelValue type="submit">Zoek</utrecht-button>
-      </menu>
-    </form>
+        <menu>
+          <utrecht-button modelValue type="submit">Zoek</utrecht-button>
+        </menu>
+      </form>
 
-    <form @submit.prevent="zoekOpAdres">
-      <label for="postcode" class="utrecht-form-label">Postcode</label>
-      <input
-        type="text"
-        id="postcode"
-        v-model="postcode"
-        class="utrecht-textbox utrecht-textbox--html-input"
-        v-on:keydown.enter.prevent="zoekOpAdres"
-      />
-      <label for="huisnummer" class="utrecht-form-label">Huisnummer</label>
-      <input
-        type="text"
-        id="huisnummer"
-        v-model="huisnummer"
-        class="utrecht-textbox utrecht-textbox--html-input"
-        v-on:keydown.enter.prevent="zoekOpAdres"
-      />
+      <form @submit.prevent="zoekOpAdres">
+        <label for="postcode" class="utrecht-form-label">Postcode</label>
+        <input
+          type="text"
+          id="postcode"
+          v-model="postcode"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          v-on:keydown.enter.prevent="zoekOpAdres"
+        />
+        <label for="huisnummer" class="utrecht-form-label">Huisnummer</label>
+        <input
+          type="text"
+          id="huisnummer"
+          v-model="huisnummer"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          v-on:keydown.enter.prevent="zoekOpAdres"
+        />
 
-      <menu>
-        <utrecht-button modelValue type="submit">Zoek</utrecht-button>
-      </menu>
-    </form>
-</section>
+        <menu>
+          <utrecht-button modelValue type="submit">Zoek</utrecht-button>
+        </menu>
+      </form>
+    </section>
     <section>
       <application-message
         v-if="error"
@@ -74,6 +74,7 @@ import type { Persoon } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import { UtrechtButton } from "@utrecht/web-component-library-vue";
 
 const service = useBrpService();
 const achternaam = ref();
@@ -137,18 +138,21 @@ const zoekOpAdres = () => {
   grid-gap: 2rem;
 }
 
-fieldset {
-  display: grid;
-  align-items: center;
-  grid-template-rows: 1fr 1fr;
+label {
+  display: inline-block;
+  margin-top: var(--spacing-default);
 }
 
-label {
-  grid-column: 1 / 2;
+input {
+  margin-top: var(--spacing-small);
+}
+
+form:last-child {
+   margin-top: var(--spacing-large);
 }
 
 menu {
-  margin-top: 2rem;
+  margin-top: var(--spacing-large);
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
