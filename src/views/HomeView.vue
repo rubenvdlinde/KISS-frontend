@@ -13,7 +13,7 @@
     method="get"
     @submit="handleSubmit"
   >
-    <section>
+    <section class="search-bar">
       <label for="werkberichtTypeInput">
         Naar welk type bericht ben je op zoek?
         <select name="type" id="werkberichtTypeInput">
@@ -113,48 +113,6 @@ form {
   margin-block-end: 2rem;
 }
 
-form > section {
-  display: inline-flex;
-  align-items: stretch;
-  --border-style: 1px solid var(--color-primary);
-
-  input,
-  select,
-  button {
-    border: none;
-    border-block: var(--border-style);
-
-    &:focus {
-      outline-color: var(--color-primary);
-    }
-  }
-
-  > :first-child {
-    input,
-    select {
-      border-radius: 1.5rem 0 0 1.5rem;
-      border-inline-start: var(--border-style);
-    }
-  }
-
-  > :last-child {
-    border-radius: 0 1.5rem 1.5rem 0;
-    border-inline-end: var(--border-style);
-  }
-}
-
-label[for="werkberichtTypeInput"],
-label[for="searchInput"] {
-  font-size: 0;
-  display: flex;
-  align-items: stretch;
-}
-
-input,
-select {
-  padding: 0.5rem;
-}
-
 #werkberichtTypeInput {
   background-color: var(--color-grey);
   border-inline-end: var(--border-style);
@@ -163,24 +121,6 @@ select {
 #searchInput {
   min-width: 40ch;
   max-width: 100%;
-  padding-left: 1rem;
-
-  &::placeholder {
-    color: black;
-  }
-}
-
-button {
-  --utrecht-icon-size: 1rem;
-
-  border: none;
-  background: white;
-  font-size: 0;
-  padding-right: var(--spacing-default);
-}
-
-utrecht-icon-loupe {
-  pointer-events: none;
 }
 
 .admin-link {

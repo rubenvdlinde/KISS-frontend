@@ -118,6 +118,72 @@ a[aria-current="page"] {
   }
 }
 
+.search-bar {
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+  --border-style: 1px solid var(--color-primary);
+
+  input,
+  select,
+  button {
+    border: none;
+    border-block: var(--border-style);
+
+    &:focus {
+      outline-color: var(--color-primary);
+    }
+  }
+
+  > :first-child {
+    input,
+    select {
+      border-radius: 1.5rem 0 0 1.5rem;
+      border-inline-start: var(--border-style);
+    }
+  }
+
+  > :last-child {
+    border-radius: 0 1.5rem 1.5rem 0;
+    border-inline-end: var(--border-style);
+  }
+
+  button {
+    --utrecht-icon-size: 1rem;
+    background: white;
+    font-size: 0;
+    padding-right: var(--spacing-default);
+  }
+
+  utrecht-icon-loupe {
+    pointer-events: none;
+  }
+
+  input,
+  select {
+    padding: 0.5rem;
+  }
+
+  label {
+    font-size: 0;
+    display: flex;
+    align-items: stretch;
+  }
+
+  input[type="search"] {
+    padding-inline-start: 1rem;
+    &::placeholder {
+      color: black;
+    }
+  }
+
+  input,
+  select,
+  label {
+    width: 100%;
+  }
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
