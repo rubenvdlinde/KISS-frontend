@@ -1,12 +1,12 @@
 <template>
   <application-message
-    v-if="saveFailed && !saving"
+    v-if="errorMessage != ''"
     messageType="error"
-    message="Er is een probleem opgetreden. Het contactmoment is niet opgeslagen."
+    :message="errorMessage"
   ></application-message>
 
   <form
-    v-if="contactmomentStore.contactmomentLoopt && !saving"
+    v-if="contactmomentStore.contactmomentLoopt && !saving && loaded"
     @submit.prevent="submitDialog.reveal"
   >
     <fieldset class="utrecht-form-fieldset">
@@ -40,9 +40,14 @@
         id="gespreksresultaat"
         v-model="contactmoment.resultaat"
         class="utrecht-select utrecht-select--html-select"
+        v-focus
       >
-        <option>zelfstandig</option>
-        <option>doorverbonden</option>
+        <option
+          v-for="gespreksresultaat in gespreksresulaten"
+          :key="gespreksresultaat.id"
+        >
+          {{ gespreksresultaat.omschrijving }}
+        </option>
       </select>
     </fieldset>
     <menu>
@@ -57,7 +62,7 @@
     </menu>
   </form>
 
-  <simple-spinner v-else-if="saving"></simple-spinner>
+  <simple-spinner v-else-if="saving || loading"></simple-spinner>
 
   <application-message
     v-else-if="saved"
@@ -114,7 +119,7 @@ import { ref, reactive, onMounted } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
-import type { Contactmoment } from "./types";
+import type { Contactmoment, Gespreksresultaat } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import { useConfirmDialog } from "@vueuse/core";
@@ -129,7 +134,8 @@ const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
 const saved = ref(false);
 const saving = ref(false);
-const saveFailed = ref(false);
+const loaded = ref(false);
+const loading = ref(true);
 const cancelDialogRevealed = ref(false);
 const submitDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
@@ -151,6 +157,9 @@ const contactmoment: Contactmoment = reactive({
       : "",
   registratiedatum: "",
 });
+const gespreksresulaten = ref<Gespreksresultaat[]>([]);
+const errorMessage = ref("");
+const gespreksresultaatInput = ref(null);
 
 cancelDialog.onConfirm(() => annuleren());
 
@@ -163,16 +172,18 @@ onMounted(() => {
 
   service
     .getGespreksResultaten()
-    .then((x) => {
-      console.log(x);
+    .then((x: Gespreksresultaat[]) => {
+      gespreksresulaten.value = x;
+      loaded.value = true;
+      //   gespreksresultaatInput.value.focus();
     })
     .catch(() => {
-      // saveFailed.value = true;
+      errorMessage.value =
+        "Er is een fout opgetreden bij het laden van de gespreksresultaten";
     })
     .finally(() => {
-      //  saving.value = false;
+      loading.value = false;
     });
- 
 });
 
 //contactmoment opslaan
@@ -180,9 +191,9 @@ onMounted(() => {
 //contactmoment stoppen
 //confirmation tonen
 const submit = () => {
-  saveFailed.value = false;
   saving.value = true;
   saved.value = false;
+  errorMessage.value = "";
 
   contactmoment.registratiedatum = getFormattedUtcDate();
 
@@ -195,7 +206,8 @@ const submit = () => {
       contactmomentStore.stop();
     })
     .catch(() => {
-      saveFailed.value = true;
+      errorMessage.value =
+        "Er is een fout opgetreden bij opslaan van het contactmoment";
     })
     .finally(() => {
       saving.value = false;

@@ -19,3 +19,8 @@ export interface Contactmoment {
   resultaat: string;
   medewerkerIdentificatie: MedewerkerIdentificatie | null;
 }
+
+export interface Gespreksresultaat {
+  id: string;
+  omschrijving: string;
+}

@@ -1,8 +1,8 @@
-import type { Contactmoment } from "./types";
+import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
-//   save: (data: Contactmoment) => Promise<void>;
-// } {
+  //   save: (data: Contactmoment) => Promise<void>;
+  // } {
   // fetch("http://localhost/api/contactmomenten")
   //   .then((r) => {
   //     if (!r.ok) console.log(r);
@@ -16,13 +16,12 @@ export function useContactmomentService() {
     console.error("contactmomentenBaseUri missing");
   }
 
-  if(!window.gespreksResultatenBaseUri){
+  if (!window.gespreksResultatenBaseUri) {
     console.error("gespreksResultatenBaseUri missing");
   }
 
   const contactmomentenBaseUri = window.contactmomentenBaseUri;
   const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
-
 
   const save = (data: Contactmoment) => {
     return fetch(contactmomentenBaseUri, {
@@ -40,11 +39,19 @@ export function useContactmomentService() {
   };
 
   const getGespreksResultaten = () => {
-    return fetch(gespreksResultatenBaseUri).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
-    });
+    return fetch(gespreksResultatenBaseUri)
+      .then((r) => {
+        if (!r.ok) {
+          throw new Error();
+        }
+        return r.json();
+      })
+      .then((json) => {
+        const results = json?.results;
+        if (!Array.isArray(results))
+          throw new Error("unexpected json result: " + JSON.stringify(json));
+        return results as Array<Gespreksresultaat>;
+      });
   };
 
   return {
