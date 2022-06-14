@@ -9,6 +9,7 @@ declare global {
     openPubBaseUri: string;
     contactmomentenBaseUri: string;
     organisatieIds: string[];
+    pubBeheerUrl: string;
     gespreksResultatenBaseUri: string;
   }
 }
