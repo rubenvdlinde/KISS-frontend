@@ -12,7 +12,7 @@
         {{ berichten.data.page.length === 1 ? "resultaat" : "resultaten" }}
         gevonden</paragraph
       >
-      <ul v-if="berichten.data.page.length">
+      <ul v-if="berichten.data.page.length" ref="listEl">
         <li
           v-for="(werkInstructie, i) in berichten.data.page"
           :key="`werkinstructies_${i}`"
@@ -67,9 +67,14 @@ const props = defineProps({
 });
 
 const currentPage = ref(1);
+const listEl = ref<Element>();
 
 const onNavigate = (pageNum: number) => {
   currentPage.value = pageNum;
+  const list = listEl.value;
+  if (list) {
+    list.scrollIntoView();
+  }
 };
 
 const parameters = computed(() => ({
