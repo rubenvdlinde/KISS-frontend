@@ -1,13 +1,14 @@
 <template>
-  <header
-    :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
-  ></header>
+  <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+    <global-search />
+  </header>
   <main><router-view /></main>
 </template>
 
 <script setup lang="ts">
 
 import { RouterView } from "vue-router";
+import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const contactmoment = useContactmomentStore();
@@ -45,14 +46,6 @@ body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
-#app > header {
-  min-height: var(--header-height);
-  background-color: var(--color-primary);
-  border-style: solid;
-  border-top-width: 6px;
-  border-top-color: var(--color-primary);
-}
-
 #app > header.contactmomentLoopt {
   border-top-color: var(--color-accent);
 }
@@ -71,6 +64,14 @@ main {
   > * {
     flex-basis: 100%;
   }
+}
+
+utrecht-icon-loupe {
+  pointer-events: none;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 main > section {
@@ -105,6 +106,93 @@ a[aria-current="page"] {
   &:hover {
     cursor: none;
   }
+}
+
+.search-bar {
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+  --border-style: 1px solid var(--color-primary);
+
+  input,
+  select,
+  button {
+    border: none;
+    border-block: var(--border-style);
+
+    &:focus {
+      outline-color: var(--color-primary);
+    }
+  }
+
+  > :first-child {
+    input,
+    select {
+      border-radius: 1.5rem 0 0 1.5rem;
+      border-inline-start: var(--border-style);
+    }
+  }
+
+  > :last-child {
+    border-radius: 0 1.5rem 1.5rem 0;
+    border-inline-end: var(--border-style);
+  }
+
+  button {
+    --utrecht-icon-size: 1rem;
+    background: white;
+    font-size: 0;
+    padding-right: var(--spacing-default);
+  }
+
+  utrecht-icon-loupe {
+    pointer-events: none;
+  }
+
+  input,
+  select {
+    padding: 0.5rem;
+  }
+
+  label {
+    font-size: 0;
+    display: flex;
+    align-items: stretch;
+  }
+
+  input[type="search"] {
+    padding-inline-start: 1rem;
+    &::placeholder {
+      color: black;
+    }
+  }
+
+  input,
+  select,
+  label {
+    width: 100%;
+  }
+}
+
+.icon-before,
+.icon-after {
+  align-items: center;
+}
+
+.icon-after::after,
+.icon-before::before {
+  display: block;
+  content: "";
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  width: 1rem;
+  height: 1rem;
+}
+
+.icon-before.chevron-down::before,
+.icon-after.chevron-down::after {
+  height: 0.5rem;
+  mask-image: url("@/assets/icons/chevron-down.svg");
 }
 
 .kiss-theme {
@@ -152,5 +240,13 @@ a[aria-current="page"] {
 utrecht-button {
   --utrecht-button-border-radius: 100px;
   --utrecht-button-min-inline-size: 150px;
+}
+
+// categories
+[class^="category-"] {
+  border-radius: 1.5rem;
+  padding: 0.5em;
+  background-color: hsl(184, 54%, 70%);
+  display: inline-block;
 }
 </style>
