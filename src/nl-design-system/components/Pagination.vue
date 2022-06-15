@@ -89,24 +89,28 @@ const props = defineProps({
 });
 const emit = defineEmits(["navigate"]);
 
-const createLink = (n: number) => ({
-  onClick(e: Event) {
-    e.preventDefault();
-    if (this.isActive) {
-      emit("navigate", n);
-    }
-  },
-  href: `?${props.queryParamName}=${n}`,
-  ariaLabel: "Pagina " + n,
-  label: n,
-  isCurrent: n === props.pagination.pageNumber,
-  isActive:
-    n === 1 ||
-    n === props.pagination.totalPages ||
-    n < props.pagination.pageNumber - 1 ||
-    n > props.pagination.pageNumber + 1,
-  rel: "",
-});
+const createLink = (n: number) => {
+  const link = {
+    onClick(e: Event) {
+      e.preventDefault();
+      if (link.isActive) {
+        emit("navigate", n);
+      }
+    },
+    href: `?${props.queryParamName}=${n}`,
+    ariaLabel: "Pagina " + n,
+    label: n,
+    isCurrent: n === props.pagination.pageNumber,
+    isActive:
+      n === 1 ||
+      n === props.pagination.totalPages ||
+      n < props.pagination.pageNumber - 1 ||
+      n > props.pagination.pageNumber + 1,
+    rel: undefined,
+  };
+
+  return link;
+};
 
 const previous = computed(() => ({
   ...createLink(props.pagination.pageNumber - 1),
@@ -131,7 +135,7 @@ const otherLinks = computed(() => {
   }
 
   const result = [];
-  if (props.pagination.pageNumber > 1) {
+  if (props.pagination.pageNumber > 2) {
     result.push(createLink(1));
   }
   if (props.pagination.pageNumber > 3) {
@@ -147,7 +151,7 @@ const otherLinks = computed(() => {
   if (props.pagination.pageNumber < props.pagination.totalPages - 2) {
     result.push(createLink(props.pagination.totalPages - 1));
   }
-  if (props.pagination.totalPages > 1) {
+  if (props.pagination.totalPages > props.pagination.pageNumber + 1) {
     result.push(createLink(props.pagination.totalPages));
   }
   return result;
