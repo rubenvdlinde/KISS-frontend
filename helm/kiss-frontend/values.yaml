@@ -7,6 +7,8 @@ replicaCount: 1
 config:
   openPubBaseUri:
   contactmomentenBaseUri:
+  gespreksResultatenBaseUri:
+  pubBeheerUrl:
   organizationIds: []
 
 image:
