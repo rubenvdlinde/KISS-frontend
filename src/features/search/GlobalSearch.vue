@@ -24,7 +24,7 @@
             v-for="{ id, title, source } in searchResults.data"
             :key="'nav_' + id"
           >
-            <a href="#" @click="currentId = id"
+            <a href="#" @click="currentId = id" class="icon-after chevron-down"
               ><span :class="`category-${source}`">{{ source }}</span
               ><span>{{ title }}</span></a
             >
@@ -54,7 +54,7 @@
     </section>
     <button
       type="button"
-      :class="{ isExpanded }"
+      :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
       @click="isExpanded = !isExpanded"
     >
       {{ buttonText }}
@@ -136,24 +136,14 @@ label {
   }
 }
 
-button[type="button"] {
+.expand-button {
   width: 100%;
-  height: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: fit-content;
+  padding-block: 0.25rem;
   border: none;
   white-space: nowrap;
-  &::after {
-    display: block;
-    content: "";
-    width: 1rem;
-    height: 0.5rem;
-    background-color: currentColor;
-    mask-image: url("@/assets/icons/chevron-down.svg");
-    mask-repeat: no-repeat;
-    display: block;
-  }
+  display: flex;
+  justify-content: center;
 
   &.isExpanded::after {
     transform: rotate(180deg);
@@ -169,19 +159,11 @@ nav ul {
     display: grid;
     grid-template-columns: 20ch 1fr 2ch;
     gap: 0.5rem;
-    align-items: center;
     justify-items: start;
     padding-block: 0.5rem;
     padding-inline-end: 1rem;
 
     &:after {
-      content: "";
-      display: block;
-      height: 0.5rem;
-      width: 1rem;
-      background-color: currentColor;
-      mask-image: url("@/assets/icons/chevron-down.svg");
-      mask-repeat: no-repeat;
       transform: rotate(-90deg);
     }
   }
