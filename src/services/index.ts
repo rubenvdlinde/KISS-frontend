@@ -50,6 +50,27 @@ export const ServiceResult = {
       error,
     });
   },
+
+  fromPromise<T = unknown>(promise: Promise<T>) {
+    const result = ServiceResult.loading<T>();
+
+    promise
+      .then((r) => {
+        Object.assign(result, {
+          state: "success",
+          data: r,
+        });
+      })
+      .catch((e) => {
+        Object.assign(result, {
+          state: "error",
+          error: e instanceof Error ? e : new Error(e),
+        });
+      });
+
+    return result;
+  },
+    
   fromFetcher<T = unknown>(
     url: string | (() => string),
     fetcher: (url: string) => Promise<T>,

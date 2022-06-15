@@ -6,21 +6,12 @@
 </template>
 
 <script setup lang="ts">
-//import { ref, watch } from "vue";
+
 import { RouterView } from "vue-router";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const contactmoment = useContactmomentStore();
-//const contactmomentClass = ref("");
 
-// watch(
-//   () => contactmoment.contactmomentLoopt,
-//   (contactmomentLooptValue) => {
-//     contactmomentClass.value = contactmomentLooptValue
-//       ? "contactmomentLoopt"
-//       : "";
-//   }
-// );
 </script>
 
 <style lang="scss">
