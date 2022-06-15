@@ -1,12 +1,22 @@
 <template>
   <application-message
-    v-if="saveFailed && !saving"
+    v-if="errorMessage != ''"
     messageType="error"
-    message="Er is een probleem opgetreden. Het contactmoment is niet opgeslagen."
+    :message="errorMessage"
+  ></application-message>
+
+  <application-message
+    v-if="gespresResultatenServiceResult.state === 'error'"
+    messageType="error"
+    :message="gespresResultatenServiceResult.error.message"
   ></application-message>
 
   <form
-    v-if="contactmomentStore.contactmomentLoopt && !saving"
+    v-if="
+      contactmomentStore.contactmomentLoopt &&
+      !saving &&
+      gespresResultatenServiceResult.state === 'success'
+    "
     @submit.prevent="submitDialog.reveal"
   >
     <fieldset class="utrecht-form-fieldset">
@@ -32,7 +42,32 @@
         <option>Instagram</option>
         <option>WhatsApp</option>
       </select>
+
+      <label for="gespreksresultaat" class="utrecht-form-label"
+        >gespreksresultaat</label
+      >
+      <select
+        id="gespreksresultaat"
+        v-model="contactmoment.resultaat"
+        class="utrecht-select utrecht-select--html-select"
+        v-focus
+      >
+        <option
+          v-for="gespreksresultaat in gespresResultatenServiceResult.data"
+          :key="gespreksresultaat.id"
+        >
+          {{ gespreksresultaat.omschrijving }}
+        </option>
+      </select>
     </fieldset>
+
+    <application-message
+      class="formValidationMessage"
+      v-if="validationMessage != ''"
+      messageType="error"
+      :message="validationMessage"
+    ></application-message>
+
     <menu>
       <utrecht-button
         modelValue
@@ -45,7 +80,9 @@
     </menu>
   </form>
 
-  <simple-spinner v-else-if="saving"></simple-spinner>
+  <simple-spinner
+    v-else-if="saving || gespresResultatenServiceResult.state === 'loading'"
+  ></simple-spinner>
 
   <application-message
     v-else-if="saved"
@@ -117,7 +154,6 @@ const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
 const saved = ref(false);
 const saving = ref(false);
-const saveFailed = ref(false);
 const cancelDialogRevealed = ref(false);
 const submitDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
@@ -131,6 +167,7 @@ const contactmoment: Contactmoment = reactive({
   initiatiefnemer: "klant", //enum "gemeente" of "klant"
   medewerker: "",
   medewerkerIdentificatie: null,
+  resultaat: "",
   kanaal: "",
   bronorganisatie:
     Array.isArray(window.organisatieIds) && window.organisatieIds[0]
@@ -138,6 +175,9 @@ const contactmoment: Contactmoment = reactive({
       : "",
   registratiedatum: "",
 });
+const errorMessage = ref("");
+const gespresResultatenServiceResult = service.getGespreksResultaten();
+const validationMessage = ref("");
 
 cancelDialog.onConfirm(() => annuleren());
 
@@ -145,18 +185,25 @@ submitDialog.onConfirm(() => submit());
 
 // voorkeurs kanaal voorselecteren
 // organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste
-onMounted(() => {
-  contactmoment.kanaal = user.preferences.kanaal;
-});
+onMounted(() => (contactmoment.kanaal = user.preferences.kanaal));
 
 //contactmoment opslaan
 //user preferences bijwerken
 //contactmoment stoppen
 //confirmation tonen
+//validate
 const submit = () => {
-  saveFailed.value = false;
+  //validate
+
+  if (!contactmoment.resultaat) {
+    validationMessage.value = "selecteer een gespreksresultaat";
+    return;
+  }
+
+  validationMessage.value = "";
   saving.value = true;
   saved.value = false;
+  errorMessage.value = "";
 
   contactmoment.registratiedatum = getFormattedUtcDate();
 
@@ -169,7 +216,8 @@ const submit = () => {
       contactmomentStore.stop();
     })
     .catch(() => {
-      saveFailed.value = true;
+      errorMessage.value =
+        "Er is een fout opgetreden bij opslaan van het contactmoment";
     })
     .finally(() => {
       saving.value = false;
@@ -210,6 +258,7 @@ const getFormattedUtcDate = () => {
 fieldset {
   display: grid;
   align-items: center;
+  grid-gap: 2rem;
   grid-template-columns: 1fr 2fr;
 }
 
@@ -222,5 +271,9 @@ menu {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+.formValidationMessage {
+  margin-top: 2rem;
 }
 </style>

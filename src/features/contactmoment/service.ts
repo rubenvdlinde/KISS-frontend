@@ -1,8 +1,9 @@
-import type { Contactmoment } from "./types";
+import { ServiceResult } from "@/services";
+import type { Contactmoment, Gespreksresultaat } from "./types";
 
-export function useContactmomentService(): {
-  save: (data: Contactmoment) => Promise<void>;
-} {
+export function useContactmomentService() {
+  //   save: (data: Contactmoment) => Promise<void>;
+  // } {
   // fetch("http://localhost/api/contactmomenten")
   //   .then((r) => {
   //     if (!r.ok) console.log(r);
@@ -16,10 +17,15 @@ export function useContactmomentService(): {
     console.error("contactmomentenBaseUri missing");
   }
 
-  const url = window.contactmomentenBaseUri;
+  if (!window.gespreksResultatenBaseUri) {
+    console.error("gespreksResultatenBaseUri missing");
+  }
+
+  const contactmomentenBaseUri = window.contactmomentenBaseUri;
+  const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
 
   const save = (data: Contactmoment) => {
-    return fetch(url, {
+    return fetch(contactmomentenBaseUri, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -32,7 +38,29 @@ export function useContactmomentService(): {
       }
     });
   };
+
+  const getGespreksResultaten = () => {
+    const fetchBerichten = fetch(gespreksResultatenBaseUri)
+      .then((r) => {
+        if (!r.ok) {
+          throw new Error(
+            "Er is een fout opgetreden bij het laden van de gespreksresultaten"
+          );
+        }
+        return r.json();
+      })
+      .then((json) => {
+        const results = json?.results;
+        if (!Array.isArray(results))
+          throw new Error("unexpected json result: " + JSON.stringify(json));
+        return results as Array<Gespreksresultaat>;
+      });
+
+    return ServiceResult.fromPromise(fetchBerichten);
+  };
+
   return {
     save,
+    getGespreksResultaten,
   };
 }
