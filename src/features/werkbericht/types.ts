@@ -2,12 +2,5 @@ export interface Werkbericht {
   title: string;
   date: Date;
   content: string;
+  type?: string;
 }
-
-export type TaxonomyFilter =
-  | {
-      audience: string;
-    }
-  | {
-      type: string;
-    };

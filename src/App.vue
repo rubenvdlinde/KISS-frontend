@@ -78,6 +78,7 @@ main {
   justify-content: space-between;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 
   > * {
     flex-basis: 100%;
@@ -110,6 +111,40 @@ main {
 
 
 
+main > section {
+  &:not(:only-of-type) {
+    max-width: var(--section-width);
+  }
+
+  > utrecht-heading:first-child {
+    padding-left: var(--text-margin);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-tertiary);
+  }
+}
+
+section > ul {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  gap: 1.625rem;
+}
+
+main > section > p {
+  margin-left: var(--text-margin);
+  margin-bottom: var(--spacing-default);
+  color: var(--color-primary);
+}
+
+a[aria-current="page"] {
+  color: inherit;
+  pointer-events: none;
+
+  &:hover {
+    cursor: none;
+  }
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -121,6 +156,8 @@ main {
   --utrecht-heading-color: var(--color-headings);
   --utrecht-paragraph-font-size: 1rem;
   --utrecht-heading-font-weight: 600;
+  --denhaag-pagination-color: var(--color-primary);
+  --denhaag-pagination-link-current-color: var(--color-headings);
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;
