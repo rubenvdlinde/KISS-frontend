@@ -18,7 +18,10 @@
   </form>
   <template v-if="currentSearch">
     <template v-if="searchResults.state === 'success'">
-      <section :class="['search-results', { isExpanded }]">
+      <section
+        ref="searchResultsRef"
+        :class="['search-results', { isExpanded }]"
+      >
         <nav v-show="!currentId">
           <ul>
             <li
@@ -84,6 +87,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 const searchInputName = "globalSearch";
 const currentSearch = ref("");
 const currentPage = ref(1);
+const searchResultsRef = ref<Element>();
 
 const searchParameters = computed(() => ({
   search: currentSearch.value,
@@ -94,6 +98,10 @@ const searchResults = useGlobalSearch(searchParameters);
 
 function handlePaginationNavigation(page: number) {
   currentPage.value = page;
+  const el = searchResultsRef.value;
+  if (el) {
+    el.scrollIntoView();
+  }
 }
 
 function handleSubmit(e: Event) {
