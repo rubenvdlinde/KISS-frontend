@@ -11,6 +11,7 @@
           v-on:keydown.enter.prevent="zoek"
         />
       </fieldset>
+      todo minimaal x aantal karaters....
       <menu>
         <utrecht-button modelValue type="submit">Zoek</utrecht-button>
       </menu>
@@ -23,11 +24,24 @@
         message="Er is een probleem opgetreden."
       ></application-message>
 
-      <div v-else-if="zaak">
-        {{ zaak }}
-      </div>
+      <table v-else-if="zaken.length > 0">
+        <thead>
+          <th>Zaaknummer</th>
+          <th>Zaaktype</th>
+          <th>Status</th>
+          <th>Datum ingediend</th>
+        </thead>
+        <tbody>
+          <tr v-for="zaak in zaken" :key="zaak.id">
+            <td>{{ zaak.identificatie }}</td>
+            <td>{{ zaak.zaaktype }}</td>
+            <td>{{ zaak.status }}</td>
+            <td>{{ zaak.registratiedatum }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <paragraph v-else-if="isDirty">Er is geen zaak gevonden.</paragraph>
+      <paragraph v-else-if="isDirty">Er zijn geen zaken gevonden.</paragraph>
 
       <simple-spinner v-else-if="busy"></simple-spinner>
     </section>
@@ -48,18 +62,18 @@ const zaaknummer = ref();
 const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
-const zaak = ref<Zaak | null>(null);
+const zaken = ref<Zaak[]>([]);
 
 const zoek = () => {
   busy.value = true;
   error.value = false;
-  zaak.value = null;
+  zaken.value = [];
 
   service
     .find(zaaknummer.value)
     .then((data) => {
       console.log(data);
-      zaak.value = data;
+      zaken.value = data;
       isDirty.value = true;
     })
     .catch(() => {
@@ -77,21 +91,10 @@ const zoek = () => {
 .grid {
   display: grid;
   grid-template-columns: 1fr 4fr;
- 
+
   padding: var(--spacing-large);
   grid-gap: 2rem;
 }
-
-// fieldset {
-//   display: grid;
-//   align-items: center;
-//   grid-template-rows: 1fr 1fr;
-
-// }
-
-// label {
-//   grid-column: 1 / 2;
-// }
 
 label {
   display: inline-block;
@@ -107,5 +110,17 @@ menu {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+th,
+td {
+  padding-top: var(--spacing-small);
+  padding-bottom: var(--spacing-small);
+  padding-left: var(--spacing-small);
+  padding-right: var(--spacing-small);
+}
+
+th {
+  text-align: left;
 }
 </style>

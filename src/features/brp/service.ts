@@ -1,9 +1,6 @@
 import type { Persoon } from "./types";
 
 export function useBrpService() {
-  //todo
-  window.brpBaseUri = "/api/brp/";
-
   if (!window.brpBaseUri) {
     console.error("brpBaseUri missing");
   }
@@ -11,7 +8,11 @@ export function useBrpService() {
   const findByNameAndBirthDay = (achternaam: string, geboortedatum: string) => {
     const url = `${window.brpBaseUri}?achternaam=${achternaam}&geboortedatum=${geboortedatum}`;
 
-    return fetch(url)
+    return fetch(url, {
+      headers: {
+        Accept: "application/json+ld",
+      },
+    })
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -41,9 +42,12 @@ export function useBrpService() {
       })
 
       .then((json) => {
-        return json.map((x: Persoon) => {
-          return { achternaam: x.achternaam } as Persoon;
-        });
+        if (!Array.isArray(json.results)) {
+          throw new Error(
+            "Invalide json, verwacht een lijst: " + JSON.stringify(json.results)
+          );
+        }
+        return json.results.map((x: Persoon) => x as Persoon);
       });
   };
 

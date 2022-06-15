@@ -2,8 +2,8 @@
   <utrecht-heading :level="1">Contactmoment</utrecht-heading>
 
   <tabs :options="{ useUrlFragment: false }" @changed="tabChanged">
-    <tab name="First tab"><zaak-zoeker></zaak-zoeker></tab>
-    <tab name="Second tab"><persoon-zoeker></persoon-zoeker></tab>
+    <tab name="Zaken"><zaak-zoeker></zaak-zoeker></tab>
+    <tab name="Personen"><persoon-zoeker></persoon-zoeker></tab>
   </tabs>
 
   <contactmoment-starter />

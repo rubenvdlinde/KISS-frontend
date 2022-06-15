@@ -28,19 +28,20 @@
 //   return ServiceResult.fromFetcher(url, fetchZaken);
 // }
 
+import { mapActions } from "pinia";
 import type { Zaak } from "./types";
 
-export function useZaaksysteemService(){
-  
+export function useZaaksysteemService() {
   //todo
-  window.zaaksysteemBaseUri = "/api/zaaksysteem/";
+  //window.zaaksysteemBaseUri = "/api/zaaksysteem/";
 
   if (!window.zaaksysteemBaseUri) {
     console.error("zaaksysteemBaseUri missing");
   }
 
   const find = (zaaknummer: number) => {
-    const url = `${window.zaaksysteemBaseUri}?zaaknummer=${zaaknummer}`;
+    const url = `${window.zaaksysteemBaseUri}?extend[]=zaaktype`;
+    //const url = `${window.zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=zaaktype`;
 
     return fetch(url)
       .then((r) => {
@@ -51,7 +52,12 @@ export function useZaaksysteemService(){
       })
 
       .then((json) => {
-        return { title: (json as Zaak).title } as Zaak;
+        if (!Array.isArray(json.results)) {
+          throw new Error(
+            "Invalide json, verwacht een lijst: " + JSON.stringify(json.results)
+          );
+        }
+        return json.results.map((x: Zaak) => x as Zaak);
       });
   };
   return {
