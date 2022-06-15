@@ -1,10 +1,4 @@
-import {
-  onUnmounted,
-  reactive,
-  readonly,
-  watch,
-  type UnwrapNestedRefs,
-} from "vue";
+import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
 const logError = import.meta.env.DEV
@@ -83,22 +77,36 @@ export const ServiceResult = {
 
     return result;
   },
-    
+
   fromFetcher<T = unknown>(
     url: string | (() => string),
     fetcher: (url: string) => Promise<T>,
-    initialData?: T
+    {
+      initialData,
+      getUniqueId,
+    }: {
+      initialData?: T;
+      getUniqueId?: () => string;
+    } = {}
   ): ServiceData<T> {
     const result =
       initialData !== undefined
         ? ServiceResult.success<T>(initialData)
         : ServiceResult.loading<T>();
 
-    const { data, error } = useSWRV<T, any>(url, fetcher, {
-      refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
-    });
+    const urlFunc = typeof url === "string" ? () => url : url;
+    const getRequestUniqueId = () => (getUniqueId ? getUniqueId() : urlFunc());
+    const fetchWithUrl = () => fetcher(urlFunc());
 
-    const dispose = watch(
+    const { data, error, isValidating } = useSWRV<T, any>(
+      getRequestUniqueId,
+      fetchWithUrl,
+      {
+        refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
+      }
+    );
+
+    const dispose1 = watch(
       [data, error],
       ([d, e]) => {
         if (e) {
@@ -117,7 +125,20 @@ export const ServiceResult = {
       { immediate: true }
     );
 
-    onUnmounted(dispose);
+    // als het uniqueId wijzigt, wordt er nieuwe data opgehaald.
+    // dat betekent dat we weer even in de loading state moeten raken.
+    const dispose2 = watch([getRequestUniqueId], (uid) => {
+      if (uid && isValidating.value) {
+        Object.assign(result, {
+          state: "loading",
+        });
+      }
+    });
+
+    onUnmounted(() => {
+      dispose1();
+      dispose2();
+    });
 
     return result;
   },

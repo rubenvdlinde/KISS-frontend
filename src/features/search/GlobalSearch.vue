@@ -16,55 +16,58 @@
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </section>
   </form>
-  <template v-if="currentSearch && searchResults.state === 'success'">
-    <section :class="['search-results', { isExpanded }]">
-      <nav v-show="!currentId">
+  <template v-if="currentSearch">
+    <template v-if="searchResults.state === 'success'">
+      <section :class="['search-results', { isExpanded }]">
+        <nav v-show="!currentId">
+          <ul>
+            <li
+              v-for="{ id, title, source } in searchResults.data.page"
+              :key="'nav_' + id"
+            >
+              <a href="#" @click="currentId = id"
+                ><span :class="`category-${source}`">{{ source }}</span
+                ><span>{{ title }}</span></a
+              >
+            </li>
+          </ul>
+        </nav>
+        <pagination
+          class="pagination"
+          :pagination="searchResults.data"
+          @navigate="handlePaginationNavigation"
+          v-show="!currentId"
+        />
         <ul>
           <li
-            v-for="{ id, title, source } in searchResults.data.page"
-            :key="'nav_' + id"
+            v-for="{ id, title, source, content } in searchResults.data.page"
+            :key="'searchResult_' + id"
+            v-show="id === currentId"
           >
-            <a href="#" @click="currentId = id"
-              ><span :class="`category-${source}`">{{ source }}</span
-              ><span>{{ title }}</span></a
+            <a class="back-to-results" href="#" @click="currentId = ''"
+              >Alle zoekresultaten</a
             >
+            <article>
+              <header>
+                <utrecht-heading model-value :level="2">{{
+                  title
+                }}</utrecht-heading>
+                <small :class="`category-${source}`">{{ source }}</small>
+              </header>
+              <p v-if="content">{{ content }}</p>
+            </article>
           </li>
         </ul>
-      </nav>
-      <pagination
-        class="pagination"
-        :pagination="searchResults.data"
-        @navigate="handlePaginationNavigation"
-        v-show="!currentId"
-      />
-      <ul>
-        <li
-          v-for="{ id, title, source, content } in searchResults.data.page"
-          :key="'searchResult_' + id"
-          v-show="id === currentId"
-        >
-          <a class="back-to-results" href="#" @click="currentId = ''"
-            >Alle zoekresultaten</a
-          >
-          <article>
-            <header>
-              <utrecht-heading model-value :level="2">{{
-                title
-              }}</utrecht-heading>
-              <small :class="`category-${source}`">{{ source }}</small>
-            </header>
-            <p v-if="content">{{ content }}</p>
-          </article>
-        </li>
-      </ul>
-    </section>
-    <button
-      type="button"
-      :class="{ isExpanded }"
-      @click="isExpanded = !isExpanded"
-    >
-      {{ buttonText }}
-    </button>
+      </section>
+      <button
+        type="button"
+        :class="{ isExpanded }"
+        @click="isExpanded = !isExpanded"
+      >
+        {{ buttonText }}
+      </button>
+    </template>
+    <simple-spinner v-if="searchResults.state === 'loading'" />
   </template>
 </template>
 
@@ -75,9 +78,10 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
 import { useGlobalSearch } from "./service";
-import Pagination from "../../nl-design-system/components/Pagination.vue";
-const searchInputName = "globalSearch";
 
+import Pagination from "../../nl-design-system/components/Pagination.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+const searchInputName = "globalSearch";
 const currentSearch = ref("");
 const currentPage = ref(1);
 

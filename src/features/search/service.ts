@@ -30,15 +30,15 @@ function mapResult(obj: any): SearchResult {
 export function useGlobalSearch(
   parameters: Ref<{ search?: string; page?: number }>
 ) {
-  const getUrl = () => {
+  function getUrl() {
     const query = parameters.value.search;
     if (!query) return "";
 
     return `${window.globalSearchBaseUri}?query=${query}`;
-  };
-  async function search(url: string): Promise<Paginated<SearchResult>> {
-    if (!url) return Promise.resolve(emptyPage);
+  }
 
+  async function fetcher(url: string): Promise<Paginated<SearchResult>> {
+    if (!url) throw new Error();
     const r = await fetch(url, {
       method: "POST",
       headers: {
@@ -67,5 +67,13 @@ export function useGlobalSearch(
     };
   }
 
-  return ServiceResult.fromFetcher(getUrl, search);
+  function getUniqueId() {
+    const { search, page } = parameters.value;
+    if (!search) return "";
+    return `${search}|${page || 1}`;
+  }
+
+  return ServiceResult.fromFetcher(getUrl, fetcher, {
+    getUniqueId,
+  });
 }
