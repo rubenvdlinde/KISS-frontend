@@ -1,12 +1,15 @@
 <template>
   <article>
     <header>
-      <utrecht-heading :level="level">{{ bericht.title }}</utrecht-heading>
+      <utrecht-heading model-value :level="level">{{
+        bericht.title
+      }}</utrecht-heading>
+      <p v-if="showType && bericht.type">{{ bericht.type }}</p>
       <time :datetime="bericht.date.toISOString()" pubdate>{{
         localeString(bericht.date)
       }}</time>
     </header>
-    <utrecht-document class="correct-header">
+    <utrecht-document model-value class="correct-header">
       <div v-html="sanitized" />
     </utrecht-document>
   </article>
@@ -32,6 +35,10 @@ const props = defineProps({
     type: Number as PropType<HeadingLevel>,
     default: 3,
     validator: (val) => typeof val === "number" && val >= 1 && val <= 6,
+  },
+  showType: {
+    type: Boolean,
+    default: false,
   },
 });
 
