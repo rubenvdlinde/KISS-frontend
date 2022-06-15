@@ -1,4 +1,4 @@
-import { emptyPage, ServiceResult, type Paginated } from "@/services";
+import { ServiceResult, type Paginated } from "@/services";
 import type { Ref } from "vue";
 export type SearchResult = {
   id: string;
