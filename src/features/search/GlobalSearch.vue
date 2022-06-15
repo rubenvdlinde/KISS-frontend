@@ -2,15 +2,15 @@
   <form
     method="get"
     enctype="application/x-www-form-urlencoded"
-    @submit="handleSubmit"
+    @submit.prevent="applySearch"
   >
     <section class="search-bar">
       <label
         ><input
           type="search"
-          :name="searchInputName"
+          v-model="searchInput"
           placeholder="Zoeken"
-          @search="handleSearch"
+          @search.prevent="applySearch"
         />Zoekterm</label
       >
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
@@ -68,36 +68,20 @@ import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useGlobalSearch } from "./service";
-const searchInputName = "globalSearch";
 
+const searchInput = ref("");
 const currentSearch = ref("");
-const searchResults = useGlobalSearch(currentSearch);
-
-function handleSubmit(e: Event) {
-  const { currentTarget } = e;
-  if (!(currentTarget instanceof HTMLFormElement)) return;
-  e.preventDefault();
-  const formData = new FormData(currentTarget);
-  const obj = Object.fromEntries(formData);
-  currentSearch.value = obj?.[searchInputName]?.toString() || "";
-}
-
-function handleSearch(e: Event) {
-  const { currentTarget } = e;
-  if (!(currentTarget instanceof HTMLInputElement)) return;
-  e.preventDefault();
-  currentSearch.value = currentTarget.value;
-}
-
 const currentId = ref("");
-
-watch(currentSearch, () => {
-  currentId.value = "";
-});
-
+const searchResults = useGlobalSearch(currentSearch);
 const isExpanded = ref(true);
+
+function applySearch() {
+  currentSearch.value = searchInput.value;
+  currentId.value = "";
+}
+
 const buttonText = computed(() =>
   isExpanded.value ? "Inklappen" : "Uitklappen"
 );
