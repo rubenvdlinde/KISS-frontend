@@ -87,13 +87,13 @@ export const ServiceResult = {
         ? ServiceResult.success<T>(initialData)
         : ServiceResult.loading<T>();
 
-    const urlFunc = typeof url === "string" ? () => url : url;
-    const getRequestUniqueId = () => (getUniqueId ? getUniqueId() : urlFunc());
-    const fetchWithUrl = () => fetcher(urlFunc());
+    const getUrl = typeof url === "string" ? () => url : url;
+    const getRequestUniqueId = getUniqueId || getUrl;
+    const fetcherWithoutParameters = () => fetcher(getUrl());
 
     const { data, error, isValidating } = useSWRV<T, any>(
       getRequestUniqueId,
-      fetchWithUrl,
+      fetcherWithoutParameters,
       {
         refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
       }
