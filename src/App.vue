@@ -174,6 +174,27 @@ a[aria-current="page"] {
   }
 }
 
+.icon-before,
+.icon-after {
+  align-items: center;
+}
+
+.icon-after::after,
+.icon-before::before {
+  display: block;
+  content: "";
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  width: 1rem;
+  height: 1rem;
+}
+
+.icon-before.chevron-down::before,
+.icon-after.chevron-down::after {
+  height: 0.5rem;
+  mask-image: url("@/assets/icons/chevron-down.svg");
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);

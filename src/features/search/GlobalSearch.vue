@@ -2,15 +2,15 @@
   <form
     method="get"
     enctype="application/x-www-form-urlencoded"
-    @submit="handleSubmit"
+    @submit.prevent="applySearch"
   >
     <section class="search-bar">
       <label
         ><input
           type="search"
-          :name="searchInputName"
+          v-model="searchInput"
           placeholder="Zoeken"
-          @search="handleSearch"
+          @search.prevent="applySearch"
         />Zoekterm</label
       >
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
@@ -28,7 +28,10 @@
               v-for="{ id, title, source } in searchResults.data.page"
               :key="'nav_' + id"
             >
-              <a href="#" @click="currentId = id"
+              <a
+                href="#"
+                @click="currentId = id"
+                class="icon-after chevron-down"
                 ><span :class="`category-${source}`">{{ source }}</span
                 ><span>{{ title }}</span></a
               >
@@ -64,7 +67,7 @@
       </section>
       <button
         type="button"
-        :class="{ isExpanded }"
+        :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
         @click="isExpanded = !isExpanded"
       >
         {{ buttonText }}
@@ -79,13 +82,16 @@ import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useGlobalSearch } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-const searchInputName = "globalSearch";
+
+const searchInput = ref("");
 const currentSearch = ref("");
+const currentId = ref("");
+const isExpanded = ref(true);
 const currentPage = ref(1);
 const searchResultsRef = ref<Element>();
 
@@ -96,6 +102,11 @@ const searchParameters = computed(() => ({
 
 const searchResults = useGlobalSearch(searchParameters);
 
+function applySearch() {
+  currentSearch.value = searchInput.value;
+  currentId.value = "";
+}
+
 function handlePaginationNavigation(page: number) {
   currentPage.value = page;
   const el = searchResultsRef.value;
@@ -104,29 +115,6 @@ function handlePaginationNavigation(page: number) {
   }
 }
 
-function handleSubmit(e: Event) {
-  const { currentTarget } = e;
-  if (!(currentTarget instanceof HTMLFormElement)) return;
-  e.preventDefault();
-  const formData = new FormData(currentTarget);
-  const obj = Object.fromEntries(formData);
-  currentSearch.value = obj?.[searchInputName]?.toString() || "";
-}
-
-function handleSearch(e: Event) {
-  const { currentTarget } = e;
-  if (!(currentTarget instanceof HTMLInputElement)) return;
-  e.preventDefault();
-  currentSearch.value = currentTarget.value;
-}
-
-const currentId = ref("");
-
-watch([currentSearch, currentPage], () => {
-  currentId.value = "";
-});
-
-const isExpanded = ref(true);
 const buttonText = computed(() =>
   isExpanded.value ? "Inklappen" : "Uitklappen"
 );
@@ -183,24 +171,14 @@ label {
   }
 }
 
-button[type="button"] {
+.expand-button {
   width: 100%;
-  height: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: fit-content;
+  padding-block: 0.25rem;
   border: none;
   white-space: nowrap;
-  &::after {
-    display: block;
-    content: "";
-    width: 1rem;
-    height: 0.5rem;
-    background-color: currentColor;
-    mask-image: url("@/assets/icons/chevron-down.svg");
-    mask-repeat: no-repeat;
-    display: block;
-  }
+  display: flex;
+  justify-content: center;
 
   &.isExpanded::after {
     transform: rotate(180deg);
@@ -216,19 +194,11 @@ nav ul {
     display: grid;
     grid-template-columns: 20ch 1fr 2ch;
     gap: 0.5rem;
-    align-items: center;
     justify-items: start;
     padding-block: 0.5rem;
     padding-inline-end: 1rem;
 
     &:after {
-      content: "";
-      display: block;
-      height: 0.5rem;
-      width: 1rem;
-      background-color: currentColor;
-      mask-image: url("@/assets/icons/chevron-down.svg");
-      mask-repeat: no-repeat;
       transform: rotate(-90deg);
     }
   }
