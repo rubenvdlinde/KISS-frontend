@@ -21,6 +21,13 @@ type Result<T> =
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
 
+export interface Paginated<T> {
+  pageSize: number;
+  pageNumber: number;
+  totalPages: number;
+  page: T[];
+}
+
 export const ServiceResult = {
   success<T>(data: T): ServiceData<T> {
     return reactive({
@@ -63,10 +70,10 @@ export const ServiceResult = {
 
     return result;
   },
-
-  fromFetcher<T = unknown, S extends string = string>(
-    url: S,
-    fetcher: (url: S) => Promise<T>,
+    
+  fromFetcher<T = unknown>(
+    url: string | (() => string),
+    fetcher: (url: string) => Promise<T>,
     initialData?: T
   ): ServiceData<T> {
     const result =
@@ -78,20 +85,24 @@ export const ServiceResult = {
       refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
     });
 
-    const dispose = watch([data, error], ([d, e]) => {
-      if (e) {
-        logError(e);
-        const errorInstance = e instanceof Error ? e : new Error(e);
-        Object.assign(result, { state: "error", error: errorInstance });
-        return;
-      }
-      if (d) {
-        Object.assign(result, {
-          data: d,
-          state: "success",
-        });
-      }
-    });
+    const dispose = watch(
+      [data, error],
+      ([d, e]) => {
+        if (e) {
+          logError(e);
+          const errorInstance = e instanceof Error ? e : new Error(e);
+          Object.assign(result, { state: "error", error: errorInstance });
+          return;
+        }
+        if (d !== undefined) {
+          Object.assign(result, {
+            data: d,
+            state: "success",
+          });
+        }
+      },
+      { immediate: true }
+    );
 
     onUnmounted(dispose);
 
@@ -99,7 +110,7 @@ export const ServiceResult = {
   },
 };
 
-function parseValidInt(input: unknown): number | undefined {
+export function parseValidInt(input: unknown): number | undefined {
   if (typeof input === "number") {
     return isFinite(input) ? input : undefined;
   }
@@ -128,4 +139,22 @@ export function parseDutchDate(dateTimeStr: string): Date {
   dateInput[1] = dateInput[1] - 1;
 
   return new Date(...dateInput);
+}
+
+export interface LookupList<K, V> {
+  fromKeyToValue: (key: K) => V | undefined;
+  fromValueToKey: (value: V) => K | undefined;
+}
+
+export function createLookupList<K, V>(data: [K, V][]): LookupList<K, V> {
+  const fromKeyToValueMap = new Map(data);
+  const FromValueToKeyMap = new Map(data.map(([k, v]) => [v, k]));
+  return {
+    fromKeyToValue(key: K) {
+      return fromKeyToValueMap.get(key);
+    },
+    fromValueToKey(val: V) {
+      return FromValueToKeyMap.get(val);
+    },
+  };
 }
