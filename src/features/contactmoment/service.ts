@@ -1,3 +1,4 @@
+import { ServiceResult } from "@/services";
 import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
@@ -39,10 +40,12 @@ export function useContactmomentService() {
   };
 
   const getGespreksResultaten = () => {
-    return fetch(gespreksResultatenBaseUri)
+    const fetchBerichten = fetch(gespreksResultatenBaseUri)
       .then((r) => {
         if (!r.ok) {
-          throw new Error();
+          throw new Error(
+            "Er is een fout opgetreden bij het laden van de gespreksresultaten"
+          );
         }
         return r.json();
       })
@@ -52,6 +55,8 @@ export function useContactmomentService() {
           throw new Error("unexpected json result: " + JSON.stringify(json));
         return results as Array<Gespreksresultaat>;
       });
+
+    return ServiceResult.fromPromise(fetchBerichten);
   };
 
   return {
