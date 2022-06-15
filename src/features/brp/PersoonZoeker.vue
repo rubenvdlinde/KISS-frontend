@@ -8,7 +8,7 @@
           id="achternaam"
           v-model="achternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
-          v-on:keydown.enter.prevent="zoekOpNaam"
+          @keydown.enter.prevent="zoekOpNaam"
         />
         <label for="geboortedatum" class="utrecht-form-label"
           >Geboortedatum</label
@@ -87,6 +87,18 @@ const isDirty = ref(false);
 const personen = ref<Persoon | null>(null); //todo array
 
 const zoekOpNaam = () => {
+  //validate input
+
+  if (!achternaam.value || achternaam.value.length < 2) {
+    alert("achternaam minimaal 2 karakters");
+    return;
+  }
+
+  if (!geboortedatum.value) {
+    alert("geboortedatum is verplicht");
+    return;
+  }
+
   busy.value = true;
   error.value = false;
   personen.value = null;
@@ -107,12 +119,24 @@ const zoekOpNaam = () => {
 };
 
 const zoekOpAdres = () => {
+  //validate input
+
+  if (!postcode.value) {
+    alert("postcode is verplicht");
+    return;
+  }
+
+  if (!huisnummer.value) {
+    alert("huisnummer is verplicht");
+    return;
+  }
+
   busy.value = true;
   error.value = false;
   personen.value = null;
 
   service
-    .findByNameAndBirthDay(achternaam.value, geboortedatum.value)
+    .findByPostalcodeAndHouseNumber(postcode.value, huisnummer.value)
     .then((data) => {
       console.log(data);
       personen.value = data;
@@ -148,7 +172,7 @@ input {
 }
 
 form:last-child {
-   margin-top: var(--spacing-large);
+  margin-top: var(--spacing-large);
 }
 
 menu {

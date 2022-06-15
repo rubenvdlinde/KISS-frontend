@@ -11,7 +11,6 @@
           v-on:keydown.enter.prevent="zoek"
         />
       </fieldset>
-      todo minimaal x aantal karaters....
       <menu>
         <utrecht-button modelValue type="submit">Zoek</utrecht-button>
       </menu>
@@ -72,7 +71,6 @@ const zoek = () => {
   service
     .find(zaaknummer.value)
     .then((data) => {
-      console.log(data);
       zaken.value = data;
       isDirty.value = true;
     })

@@ -5,4 +5,5 @@ window.organisatieIds = ["999990639"];
 window.pubBeheerUrl = "https://openweb.kiss-dev.commonground.nu/";
 window.zaaksysteemBaseUri =
   "https://kissdevelopment-dimpact.commonground.nu/api/zaken";
-window.brpBaseUri = "http://localhost/api/ingeschrevenpersonen";
+window.brpBaseUri =
+  "https://kissdevelopment-dimpact.commonground.nu/api/ingeschrevenpersonen"; // "http://localhost/api/ingeschrevenpersonen";

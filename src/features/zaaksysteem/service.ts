@@ -40,7 +40,8 @@ export function useZaaksysteemService() {
   }
 
   const find = (zaaknummer: number) => {
-    const url = `${window.zaaksysteemBaseUri}?extend[]=zaaktype`;
+    //const url = `${window.zaaksysteemBaseUri}?extend[]=zaaktype`;
+    const url = `${window.zaaksysteemBaseUri}?rollen.rol__betrokkeneIdentificatie__natuurlijkPersoon__inpBsn=sdfsfsdf`;
     //const url = `${window.zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=zaaktype`;
 
     return fetch(url)

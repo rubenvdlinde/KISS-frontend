@@ -6,7 +6,7 @@ export function useBrpService() {
   }
 
   const findByNameAndBirthDay = (achternaam: string, geboortedatum: string) => {
-    const url = `${window.brpBaseUri}?achternaam=${achternaam}&geboortedatum=${geboortedatum}`;
+    const url = `${window.brpBaseUri}?naam__geslachtsnaam=${achternaam}&geboorte__datum=${geboortedatum}`;
 
     return fetch(url, {
       headers: {
@@ -31,7 +31,7 @@ export function useBrpService() {
     postcode: string,
     huisnummer: string
   ) => {
-    const url = `${window.brpBaseUri}?postcode=${postcode}&huisnummer=${huisnummer}`;
+    const url = `${window.brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}`;
 
     return fetch(url)
       .then((r) => {
