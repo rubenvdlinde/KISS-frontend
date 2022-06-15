@@ -114,7 +114,7 @@ form {
 }
 
 #werkberichtTypeInput {
-  background-color: var(--color-grey);
+  background-color: var(--color-secondary);
   border-inline-end: var(--border-style);
 }
 
