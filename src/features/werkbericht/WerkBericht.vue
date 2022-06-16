@@ -84,6 +84,10 @@ article {
     display: block;
   }
 
+  small {
+    font-size: 0.875rem;
+  }
+
   :deep(ul) {
     display: flex;
     flex-direction: column;

@@ -262,7 +262,8 @@ utrecht-button {
 [class^="category-"],
 [class*=" category-"] {
   border-radius: 1.5rem;
-  padding: 0.5em;
+  padding-inline: 0.75rem;
+  padding-block: 0.5em;
   background-color: var(--color-category-default);
   display: inline-block;
 }

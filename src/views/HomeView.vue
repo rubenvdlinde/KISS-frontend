@@ -211,7 +211,7 @@ label[for="searchInput"] {
 }
 
 .forms > :first-child {
-  width: min(100%, 30rem);
+  width: min(100%, var(--section-width));
 }
 
 .forms > :last-child {
@@ -226,9 +226,6 @@ form {
   display: flex;
   gap: 0.5rem;
   border: none;
-  border-radius: var(--radius-default);
-  padding-block: 0.25rem;
-  padding-inline: 0.5rem;
 
   > :first-child {
     position: absolute;
