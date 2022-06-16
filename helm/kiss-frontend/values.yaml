@@ -9,6 +9,7 @@ config:
   contactmomentenBaseUri:
   gespreksResultatenBaseUri:
   pubBeheerUrl:
+  globalSearchBaseUri:
   organizationIds: []
 
 image:

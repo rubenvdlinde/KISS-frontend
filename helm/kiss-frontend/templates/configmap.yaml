@@ -11,4 +11,5 @@ data:
       window.contactmomentenBaseUri = '{{ .Values.config.contactmomentenBaseUri }}';
       window.gespreksResultatenBaseUri = '{{ .Values.config.gespreksResultatenBaseUri }}';
       window.pubBeheerUrl = '{{ .Values.config.pubBeheerUrl }}';
+      window.globalSearchBaseUri = '{{ .Values.config.globalSearchBaseUri }}';
       window.organisatieIds = ["{{ join "\",\"" .Values.config.organizationIds }}"];
