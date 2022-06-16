@@ -46,7 +46,8 @@
         />
         <ul>
           <li
-            v-for="{ id, title, source, content } in searchResults.data.page"
+            v-for="{ id, title, source, content, url } in searchResults.data
+              .page"
             :key="'searchResult_' + id"
             v-show="id === currentId"
           >
@@ -55,9 +56,17 @@
             >
             <article>
               <header>
-                <utrecht-heading model-value :level="2">{{
-                  title
-                }}</utrecht-heading>
+                <utrecht-heading model-value :level="2"
+                  ><a
+                    v-if="url"
+                    :href="url.toString()"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ title }}
+                  </a>
+                  <template v-else>{{ title }}</template>
+                </utrecht-heading>
                 <small :class="`category-${source}`">{{ source }}</small>
               </header>
               <p v-if="content">{{ content }}</p>
@@ -151,6 +160,7 @@ label {
   );
   display: grid;
   padding-inline: var(--container-padding);
+  padding-block-end: 1rem;
   background-color: var(--color-secondary);
   overflow-y: hidden;
   position: relative;

@@ -1,11 +1,6 @@
-import { ServiceResult, type Paginated } from "@/services";
+import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
 import type { Ref } from "vue";
-export type SearchResult = {
-  id: string;
-  title: string;
-  source: string;
-  content: string;
-};
+import type { SearchResult } from "./types";
 
 function mapSource(engine: unknown) {
   if (typeof engine !== "string") return "onbekend";
@@ -19,11 +14,13 @@ function mapResult(obj: any): SearchResult {
   const id = obj?.id?.raw;
   const title = obj?.headings?.raw?.[0] ?? obj?.title?.raw;
   const content = obj?.body_content?.raw;
+  const url = parseValidUrl(obj?.url?.raw);
   return {
     source,
     id,
     title,
     content,
+    url,
   };
 }
 

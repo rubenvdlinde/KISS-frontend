@@ -156,6 +156,16 @@ export function parseValidInt(input: unknown): number | undefined {
   return isFinite(parsed) ? parsed : undefined;
 }
 
+export function parseValidUrl(input: unknown): URL | undefined {
+  if (input instanceof URL) return input;
+  if (typeof input !== "string") return undefined;
+  try {
+    return new URL(input);
+  } catch (error) {
+    return undefined;
+  }
+}
+
 export function parseDutchDate(dateTimeStr: string): Date {
   const [dateStr, timeStr] = dateTimeStr.split(" ");
   const [year, day, month] = dateStr.split("-");
