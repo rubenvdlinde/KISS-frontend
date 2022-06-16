@@ -90,7 +90,7 @@ main > section {
 
 section > ul {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
+  grid-template-columns: repeat(auto-fill, min(var(--section-width), 100%));
   justify-content: space-between;
   gap: 1.625rem;
 
