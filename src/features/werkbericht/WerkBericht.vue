@@ -1,13 +1,22 @@
 <template>
   <article>
     <header>
+      <small v-if="showType && bericht.types.length">
+        {{ bericht.types.join(", ") }}
+      </small>
       <utrecht-heading model-value :level="level">{{
         bericht.title
       }}</utrecht-heading>
-      <p v-if="showType && bericht.type">{{ bericht.type }}</p>
       <time :datetime="bericht.date.toISOString()" pubdate>{{
         localeString(bericht.date)
       }}</time>
+      <small
+        v-for="(skill, i) in bericht.skills"
+        :class="`category-${skill.split(' ').join('-')}`"
+        :key="i"
+      >
+        {{ skill }}
+      </small>
     </header>
     <utrecht-document model-value class="correct-header">
       <div v-html="sanitized" />
@@ -60,12 +69,18 @@ article {
   background-color: var(--color-secondary);
   padding: 0.75rem var(--text-margin);
   max-width: var(--section-width);
+  display: grid;
+  gap: 0.75rem;
+
+  header {
+    display: grid;
+    justify-items: flex-start;
+    gap: 0.5rem;
+  }
 
   time {
     color: var(--color-primary);
     display: block;
-    margin-top: var(--spacing-default);
-    margin-bottom: 1.25rem;
   }
 
   :deep(ul) {

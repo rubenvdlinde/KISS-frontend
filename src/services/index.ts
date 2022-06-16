@@ -25,6 +25,7 @@ export interface Paginated<T> {
   pageSize: number;
   pageNumber: number;
   totalPages: number;
+  totalRecords?: number;
   page: T[];
 }
 
@@ -191,11 +192,12 @@ export function parseDutchDate(dateTimeStr: string): Date {
 export interface LookupList<K, V> {
   fromKeyToValue: (key: K) => V | undefined;
   fromValueToKey: (value: V) => K | undefined;
+  entries: [K, V][];
 }
 
-export function createLookupList<K, V>(data: [K, V][]): LookupList<K, V> {
-  const fromKeyToValueMap = new Map(data);
-  const FromValueToKeyMap = new Map(data.map(([k, v]) => [v, k]));
+export function createLookupList<K, V>(entries: [K, V][]): LookupList<K, V> {
+  const fromKeyToValueMap = new Map(entries);
+  const FromValueToKeyMap = new Map(entries.map(([k, v]) => [v, k]));
   return {
     fromKeyToValue(key: K) {
       return fromKeyToValueMap.get(key);
@@ -203,5 +205,6 @@ export function createLookupList<K, V>(data: [K, V][]): LookupList<K, V> {
     fromValueToKey(val: V) {
       return FromValueToKeyMap.get(val);
     },
+    entries,
   };
 }

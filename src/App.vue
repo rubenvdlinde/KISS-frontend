@@ -168,8 +168,7 @@ a[aria-current="page"] {
   }
 
   input,
-  select,
-  label {
+  select {
     width: 100%;
   }
 }
@@ -193,6 +192,11 @@ a[aria-current="page"] {
 .icon-after.chevron-down::after {
   height: 0.5rem;
   mask-image: url("@/assets/icons/chevron-down.svg");
+}
+
+.icon-before.circle-xmark::before,
+.icon-after.circle-xmark::after {
+  mask-image: url("@/assets/icons/circle-xmark.svg");
 }
 
 .kiss-theme {
@@ -243,7 +247,8 @@ utrecht-button {
 }
 
 // categories
-[class^="category-"] {
+[class^="category-"],
+[class*=" category-"] {
   border-radius: 1.5rem;
   padding: 0.5em;
   background-color: var(--color-category-default);
