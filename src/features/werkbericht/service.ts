@@ -130,9 +130,7 @@ export function useWerkberichten(
       params.push(["page", page.toString()]);
     }
     if (skillIds?.length) {
-      skillIds.forEach((skillId) => {
-        params.push(["openpub_skill", skillId.toString()]);
-      });
+      params.push(["openpub_skill", skillIds.join(",")]);
     }
     if (!params.length) {
       return url;
