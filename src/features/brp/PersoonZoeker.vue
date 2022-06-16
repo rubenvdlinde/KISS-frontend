@@ -53,17 +53,29 @@
       </form>
     </section>
     <section>
+      <div @click="findzaken(205827123)">zaken ></div>
+
       <application-message
         v-if="error"
         messageType="error"
         message="Er is een probleem opgetreden."
       ></application-message>
 
-      <div v-else-if="personen">
-        {{ personen }}
-      </div>
+      <table v-else-if="personen.length > 0">
+        <thead>
+          <th>Zaaknummer</th>
+          <th>Zaaktype</th>
+          <th>Status</th>
+          <th>Datum ingediend</th>
+        </thead>
+        <tbody>
+          <tr v-for="persoon in personen" :key="persoon.id">
+            <td>{{ persoon.achternaam }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <paragraph v-else-if="isDirty">Er is geen zaak gevonden.</paragraph>
+      <paragraph v-else-if="isDirty">Er zijn geen personen gevonden.</paragraph>
 
       <simple-spinner v-else-if="busy"></simple-spinner>
     </section>
@@ -79,6 +91,8 @@ import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 
+const emit = defineEmits(["zakenZoeken"]);
+
 const service = useBrpService();
 const achternaam = ref();
 const geboortedatum = ref();
@@ -87,7 +101,7 @@ const huisnummer = ref();
 const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
-const personen = ref<Persoon | null>(null); //todo array
+const personen = ref<Persoon[]>([]);
 
 const zoekOpNaam = () => {
   //validate input
@@ -104,7 +118,7 @@ const zoekOpNaam = () => {
 
   busy.value = true;
   error.value = false;
-  personen.value = null;
+  personen.value = [];
 
   service
     .findByNameAndBirthDay(achternaam.value, geboortedatum.value)
@@ -140,7 +154,7 @@ const zoekOpAdres = () => {
 
   busy.value = true;
   error.value = false;
-  personen.value = null;
+  personen.value = [];
 
   service
     .findByPostalcodeAndHouseNumber(postcode.value, huisnummer.value)
@@ -155,6 +169,10 @@ const zoekOpAdres = () => {
     .finally(() => {
       busy.value = false;
     });
+};
+
+const findzaken = (bsn: number) => {
+  emit("zakenZoeken", bsn);
 };
 </script>
 
