@@ -60,7 +60,7 @@ summary {
   margin-inline-start: auto;
   font-weight: 500;
   padding-block: 0.5rem;
-  padding-inline: 1.5rem;
+  padding-inline: var(--padding-inline);
   border: var(--border-style);
   color: var(--color-primary);
   max-width: 100%;
@@ -86,6 +86,7 @@ details {
   --box-shadow: 0 0 0.2857142857em 0 rgb(0 0 0 / 20%);
   --border-width: 2px;
   --border-style: var(--color-primary) var(--border-width) solid;
+  --padding-inline: 1.5rem;
   position: relative;
   min-width: fit-content;
   width: 100%;
@@ -133,7 +134,8 @@ fieldset {
   gap: 0.5rem;
   background-color: var(--color-secondary);
   box-shadow: var(--box-shadow);
-  padding: 1rem;
+  padding-block: 1rem;
+  padding-inline: var(--padding-inline);
   border-end-end-radius: var(--radius-medium);
   border-end-start-radius: var(--radius-medium);
   clip-path: inset(0px -5px -5px -5px);
