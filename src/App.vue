@@ -6,13 +6,11 @@
 </template>
 
 <script setup lang="ts">
-
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const contactmoment = useContactmomentStore();
-
 </script>
 
 <style lang="scss">
@@ -30,6 +28,8 @@ const contactmoment = useContactmomentStore();
   --color-headings: #1b263b;
   --color-accent: #58af23;
   --color-error: #d44;
+  --color-category-default: hsl(184, 54%, 70%);
+  --color-category-website: hsl(285, 56%, 83%);
 
   // spacing
   --container-width: 69.375rem;
@@ -246,11 +246,11 @@ utrecht-button {
 [class^="category-"] {
   border-radius: 1.5rem;
   padding: 0.5em;
-  background-color: hsl(184, 54%, 70%);
+  background-color: var(--color-category-default);
   display: inline-block;
 }
 
 .category-Website {
-  background-color: hsl(285, 56%, 83%);
+  background-color: var(--color-category-website);
 }
 </style>
