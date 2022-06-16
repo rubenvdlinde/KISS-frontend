@@ -1,37 +1,76 @@
-import { ServiceResult } from "@/services";
+import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
 import type { Ref } from "vue";
-export type SearchResults = {
-  id: string;
-  title: string;
-  source: string;
-  content: string;
-};
-export function useGlobalSearch(searchString: Ref<string | undefined>) {
-  return ServiceResult.success<SearchResults[]>([
-    {
-      id: "1234",
-      title: "Hoe vraag ik toeslag aan?",
-      source: "Kennisbank",
-      content: `<p>Als u een toeslag wilt krijgen, dan kunt u die aanvragen met Mijn toeslagen. U hoeft een toeslag maar 1 keer
-      aan te vragen. Als u aan de voorwaarden blijft voldoen, krijgt 0 de toeslag het volgendejaar vanzelf.
-      Uw zorgtoeslag, huurtoeslag en kindgebonden budget kunt u nog aanvragen tot en met1 september in het
-      volgendejaar. U kunt bijvoorbeeld nog zorgtoeslag over 2021 aanvragen tot en met 1 september 2022.
-      Toeslag voor 2020 kunt u niet meer aanvragen.</p>
-      <h2>Hebt u uitstel voor uw aangifte inkomstenbelasting? Dan hebt u meer tijd
-      om toeslag aan te vragen</h2>
-      <p>Als u een toeslag wilt krijgen, dan kunt u die aanvragen met Mijn toeslagen. U hoeft een toeslag maar 1 keer
-      aan te vragen. Als u aan de voorwaarden blijft voldoen, krijgt 0 de toeslag het volgendejaar vanzelf.
-      Uw zorgtoeslag, huurtoeslag en kindgebonden budget kunt u nog aanvragen tot en met1 september in het
-      volgendejaar. U kunt bijvoorbeeld nog zorgtoeslag over 2021 aanvragen tot en met 1 september 2022.
-      Toeslag voor 2020 kunt u niet meer aanvragen.</p>
-      
-      `,
-    },
-    {
-      id: "5678",
-      title: "Op welke toeslagen heb ik recht",
-      source: "Kennisbank",
-      content: "",
-    },
-  ]);
+import type { SearchResult } from "./types";
+
+function mapSource(engine: unknown) {
+  if (typeof engine !== "string") return "onbekend";
+  if (engine.endsWith("-crawler")) return "Website";
+  if (engine === "pdc") return "Kennisbank";
+  return "onbekend";
+}
+
+function mapResult(obj: any): SearchResult {
+  const source = mapSource(obj?._meta?.engine);
+  const id = obj?.id?.raw;
+  const title = obj?.headings?.raw?.[0] ?? obj?.title?.raw;
+  const content = obj?.body_content?.raw;
+  const url = parseValidUrl(obj?.url?.raw);
+  return {
+    source,
+    id,
+    title,
+    content,
+    url,
+  };
+}
+
+export function useGlobalSearch(
+  parameters: Ref<{ search?: string; page?: number }>
+) {
+  function getUrl() {
+    const query = parameters.value.search;
+    if (!query) return "";
+
+    return `${window.globalSearchBaseUri}?query=${query}`;
+  }
+
+  async function fetcher(url: string): Promise<Paginated<SearchResult>> {
+    if (!url) throw new Error();
+    const r = await fetch(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        page: {
+          current: parameters.value.page || 1,
+        },
+      }),
+    });
+    if (!r.ok) throw new Error();
+    const json = await r.json();
+    const { results, meta } = json ?? {};
+    const {
+      current: pageNumber,
+      total_pages: totalPages,
+      size: pageSize,
+    } = meta?.page ?? {};
+    const page = Array.isArray(results) ? results.map(mapResult) : [];
+    return {
+      page,
+      pageSize,
+      pageNumber,
+      totalPages,
+    };
+  }
+
+  function getUniqueId() {
+    const { search, page } = parameters.value;
+    if (!search) return "";
+    return `${search}|${page || 1}`;
+  }
+
+  return ServiceResult.fromFetcher(getUrl, fetcher, {
+    getUniqueId,
+  });
 }

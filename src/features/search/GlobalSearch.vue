@@ -16,54 +16,77 @@
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </section>
   </form>
-  <template v-if="currentSearch && searchResults.state === 'success'">
-    <section :class="['search-results', { isExpanded }]">
-      <nav v-show="!currentId">
+  <template v-if="currentSearch">
+    <template v-if="searchResults.state === 'success'">
+      <section
+        ref="searchResultsRef"
+        :class="['search-results', { isExpanded }]"
+      >
+        <nav v-show="!currentId">
+          <ul>
+            <li
+              v-for="{ id, title, source } in searchResults.data.page"
+              :key="'nav_' + id"
+            >
+              <a
+                href="#"
+                @click="currentId = id"
+                class="icon-after chevron-down"
+                ><span :class="`category-${source}`">{{ source }}</span
+                ><span>{{ title }}</span></a
+              >
+            </li>
+          </ul>
+        </nav>
+        <pagination
+          class="pagination"
+          :pagination="searchResults.data"
+          @navigate="handlePaginationNavigation"
+          v-show="!currentId"
+        />
         <ul>
           <li
-            v-for="{ id, title, source } in searchResults.data"
-            :key="'nav_' + id"
+            v-for="{ id, title, source, content, url } in searchResults.data
+              .page"
+            :key="'searchResult_' + id"
+            v-show="id === currentId"
           >
-            <a href="#" @click="currentId = id" class="icon-after chevron-down"
-              ><span :class="`category-${source}`">{{ source }}</span
-              ><span>{{ title }}</span></a
+            <a class="back-to-results" href="#" @click="currentId = ''"
+              >Alle zoekresultaten</a
             >
+            <article>
+              <header>
+                <utrecht-heading model-value :level="2"
+                  ><a
+                    v-if="url"
+                    :href="url.toString()"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ title }}
+                  </a>
+                  <template v-else>{{ title }}</template>
+                </utrecht-heading>
+                <small :class="`category-${source}`">{{ source }}</small>
+              </header>
+              <p v-if="content">{{ content }}</p>
+            </article>
           </li>
         </ul>
-      </nav>
-      <ul>
-        <li
-          v-for="{ id, title, source, content } in searchResults.data"
-          :key="'searchResult_' + id"
-          v-show="id === currentId"
-        >
-          <a class="back-to-results" href="#" @click="currentId = ''"
-            >Alle zoekresultaten</a
-          >
-          <article>
-            <header>
-              <utrecht-heading model-value :level="2">{{
-                title
-              }}</utrecht-heading>
-              <small :class="`category-${source}`">{{ source }}</small>
-            </header>
-            <section v-if="content" v-html="cleanHtml(content, 2)"></section>
-          </article>
-        </li>
-      </ul>
-    </section>
-    <button
-      type="button"
-      :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
-      @click="isExpanded = !isExpanded"
-    >
-      {{ buttonText }}
-    </button>
+      </section>
+      <button
+        type="button"
+        :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
+        @click="isExpanded = !isExpanded"
+      >
+        {{ buttonText }}
+      </button>
+    </template>
+    <simple-spinner v-if="searchResults.state === 'loading'" />
   </template>
 </template>
 
 <script lang="ts" setup>
-import { cleanHtml } from "@/helpers/html";
 import {
   UtrechtIconLoupe,
   UtrechtHeading,
@@ -71,15 +94,34 @@ import {
 import { computed, ref } from "vue";
 import { useGlobalSearch } from "./service";
 
+import Pagination from "../../nl-design-system/components/Pagination.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+
 const searchInput = ref("");
 const currentSearch = ref("");
 const currentId = ref("");
-const searchResults = useGlobalSearch(currentSearch);
 const isExpanded = ref(true);
+const currentPage = ref(1);
+const searchResultsRef = ref<Element>();
+
+const searchParameters = computed(() => ({
+  search: currentSearch.value,
+  page: currentPage.value,
+}));
+
+const searchResults = useGlobalSearch(searchParameters);
 
 function applySearch() {
   currentSearch.value = searchInput.value;
   currentId.value = "";
+}
+
+function handlePaginationNavigation(page: number) {
+  currentPage.value = page;
+  const el = searchResultsRef.value;
+  if (el) {
+    el.scrollIntoView();
+  }
 }
 
 const buttonText = computed(() =>
@@ -118,6 +160,7 @@ label {
   );
   display: grid;
   padding-inline: var(--container-padding);
+  padding-block-end: 1rem;
   background-color: var(--color-secondary);
   overflow-y: hidden;
   position: relative;
@@ -130,6 +173,8 @@ label {
 
   &:not(.isExpanded) {
     max-height: 2.5rem;
+    pointer-events: none;
+    user-select: none;
     > * {
       opacity: 50%;
     }
@@ -199,5 +244,9 @@ article {
       margin-bottom: 1em;
     }
   }
+}
+
+.pagination {
+  margin-inline: auto;
 }
 </style>
