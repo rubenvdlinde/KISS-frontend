@@ -130,7 +130,7 @@ export const ServiceResult = {
 
     // als het uniqueId wijzigt, wordt er nieuwe data opgehaald.
     // dat betekent dat we weer even in de loading state moeten raken.
-    const dispose2 = watch([getRequestUniqueId], (uid) => {
+    const dispose2 = watch(getRequestUniqueId, (uid) => {
       if (uid && isValidating.value) {
         Object.assign(result, {
           state: "loading",
