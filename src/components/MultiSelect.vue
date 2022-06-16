@@ -1,26 +1,24 @@
 <template>
-  <div>
-    <details ref="detailsEl">
-      <summary class="icon-before filter">{{ label }}</summary>
-      <fieldset>
-        <legend>{{ label }}</legend>
-        <label
-          v-for="[key, name] in options"
-          :for="name + '_check_' + key"
-          :key="name + '_check_' + key"
-        >
-          {{ name }}
-          <input
-            type="checkbox"
-            :name="name"
-            :id="name + '_check_' + key"
-            :value="key"
-            v-model="currentValue"
-          />
-        </label>
-      </fieldset>
-    </details>
-  </div>
+  <details ref="detailsEl">
+    <summary class="icon-before filter">{{ label }}</summary>
+    <fieldset>
+      <legend>{{ label }}</legend>
+      <label
+        v-for="[key, name] in options"
+        :for="name + '_check_' + key"
+        :key="name + '_check_' + key"
+      >
+        {{ name }}
+        <input
+          type="checkbox"
+          :name="name"
+          :id="name + '_check_' + key"
+          :value="key"
+          v-model="currentValue"
+        />
+      </label>
+    </fieldset>
+  </details>
 </template>
 
 <script lang="ts" setup>
@@ -53,13 +51,6 @@ onClickOutside(detailsEl, () => {
 </script>
 
 <style scoped lang="scss">
-div {
-  position: relative;
-  padding-block-end: 2.75rem;
-  margin-block-start: -0.5rem;
-  width: 100%;
-}
-
 summary {
   width: fit-content;
   display: flex;
@@ -70,7 +61,7 @@ summary {
   font-weight: 500;
   padding-block: 0.5rem;
   padding-inline: 1.5rem;
-  border: 2px var(--color-primary) solid;
+  border: var(--border-style);
   color: var(--color-primary);
   max-width: 100%;
   user-select: none;
@@ -92,20 +83,19 @@ summary {
 }
 
 details {
-  position: absolute;
+  --box-shadow: 0 0 0.2857142857em 0 rgb(0 0 0 / 20%);
+  --border-width: 2px;
+  --border-style: var(--color-primary) var(--border-width) solid;
+  position: relative;
   min-width: fit-content;
   width: 100%;
-  right: 0;
-  top: 0;
   display: flex;
   flex-flow: row nowrap;
   align-items: flex-end;
   justify-content: flex-end;
   z-index: 1;
-  padding-inline: 1rem;
-  padding-block-end: 1rem;
-  padding-block-start: 0.5rem;
-  border-radius: var(--radius-medium);
+  border-start-start-radius: var(--radius-medium);
+  border-start-end-radius: var(--radius-medium);
 }
 
 select {
@@ -114,12 +104,11 @@ select {
 
 details[open] {
   background-color: var(--color-secondary);
-  box-shadow: 0 0 0.2857142857em 0 rgb(0 0 0 / 20%);
+  box-shadow: var(--box-shadow);
 
   > summary {
     border-color: transparent;
     border-radius: 0;
-    border-bottom-color: var(--color-primary);
     width: 100%;
 
     &::before {
@@ -136,8 +125,18 @@ legend {
 
 fieldset {
   display: grid;
+  position: absolute;
+  width: 100%;
+  border-block-start: var(--border-style);
+  bottom: var(--border-width);
+  transform: translateY(100%);
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  background-color: var(--color-secondary);
+  box-shadow: var(--box-shadow);
+  padding: 1rem;
+  border-end-end-radius: var(--radius-medium);
+  border-end-start-radius: var(--radius-medium);
+  clip-path: inset(0px -5px -5px -5px);
 
   label {
     display: flex;

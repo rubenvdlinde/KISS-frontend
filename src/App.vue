@@ -93,11 +93,6 @@ section > ul {
   grid-template-columns: repeat(auto-fill, min(var(--section-width), 100%));
   justify-content: space-between;
   gap: 1.625rem;
-
-  li {
-    width: 100%;
-    overflow-x: hidden;
-  }
 }
 
 main > section > p {

@@ -7,7 +7,7 @@
     }}</paragraph>
 
     <template v-else-if="berichten.state === 'success'">
-      <paragraph v-if="filter.search"
+      <paragraph v-if="filter.search || filter.skillIds?.length"
         >{{ berichten.data.totalRecords }}
         {{ berichten.data.totalRecords === 1 ? "resultaat" : "resultaten" }}
         gevonden</paragraph
@@ -53,7 +53,7 @@ const props = defineProps({
     default: 2,
   },
   filter: {
-    type: Object as PropType<Pick<UseWerkberichtenParams, "typeId" | "search">>,
+    type: Object as PropType<UseWerkberichtenParams>,
     required: true,
   },
   getErrorMessage: {
