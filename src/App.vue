@@ -40,6 +40,8 @@ const contactmoment = useContactmomentStore();
 
   // other
   --radius-default: 0.5rem;
+  --radius-medium: 1rem;
+  --radius-large: 1.5rem;
 }
 
 body {
@@ -87,10 +89,15 @@ main > section {
 }
 
 section > ul {
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   justify-content: space-between;
   gap: 1.625rem;
+
+  li {
+    width: 100%;
+    overflow-x: hidden;
+  }
 }
 
 main > section > p {
@@ -128,13 +135,13 @@ a[aria-current="page"] {
   > :first-child {
     input,
     select {
-      border-radius: 1.5rem 0 0 1.5rem;
+      border-radius: var(--radius-large) 0 0 var(--radius-large);
       border-inline-start: var(--border-style);
     }
   }
 
   > :last-child {
-    border-radius: 0 1.5rem 1.5rem 0;
+    border-radius: 0 var(--radius-large) var(--radius-large) 0;
     border-inline-end: var(--border-style);
   }
 
@@ -197,6 +204,11 @@ a[aria-current="page"] {
 .icon-before.circle-xmark::before,
 .icon-after.circle-xmark::after {
   mask-image: url("@/assets/icons/circle-xmark.svg");
+}
+
+.icon-before.filter::before,
+.icon-after.filter::after {
+  mask-image: url("@/assets/icons/filter.svg");
 }
 
 .kiss-theme {

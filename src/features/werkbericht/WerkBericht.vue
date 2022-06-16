@@ -65,10 +65,11 @@ const sanitized = computed(() => cleanHtml(props.bericht.content, props.level));
 
 <style lang="scss" scoped>
 article {
-  border-radius: 1rem;
+  border-radius: var(--radius-medium);
   background-color: var(--color-secondary);
   padding: 0.75rem var(--text-margin);
-  max-width: var(--section-width);
+  width: 100%;
+  overflow: hidden;
   display: grid;
   gap: 0.75rem;
 

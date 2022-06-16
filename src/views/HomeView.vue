@@ -48,25 +48,12 @@
     </li>
     <li>
       <form class="skills-form" method="get" v-if="skills.state === 'success'">
-        <details>
-          <summary>
-            <label for="skillInput"> Filter op categorie </label>
-          </summary>
-          <select
-            name="skillIds"
-            id="skillInput"
-            multiple
-            v-model="currentSkills"
-          >
-            <option
-              v-for="[key, label] in skills.data.entries"
-              :value="key"
-              :key="'skills_' + key"
-            >
-              {{ label }}
-            </option>
-          </select>
-        </details>
+        <multi-select
+          name="skillIds"
+          label="Filter op categorie"
+          :options="skills.data.entries"
+          v-model="currentSkills"
+        />
         <menu class="delete-skills-menu">
           <li
             v-for="{ id, name, className } in selectedSkills"
@@ -127,6 +114,7 @@ import {
 } from "@/features/werkbericht";
 import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
 import { parseValidInt } from "@/services";
+import MultiSelect from "@/components/MultiSelect.vue";
 
 const { pubBeheerUrl } = window;
 
@@ -228,6 +216,10 @@ label[for="searchInput"] {
 
 .forms > :last-child {
   width: min(100%, 20rem);
+}
+
+form {
+  display: flex;
 }
 
 .remove-filter {
