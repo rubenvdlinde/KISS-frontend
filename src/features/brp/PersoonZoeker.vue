@@ -3,6 +3,7 @@
     <section>
       <form @submit.prevent="zoekOpNaam">
         <label for="achternaam" class="utrecht-form-label">Achternaam</label>
+
         <input
           type="text"
           id="achternaam"
@@ -34,6 +35,7 @@
           v-model="postcode"
           class="utrecht-textbox utrecht-textbox--html-input"
           v-on:keydown.enter.prevent="zoekOpAdres"
+          placeholder="3077AW"
         />
         <label for="huisnummer" class="utrecht-form-label">Huisnummer</label>
         <input
@@ -42,6 +44,7 @@
           v-model="huisnummer"
           class="utrecht-textbox utrecht-textbox--html-input"
           v-on:keydown.enter.prevent="zoekOpAdres"
+          placeholder="31"
         />
 
         <menu>
@@ -130,6 +133,10 @@ const zoekOpAdres = () => {
     alert("huisnummer is verplicht");
     return;
   }
+
+  //sanatize input
+
+  postcode.value = postcode.value.replace(/\s+/g, "").toUpperCase();
 
   busy.value = true;
   error.value = false;

@@ -85,7 +85,6 @@ main {
   }
 }
 
-
 .tabs-component {
   ul li.is-active {
     background-color: var(--color-secondary);
@@ -107,9 +106,6 @@ main {
     background-color: var(--color-secondary);
   }
 }
-
-
-
 
 main > section {
   &:not(:only-of-type) {
@@ -143,6 +139,10 @@ a[aria-current="page"] {
   &:hover {
     cursor: none;
   }
+}
+
+::placeholder {
+  color: red;
 }
 
 .kiss-theme {
@@ -193,6 +193,8 @@ a[aria-current="page"] {
 
   --utrecht-form-input-padding-block-end: var(--spacing-small);
   --utrecht-form-input-padding-block-start: var(--spacing-small);
+
+  --utrecht-form-input-placeholder-color: #999;
 }
 
 utrecht-button {

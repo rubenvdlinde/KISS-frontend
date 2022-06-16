@@ -31,7 +31,7 @@ export function useBrpService() {
     postcode: string,
     huisnummer: string
   ) => {
-    const url = `${window.brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}`;
+    const url = `${window.brpBaseUri}?verblijfplaats.postcode=${postcode}&verblijfplaats.huisnummer=${huisnummer}`;
 
     return fetch(url)
       .then((r) => {
