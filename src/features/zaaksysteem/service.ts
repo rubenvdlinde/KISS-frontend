@@ -25,15 +25,34 @@ export function useZaaksysteemService() {
             "Invalide json, verwacht een lijst: " + JSON.stringify(json.results)
           );
         }
-        return json.results.map((x: Zaak) => x as Zaak);
+        return json.results.map(
+          (x: {
+            id: string;
+            identificatie: string;
+            startdatum: string;
+            url: string;
+            embedded: {
+              zaaktype: { omschrijving: string };
+              status: { statustoelichting: string };
+            };
+          }) => {
+            return {
+              identificatie: x.identificatie,
+              id: x.id,
+              startdatum: x.startdatum,
+              url: x.url,
+              zaaktype: x.embedded.zaaktype.omschrijving,
+              registratiedatum: x.startdatum,
+              status: x.embedded.status.statustoelichting,
+            } as Zaak;
+          }
+        );
       });
   };
 
   const findByBsn = (bsn: number) => {
-    // const url = `${window.zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=zaaktype`;
     const url = `${window.zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
 
-    //todo embedde zaaktype ...
     return fetch(url)
       .then((r) => {
         if (!r.ok) {
@@ -48,7 +67,29 @@ export function useZaaksysteemService() {
             "Invalide json, verwacht een lijst: " + JSON.stringify(json.results)
           );
         }
-        return json.results.map((x: Zaak) => x as Zaak);
+
+        return json.results.map(
+          (x: {
+            id: string;
+            identificatie: string;
+            startdatum: string;
+            url: string;
+            embedded: {
+              zaaktype: { omschrijving: string };
+              status: { statustoelichting: string };
+            };
+          }) => {
+            return {
+              identificatie: x.identificatie,
+              id: x.id,
+              startdatum: x.startdatum,
+              url: x.url,
+              zaaktype: x.embedded.zaaktype.omschrijving,
+              registratiedatum: x.startdatum,
+              status: x.embedded.status.statustoelichting,
+            } as Zaak;
+          }
+        );
       });
   };
 

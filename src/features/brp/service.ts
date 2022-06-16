@@ -5,33 +5,34 @@ export function useBrpService() {
     console.error("brpBaseUri missing");
   }
 
-  const findByNameAndBirthDay = (achternaam: string, geboortedatum: string) => {
-    const url = `${window.brpBaseUri}?naam__geslachtsnaam=${achternaam}&geboorte__datum=${geboortedatum}`;
+  //zoeken op geboortedatum wordt nog niet ondersteund in de api, daarom tijdelijk disabled
+  // const findByNameAndBirthDay = (achternaam: string, geboortedatum: string) => {
+  //   const url = `${window.brpBaseUri}?naam__geslachtsnaam=${achternaam}&geboorte__datum=${geboortedatum}`;
 
-    return fetch(url, {
-      headers: {
-        Accept: "application/json+ld",
-      },
-    })
-      .then((r) => {
-        if (!r.ok) {
-          throw new Error();
-        }
-        return r.json();
-      })
+  //   return fetch(url, {
+  //     headers: {
+  //       Accept: "application/json+ld",
+  //     },
+  //   })
+  //     .then((r) => {
+  //       if (!r.ok) {
+  //         throw new Error();
+  //       }
+  //       return r.json();
+  //     })
 
-      .then((json) => {
-        return json.map((x: Persoon) => {
-          return { achternaam: x.achternaam } as Persoon;
-        });
-      });
-  };
+  //     .then((json) => {
+  //       return json.map((x: Persoon) => {
+  //         return { achternaam: x.achternaam } as Persoon;
+  //       });
+  //     });
+  // };
 
   const findByPostalcodeAndHouseNumber = (
     postcode: string,
     huisnummer: string
   ) => {
-    const url = `${window.brpBaseUri}?verblijfplaats.postcode=${postcode}&verblijfplaats.huisnummer=${huisnummer}`;
+    const url = `${window.brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}&extend[]=all`;
 
     return fetch(url)
       .then((r) => {
@@ -47,12 +48,40 @@ export function useBrpService() {
             "Invalide json, verwacht een lijst: " + JSON.stringify(json.results)
           );
         }
-        return json.results.map((x: Persoon) => x as Persoon);
+        return json.results.map(
+          (x: {
+            id: string;
+            burgerservicenummer: string;
+            leeftijd: number;
+            embedded: {
+              naam: {
+                voornamen: string;
+                voorvoegsel: string;
+                geslachtsnaam: string;
+              };
+            };
+          }) => {
+            //als er geen bsn bekend is hebben we er niets aan
+            const bsnNumber = parseInt(x.burgerservicenummer);
+            if (isNaN(bsnNumber)) {
+              return;
+            }
+
+            return {
+              id: x.id,
+              voornamen: x.embedded.naam.voornamen,
+              voorvoegsel: x.embedded.naam.voorvoegsel,
+              achternaam: x.embedded.naam.geslachtsnaam,
+              leeftijd: x.leeftijd,
+              bsn: bsnNumber,
+            } as Persoon;
+          }
+        );
       });
   };
 
   return {
-    findByNameAndBirthDay,
+    // findByNameAndBirthDay,
     findByPostalcodeAndHouseNumber,
   };
 }

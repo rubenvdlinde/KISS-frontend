@@ -1,7 +1,8 @@
 <template>
   <section class="grid">
     <section>
-      <form @submit.prevent="zoekOpNaam">
+      <!-- zoeken op geboortedatum wordt nog niet ondersteund in de api, daarom tijdelijk disabled -->
+      <!-- <form @submit.prevent="zoekOpNaam">
         <label for="achternaam" class="utrecht-form-label">Achternaam</label>
 
         <input
@@ -25,7 +26,7 @@
         <menu>
           <utrecht-button modelValue type="submit">Zoek</utrecht-button>
         </menu>
-      </form>
+      </form> -->
 
       <form @submit.prevent="zoekOpAdres">
         <label for="postcode" class="utrecht-form-label">Postcode</label>
@@ -53,8 +54,6 @@
       </form>
     </section>
     <section>
-      <div @click="findzaken(205827123)">zaken ></div>
-
       <application-message
         v-if="error"
         messageType="error"
@@ -63,21 +62,36 @@
 
       <table v-else-if="personen.length > 0">
         <thead>
-          <th>Zaaknummer</th>
-          <th>Zaaktype</th>
-          <th>Status</th>
-          <th>Datum ingediend</th>
+          <th>voornamen</th>
+          <th>voorvoegsel</th>
+          <th>achternamen</th>
+          <th>leeftijd</th>
+          <th>bsn</th>
+          <th></th>
         </thead>
         <tbody>
           <tr v-for="persoon in personen" :key="persoon.id">
+            <td>{{ persoon.voornamen }}</td>
+            <td>{{ persoon.voorvoegsel }}</td>
             <td>{{ persoon.achternaam }}</td>
+            <td>{{ persoon.leeftijd }}</td>
+            <td>{{ persoon.bsn }}</td>
+            <td>
+              <utrecht-button
+                class="button-small"
+                modelValue
+                type="submit"
+                @click.prevent="findzaken(persoon.bsn)"
+                >Toon zaken</utrecht-button
+              >
+            </td>
           </tr>
         </tbody>
       </table>
 
-      <paragraph v-else-if="isDirty">Er zijn geen personen gevonden.</paragraph>
-
       <simple-spinner v-else-if="busy"></simple-spinner>
+
+      <paragraph v-else-if="isDirty">Er zijn geen personen gevonden.</paragraph>
     </section>
   </section>
 </template>
@@ -94,8 +108,8 @@ import { UtrechtButton } from "@utrecht/web-component-library-vue";
 const emit = defineEmits(["zakenZoeken"]);
 
 const service = useBrpService();
-const achternaam = ref();
-const geboortedatum = ref();
+// const achternaam = ref();
+// const geboortedatum = ref();
 const postcode = ref();
 const huisnummer = ref();
 const error = ref(false);
@@ -103,37 +117,38 @@ const busy = ref(false);
 const isDirty = ref(false);
 const personen = ref<Persoon[]>([]);
 
-const zoekOpNaam = () => {
-  //validate input
+// const zoekOpNaam = () => {
+//   //validate input
 
-  if (!achternaam.value || achternaam.value.length < 2) {
-    alert("achternaam minimaal 2 karakters");
-    return;
-  }
+//   if (!achternaam.value || achternaam.value.length < 2) {
+//     alert("achternaam minimaal 2 karakters");
+//     return;
+//   }
 
-  if (!geboortedatum.value) {
-    alert("geboortedatum is verplicht");
-    return;
-  }
+//   if (!geboortedatum.value) {
+//     alert("geboortedatum is verplicht");
+//     return;
+//   }
 
-  busy.value = true;
-  error.value = false;
-  personen.value = [];
+//   busy.value = true;
+//   error.value = false;
+//   personen.value = [];
 
-  service
-    .findByNameAndBirthDay(achternaam.value, geboortedatum.value)
-    .then((data) => {
-      console.log(data);
-      personen.value = data;
-      isDirty.value = true;
-    })
-    .catch(() => {
-      error.value = true;
-    })
-    .finally(() => {
-      busy.value = false;
-    });
-};
+//   // zoeken op geboortedatum wordt nog niet ondersteund in de api, daarom tijdelijk disabled
+//   service
+//     .findByNameAndBirthDay(achternaam.value, geboortedatum.value)
+//     .then((data) => {
+//       console.log(data);
+//       personen.value = data;
+//       isDirty.value = true;
+//     })
+//     .catch(() => {
+//       error.value = true;
+//     })
+//     .finally(() => {
+//       busy.value = false;
+//     });
+// };
 
 const zoekOpAdres = () => {
   //validate input
@@ -171,6 +186,7 @@ const zoekOpAdres = () => {
     });
 };
 
+//test bsn: 205827123
 const findzaken = (bsn: number) => {
   emit("zakenZoeken", bsn);
 };
@@ -205,5 +221,17 @@ menu {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+th,
+td {
+  padding-top: var(--spacing-small);
+  padding-bottom: var(--spacing-small);
+  padding-left: var(--spacing-small);
+  padding-right: var(--spacing-small);
+}
+
+th {
+  text-align: left;
 }
 </style>

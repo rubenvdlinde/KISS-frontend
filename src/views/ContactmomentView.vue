@@ -24,7 +24,7 @@
       >
         <a
           href=""
-          class="tabs-component-tab-a is-active"
+          class="tabs-component-tab-a"
           role="tab"
           aria-selected="true"
           @click.prevent="activeTab = tabs.personenZoeker"
@@ -43,13 +43,6 @@
     </div>
   </div>
 
-  <!-- <tabs :options="{ useUrlFragment: false, defaultTabHash: xx }" :key="tabsKey">
-    <tab id="bbb" name="Zaken"><zaak-zoeker></zaak-zoeker></tab>
-    <tab id="aa" name="Personen"
-      ><persoon-zoeker @zakenZoeken="onZakenZoeken"></persoon-zoeker
-    ></tab>
-  </tabs> -->
-
   <contactmoment-starter />
 </template>
 
@@ -58,13 +51,14 @@ import ContactmomentStarter from "../features/contactmoment/ContactmomentStarter
 import ZaakZoeker from "../features/zaaksysteem/ZaakZoeker.vue";
 import PersoonZoeker from "../features/brp/PersoonZoeker.vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-
-//import { Tabs, Tab } from "vue3-tabs-component";
 import { ref } from "vue";
 
 const tabs = { zakenZoeker: "zakenZoeker", personenZoeker: "personenZoeker" };
 const activeTab = ref(tabs.personenZoeker);
 const curentBsn = ref<number>();
+
+// er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
+// we swichen daarvoor naar de zakentab
 const onZakenZoeken = (bsn: number) => {
   curentBsn.value = bsn;
   activeTab.value = tabs.zakenZoeker;

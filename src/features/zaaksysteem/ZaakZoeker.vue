@@ -58,15 +58,15 @@
         </tbody>
       </table>
 
-      <paragraph v-else-if="isDirty">Er zijn geen zaken gevonden.</paragraph>
-
       <simple-spinner v-else-if="busy"></simple-spinner>
+
+      <paragraph v-else-if="isDirty">Er zijn geen zaken gevonden.</paragraph>
     </section>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, onUpdated, onMounted } from "vue";
+import { ref, watch } from "vue";
 import { useZaaksysteemService } from "./service";
 import type { Zaak } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
@@ -85,22 +85,6 @@ const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
 const zaken = ref<Zaak[]>([]);
-
-onMounted(() => {
-  //console.log(919191, bsn.value);
-  //   if (props.populatedBsn) {
-  //     bsn.value = props.populatedBsn;
-  //   }
-});
-
-// const bsn = computed({
-//   get() {
-//     return props.populatedBsn;
-//   },
-//   set(value) {
-//     emit("subscribe:bsn", value);
-//   },
-// });
 
 const zoekOpZaak = () => {
   busy.value = true;
@@ -140,6 +124,7 @@ const zoekOpBsn = () => {
     });
 };
 
+//als er een bsn meegegeven wordt dan initieren we direct een zoekopdracht daarop
 watch(
   () => props.populatedBsn,
   (first, second) => {

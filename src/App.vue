@@ -200,5 +200,21 @@ a[aria-current="page"] {
 utrecht-button {
   --utrecht-button-border-radius: 100px;
   --utrecht-button-min-inline-size: 150px;
+
+  --utrecht-button-padding-inline-start: 1rem;
+  --utrecht-button-padding-inline-end: 1rem;
+  --utrecht-button-min-block-size: 1rem;
+
+  --utrecht-button-padding-block-start: 0.6rem;
+  --utrecht-button-padding-block-end: 0.6rem;
+}
+
+utrecht-button.button-small {
+  --utrecht-button-padding-inline-start: 1rem;
+  --utrecht-button-padding-inline-end: 1rem;
+  --utrecht-button-min-block-size: 1rem;
+  --utrecht-button-min-inline-size: 1rem;
+  --utrecht-button-padding-block-start: 0.6rem;
+  --utrecht-button-padding-block-end: 0.6rem;
 }
 </style>
