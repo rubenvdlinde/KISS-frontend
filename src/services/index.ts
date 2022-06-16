@@ -34,7 +34,7 @@ interface FetcherConfig<T = unknown> {
    */
   initialData?: T;
   /**
-   * if the url alone is not enough to identify a unique request, you can supply one here.
+   * if the url alone is not enough to identify a unique request, you can supply a function that does this in stead.
    */
   getUniqueId?: () => string;
 }
