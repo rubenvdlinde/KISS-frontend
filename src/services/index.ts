@@ -28,6 +28,17 @@ export interface Paginated<T> {
   page: T[];
 }
 
+interface FetcherConfig<T = unknown> {
+  /**
+   * data to initialize the ServiceData, so we won't start with a loading state.
+   */
+  initialData?: T;
+  /**
+   * if the url alone is not enough to identify a unique request, you can supply a function that does this in stead.
+   */
+  getUniqueId?: () => string;
+}
+
 export const ServiceResult = {
   success<T>(data: T): ServiceData<T> {
     return reactive({
@@ -70,22 +81,35 @@ export const ServiceResult = {
 
     return result;
   },
-    
+
+  /**
+   * @param url either the url or a function to return a dynamic url. this is also used to identify a unique request, unless you supply a function to do this in the config.
+   * @param fetcher a function to fetch the data
+   * @param config optional configuration for the fetcher
+   */
   fromFetcher<T = unknown>(
     url: string | (() => string),
     fetcher: (url: string) => Promise<T>,
-    initialData?: T
+    config?: FetcherConfig<T>
   ): ServiceData<T> {
     const result =
-      initialData !== undefined
-        ? ServiceResult.success<T>(initialData)
+      config?.initialData !== undefined
+        ? ServiceResult.success<T>(config.initialData)
         : ServiceResult.loading<T>();
 
-    const { data, error } = useSWRV<T, any>(url, fetcher, {
-      refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
-    });
+    const getUrl = typeof url === "string" ? () => url : url;
+    const getRequestUniqueId = config?.getUniqueId || getUrl;
+    const fetcherWithoutParameters = () => fetcher(getUrl());
 
-    const dispose = watch(
+    const { data, error, isValidating } = useSWRV<T, any>(
+      getRequestUniqueId,
+      fetcherWithoutParameters,
+      {
+        refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
+      }
+    );
+
+    const dispose1 = watch(
       [data, error],
       ([d, e]) => {
         if (e) {
@@ -104,7 +128,20 @@ export const ServiceResult = {
       { immediate: true }
     );
 
-    onUnmounted(dispose);
+    // als het uniqueId wijzigt, wordt er nieuwe data opgehaald.
+    // dat betekent dat we weer even in de loading state moeten raken.
+    const dispose2 = watch(getRequestUniqueId, (uid) => {
+      if (uid && isValidating.value) {
+        Object.assign(result, {
+          state: "loading",
+        });
+      }
+    });
+
+    onUnmounted(() => {
+      dispose1();
+      dispose2();
+    });
 
     return result;
   },
@@ -117,6 +154,16 @@ export function parseValidInt(input: unknown): number | undefined {
   if (typeof input !== "string") return undefined;
   const parsed = Number.parseInt(input, 10);
   return isFinite(parsed) ? parsed : undefined;
+}
+
+export function parseValidUrl(input: unknown): URL | undefined {
+  if (input instanceof URL) return input;
+  if (typeof input !== "string") return undefined;
+  try {
+    return new URL(input);
+  } catch (error) {
+    return undefined;
+  }
 }
 
 export function parseDutchDate(dateTimeStr: string): Date {

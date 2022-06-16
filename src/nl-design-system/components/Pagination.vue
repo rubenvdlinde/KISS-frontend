@@ -90,6 +90,9 @@ const props = defineProps({
 const emit = defineEmits(["navigate"]);
 
 const createLink = (n: number) => {
+  const distanceFromCurrent =
+    Math.max(props.pagination.pageNumber, n) -
+    Math.min(props.pagination.pageNumber, n);
   const link = {
     onClick(e: Event) {
       e.preventDefault();
@@ -102,10 +105,7 @@ const createLink = (n: number) => {
     label: n,
     isCurrent: n === props.pagination.pageNumber,
     isActive:
-      n === 1 ||
-      n === props.pagination.totalPages ||
-      n < props.pagination.pageNumber - 1 ||
-      n > props.pagination.pageNumber + 1,
+      n === 1 || n === props.pagination.totalPages || distanceFromCurrent === 1,
     rel: undefined,
   };
 
