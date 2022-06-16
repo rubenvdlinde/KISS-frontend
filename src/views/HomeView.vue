@@ -249,6 +249,5 @@ menu {
   display: flex;
   flex-flow: row wrap;
   gap: 0.5rem;
-  max-width: 20rem;
 }
 </style>
