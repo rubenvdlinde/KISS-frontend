@@ -3,6 +3,7 @@
     <details ref="detailsEl">
       <summary class="icon-before filter">{{ label }}</summary>
       <fieldset>
+        <legend>{{ label }}</legend>
         <label
           v-for="[key, name] in options"
           :for="name + '_check_' + key"
@@ -119,6 +120,10 @@ details[open] {
       transform: rotate(180deg);
     }
   }
+}
+
+legend {
+  font-size: 0;
 }
 
 fieldset {
