@@ -22,5 +22,5 @@ export interface Contactmoment {
 
 export interface Gespreksresultaat {
   id: string;
-  omschrijving: string;
+  definitie: string;
 }

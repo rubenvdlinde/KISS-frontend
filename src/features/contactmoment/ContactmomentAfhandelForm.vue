@@ -56,7 +56,7 @@
           v-for="gespreksresultaat in gespresResultatenServiceResult.data"
           :key="gespreksresultaat.id"
         >
-          {{ gespreksresultaat.omschrijving }}
+          {{ gespreksresultaat.definitie }}
         </option>
       </select>
     </fieldset>
