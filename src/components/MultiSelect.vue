@@ -15,6 +15,7 @@
           :id="name + '_check_' + key"
           :value="key"
           v-model="currentValue"
+          @change="emit('update:modelValue', currentValue)"
         />
       </label>
     </fieldset>
@@ -35,7 +36,6 @@ const emit = defineEmits(["update:modelValue"]);
 const currentValue = ref(props.modelValue);
 const detailsEl = ref<HTMLElement>();
 
-watch(currentValue, (v) => emit("update:modelValue", v));
 watch(
   () => props.modelValue,
   (v) => {
