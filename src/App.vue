@@ -127,7 +127,7 @@ a[aria-current="page"] {
     border: none;
     border-block: var(--border-style);
 
-    &:focus {
+    &:focus-visible {
       outline-color: var(--color-primary);
     }
   }

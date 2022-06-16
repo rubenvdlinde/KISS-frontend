@@ -79,7 +79,7 @@ summary {
     cursor: pointer;
   }
 
-  &:focus {
+  &:focus-visible {
     outline-color: var(--utrecht-focus-outline-color, transparent);
     outline-offset: var(--utrecht-focus-outline-offset, 0);
     outline-style: var(--utrecht-focus-outline-style, solid);
