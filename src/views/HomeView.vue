@@ -227,6 +227,13 @@ form {
   gap: 0.5rem;
   border: none;
 
+  &:focus {
+    outline-color: var(--utrecht-focus-outline-color, transparent);
+    outline-offset: var(--utrecht-focus-outline-offset, 0);
+    outline-style: var(--utrecht-focus-outline-style, solid);
+    outline-width: var(--utrecht-focus-outline-width, 0);
+  }
+
   > :first-child {
     position: absolute;
     left: -999px;

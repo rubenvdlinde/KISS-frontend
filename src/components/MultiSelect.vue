@@ -73,9 +73,17 @@ summary {
   border: 2px var(--color-primary) solid;
   color: var(--color-primary);
   max-width: 100%;
+  user-select: none;
 
   &:hover {
     cursor: pointer;
+  }
+
+  &:focus {
+    outline-color: var(--utrecht-focus-outline-color, transparent);
+    outline-offset: var(--utrecht-focus-outline-offset, 0);
+    outline-style: var(--utrecht-focus-outline-style, solid);
+    outline-width: var(--utrecht-focus-outline-width, 0);
   }
 
   > * {
