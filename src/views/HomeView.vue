@@ -1,5 +1,6 @@
 <template>
   <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
+
   <a
     :href="pubBeheerUrl"
     rel="noopener noreferrer"
@@ -36,31 +37,33 @@
       </button>
     </section>
   </form>
-  <werk-berichten
-    v-if="filter"
-    :level="2"
-    page-param-name="werkberichtsearchpage"
-    :filter="filter"
-    header="Zoekresultaten"
-  />
-  <template v-else>
+  <section class="grid werkberichten">
     <werk-berichten
+      v-if="filter"
       :level="2"
-      header="Nieuws"
-      page-param-name="nieuwspage"
-      :filter="{
-        type: nieuws,
-      }"
+      page-param-name="werkberichtsearchpage"
+      :filter="filter"
+      header="Zoekresultaten"
     />
-    <werk-berichten
-      :level="2"
-      header="Werkinstructies"
-      page-param-name="werkinstructiepage"
-      :filter="{
-        type: werkinstructie,
-      }"
-    />
-  </template>
+    <template v-else>
+      <werk-berichten
+        :level="2"
+        header="Nieuws"
+        page-param-name="nieuwspage"
+        :filter="{
+          type: nieuws,
+        }"
+      />
+      <werk-berichten
+        :level="2"
+        header="Werkinstructies"
+        page-param-name="werkinstructiepage"
+        :filter="{
+          type: werkinstructie,
+        }"
+      />
+    </template>
+  </section>
   <contactmoment-starter />
 </template>
 
@@ -154,5 +157,8 @@ section > p {
   margin-left: var(--text-margin);
   margin-bottom: var(--spacing-default);
   color: var(--color-primary);
+}
+.werkberichten :deep(li) {
+  width: 100%;
 }
 </style>
