@@ -1,5 +1,10 @@
 <template>
   <utrecht-heading :level="1">Afhandeling</utrecht-heading>
+  <router-link
+    v-if="contactmoment.contactmomentLoopt"
+    :to="{ name: 'contactmoment' }"
+    >terug</router-link
+  >
   <section class="layoutcontainer-small">
     <contactmoment-afhandel-form />
   </section>
