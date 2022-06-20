@@ -198,10 +198,6 @@ const filter = computed(() => ({
   margin-block-end: 2rem;
 }
 
-input[name="skillsId_cb"]:not(:checked) {
-  display: none;
-}
-
 label[for="searchInput"] {
   flex: 1;
 }
