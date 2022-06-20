@@ -2,14 +2,15 @@
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
     <global-search />
   </header>
-  <main><router-view /></main>
+  <router-view />
+  <contactmoment-starter />
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-
+import ContactmomentStarter from "./features/contactmoment/ContactmomentStarter.vue";
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -32,7 +33,8 @@ const contactmoment = useContactmomentStore();
   --color-category-website: hsl(285, 56%, 83%);
 
   // spacing
-  --container-width: 69.375rem;
+  --container-width: 80rem;
+  --container-padding: calc(50vw - var(--container-width) / 2);
   --section-width: 30.75rem;
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
@@ -50,25 +52,12 @@ body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
-#app > header.contactmomentLoopt {
-  border-top-color: var(--color-accent);
+#app {
+  position: relative;
 }
 
-main {
-  min-width: var(--container-width);
-  max-width: 80%;
-  padding: 2rem var(--spacing-default);
-  gap: var(--spacing-default);
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
+#app > header.contactmomentLoopt {
+  border-top-color: var(--color-accent);
 }
 
 utrecht-icon-loupe {
@@ -101,6 +90,18 @@ button:hover {
   }
 }
 
+main {
+  gap: var(--spacing-default);
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  position: relative;
+
+  > * {
+    flex-basis: 100%;
+  }
+}
+
 main > section {
   &:not(:only-of-type) {
     max-width: var(--section-width);
@@ -111,19 +112,6 @@ main > section {
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--color-tertiary);
   }
-}
-
-section > ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, min(var(--section-width), 100%));
-  justify-content: space-between;
-  gap: 1.625rem;
-}
-
-main > section > p {
-  margin-left: var(--text-margin);
-  margin-bottom: var(--spacing-default);
-  color: var(--color-primary);
 }
 
 a[aria-current="page"] {

@@ -33,7 +33,7 @@ const onStopContactMoment = () => router.push({ name: "afhandeling" }); //een li
 utrecht-button {
   position: fixed;
   bottom: var(--utrecht-space-row-4xl);
-  right: var(--utrecht-space-column-2xl);
+  right: var(--container-padding);
   --utrecht-button-min-block-size: 3.5rem;
   --utrecht-button-min-inline-size: 15rem;
 }
