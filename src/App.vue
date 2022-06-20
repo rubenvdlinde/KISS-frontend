@@ -192,7 +192,7 @@ a[aria-current="page"] {
 
 .icon-before.chevron-down::before,
 .icon-after.chevron-down::after {
-  height: 0.5rem;
+  height: 0.6rem;
   mask-image: url("@/assets/icons/chevron-down.svg");
 }
 

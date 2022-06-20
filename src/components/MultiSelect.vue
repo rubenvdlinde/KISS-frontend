@@ -4,19 +4,19 @@
     <fieldset>
       <legend>{{ label }}</legend>
       <label
-        v-for="[key, name] in options"
-        :for="name + '_check_' + key"
-        :key="name + '_check_' + key"
+        v-for="[optionKey, optionLabel] in options"
+        :for="name + '_check_' + optionKey"
+        :key="name + '_check_' + optionKey"
       >
-        {{ name }}
         <input
           type="checkbox"
           :name="name"
-          :id="name + '_check_' + key"
-          :value="key"
+          :id="name + '_check_' + optionKey"
+          :value="optionKey"
           v-model="currentValue"
           @change="emit('update:modelValue', currentValue)"
         />
+        {{ optionLabel }}
       </label>
     </fieldset>
   </details>
@@ -111,10 +111,11 @@ details[open] {
     border-color: transparent;
     border-radius: 0;
     width: 100%;
+    padding-inline-start: 1rem;
 
     &::before {
       mask-image: url("@/assets/icons/chevron-down.svg");
-      height: 0.5rem;
+      height: 0.6rem;
       transform: rotate(180deg);
     }
   }
@@ -135,14 +136,20 @@ fieldset {
   background-color: var(--color-secondary);
   box-shadow: var(--box-shadow);
   padding-block: 1rem;
-  padding-inline: var(--padding-inline);
+  padding-inline-end: var(--padding-inline);
+  padding-inline-start: calc(1rem + var(--border-width));
   border-end-end-radius: var(--radius-medium);
   border-end-start-radius: var(--radius-medium);
   clip-path: inset(0px -5px -5px -5px);
 
   label {
     display: flex;
-    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    line-height: var(
+      --utrecht-paragraph-line-height,
+      var(--utrecht-document-line-height, normal)
+    );
 
     &:hover {
       cursor: pointer;
@@ -152,6 +159,8 @@ fieldset {
   input {
     accent-color: var(--color-primary);
     transform: scale(1.25);
+    margin: 0;
+    margin-inline-start: 2px;
   }
 }
 </style>
