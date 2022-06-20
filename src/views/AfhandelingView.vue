@@ -15,7 +15,6 @@
 <script setup lang="ts">
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ContactmomentAfhandelForm } from "@/features/contactmoment";
-//import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const contactmoment = useContactmomentStore();

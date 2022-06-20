@@ -3,14 +3,12 @@
     <global-search />
   </header>
   <router-view />
-  <contactmoment-starter />
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import ContactmomentStarter from "./features/contactmoment/ContactmomentStarter.vue";
 const contactmoment = useContactmomentStore();
 </script>
 
