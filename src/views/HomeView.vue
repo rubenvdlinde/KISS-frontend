@@ -1,13 +1,15 @@
 <template>
   <main>
-    <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
-    <a
-      :href="pubBeheerUrl"
-      rel="noopener noreferrer"
-      target="_blank"
-      class="admin-link"
-      >Items beheren</a
-    >
+    <header>
+      <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
+      <a
+        :href="pubBeheerUrl"
+        rel="noopener noreferrer"
+        target="_blank"
+        class="admin-link"
+        >Items beheren</a
+      >
+    </header>
     <menu class="forms">
       <li>
         <form
@@ -48,7 +50,11 @@
         </form>
       </li>
       <li>
-        <form class="skills-form" method="get" v-if="skills.state === 'success'">
+        <form
+          class="skills-form"
+          method="get"
+          v-if="skills.state === 'success'"
+        >
           <multi-select
             name="skillIds"
             label="Filter op categorie"
@@ -175,16 +181,11 @@ const filter = computed(() => ({
 </script>
 
 <style scoped lang="scss">
-main {
-  max-width: var(--container-width);
-  padding: 2rem var(--spacing-default);
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
+header {
+  flex-flow: row wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 #werkberichtTypeInput {
@@ -193,10 +194,6 @@ main {
 }
 
 .admin-link {
-  position: absolute;
-  inset-inline-end: 0;
-  inset-block-start: 0;
-  margin-block-start: 3.75rem;
   margin-inline-end: var(--spacing-default);
   color: var(--color-headings);
 }
@@ -223,6 +220,7 @@ label[for="searchInput"] {
 
 .forms > :last-child {
   width: min(100%, 20rem);
+  margin-inline-start: auto;
 }
 
 form {

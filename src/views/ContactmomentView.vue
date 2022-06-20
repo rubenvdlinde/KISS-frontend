@@ -68,17 +68,12 @@ const onZakenZoeken = (bsn: number) => {
 </script>
 
 <style scoped lang="scss">
-.tabs-component-tabs,
-utrecht-heading {
-  max-width: var(--container-width);
+main {
+  padding-inline: 0;
 }
 
 .tabs-component-tabs,
 utrecht-heading,
-.tabs-component-panels {
-  margin-inline: auto;
-}
-
 .tabs-component-panels {
   padding-inline: var(--container-padding);
 }

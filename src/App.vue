@@ -34,7 +34,10 @@ const contactmoment = useContactmomentStore();
 
   // spacing
   --container-width: 80rem;
-  --container-padding: calc(50vw - var(--container-width) / 2);
+  --container-padding: max(
+    var(--spacing-default),
+    calc(50vw - var(--container-width) / 2)
+  );
   --section-width: 30.75rem;
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
@@ -92,6 +95,8 @@ button:hover {
 
 main {
   gap: var(--spacing-default);
+  padding-inline: var(--container-padding);
+  padding-block: var(--spacing-large);
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;

@@ -25,9 +25,4 @@ const contactmoment = useContactmomentStore();
 .layoutcontainer-small {
   max-width: 40rem;
 }
-
-main {
-  max-width: var(--container-width);
-  margin-inline: auto;
-}
 </style>
