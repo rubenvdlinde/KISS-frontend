@@ -139,7 +139,11 @@ export function useWerkberichten(
   }
 
   async function fetchBerichten(url: string): Promise<Paginated<Werkbericht>> {
-    if (typesResult.state !== "success" || !url)
+    if (
+      typesResult.state !== "success" ||
+      skillsResult.state !== "success" ||
+      !url
+    )
       throw new Error(
         "this should never happen, we already check this in the url function"
       );
