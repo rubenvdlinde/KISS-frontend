@@ -102,4 +102,15 @@ section {
 ul + nav {
   justify-self: center;
 }
+
+section > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, min(var(--section-width), 100%));
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+section > p {
+  margin-inline-start: var(--text-margin);
+}
 </style>

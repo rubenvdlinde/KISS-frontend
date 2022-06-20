@@ -11,6 +11,8 @@ declare global {
     organisatieIds: string[];
     globalSearchBaseUri: string;
     pubBeheerUrl: string;
+    zaaksysteemBaseUri: string;
+    brpBaseUri: string;
     gespreksResultatenBaseUri: string;
   }
 }

@@ -2,14 +2,15 @@
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
     <global-search />
   </header>
-  <main><router-view /></main>
+  <router-view />
+  <contactmoment-starter />
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-
+import ContactmomentStarter from "./features/contactmoment/ContactmomentStarter.vue";
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -32,9 +33,15 @@ const contactmoment = useContactmomentStore();
   --color-category-website: hsl(285, 56%, 83%);
 
   // spacing
-  --container-width: 69.375rem;
+  --container-width: 80rem;
+  --container-padding: max(
+    var(--spacing-default),
+    calc(50vw - var(--container-width) / 2)
+  );
   --section-width: 30.75rem;
   --spacing-default: 1rem;
+  --spacing-small: 0.5rem;
+  --spacing-large: 2rem;
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
@@ -48,24 +55,12 @@ body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
-#app > header.contactmomentLoopt {
-  border-top-color: var(--color-accent);
+#app {
+  position: relative;
 }
 
-main {
-  max-width: var(--container-width);
-  padding: 2rem var(--spacing-default);
-  gap: var(--spacing-default);
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
+#app > header.contactmomentLoopt {
+  border-top-color: var(--color-accent);
 }
 
 utrecht-icon-loupe {
@@ -74,6 +69,42 @@ utrecht-icon-loupe {
 
 button:hover {
   cursor: pointer;
+}
+
+.tabs-component {
+  ul li.is-active {
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-default) var(--radius-default) 0 0;
+  }
+
+  ul li {
+    display: inline-block;
+    padding: var(--spacing-default);
+
+    a {
+      text-decoration: none;
+      font-size: var(--utrecht-typography-scale-lg);
+      color: var(--utrecht-document-color);
+    }
+  }
+
+  > div {
+    background-color: var(--color-secondary);
+  }
+}
+
+main {
+  gap: var(--spacing-default);
+  padding-inline: var(--container-padding);
+  padding-block: var(--spacing-large);
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  position: relative;
+
+  > * {
+    flex-basis: 100%;
+  }
 }
 
 main > section {
@@ -88,19 +119,6 @@ main > section {
   }
 }
 
-section > ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, min(var(--section-width), 100%));
-  justify-content: space-between;
-  gap: 1.625rem;
-}
-
-main > section > p {
-  margin-left: var(--text-margin);
-  margin-bottom: var(--spacing-default);
-  color: var(--color-primary);
-}
-
 a[aria-current="page"] {
   color: inherit;
   pointer-events: none;
@@ -108,6 +126,10 @@ a[aria-current="page"] {
   &:hover {
     cursor: none;
   }
+}
+
+::placeholder {
+  color: red;
 }
 
 .search-bar {
@@ -230,7 +252,9 @@ a[aria-current="page"] {
 
   /* h3 */
   --utrecht-heading-3-line-height: 2rem;
-  --utrecht-heading-3-font-size: 1.25rem;
+  --utrecht-heading-3-font-size: var(--utrecht-typography-scale-lg);
+
+  --utrecht-typography-scale-lg: 1.25rem;
 
   /* button */
   --utrecht-button-background-color: var(--color-primary);
@@ -246,11 +270,35 @@ a[aria-current="page"] {
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
   --utrecht-form-label-font-size: 1rem;
+
+  --utrecht-form-input-border-color: var(--color-primary);
+  --utrecht-form-input-border-radius: var(--radius-default);
+
+  --utrecht-form-input-padding-block-end: var(--spacing-small);
+  --utrecht-form-input-padding-block-start: var(--spacing-small);
+
+  --utrecht-form-input-placeholder-color: #999;
 }
 
 utrecht-button {
   --utrecht-button-border-radius: 100px;
   --utrecht-button-min-inline-size: 150px;
+
+  --utrecht-button-padding-inline-start: 1rem;
+  --utrecht-button-padding-inline-end: 1rem;
+  --utrecht-button-min-block-size: 1rem;
+
+  --utrecht-button-padding-block-start: 0.6rem;
+  --utrecht-button-padding-block-end: 0.6rem;
+}
+
+utrecht-button.button-small {
+  --utrecht-button-padding-inline-start: 1rem;
+  --utrecht-button-padding-inline-end: 1rem;
+  --utrecht-button-min-block-size: 1rem;
+  --utrecht-button-min-inline-size: 1rem;
+  --utrecht-button-padding-block-start: 0.6rem;
+  --utrecht-button-padding-block-end: 0.6rem;
 }
 
 // categories

@@ -1,17 +1,20 @@
 <template>
-  <utrecht-heading :level="1">Afhandeling</utrecht-heading>
-  <section class="layoutcontainer-small">
-    <contactmoment-afhandel-form />
-  </section>
-  <contactmoment-starter v-if="!contactmoment.contactmomentLoopt" />
+  <main>
+    <utrecht-heading :level="1">Afhandeling</utrecht-heading>
+    <router-link
+      v-if="contactmoment.contactmomentLoopt"
+      :to="{ name: 'contactmoment' }"
+      >terug</router-link
+    >
+    <section class="layoutcontainer-small">
+      <contactmoment-afhandel-form />
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import {
-  ContactmomentAfhandelForm,
-  ContactmomentStarter,
-} from "@/features/contactmoment";
+import { ContactmomentAfhandelForm } from "@/features/contactmoment";
 //import ContactmomentStarter from "@/features/contactmoment/ContactmomentStarter.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 

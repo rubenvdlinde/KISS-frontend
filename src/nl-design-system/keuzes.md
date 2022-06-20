@@ -15,3 +15,6 @@
 # Bevindingen
 * In de typescript definitie van de vue wrappers utrecht, wordt `modelValue` als parameter vereist, Zelfs bij bijvoorbeeld headings. Dit is niet de bedoeling en zorgt voor errors in volar.
 * Je moet los van de vue wrappers, de web componenten definieren. Hier is alleen een algemene functie voor, die alle componenten registreert. Dit levert een flinke bundel op. Beter zou zijn om per vue component eenmalig de bijbehorende web component te registreren.
+
+# contactmoment zaak/persoon zoeken
+* geen utrecht tab component. wel tab react component van denhaag, maar dat is een wrapper op een  @material-ui/core tab. een designsytem in een designsystem? dat levert classes op die ik niet in het uiteindelijke nldesign system verwacht, dus dit gaan we nu niet gebruiken/nabouwen

@@ -1,7 +1,21 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  type NavigationGuard,
+} from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import AfhandelingView from "../views/AfhandelingView.vue";
+import ContactmomentView from "../views/ContactmomentView.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
+
+const guardContactMoment: NavigationGuard = (to, from, next) => {
+  const contactmoment = useContactmomentStore();
+  if (contactmoment.contactmomentLoopt) {
+    next();
+  } else {
+    next("/");
+  }
+};
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,14 +29,13 @@ const router = createRouter({
       path: "/contactmoment/afhandeling",
       name: "afhandeling",
       component: AfhandelingView,
-      beforeEnter: (to, from, next) => {
-        const contactmoment = useContactmomentStore();
-        if (contactmoment.contactmomentLoopt) {
-          next();
-        } else {
-          next("/");
-        }
-      },
+      beforeEnter: guardContactMoment,
+    },
+    {
+      path: "/contactmoment/contactmoment",
+      name: "contactmoment",
+      component: ContactmomentView,
+      beforeEnter: guardContactMoment,
     },
   ],
 });
