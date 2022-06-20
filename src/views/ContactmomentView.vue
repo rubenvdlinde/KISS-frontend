@@ -47,11 +47,13 @@
       </div>
     </div>
   </main>
+  <contactmoment-starter />
 </template>
 
 <script setup lang="ts">
-import ZaakZoeker from "../features/zaaksysteem/ZaakZoeker.vue";
-import PersoonZoeker from "../features/brp/PersoonZoeker.vue";
+import ZaakZoeker from "@/features/zaaksysteem/ZaakZoeker.vue";
+import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
+import { ContactmomentStarter } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
 
