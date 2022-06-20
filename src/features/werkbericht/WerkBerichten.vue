@@ -83,6 +83,10 @@ const parameters = computed(() => ({
 }));
 
 const berichten = useWerkberichten(parameters);
+
+watch([() => props.filter.search, () => props.filter.skillIds], () => {
+  currentPage.value = 1;
+});
 </script>
 
 <style lang="scss" scoped>
