@@ -185,7 +185,7 @@ header {
   flex-flow: row wrap;
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
 }
 
 #werkberichtTypeInput {
