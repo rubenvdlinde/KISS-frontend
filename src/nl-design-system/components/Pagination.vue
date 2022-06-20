@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType } from "vue";
+import { computed, watch, type PropType } from "vue";
 import type { Paginated } from "@/services";
 const props = defineProps({
   pagination: {
@@ -156,6 +156,19 @@ const otherLinks = computed(() => {
   }
   return result;
 });
+
+watch(
+  () => props.pagination,
+  (pagination) => {
+    if (
+      pagination.pageNumber < 1 ||
+      pagination.pageNumber > pagination.totalPages
+    ) {
+      emit("navigate", 1);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss">

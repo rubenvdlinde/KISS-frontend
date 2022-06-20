@@ -40,6 +40,8 @@ const contactmoment = useContactmomentStore();
 
   // other
   --radius-default: 0.5rem;
+  --radius-medium: 1rem;
+  --radius-large: 1.5rem;
 }
 
 body {
@@ -87,8 +89,8 @@ main > section {
 }
 
 section > ul {
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, min(var(--section-width), 100%));
   justify-content: space-between;
   gap: 1.625rem;
 }
@@ -120,7 +122,7 @@ a[aria-current="page"] {
     border: none;
     border-block: var(--border-style);
 
-    &:focus {
+    &:focus-visible {
       outline-color: var(--color-primary);
     }
   }
@@ -128,13 +130,13 @@ a[aria-current="page"] {
   > :first-child {
     input,
     select {
-      border-radius: 1.5rem 0 0 1.5rem;
+      border-radius: var(--radius-large) 0 0 var(--radius-large);
       border-inline-start: var(--border-style);
     }
   }
 
   > :last-child {
-    border-radius: 0 1.5rem 1.5rem 0;
+    border-radius: 0 var(--radius-large) var(--radius-large) 0;
     border-inline-end: var(--border-style);
   }
 
@@ -168,8 +170,7 @@ a[aria-current="page"] {
   }
 
   input,
-  select,
-  label {
+  select {
     width: 100%;
   }
 }
@@ -191,8 +192,18 @@ a[aria-current="page"] {
 
 .icon-before.chevron-down::before,
 .icon-after.chevron-down::after {
-  height: 0.5rem;
+  height: 0.6rem;
   mask-image: url("@/assets/icons/chevron-down.svg");
+}
+
+.icon-before.circle-xmark::before,
+.icon-after.circle-xmark::after {
+  mask-image: url("@/assets/icons/circle-xmark.svg");
+}
+
+.icon-before.filter::before,
+.icon-after.filter::after {
+  mask-image: url("@/assets/icons/filter.svg");
 }
 
 .kiss-theme {
@@ -243,9 +254,11 @@ utrecht-button {
 }
 
 // categories
-[class^="category-"] {
+[class^="category-"],
+[class*=" category-"] {
   border-radius: 1.5rem;
-  padding: 0.5em;
+  padding-inline: 0.75rem;
+  padding-block: 0.5em;
   background-color: var(--color-category-default);
   display: inline-block;
 }

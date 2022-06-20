@@ -114,6 +114,7 @@ const searchResults = useGlobalSearch(searchParameters);
 function applySearch() {
   currentSearch.value = searchInput.value;
   currentId.value = "";
+  currentPage.value = 1;
 }
 
 function handlePaginationNavigation(page: number) {
