@@ -7,9 +7,9 @@
     }}</paragraph>
 
     <template v-else-if="berichten.state === 'success'">
-      <paragraph v-if="filter.search"
-        >{{ berichten.data.page.length }}
-        {{ berichten.data.page.length === 1 ? "resultaat" : "resultaten" }}
+      <paragraph v-if="filter.search || filter.skillIds?.length"
+        >{{ berichten.data.totalRecords }}
+        {{ berichten.data.totalRecords === 1 ? "resultaat" : "resultaten" }}
         gevonden</paragraph
       >
       <ul v-if="berichten.data.page.length" ref="listEl">
@@ -36,7 +36,7 @@
 </template>
 <script lang="ts" setup>
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { computed, ref, type PropType } from "vue";
+import { computed, ref, watch, type PropType } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
@@ -53,7 +53,7 @@ const props = defineProps({
     default: 2,
   },
   filter: {
-    type: Object as PropType<Pick<UseWerkberichtenParams, "type" | "search">>,
+    type: Object as PropType<UseWerkberichtenParams>,
     required: true,
   },
   getErrorMessage: {
@@ -83,6 +83,13 @@ const parameters = computed(() => ({
 }));
 
 const berichten = useWerkberichten(parameters);
+
+watch(
+  () => props.filter,
+  () => {
+    currentPage.value = 1;
+  }
+);
 </script>
 
 <style lang="scss" scoped>

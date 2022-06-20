@@ -10,8 +10,9 @@ import {
 import type { Ref } from "vue";
 
 export type UseWerkberichtenParams = {
-  type?: string;
+  typeId?: number;
   search?: string;
+  skillIds?: number[];
   page?: number;
   pagesize?: number;
 };
@@ -23,7 +24,8 @@ export type UseWerkberichtenParams = {
  */
 function parseWerkbericht(
   jsonObject: any,
-  getBerichtTypeNameById: (id: number) => string | undefined
+  getBerichtTypeNameById: (id: number) => string | undefined,
+  getSkillNameById: (id: number) => string | undefined
 ): Werkbericht {
   if (
     typeof jsonObject?.title?.rendered !== "string" ||
@@ -36,23 +38,35 @@ function parseWerkbericht(
     );
   }
 
-  const berichtTypeId = jsonObject?.["openpub-type"]?.[0];
-  const typeName =
-    typeof berichtTypeId === "number" && getBerichtTypeNameById(berichtTypeId);
+  const berichtTypeIds = jsonObject?.["openpub-type"];
+  const typeNames = Array.isArray(berichtTypeIds)
+    ? berichtTypeIds.map(
+        (x) =>
+          (typeof x === "number" && getBerichtTypeNameById(x)) || "onbekend"
+      )
+    : ["onbekend"];
+
+  const skillIds = jsonObject?.["openpub_skill"];
+  const skillNames = Array.isArray(skillIds)
+    ? skillIds.map(
+        (x) => (typeof x === "number" && getSkillNameById(x)) || "onbekend"
+      )
+    : ["onbekend"];
 
   return {
     title: jsonObject.title.rendered,
     content: jsonObject.content.rendered,
     date: new Date(jsonObject.date),
-    type: typeName || "onbekend",
+    types: typeNames,
+    skills: skillNames,
   };
 }
 
 /**
- * Fetches a lookuplist of BerichtTypes from the api
+ * Fetches a lookuplist from the api
  * @param url
  */
-function fetchBerichtTypes(url: string): Promise<LookupList<number, string>> {
+function fetchLookupList(url: string): Promise<LookupList<number, string>> {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
@@ -70,9 +84,17 @@ function fetchBerichtTypes(url: string): Promise<LookupList<number, string>> {
 /**
  * Returns a reactive ServiceData object promising a LookupList of berichttypes
  */
-function useBerichtTypes(): ServiceData<LookupList<number, string>> {
+export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
   const url = window.openPubBaseUri + "/openpub-type";
-  return ServiceResult.fromFetcher(url, fetchBerichtTypes);
+  return ServiceResult.fromFetcher(url, fetchLookupList);
+}
+
+/**
+ * Returns a reactive ServiceData object promising a LookupList of skills
+ */
+export function useSkills(): ServiceData<LookupList<number, string>> {
+  const url = window.openPubBaseUri + "/openpub_skill";
+  return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
 /**
@@ -84,19 +106,20 @@ export function useWerkberichten(
   parameters?: Ref<UseWerkberichtenParams>
 ): ServiceData<Paginated<Werkbericht>> {
   const typesResult = useBerichtTypes();
+  const skillsResult = useSkills();
 
   function getUrl() {
     // we return a falsy value if we haven't received the berichttypes yet,
     // because we need them to look up names of berichttypes by their id.
     // a falsy value indicates to the SWRV library that it should not yet trigger a fetch
-    if (typesResult.state !== "success") return "";
+    if (typesResult.state !== "success" || skillsResult.state !== "success")
+      return "";
 
     const url = window.openPubBaseUri + "/kiss_openpub_pub";
     if (!parameters?.value) return url;
 
-    const { type, search, page } = parameters.value;
+    const { typeId, search, page, skillIds } = parameters.value;
     const params: [string, string][] = [];
-    const typeId = type && typesResult.data.fromValueToKey(type);
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
@@ -105,6 +128,9 @@ export function useWerkberichten(
     }
     if (page) {
       params.push(["page", page.toString()]);
+    }
+    if (skillIds?.length) {
+      params.push(["openpub_skill", skillIds.join(",")]);
     }
     if (!params.length) {
       return url;
@@ -128,15 +154,21 @@ export function useWerkberichten(
 
     const pageNumber = parameters?.value.page || 1;
     const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
+    const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
 
     const page = json.map((x) =>
-      parseWerkbericht(x, typesResult.data.fromKeyToValue)
+      parseWerkbericht(
+        x,
+        typesResult.data.fromKeyToValue,
+        skillsResult.data.fromKeyToValue
+      )
     );
 
     return {
       page,
       pageNumber,
       totalPages,
+      totalRecords,
       pageSize: 15,
     };
   }
