@@ -79,10 +79,12 @@
       </li>
     </menu>
     <werk-berichten
-      v-if="filter.search || filter.skillIds.length"
+      v-if="currentSearch || currentSkills.length"
       :level="2"
       page-param-name="werkberichtsearchpage"
-      :filter="filter"
+      :search="currentSearch"
+      :skill-ids="currentSkills"
+      :type-id="currentTypeId"
       header="Zoekresultaten"
     />
     <template v-else>
@@ -91,18 +93,14 @@
         v-if="nieuwsId"
         header="Nieuws"
         page-param-name="nieuwspage"
-        :filter="{
-          typeId: nieuwsId,
-        }"
+        :typeId="nieuwsId"
       />
       <werk-berichten
         :level="2"
         v-if="werkInstructieId"
         header="Werkinstructies"
         page-param-name="werkinstructiepage"
-        :filter="{
-          typeId: werkInstructieId,
-        }"
+        :typeId="werkInstructieId"
       />
     </template>
   </main>
@@ -174,12 +172,6 @@ function handleSearch(e: Event) {
   e.preventDefault();
   currentSearch.value = currentTarget.value;
 }
-
-const filter = computed(() => ({
-  search: currentSearch.value,
-  typeId: currentSearch.value ? currentTypeId.value : undefined,
-  skillIds: currentSkills.value,
-}));
 </script>
 
 <style scoped lang="scss">
