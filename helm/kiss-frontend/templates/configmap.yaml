@@ -12,4 +12,6 @@ data:
       window.gespreksResultatenBaseUri = '{{ .Values.config.gespreksResultatenBaseUri }}';
       window.pubBeheerUrl = '{{ .Values.config.pubBeheerUrl }}';
       window.globalSearchBaseUri = '{{ .Values.config.globalSearchBaseUri }}';
+      window.zaaksysteemBaseUri = '{{ .Values.config.zaaksysteemBaseUri }}';
+      window.brpBaseUri = '{{ .Values.config.brpBaseUri }}';
       window.organisatieIds = ["{{ join "\",\"" .Values.config.organizationIds }}"];

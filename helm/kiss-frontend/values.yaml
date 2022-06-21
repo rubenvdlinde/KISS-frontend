@@ -10,6 +10,8 @@ config:
   gespreksResultatenBaseUri:
   pubBeheerUrl:
   globalSearchBaseUri:
+  zaaksysteemBaseUri:
+  brpBaseUri:
   organizationIds: []
 
 image:
