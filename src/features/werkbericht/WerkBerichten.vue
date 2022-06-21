@@ -7,7 +7,7 @@
     }}</paragraph>
 
     <template v-else-if="berichten.state === 'success'">
-      <paragraph v-if="filter.search || filter.skillIds?.length"
+      <paragraph v-if="search || skillIds?.length"
         >{{ berichten.data.totalRecords }}
         {{ berichten.data.totalRecords === 1 ? "resultaat" : "resultaten" }}
         gevonden</paragraph
@@ -20,7 +20,7 @@
           <werk-bericht
             :bericht="werkInstructie"
             :level="(level + 1 as any)"
-            :show-type="!!filter.search"
+            :show-type="!!search || !!skillIds?.length"
           />
         </li>
       </ul>
@@ -40,7 +40,7 @@ import { computed, ref, watch, type PropType } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
-import { useWerkberichten, type UseWerkberichtenParams } from "./service";
+import { useWerkberichten } from "./service";
 import WerkBericht from "./WerkBericht.vue";
 
 const props = defineProps({
@@ -52,9 +52,17 @@ const props = defineProps({
     type: Number as PropType<1 | 2 | 3 | 4 | 5>,
     default: 2,
   },
-  filter: {
-    type: Object as PropType<UseWerkberichtenParams>,
-    required: true,
+  search: {
+    type: String,
+    default: "",
+  },
+  typeId: {
+    type: Number,
+    default: undefined,
+  },
+  skillIds: {
+    type: Array as PropType<number[]>,
+    default: () => [],
   },
   getErrorMessage: {
     type: Function as PropType<(e: Error) => string>,
@@ -78,13 +86,15 @@ const onNavigate = (pageNum: number) => {
 };
 
 const parameters = computed(() => ({
-  ...props.filter,
+  search: props.search,
+  skillIds: props.skillIds,
+  typeId: props.typeId,
   page: currentPage.value,
 }));
 
 const berichten = useWerkberichten(parameters);
 
-watch([() => props.filter], () => {
+watch([() => props.search, () => props.skillIds, () => props.typeId], () => {
   currentPage.value = 1;
 });
 </script>
