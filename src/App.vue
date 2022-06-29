@@ -210,6 +210,12 @@ a[aria-current="page"] {
   height: 1rem;
 }
 
+.icon-large::after,
+.icon-large::before {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .icon-before.chevron-down::before,
 .icon-after.chevron-down::after {
   height: 0.6rem;
@@ -224,6 +230,11 @@ a[aria-current="page"] {
 .icon-before.filter::before,
 .icon-after.filter::after {
   mask-image: url("@/assets/icons/filter.svg");
+}
+
+.icon-before.check::before,
+.icon-after.check::after {
+  mask-image: url("@/assets/icons/check.svg");
 }
 
 .kiss-theme {

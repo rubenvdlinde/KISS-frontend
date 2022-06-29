@@ -11,6 +11,13 @@
     :message="gespresResultatenServiceResult.error.message"
   ></application-message>
 
+  <h2>gekopplede zaken</h2>
+
+  <zaken-overzicht
+    v-if="contactmomentStore.zaken.length > 0"
+    :zaken="contactmomentStore.zaken"
+  ></zaken-overzicht>
+
   <form
     v-if="
       contactmomentStore.contactmomentLoopt &&
@@ -147,6 +154,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
+import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 
 const router = useRouter();
 const user = useUserStore();
