@@ -11,10 +11,12 @@
     :message="gespresResultatenServiceResult.error.message"
   ></application-message>
 
-  <h2>gekopplede zaken</h2>
-
   <zaken-overzicht
-    v-if="contactmomentStore.zaken.length > 0"
+    v-if="
+      contactmomentStore.contactmomentLoopt &&
+      !saving &&
+      contactmomentStore.zaken.length > 0
+    "
     :zaken="contactmomentStore.zaken"
   ></zaken-overzicht>
 
@@ -146,7 +148,7 @@ import { ref, reactive, onMounted } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
-import type { Contactmoment } from "./types";
+import type { Contactmoment, ContactmomentObject } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import { useConfirmDialog } from "@vueuse/core";
@@ -217,9 +219,12 @@ const submit = () => {
 
   service
     .save(contactmoment)
-    .then(() => {
+    .then((savedContactmoment) => {
+      // nu ook de zaken opslaan bij het contactmoment
+      zakenToevoegenAanContactmoment(savedContactmoment.id);
+      //gezkozen kanaal vastleggen als voorkeur
       user.setKanaal(contactmoment.kanaal);
-
+      //status bijwekren
       saved.value = true;
       contactmomentStore.stop();
     })
@@ -230,6 +235,22 @@ const submit = () => {
     .finally(() => {
       saving.value = false;
     });
+};
+
+const zakenToevoegenAanContactmoment = (id: string) => {
+  contactmomentStore?.zaken.forEach((zaak) => {
+    const data = {
+      contactmoment:
+        window.contactmomentenBaseUri + "/objectcontactmomenten/" + id, //todo de hele url zou uit de response van het aanmaken contactmoment moeten komen
+      object: zaak.url,
+      objectType: "zaak",
+    } as ContactmomentObject;
+
+    service.saveZaak(data).catch(() => {
+      errorMessage.value =
+        "Er is een fout opgetreden bij het toevoegen van een zaak bij het contactmoment";
+    });
+  });
 };
 
 //stop het contactmoment en ga terug naar home

@@ -1,4 +1,5 @@
 <template>
+  <h2>Zaken</h2>
   <table v-if="zaken.length > 0">
     <thead>
       <th>Zaaknummer</th>

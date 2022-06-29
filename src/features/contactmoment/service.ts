@@ -1,18 +1,11 @@
 import { ServiceResult } from "@/services";
-import type { Contactmoment, Gespreksresultaat } from "./types";
+import type {
+  Contactmoment,
+  Gespreksresultaat,
+  ContactmomentObject,
+} from "./types";
 
 export function useContactmomentService() {
-  //   save: (data: Contactmoment) => Promise<void>;
-  // } {
-  // fetch("http://localhost/api/contactmomenten")
-  //   .then((r) => {
-  //     if (!r.ok) console.log(r);
-  //     return r.json();
-  //   })
-  //   .then((json) => {
-  //     console.log(json);
-  //   });
-
   if (!window.contactmomentenBaseUri) {
     console.error("contactmomentenBaseUri missing");
   }
@@ -21,11 +14,35 @@ export function useContactmomentService() {
     console.error("gespreksResultatenBaseUri missing");
   }
 
-  const contactmomentenBaseUri = window.contactmomentenBaseUri;
+  const contactmomentenUrl = window.contactmomentenBaseUri + "/contactmomenten";
+  const objectcontactmomentenUrl =
+    window.contactmomentenBaseUri + "/objectcontactmomenten";
   const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
 
   const save = (data: Contactmoment) => {
-    return fetch(contactmomentenBaseUri, {
+    return fetch(contactmomentenUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+      return r.json();
+    });
+  };
+
+  //   {
+  //     "contactmoment": "http://kissdevelopment-dimpact.commonground.nu/api/contactmomenten/10ec6633-aa70-4d52-9e54-f7cf4c70b680",
+  //     "object": "http://kissdevelopment-dimpact.commonground.nu/api/zaken/4cad808a-6011-4d07-b0c6-cd5c98a3dfae",
+  //     "objectType": "zaak"
+  // }
+
+  const saveZaak = (data: ContactmomentObject) => {
+    return fetch(objectcontactmomentenUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -62,5 +79,6 @@ export function useContactmomentService() {
   return {
     save,
     getGespreksResultaten,
+    saveZaak,
   };
 }
