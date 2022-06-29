@@ -4,7 +4,7 @@ services:
     frontend:
         image: ${CONTAINER_REGISTRY_BASE}/${CONTAINER_PROJECT_NAME}:${APP_ENV}
         build:
-            dockerfile: dockerDockerfileDev
+            dockerfile: DockerfileDev
             context: .
         ports:
             - "8080:80"
