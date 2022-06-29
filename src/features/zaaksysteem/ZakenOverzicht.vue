@@ -35,16 +35,21 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
+table {
+  margin-top: var(--spacing-default);
+}
+th:not(:first-child),
+td:not(:first-child) {
+  padding-left: var(--spacing-small);
+}
+
 th,
 td {
   padding-top: var(--spacing-small);
   padding-bottom: var(--spacing-small);
-  padding-left: var(--spacing-small);
+
   padding-right: var(--spacing-small);
   vertical-align: middle;
-}
-
-th {
   text-align: left;
 }
 </style>

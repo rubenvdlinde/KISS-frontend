@@ -11,15 +11,16 @@
     :message="gespresResultatenServiceResult.error.message"
   ></application-message>
 
-  <zaken-overzicht
+  <section
+    class="zakenoverzicht"
     v-if="
       contactmomentStore.contactmomentLoopt &&
       !saving &&
       contactmomentStore.zaken.length > 0
     "
-    :zaken="contactmomentStore.zaken"
-  ></zaken-overzicht>
-
+  >
+    <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
+  </section>
   <form
     v-if="
       contactmomentStore.contactmomentLoopt &&
@@ -304,5 +305,9 @@ menu {
 
 .formValidationMessage {
   margin-top: 2rem;
+}
+
+.zakenoverzicht {
+  margin-bottom: var(--spacing-large);
 }
 </style>

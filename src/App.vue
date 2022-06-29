@@ -126,6 +126,10 @@ a[aria-current="page"] {
   }
 }
 
+h2 {
+  margin-top: var(--spacing-large);
+}
+
 ::placeholder {
   color: red;
 }
