@@ -17,16 +17,22 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     stop() {
       this.contactmomentLoopt = false;
+      this.zaken = [];
     },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
-      if (this.zaken.findIndex((element) => element.id === zaak.id) === -1) {
+      const index = this.zaken.findIndex((element) => element.id === zaak.id);
+      if (index === -1) {
         //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
         this.zaken.push(contactmomentZaak);
+        contactmomentZaak.shouldStore = true;
+        return true;
+      } else {
+        const existingZaak = this.zaken[index];
+        //toggle of hij wel niet opgeslagen moet worden bij het contactmoment
+        existingZaak.shouldStore = !existingZaak.shouldStore;
+        return existingZaak.shouldStore;
       }
-
-      //toggle of hij wel niet opgeslagen moet worden bij het contactmoment
-      contactmomentZaak.shouldStore = !contactmomentZaak.shouldStore;
     },
     findById(id: string) {
       return this.zaken.find((element) => element.id === id);

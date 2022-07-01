@@ -37,6 +37,9 @@ const contactmoment = useContactmomentStore();
     calc(50vw - var(--container-width) / 2)
   );
   --section-width: 30.75rem;
+  --section-width-small: 20rem;
+  --section-width-large: 60rem;
+
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;

@@ -1,4 +1,4 @@
-import { createApp, onMounted } from "vue";
+import { createApp } from "vue";
 import { defineCustomElements } from "@utrecht/web-component-library-stencil";
 import App from "./App.vue";
 import router from "./router";

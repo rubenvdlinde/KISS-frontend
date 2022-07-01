@@ -1,30 +1,13 @@
 <template>
   <application-message
-    v-if="errorMessage != ''"
-    messageType="error"
-    :message="errorMessage"
-  ></application-message>
-
-  <application-message
     v-if="gespresResultatenServiceResult.state === 'error'"
     messageType="error"
     :message="gespresResultatenServiceResult.error.message"
   ></application-message>
 
-  <section
-    class="zakenoverzicht"
-    v-if="
-      contactmomentStore.contactmomentLoopt &&
-      !saving &&
-      contactmomentStore.zaken.length > 0
-    "
-  >
-    <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
-  </section>
   <form
     v-if="
       contactmomentStore.contactmomentLoopt &&
-      !saving &&
       gespresResultatenServiceResult.state === 'success'
     "
     @submit.prevent="submitDialog.reveal"
@@ -91,14 +74,8 @@
   </form>
 
   <simple-spinner
-    v-else-if="saving || gespresResultatenServiceResult.state === 'loading'"
+    v-else-if="gespresResultatenServiceResult.state === 'loading'"
   ></simple-spinner>
-
-  <application-message
-    v-else-if="saved"
-    messageType="confirm"
-    message="Het contactmoment is opgeslagen."
-  ></application-message>
 
   <!-- Annuleer Dialog -->
 
@@ -149,7 +126,7 @@ import { ref, reactive, onMounted } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
-import type { Contactmoment, ContactmomentObject } from "./types";
+import type { Contactmoment } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import { useConfirmDialog } from "@vueuse/core";
@@ -157,14 +134,12 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
-import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 
 const router = useRouter();
 const user = useUserStore();
 const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
-const saved = ref(false);
-const saving = ref(false);
+
 const cancelDialogRevealed = ref(false);
 const submitDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
@@ -186,9 +161,11 @@ const contactmoment: Contactmoment = reactive({
       : "",
   registratiedatum: "",
 });
-const errorMessage = ref("");
+
 const gespresResultatenServiceResult = service.getGespreksResultaten();
 const validationMessage = ref("");
+
+const emit = defineEmits(["save"]);
 
 cancelDialog.onConfirm(() => annuleren());
 
@@ -198,60 +175,19 @@ submitDialog.onConfirm(() => submit());
 // organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste
 onMounted(() => (contactmoment.kanaal = user.preferences.kanaal));
 
+//validate
 //contactmoment opslaan
 //user preferences bijwerken
-//contactmoment stoppen
-//confirmation tonen
-//validate
 const submit = () => {
-  //validate
-
   if (!contactmoment.resultaat) {
     validationMessage.value = "selecteer een gespreksresultaat";
     return;
   }
 
   validationMessage.value = "";
-  saving.value = true;
-  saved.value = false;
-  errorMessage.value = "";
-
   contactmoment.registratiedatum = getFormattedUtcDate();
-
-  service
-    .save(contactmoment)
-    .then((savedContactmoment) => {
-      // nu ook de zaken opslaan bij het contactmoment
-      zakenToevoegenAanContactmoment(savedContactmoment.id);
-      //gezkozen kanaal vastleggen als voorkeur
-      user.setKanaal(contactmoment.kanaal);
-      //status bijwekren
-      saved.value = true;
-      contactmomentStore.stop();
-    })
-    .catch(() => {
-      errorMessage.value =
-        "Er is een fout opgetreden bij opslaan van het contactmoment";
-    })
-    .finally(() => {
-      saving.value = false;
-    });
-};
-
-const zakenToevoegenAanContactmoment = (id: string) => {
-  contactmomentStore?.zaken.forEach((zaak) => {
-    const data = {
-      contactmoment:
-        window.contactmomentenBaseUri + "/objectcontactmomenten/" + id, //todo de hele url zou uit de response van het aanmaken contactmoment moeten komen
-      object: zaak.url,
-      objectType: "zaak",
-    } as ContactmomentObject;
-
-    service.saveZaak(data).catch(() => {
-      errorMessage.value =
-        "Er is een fout opgetreden bij het toevoegen van een zaak bij het contactmoment";
-    });
-  });
+  user.setKanaal(contactmoment.kanaal);
+  emit("save", contactmoment);
 };
 
 //stop het contactmoment en ga terug naar home
@@ -305,9 +241,5 @@ menu {
 
 .formValidationMessage {
   margin-top: 2rem;
-}
-
-.zakenoverzicht {
-  margin-bottom: var(--spacing-large);
 }
 </style>

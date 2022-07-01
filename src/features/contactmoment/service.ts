@@ -1,9 +1,5 @@
 import { ServiceResult } from "@/services";
-import type {
-  Contactmoment,
-  Gespreksresultaat,
-  ContactmomentObject,
-} from "./types";
+import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
   if (!window.contactmomentenBaseUri) {
@@ -15,8 +11,7 @@ export function useContactmomentService() {
   }
 
   const contactmomentenUrl = window.contactmomentenBaseUri + "/contactmomenten";
-  const objectcontactmomentenUrl =
-    window.contactmomentenBaseUri + "/objectcontactmomenten";
+
   const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
 
   const save = (data: Contactmoment) => {
@@ -32,27 +27,6 @@ export function useContactmomentService() {
         throw new Error();
       }
       return r.json();
-    });
-  };
-
-  //   {
-  //     "contactmoment": "http://kissdevelopment-dimpact.commonground.nu/api/contactmomenten/10ec6633-aa70-4d52-9e54-f7cf4c70b680",
-  //     "object": "http://kissdevelopment-dimpact.commonground.nu/api/zaken/4cad808a-6011-4d07-b0c6-cd5c98a3dfae",
-  //     "objectType": "zaak"
-  // }
-
-  const saveZaak = (data: ContactmomentObject) => {
-    return fetch(objectcontactmomentenUrl, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
     });
   };
 
@@ -79,6 +53,6 @@ export function useContactmomentService() {
   return {
     save,
     getGespreksResultaten,
-    saveZaak,
+    // saveZaak,
   };
 }
