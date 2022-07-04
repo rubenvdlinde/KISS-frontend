@@ -75,8 +75,8 @@ function fetchLookupList(url: string): Promise<LookupList<number, string>> {
           "Invalide json, verwacht een lijst: " + JSON.stringify(json)
         );
       return json
-        .filter((x) => typeof x?.id === "number" && typeof x?.name === "string")
-        .map((x) => [x.id, x.name] as [number, string]);
+        .filter((x) => typeof x?.id === "number" && typeof x?.slug === "string")
+        .map((x) => [x.id, x.slug] as [number, string]);
     })
     .then(createLookupList);
 }
