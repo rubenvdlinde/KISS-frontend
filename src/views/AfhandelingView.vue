@@ -6,28 +6,30 @@
       :to="{ name: 'contactmoment' }"
       >terug</router-link
     >
-    <section v-if="saving"><simple-spinner></simple-spinner></section>
+    <section>
+      <section v-if="saving"><simple-spinner></simple-spinner></section>
 
-    <application-message v-else-if="saved" messageType="confirm">
-      <span
-        >Het contactmoment is opgeslagen. Ga terug naar het
-        <router-link :to="{ name: 'home' }">startscherm</router-link></span
-      >
-    </application-message>
-    <application-message
-      v-else-if="errorMessage != ''"
-      messageType="error"
-      :message="errorMessage"
-    ></application-message>
+      <application-message v-else-if="saved" messageType="confirm">
+        <span
+          >Het contactmoment is opgeslagen. Ga terug naar het
+          <router-link :to="{ name: 'home' }">startscherm</router-link></span
+        >
+      </application-message>
+      <application-message
+        v-else-if="errorMessage != ''"
+        messageType="error"
+        :message="errorMessage"
+      ></application-message>
 
-    <template v-else-if="contactmoment.contactmomentLoopt">
-      <section v-if="contactmoment.zaken.length > 0">
-        <zaken-overzicht :zaken="contactmoment.zaken"></zaken-overzicht>
-      </section>
-      <section>
-        <contactmoment-afhandel-form @save="saveContact" />
-      </section>
-    </template>
+      <template v-else-if="contactmoment.contactmomentLoopt">
+        <section v-if="contactmoment.zaken.length > 0">
+          <zaken-overzicht :zaken="contactmoment.zaken"></zaken-overzicht>
+        </section>
+        <section>
+          <contactmoment-afhandel-form @save="saveContact" />
+        </section>
+      </template>
+    </section>
   </main>
 </template>
 
