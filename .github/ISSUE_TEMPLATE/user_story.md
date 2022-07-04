@@ -19,8 +19,18 @@ assignees: ''
 
 ### Taken Conduction
 - [ ] Test invullen
+- [ ] 
+
+### Taken ICAT
+- [ ] Test invullen
+- [ ] 
+
+### Taken DIMPACT
+- [ ] Test invullen
+- [ ] 
+
 ### Tijdinschatting 
-- *Conduction* 1
+- *Conduction* 8
 - *ICATT* v
 
 ### Discussie
