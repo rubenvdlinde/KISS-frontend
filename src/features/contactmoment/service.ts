@@ -2,17 +2,6 @@ import { ServiceResult } from "@/services";
 import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
-  //   save: (data: Contactmoment) => Promise<void>;
-  // } {
-  // fetch("http://localhost/api/contactmomenten")
-  //   .then((r) => {
-  //     if (!r.ok) console.log(r);
-  //     return r.json();
-  //   })
-  //   .then((json) => {
-  //     console.log(json);
-  //   });
-
   if (!window.contactmomentenBaseUri) {
     console.error("contactmomentenBaseUri missing");
   }
@@ -21,11 +10,12 @@ export function useContactmomentService() {
     console.error("gespreksResultatenBaseUri missing");
   }
 
-  const contactmomentenBaseUri = window.contactmomentenBaseUri;
+  const contactmomentenUrl = window.contactmomentenBaseUri + "/contactmomenten";
+
   const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
 
   const save = (data: Contactmoment) => {
-    return fetch(contactmomentenBaseUri, {
+    return fetch(contactmomentenUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -36,6 +26,7 @@ export function useContactmomentService() {
       if (!r.ok) {
         throw new Error();
       }
+      return r.json();
     });
   };
 
@@ -62,5 +53,6 @@ export function useContactmomentService() {
   return {
     save,
     getGespreksResultaten,
+    // saveZaak,
   };
 }

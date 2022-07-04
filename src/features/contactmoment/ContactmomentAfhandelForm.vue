@@ -1,11 +1,5 @@
 <template>
   <application-message
-    v-if="errorMessage != ''"
-    messageType="error"
-    :message="errorMessage"
-  ></application-message>
-
-  <application-message
     v-if="gespresResultatenServiceResult.state === 'error'"
     messageType="error"
     :message="gespresResultatenServiceResult.error.message"
@@ -14,7 +8,6 @@
   <form
     v-if="
       contactmomentStore.contactmomentLoopt &&
-      !saving &&
       gespresResultatenServiceResult.state === 'success'
     "
     @submit.prevent="submitDialog.reveal"
@@ -81,14 +74,8 @@
   </form>
 
   <simple-spinner
-    v-else-if="saving || gespresResultatenServiceResult.state === 'loading'"
+    v-else-if="gespresResultatenServiceResult.state === 'loading'"
   ></simple-spinner>
-
-  <application-message
-    v-else-if="saved"
-    messageType="confirm"
-    message="Het contactmoment is opgeslagen."
-  ></application-message>
 
   <!-- Annuleer Dialog -->
 
@@ -152,8 +139,7 @@ const router = useRouter();
 const user = useUserStore();
 const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
-const saved = ref(false);
-const saving = ref(false);
+
 const cancelDialogRevealed = ref(false);
 const submitDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
@@ -175,9 +161,11 @@ const contactmoment: Contactmoment = reactive({
       : "",
   registratiedatum: "",
 });
-const errorMessage = ref("");
+
 const gespresResultatenServiceResult = service.getGespreksResultaten();
 const validationMessage = ref("");
+
+const emit = defineEmits(["save"]);
 
 cancelDialog.onConfirm(() => annuleren());
 
@@ -187,41 +175,19 @@ submitDialog.onConfirm(() => submit());
 // organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste
 onMounted(() => (contactmoment.kanaal = user.preferences.kanaal));
 
+//validate
 //contactmoment opslaan
 //user preferences bijwerken
-//contactmoment stoppen
-//confirmation tonen
-//validate
 const submit = () => {
-  //validate
-
   if (!contactmoment.resultaat) {
     validationMessage.value = "selecteer een gespreksresultaat";
     return;
   }
 
   validationMessage.value = "";
-  saving.value = true;
-  saved.value = false;
-  errorMessage.value = "";
-
   contactmoment.registratiedatum = getFormattedUtcDate();
-
-  service
-    .save(contactmoment)
-    .then(() => {
-      user.setKanaal(contactmoment.kanaal);
-
-      saved.value = true;
-      contactmomentStore.stop();
-    })
-    .catch(() => {
-      errorMessage.value =
-        "Er is een fout opgetreden bij opslaan van het contactmoment";
-    })
-    .finally(() => {
-      saving.value = false;
-    });
+  user.setKanaal(contactmoment.kanaal);
+  emit("save", contactmoment);
 };
 
 //stop het contactmoment en ga terug naar home
