@@ -37,6 +37,9 @@ const contactmoment = useContactmomentStore();
     calc(50vw - var(--container-width) / 2)
   );
   --section-width: 30.75rem;
+  --section-width-small: 20rem;
+  --section-width-large: 60rem;
+
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
@@ -126,6 +129,10 @@ a[aria-current="page"] {
   }
 }
 
+h2 {
+  margin-top: var(--spacing-large);
+}
+
 ::placeholder {
   color: red;
 }
@@ -210,6 +217,12 @@ a[aria-current="page"] {
   height: 1rem;
 }
 
+.icon-large::after,
+.icon-large::before {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .icon-before.chevron-down::before,
 .icon-after.chevron-down::after {
   height: 0.6rem;
@@ -224,6 +237,11 @@ a[aria-current="page"] {
 .icon-before.filter::before,
 .icon-after.filter::after {
   mask-image: url("@/assets/icons/filter.svg");
+}
+
+.icon-before.check::before,
+.icon-after.check::after {
+  mask-image: url("@/assets/icons/check.svg");
 }
 
 .kiss-theme {
