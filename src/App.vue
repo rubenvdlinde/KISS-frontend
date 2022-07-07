@@ -1,6 +1,14 @@
 <template>
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-    <global-search />
+    <global-search>
+      <template #articleFooter>
+        <slide-in-container class="feedbackform">
+          <template #default="{ close: closeHandler }"
+            ><feedback-form :close="closeHandler"
+          /></template>
+        </slide-in-container>
+      </template>
+    </global-search>
   </header>
   <router-view />
 </template>
@@ -9,6 +17,8 @@
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import SlideInContainer from "./features/feedback/slideInContainer.vue";
+import FeedbackForm from "./features/feedback/FeedbackForm.vue";
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -200,6 +210,10 @@ h2 {
   select {
     width: 100%;
   }
+}
+
+.feedbackform section {
+  padding: var(--spacing-large);
 }
 
 .icon-before,
