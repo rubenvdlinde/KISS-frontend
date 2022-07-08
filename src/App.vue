@@ -1,7 +1,7 @@
 <template>
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
     <global-search>
-      <template #articleFooter>
+      <template #articleFooter="{ show }">
         <slide-in-container class="feedbackform">
           <template #default="{ close: closeHandler }"
             ><feedback-form :close="closeHandler"
@@ -60,6 +60,8 @@ const contactmoment = useContactmomentStore();
   --radius-default: 0.5rem;
   --radius-medium: 1rem;
   --radius-large: 1.5rem;
+
+  --height-body: 100vh;
 }
 
 body {
@@ -213,7 +215,11 @@ h2 {
 }
 
 .feedbackform section {
-  padding: var(--spacing-large);
+  padding: var(--spacing-default);
+  max-width: 30rem;
+
+  padding-top: 10rem;
+  height: 100%;
 }
 
 .icon-before,

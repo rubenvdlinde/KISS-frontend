@@ -17,22 +17,15 @@ const toggle = () => (isOpen.value = !isOpen.value);
 <style lang="scss" scoped>
 @import "@utrecht/component-library-css";
 
-menu {
-}
 aside {
+  height: 100vh;
   z-index: 100;
-  position: absolute;
+  position: fixed;
   right: 0rem;
-  top: 100px;
+  top: 0px;
   background-color: var(--color-secundary);
-
   display: grid;
   grid-template-columns: 0 1fr;
-
-  // transition: width 1s ease-in-out;
-}
-
-aside.open section {
 }
 
 aside.open section {
@@ -41,19 +34,16 @@ aside.open section {
 
 button {
   position: relative;
-  top: 10rem;
+  top: 15rem;
   right: 3rem;
   background: var(--color-primary);
   color: white;
   border: none;
-  z-index: 15;
   height: 3rem;
-  display: inline-block;
   transform-origin: top left;
   transform: rotate(-90deg);
   padding: var(--utrecht-button-padding-inline-start)
     var(--utrecht-button-padding-inline-end);
-
   height: var(--utrecht-button-min-inline-size);
   font-size: var(
     --utrecht-button-font-size,
@@ -63,8 +53,8 @@ button {
 
 section {
   border-left: 4px solid var(--color-primary);
-  border-bottom: 4px solid var(--color-primary);
-  border-top: 4px solid var(--color-primary);
+  //border-bottom: 4px solid var(--color-primary);
+  //   border-top: 4px solid var(--color-primary);
   background-color: var(--color-secondary);
   display: none;
 }

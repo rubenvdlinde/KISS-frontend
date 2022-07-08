@@ -149,12 +149,12 @@ const annuleren = () => {
 <style lang="scss" scoped>
 @import "@utrecht/component-library-css";
 
-fieldset {
-  display: grid;
-  align-items: center;
-  grid-gap: 2rem;
-  grid-template-columns: 1fr 2fr;
-}
+// fieldset {
+//   display: grid;
+//   align-items: center;
+//   grid-gap: 2rem;
+//   grid-template-columns: 1fr 2fr;
+// }
 
 label {
   grid-column: 1 / 2;

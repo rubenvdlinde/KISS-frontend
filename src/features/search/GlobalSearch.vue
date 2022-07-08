@@ -71,7 +71,7 @@
               </header>
               <p v-if="content">{{ content }}</p>
             </article>
-            <slot name="articleFooter"></slot>
+            <slot name="articleFooter" :show="isExpanded"></slot>
           </li>
         </ul>
       </section>
