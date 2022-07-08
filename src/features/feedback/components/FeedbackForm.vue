@@ -47,14 +47,16 @@
     ></application-message>
 
     <menu>
-      <utrecht-button
-        modelValue
-        type="button"
+      <button
         @click="cancelDialog.reveal"
-        appearance="secondary-action-button"
-        >Annuleren</utrecht-button
+        class="utrecht-button utrecht-button--secondary-action"
       >
-      <utrecht-button modelValue type="submit">Opslaan</utrecht-button>
+        Annuleren
+      </button>
+
+      <button class="utrecht-button utrecht-button--submit" type="submit">
+        Opslaan
+      </button>
     </menu>
   </form>
 
@@ -67,7 +69,14 @@
     </template>
 
     <template #menu>
-      <utrecht-button
+      <button
+        @click="cancelDialog.cancel"
+        class="utrecht-button utrecht-button--secondary-action"
+      >
+        Nee
+      </button>
+      <button @click="cancelDialog.confirm" class="utrecht-button">Ja</button>
+      <!-- <utrecht-button
         modelValue
         @click="cancelDialog.cancel"
         appearance="secondary-action-button"
@@ -75,35 +84,27 @@
       >
       <utrecht-button modelValue @click="cancelDialog.confirm"
         >Ja</utrecht-button
-      >
+      > -->
     </template>
   </modal-template>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from "vue";
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
-import { useFeedbackService } from "./service";
-import type { Feedback } from "./types";
+import { useFeedbackService } from "../service";
+import type { Feedback } from "../types";
 import { useUserStore } from "@/stores/user";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
 
-const props = defineProps({
-  close: {
-    type: Function,
-    required: false,
-  },
-});
-
 const busy = ref(false);
 const user = useUserStore();
 const service = useFeedbackService();
 const cancelDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
-
+const emit = defineEmits(["cancelled", "saved"]);
 const feedback: Feedback = reactive({
   naam: "",
   content: "",
@@ -126,7 +127,9 @@ onMounted(() => {
 //opslaan
 const submit = () => {
   //todo validate
-  service.postFeedback(feedback);
+  service.postFeedback(feedback).then(() => {
+    emit("saved");
+  });
   //form leegmaken
   //loading state en feedback..
 };
@@ -139,22 +142,19 @@ const annuleren = () => {
   feedback.aanleiding = "";
   feedback.email = "";
 
-  console.log(props.close);
-  if (props && props.close) {
-    props.close();
-  }
+  emit("cancelled");
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@utrecht/component-library-css";
 
-// fieldset {
-//   display: grid;
-//   align-items: center;
-//   grid-gap: 2rem;
-//   grid-template-columns: 1fr 2fr;
-// }
+fieldset {
+  display: grid;
+  align-items: center;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 2fr;
+}
 
 label {
   grid-column: 1 / 2;

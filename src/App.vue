@@ -1,12 +1,8 @@
 <template>
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
     <global-search>
-      <template #articleFooter="{ show }">
-        <slide-in-container class="feedbackform">
-          <template #default="{ close: closeHandler }"
-            ><feedback-form :close="closeHandler"
-          /></template>
-        </slide-in-container>
+      <template #articleFooter>
+        <search-feedback></search-feedback>
       </template>
     </global-search>
   </header>
@@ -17,8 +13,7 @@
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import SlideInContainer from "./features/feedback/slideInContainer.vue";
-import FeedbackForm from "./features/feedback/FeedbackForm.vue";
+import SearchFeedback from "./features/feedback/SearchFeedback.vue";
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -214,13 +209,13 @@ h2 {
   }
 }
 
-.feedbackform section {
-  padding: var(--spacing-default);
-  max-width: 30rem;
+// .feedbackform section {
+//   padding: var(--spacing-default);
+//   max-width: 30rem;
 
-  padding-top: 10rem;
-  height: 100%;
-}
+//   padding-top: 10rem;
+//   height: 100%;
+// }
 
 .icon-before,
 .icon-after {
@@ -316,7 +311,8 @@ h2 {
   --utrecht-form-input-placeholder-color: #999;
 }
 
-utrecht-button {
+utrecht-button,
+.utrecht-button {
   --utrecht-button-border-radius: 100px;
   --utrecht-button-min-inline-size: 150px;
 
@@ -335,6 +331,74 @@ utrecht-button.button-small {
   --utrecht-button-min-inline-size: 1rem;
   --utrecht-button-padding-block-start: 0.6rem;
   --utrecht-button-padding-block-end: 0.6rem;
+}
+
+.utrecht-button {
+  background-color: var(--utrecht-button-background-color);
+
+  border-color: var(
+    --utrecht-button-border-bottom-color,
+    var(--utrecht-button-border-color, transparent)
+  );
+
+  border-width: var(
+    --utrecht-button-border-bottom-width,
+    var(--utrecht-button-border-width, 0)
+  );
+  color: var(--utrecht-button-color);
+  font-family: var(
+    --utrecht-button-font-family,
+    var(--utrecht-document-font-family)
+  );
+  font-size: var(
+    --utrecht-button-font-size,
+    var(--utrecht-document-font-family)
+  );
+  font-weight: var(--utrecht-button-font-weight);
+  inline-size: var(--utrecht-button-inline-size, auto);
+  letter-spacing: var(--utrecht-button-letter-spacing);
+  line-height: var(--utrecht-button-line-height);
+  min-block-size: var(--utrecht-button-min-block-size, 44px);
+  min-inline-size: var(--utrecht-button-min-inline-size, 44px);
+  padding-block-end: var(--utrecht-button-padding-block-end);
+  padding-block-start: var(--utrecht-button-padding-block-start);
+  padding-inline-end: var(--utrecht-button-padding-inline-end);
+  padding-inline-start: var(--utrecht-button-padding-inline-start);
+  text-transform: var(--utrecht-button-text-transform);
+  user-select: none;
+  border-radius: var(--utrecht-button-border-radius);
+  border-style: solid;
+
+  // background: var(--color-primary);
+  // color: white;
+  // border: none;
+  // height: 3rem;
+  // padding: var(--utrecht-button-padding-inline-start)
+  //   var(--utrecht-button-padding-inline-end);
+  // height: var(--utrecht-button-min-inline-size);
+  // font-size: var(
+  //   --utrecht-button-font-size,
+  //   var(--utrecht-document-font-family)
+  // );
+}
+
+.utrecht-button--secondary-action {
+  background-color: var(
+    --utrecht-button-secondary-action-background-color,
+    var(--utrecht-button-background-color)
+  );
+  border-color: var(
+    --utrecht-button-secondary-action-border-color,
+    var(--utrecht-button-border-color)
+  );
+  border-width: var(
+    --utrecht-button-secondary-action-border-width,
+    var(--utrecht-button-border-width)
+  );
+  color: var(
+    --utrecht-button-secondary-action-color,
+    var(--utrecht-button-color)
+  );
 }
 
 // categories

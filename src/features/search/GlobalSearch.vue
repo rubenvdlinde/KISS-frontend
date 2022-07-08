@@ -70,8 +70,8 @@
                 <small :class="`category-${source}`">{{ source }}</small>
               </header>
               <p v-if="content">{{ content }}</p>
+              <slot name="articleFooter"></slot>
             </article>
-            <slot name="articleFooter" :show="isExpanded"></slot>
           </li>
         </ul>
       </section>
