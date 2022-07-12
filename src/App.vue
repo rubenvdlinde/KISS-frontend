@@ -194,6 +194,7 @@ h2 {
     font-size: 0;
     display: flex;
     align-items: stretch;
+    color: var(--color-error);
   }
 
   input[type="search"] {
@@ -208,14 +209,6 @@ h2 {
     width: 100%;
   }
 }
-
-// .feedbackform section {
-//   padding: var(--spacing-default);
-//   max-width: 30rem;
-
-//   padding-top: 10rem;
-//   height: 100%;
-// }
 
 .icon-before,
 .icon-after {
@@ -257,6 +250,16 @@ h2 {
 .icon-before.check::before,
 .icon-after.check::after {
   mask-image: url("@/assets/icons/check.svg");
+}
+
+//forms
+form {
+  label {
+    span.required {
+      color: var(--color-error);
+      padding-left: var(--spacing-small);
+    }
+  }
 }
 
 .kiss-theme {
@@ -368,18 +371,6 @@ utrecht-button.button-small {
   user-select: none;
   border-radius: var(--utrecht-button-border-radius);
   border-style: solid;
-
-  // background: var(--color-primary);
-  // color: white;
-  // border: none;
-  // height: 3rem;
-  // padding: var(--utrecht-button-padding-inline-start)
-  //   var(--utrecht-button-padding-inline-end);
-  // height: var(--utrecht-button-min-inline-size);
-  // font-size: var(
-  //   --utrecht-button-font-size,
-  //   var(--utrecht-document-font-family)
-  // );
 }
 
 .utrecht-button--secondary-action {

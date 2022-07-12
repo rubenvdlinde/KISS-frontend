@@ -3,8 +3,6 @@
 
   <form v-else @submit.prevent="submit">
     <fieldset class="utrecht-form-fieldset">
-      <legend>{{ feedback.naam }}</legend>
-
       <label for="content" class="utrecht-form-label"
         >Citeer de tekst waar het om gaat</label
       >
@@ -15,7 +13,7 @@
       ></textarea>
 
       <label for="opmerking" class="utrecht-form-label"
-        >Omschrijf wat je feedback is</label
+        >Omschrijf wat je feedback is<span class="required">*</span></label
       >
       <textarea
         id="opmerking"
@@ -66,6 +64,7 @@
       <button
         @click="cancelDialog.reveal"
         class="utrecht-button utrecht-button--secondary-action"
+        type="button"
       >
         Annuleren
       </button>
@@ -132,9 +131,11 @@ cancelDialog.onConfirm(() => annuleren());
 //validate
 //opslaan
 const submit = () => {
-  if (!feedback.opmerking) {
-    validationMessage.value =
-      "het veld 'Omschrijf wat je feedback is' is verplicht";
+  validationMessage.value = feedback.opmerking
+    ? ""
+    : "het veld 'Omschrijf wat je feedback is' is verplicht";
+
+  if (validationMessage.value) {
     return;
   }
 
