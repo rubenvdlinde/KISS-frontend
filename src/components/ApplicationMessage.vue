@@ -13,6 +13,7 @@ const props = defineProps({
     validator: (value) => {
       return value == "error" || value == "confirm";
     },
+    default: "confirm",
   },
   message: String,
 });

@@ -70,7 +70,7 @@
                 <small :class="`category-${source}`">{{ source }}</small>
               </header>
               <p v-if="content">{{ content }}</p>
-              <slot name="articleFooter"></slot>
+              <slot name="articleFooter" :id="url" :title="title"></slot>
             </article>
           </li>
         </ul>

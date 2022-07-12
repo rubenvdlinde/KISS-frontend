@@ -1,8 +1,8 @@
 <template>
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
     <global-search>
-      <template #articleFooter>
-        <search-feedback></search-feedback>
+      <template #articleFooter="{ id, title }">
+        <search-feedback :id="id" :name="title"></search-feedback>
       </template>
     </global-search>
   </header>

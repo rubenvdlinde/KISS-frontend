@@ -1,8 +1,10 @@
 <template>
-  <simple-spinner v-if="busy"></simple-spinner>
+  <simple-spinner v-if="serviceResult.loading"></simple-spinner>
 
   <form v-else @submit.prevent="submit">
     <fieldset class="utrecht-form-fieldset">
+      <legend>{{ feedback.naam }}</legend>
+
       <label for="content" class="utrecht-form-label"
         >Citeer de tekst waar het om gaat</label
       >
@@ -16,7 +18,7 @@
         >Omschrijf wat je feedback is</label
       >
       <textarea
-        id="content"
+        id="opmerking"
         v-model="feedback.opmerking"
         class="utrecht-textarea utrecht-textarea--html-textarea"
       ></textarea>
@@ -25,16 +27,19 @@
         >Wat is de aanleiding?</label
       >
       <textarea
-        id="content"
+        id="aanleiding"
         v-model="feedback.aanleiding"
         class="utrecht-textarea utrecht-textarea--html-textarea"
       ></textarea>
 
-      <label for="email" class="utrecht-form-label">jouw emailadres</label>
+      <label for="contactgegevens" class="utrecht-form-label"
+        >Het emailadres of telefoonnummer waarop de auteur jou kan
+        bereiken</label
+      >
       <input
-        type="email"
-        id="content"
-        v-model="feedback.email"
+        type="text"
+        id="contactgegevens"
+        v-model="feedback.contactgegevens"
         class="utrecht-textbox utrecht-textbox--html-input"
       />
     </fieldset>
@@ -44,6 +49,17 @@
       v-if="validationMessage != ''"
       messageType="error"
       :message="validationMessage"
+    ></application-message>
+
+    <application-message
+      v-if="serviceResult.error"
+      messageType="error"
+      message="Er is een fout opgetreden"
+    ></application-message>
+
+    <application-message
+      v-if="serviceResult.success"
+      message="Uw feedback is verzonden"
     ></application-message>
 
     <menu>
@@ -76,73 +92,75 @@
         Nee
       </button>
       <button @click="cancelDialog.confirm" class="utrecht-button">Ja</button>
-      <!-- <utrecht-button
-        modelValue
-        @click="cancelDialog.cancel"
-        appearance="secondary-action-button"
-        >Nee</utrecht-button
-      >
-      <utrecht-button modelValue @click="cancelDialog.confirm"
-        >Ja</utrecht-button
-      > -->
     </template>
   </modal-template>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, defineProps } from "vue";
 import { useFeedbackService } from "../service";
-import type { Feedback } from "../types";
-import { useUserStore } from "@/stores/user";
+import type { Feedback, ServiceResult } from "../types";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
+import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 
-const busy = ref(false);
-const user = useUserStore();
+const props = defineProps<{
+  id: unknown | URL;
+  name: string;
+}>();
+
+const serviceResult = ref<ServiceResult>({} as ServiceResult);
 const service = useFeedbackService();
 const cancelDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
 const emit = defineEmits(["cancelled", "saved"]);
 const feedback: Feedback = reactive({
-  naam: "",
+  naam: props.name,
+  uri: props.id,
   content: "",
   opmerking: "",
   aanleiding: "",
-  email: "",
+  contactgegevens: "",
 });
 
 const validationMessage = ref("");
 
 cancelDialog.onConfirm(() => annuleren());
 
-// zodra we kunnen inloggen kunnen we het emailadres van de ingelogde gebruiker populaten.
-onMounted(() => {
-  console.log(user);
-  //feedback.email = user.email
-});
-
 //validate
 //opslaan
 const submit = () => {
-  //todo validate
-  service.postFeedback(feedback).then(() => {
-    emit("saved");
+  if (!feedback.opmerking) {
+    validationMessage.value =
+      "het veld 'Omschrijf wat je feedback is' is verplicht";
+    return;
+  }
+
+  const result = service.postFeedback(feedback);
+  serviceResult.value = result.state.value;
+
+  result.promise.then(() => {
+    console.log(result.state);
+    if (!result.state.value.error) {
+      clear();
+      emit("saved");
+    }
   });
-  //form leegmaken
-  //loading state en feedback..
 };
 
 //maak leeg en verberg het formulier
 const annuleren = () => {
-  feedback.naam = "";
+  clear();
+  emit("cancelled");
+};
+
+const clear = () => {
   feedback.content = "";
   feedback.opmerking = "";
   feedback.aanleiding = "";
-  feedback.email = "";
-
-  emit("cancelled");
+  feedback.contactgegevens = "";
 };
 </script>
 
@@ -169,5 +187,10 @@ menu {
 
 .formValidationMessage {
   margin-top: 2rem;
+}
+
+.error,
+.confirm {
+  margin-top: var(--spacing-default);
 }
 </style>

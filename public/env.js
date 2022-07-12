@@ -11,3 +11,4 @@ window.brpBaseUri =
 window.globalSearchBaseUri =
   "https://kissdevelopment-dimpact.commonground.nu/api/elastic/api/as/v1/engines/kiss-search/search";
 window.pubBeheerUrl = "https://openweb.kiss-dev.commonground.nu/wp-login.php";
+window.gatewayBaseUri = "https://kissdevelopment-dimpact.commonground.nu/api";
