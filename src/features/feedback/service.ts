@@ -40,7 +40,6 @@ export function useFeedbackService() {
 
     return result;
   };
-  // service result gebruiken? return ServiceResult.fromPromise(fetchBerichten);
 
   return {
     postFeedback,
@@ -54,6 +53,6 @@ function MapModel(feedbackModel: Feedback) {
   return {
     topic: feedbackModel.uri,
     name: feedbackModel.naam,
-    description: `Content\r\n${feedbackModel.content}\r\nOpmerking\r\n${feedbackModel.opmerking}\r\nAanleiding\r\n${feedbackModel.aanleiding}`,
+    description: `Content\r\n${feedbackModel.content}\r\nOpmerking\r\n${feedbackModel.opmerking}\r\nAanleiding\r\n${feedbackModel.aanleiding}\r\nContctgegevens\r\n${feedbackModel.contactgegevens}`,
   };
 }

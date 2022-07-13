@@ -325,6 +325,8 @@ utrecht-button,
 
   --utrecht-button-padding-block-start: 0.6rem;
   --utrecht-button-padding-block-end: 0.6rem;
+
+  --utrecht-button-secondary-action-background-color: transparent;
 }
 
 utrecht-button.button-small {

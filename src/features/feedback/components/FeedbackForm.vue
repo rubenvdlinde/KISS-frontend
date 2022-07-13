@@ -55,11 +55,6 @@
       message="Er is een fout opgetreden"
     ></application-message>
 
-    <application-message
-      v-if="serviceResult.success"
-      message="Uw feedback is verzonden"
-    ></application-message>
-
     <menu>
       <button
         @click="cancelDialog.reveal"
@@ -143,8 +138,7 @@ const submit = () => {
   serviceResult.value = result.state.value;
 
   result.promise.then(() => {
-    console.log(result.state);
-    if (!result.state.value.error) {
+    if (result.state.value.success) {
       clear();
       emit("saved");
     }

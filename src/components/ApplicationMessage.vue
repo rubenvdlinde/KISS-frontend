@@ -1,12 +1,13 @@
 <template>
-  <article :class="messageType">
+  <article :class="[messageType, fade ? 'fade' : '']">
     <slot>{{ message }}</slot>
   </article>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, toRefs } from "vue";
+import { defineProps, toRefs, onMounted, ref } from "vue";
 
+const fade = ref(false);
 const props = defineProps({
   messageType: {
     type: String,
@@ -16,9 +17,16 @@ const props = defineProps({
     default: "confirm",
   },
   message: String,
+  autoClose: Boolean,
 });
 
 const { messageType, message } = toRefs(props);
+
+onMounted(() => {
+  setTimeout(() => {
+    fade.value = props.autoClose;
+  }, 3000);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -34,5 +42,11 @@ article {
 
 .confirm {
   background-color: var(--color-accent);
+}
+
+.fade {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 2000ms, opacity 2000ms;
 }
 </style>
