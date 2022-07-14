@@ -1,5 +1,5 @@
 <template>
-  <simple-spinner v-if="serviceResult.loading"></simple-spinner>
+  <simple-spinner v-if="serviceResult?.loading"></simple-spinner>
 
   <form v-else @submit.prevent="submit">
     <fieldset class="utrecht-form-fieldset">
@@ -50,7 +50,7 @@
     ></application-message>
 
     <application-message
-      v-if="serviceResult.error"
+      v-if="serviceResult?.error"
       messageType="error"
       message="Er is een fout opgetreden"
     ></application-message>
@@ -93,19 +93,20 @@
 <script lang="ts" setup>
 import { ref, reactive, defineProps } from "vue";
 import { useFeedbackService } from "../service";
-import type { Feedback, ServiceResult } from "../types";
+import type { Feedback } from "../types";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import type { ServiceData } from "@/services/index";
 
 const props = defineProps<{
   id: unknown | URL;
   name: string;
 }>();
 
-const serviceResult = ref<ServiceResult>({} as ServiceResult);
+const serviceResult = ref<ServiceData<Feedback>>();
 const service = useFeedbackService();
 const cancelDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
@@ -135,13 +136,11 @@ const submit = () => {
   }
 
   const result = service.postFeedback(feedback);
-  serviceResult.value = result.state.value;
+  serviceResult.value = result.state;
 
   result.promise.then(() => {
-    if (result.state.value.success) {
-      clear();
-      emit("saved");
-    }
+    clear();
+    emit("saved");
   });
 };
 

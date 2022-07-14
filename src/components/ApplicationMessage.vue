@@ -1,5 +1,5 @@
 <template>
-  <article :class="[messageType, fade ? 'fade' : '']">
+  <article :class="[messageType, { fade }]">
     <slot>{{ message }}</slot>
   </article>
 </template>

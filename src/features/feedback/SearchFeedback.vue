@@ -9,10 +9,10 @@
     ></feedback-form>
   </section>
   <menu v-else>
-    <button @click="openFeedbackForm" class="utrecht-button">
-      Feedback
-    </button></menu
-  >
+    <li>
+      <button @click="openFeedbackForm" class="utrecht-button">Feedback</button>
+    </li>
+  </menu>
   <application-message
     v-if="isSaved"
     message="Uw feedback is verzonden"
@@ -57,5 +57,8 @@ section {
 }
 utrecht-heading {
   margin-bottom: var(--spacing-large);
+}
+menu {
+  list-style: none;
 }
 </style>
