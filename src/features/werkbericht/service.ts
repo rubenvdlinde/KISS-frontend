@@ -22,18 +22,13 @@ export type UseWerkberichtenParams = {
 const timezoneRegex = /T[0-9|:]*[+|-|Z]+/;
 
 function parseDateStrWithTimezone(dateStr: string) {
-  if (!dateStr) return undefined;
   if (timezoneRegex.test(dateStr)) return new Date(dateStr);
   // if no timezone info is present we assume UTC
   return new Date(dateStr + "Z");
 }
 
-function maxDate(dates: (Date | undefined)[]) {
-  return dates.reduce((a, b) => {
-    if (!a || !b) return a || b;
-    if (a > b) return a;
-    return b;
-  });
+function maxDate(dates: Date[]) {
+  return new Date(Math.max(...dates.map((x) => x.getTime())));
 }
 
 /**
