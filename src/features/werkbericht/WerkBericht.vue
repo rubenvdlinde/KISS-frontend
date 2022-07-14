@@ -7,7 +7,7 @@
       <utrecht-heading model-value :level="level">{{
         bericht.title
       }}</utrecht-heading>
-      <time v-if="bericht.date" :datetime="bericht.date.toISOString()">{{
+      <time :datetime="bericht.date.toISOString()">{{
         localeString(bericht.date)
       }}</time>
       <small
