@@ -19,6 +19,7 @@
         id="opmerking"
         v-model="feedback.opmerking"
         class="utrecht-textarea utrecht-textarea--html-textarea"
+        required
       ></textarea>
 
       <label for="aanleiding" class="utrecht-form-label"
@@ -41,13 +42,6 @@
         class="utrecht-textbox utrecht-textbox--html-input"
       />
     </fieldset>
-
-    <application-message
-      class="formValidationMessage"
-      v-if="validationMessage != ''"
-      messageType="error"
-      :message="validationMessage"
-    ></application-message>
 
     <application-message
       v-if="serviceResult?.error"
@@ -120,21 +114,9 @@ const feedback: Feedback = reactive({
   contactgegevens: "",
 });
 
-const validationMessage = ref("");
-
 cancelDialog.onConfirm(() => annuleren());
 
-//validate
-//opslaan
 const submit = () => {
-  validationMessage.value = feedback.opmerking
-    ? ""
-    : "het veld 'Omschrijf wat je feedback is' is verplicht";
-
-  if (validationMessage.value) {
-    return;
-  }
-
   const result = service.postFeedback(feedback);
   serviceResult.value = result.state;
 
@@ -177,10 +159,6 @@ menu {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-}
-
-.formValidationMessage {
-  margin-top: 2rem;
 }
 
 .error,

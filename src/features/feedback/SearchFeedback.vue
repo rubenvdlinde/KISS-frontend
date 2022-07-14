@@ -10,7 +10,12 @@
   </section>
   <menu v-else>
     <li>
-      <button @click="openFeedbackForm" class="utrecht-button">Feedback</button>
+      <button
+        @click="openFeedbackForm"
+        class="utrecht-button utrecht-button--action"
+      >
+        Feedback
+      </button>
     </li>
   </menu>
   <application-message
@@ -50,6 +55,8 @@ const feedbackCancelled = () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@utrecht/component-library-css";
+
 section {
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-default);
