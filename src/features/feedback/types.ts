@@ -7,8 +7,8 @@ export interface Feedback {
   contactgegevens: string; // email of telefoonnummer melder
 }
 
-export interface ServiceResult {
-  loading: boolean;
-  error: boolean;
-  success: boolean | null;
-}
+// export interface ServiceResult {
+//   loading: boolean;
+//   error: boolean;
+//   success: boolean | null;
+// }
