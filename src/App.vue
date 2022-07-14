@@ -5,6 +5,8 @@
         <search-feedback :id="id" :name="title"></search-feedback>
       </template>
     </global-search>
+    <!-- tijdelijk om te testen -->
+    <a :href="loginUrl">Login</a>
   </header>
   <router-view />
 </template>
@@ -14,7 +16,10 @@ import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
+import { useLoggedinUser } from "./features/user/service";
 const contactmoment = useContactmomentStore();
+useLoggedinUser();
+const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
 </script>
 
 <style lang="scss">

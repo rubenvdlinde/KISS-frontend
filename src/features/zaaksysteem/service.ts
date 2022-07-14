@@ -1,17 +1,16 @@
 import type { ContactmomentObject, Zaak } from "./types";
 
 export function useZaaksysteemService() {
-  //todo
-  //window.zaaksysteemBaseUri = "/api/zaaksysteem/";
-
-  if (!window.zaaksysteemBaseUri) {
-    console.error("zaaksysteemBaseUri missing");
+  if (!window.gatewayBaseUri) {
+    console.error("gatewayBaseUri missing");
   }
 
-  const findByZaak = (zaaknummer: number) => {
-    const url = `${window.zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=all`;
+  const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
-    return fetch(url)
+  const findByZaak = (zaaknummer: number) => {
+    const url = `${zaaksysteemBaseUri}/api/zaken?identificatie=${zaaknummer}&extend[]=all`;
+
+    return fetch(url, { credentials: "include" })
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -51,9 +50,9 @@ export function useZaaksysteemService() {
   };
 
   const findByBsn = (bsn: number) => {
-    const url = `${window.zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
+    const url = `${zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
 
-    return fetch(url)
+    return fetch(url, { credentials: "include" })
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -100,11 +99,12 @@ export function useZaaksysteemService() {
   // }
 
   const objectcontactmomentenUrl =
-    window.contactmomentenBaseUri + "/objectcontactmomenten";
+    window.gatewayBaseUri + "/api/objectcontactmomenten";
 
   const saveZaak = (data: ContactmomentObject) => {
     return fetch(objectcontactmomentenUrl, {
       method: "POST",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

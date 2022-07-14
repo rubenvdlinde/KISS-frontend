@@ -7,11 +7,12 @@ export function useFeedbackService() {
     console.error("contactmomentenBaseUri missing");
   }
 
-  const feedbackUrl = window.gatewayBaseUri + "/reviews";
+  const feedbackUrl = window.gatewayBaseUri + "/api/reviews";
 
   const postFeedback = (data: Feedback) => {
     const promise = fetch(feedbackUrl, {
       method: "POST",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

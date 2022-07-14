@@ -1,13 +1,15 @@
 import type { Persoon } from "./types";
 
 export function useBrpService() {
-  if (!window.brpBaseUri) {
-    console.error("brpBaseUri missing");
+  if (!window.gatewayBaseUri) {
+    console.error("gatewayBaseUri missing");
   }
+
+  const brpBaseUri = window.gatewayBaseUri + "/api/ingeschrevenpersonen";
 
   //zoeken op geboortedatum wordt nog niet ondersteund in de api, daarom tijdelijk disabled
   // const findByNameAndBirthDay = (achternaam: string, geboortedatum: string) => {
-  //   const url = `${window.brpBaseUri}?naam__geslachtsnaam=${achternaam}&geboorte__datum=${geboortedatum}`;
+  //   const url = `${brpBaseUri}?naam__geslachtsnaam=${achternaam}&geboorte__datum=${geboortedatum}`;
 
   //   return fetch(url, {
   //     headers: {
@@ -32,9 +34,9 @@ export function useBrpService() {
     postcode: string,
     huisnummer: string
   ) => {
-    const url = `${window.brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}&extend[]=all`;
+    const url = `${brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}&extend[]=all`;
 
-    return fetch(url)
+    return fetch(url, { credentials: "include" })
       .then((r) => {
         if (!r.ok) {
           throw new Error();

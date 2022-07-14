@@ -24,6 +24,9 @@ function mapResult(obj: any): SearchResult {
   };
 }
 
+const globalSearchBaseUri =
+  window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-search/search";
+
 export function useGlobalSearch(
   parameters: Ref<{ search?: string; page?: number }>
 ) {
@@ -31,13 +34,14 @@ export function useGlobalSearch(
     const query = parameters.value.search;
     if (!query) return "";
 
-    return `${window.globalSearchBaseUri}?query=${query}`;
+    return `${globalSearchBaseUri}?query=${query}`;
   }
 
   async function fetcher(url: string): Promise<Paginated<SearchResult>> {
     if (!url) throw new Error();
     const r = await fetch(url, {
       method: "POST",
+      credentials: "include",
       headers: {
         "content-type": "application/json",
       },
