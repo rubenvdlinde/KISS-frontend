@@ -14,6 +14,7 @@ declare global {
     zaaksysteemBaseUri: string;
     brpBaseUri: string;
     gespreksResultatenBaseUri: string;
+    gatewayBaseUri: string;
   }
 }
 

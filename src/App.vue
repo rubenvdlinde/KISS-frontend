@@ -1,6 +1,10 @@
 <template>
   <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-    <global-search />
+    <global-search>
+      <template #articleFooter="{ id, title }">
+        <search-feedback :id="id" :name="title"></search-feedback>
+      </template>
+    </global-search>
   </header>
   <router-view />
 </template>
@@ -9,6 +13,7 @@
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import SearchFeedback from "./features/feedback/SearchFeedback.vue";
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -50,6 +55,8 @@ const contactmoment = useContactmomentStore();
   --radius-default: 0.5rem;
   --radius-medium: 1rem;
   --radius-large: 1.5rem;
+
+  --height-body: 100vh;
 }
 
 body {
@@ -187,6 +194,7 @@ h2 {
     font-size: 0;
     display: flex;
     align-items: stretch;
+    color: var(--color-error);
   }
 
   input[type="search"] {
@@ -244,6 +252,16 @@ h2 {
   mask-image: url("@/assets/icons/check.svg");
 }
 
+//forms
+form {
+  label {
+    span.required {
+      color: var(--color-error);
+      padding-left: var(--spacing-small);
+    }
+  }
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -296,7 +314,8 @@ h2 {
   --utrecht-form-input-placeholder-color: #999;
 }
 
-utrecht-button {
+utrecht-button,
+.utrecht-button {
   --utrecht-button-border-radius: 100px;
   --utrecht-button-min-inline-size: 150px;
 
@@ -306,6 +325,8 @@ utrecht-button {
 
   --utrecht-button-padding-block-start: 0.6rem;
   --utrecht-button-padding-block-end: 0.6rem;
+
+  --utrecht-button-secondary-action-background-color: transparent;
 }
 
 utrecht-button.button-small {

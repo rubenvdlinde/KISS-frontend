@@ -70,6 +70,7 @@
                 <small :class="`category-${source}`">{{ source }}</small>
               </header>
               <p v-if="content">{{ content }}</p>
+              <slot name="articleFooter" :id="url" :title="title"></slot>
             </article>
           </li>
         </ul>
@@ -163,7 +164,7 @@ label {
   padding-inline: var(--container-padding);
   padding-block-end: 1rem;
   background-color: var(--color-secondary);
-  overflow-y: hidden;
+  //
   position: relative;
 
   > ul li {
@@ -176,6 +177,7 @@ label {
     max-height: 2.5rem;
     pointer-events: none;
     user-select: none;
+    overflow: hidden;
     > * {
       opacity: 50%;
     }
