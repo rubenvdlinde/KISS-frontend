@@ -135,8 +135,8 @@ const annuleren = () => {
 const clear = () => {
   feedback.content = "";
   feedback.opmerking = "";
-  feedback.aanleiding = "";
   feedback.contactgegevens = "";
+  feedback.aanleiding = "";
 };
 </script>
 
