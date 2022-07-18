@@ -1,7 +1,21 @@
 import { ServiceResult } from "@/services";
 import { computed } from "vue";
 
-function fetchUserRoles(url: string) {
+export type User =
+  | {
+      isLoggedIn: false;
+    }
+  | {
+      isLoggedIn: true;
+      id: string;
+      roles: string[];
+    };
+
+export enum Roles {
+  admin = "ROLE_scope.POST.admin",
+}
+
+function fetchUser(url: string): Promise<User> {
   return fetch(url, {
     credentials: "include",
   })
@@ -10,19 +24,28 @@ function fetchUserRoles(url: string) {
       return r.json();
     })
     .then((json) => {
-      if (!json.data?.roles?.length)
-        throw new Error(
-          "Gebruiker is niet ingelogd of heeft geen rollen. json: " + json
-        );
-      return json.data.roles as string[];
+      const roles = json?.roles;
+      const id = json?.id;
+      if (typeof id !== "string" || !id)
+        return {
+          isLoggedIn: false,
+        };
+      return {
+        isLoggedIn: true,
+        roles: Array.isArray(roles) ? roles : [],
+        id,
+      };
     });
 }
 
-export function useCurrentUserRoles() {
-  const state = ServiceResult.fromFetcher(
-    window.gatewayBaseUri + "/me",
-    fetchUserRoles
+export const useCurrentUser = () =>
+  ServiceResult.fromFetcher(window.gatewayBaseUri + "/me", fetchUser);
+
+export function useHasRole(role: Roles) {
+  const user = useCurrentUser();
+  return computed(
+    () => user.success && user.data.isLoggedIn && user.data.roles.includes(role)
   );
-  const roles = computed(() => (state.success ? state.data : []));
-  return roles;
 }
+
+export const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";

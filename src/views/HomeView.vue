@@ -3,7 +3,7 @@
     <header>
       <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
       <a
-        v-if="roles.includes('ROLE_scope.POST.admin')"
+        v-if="isAdmin"
         :href="pubBeheerUrl"
         rel="noopener noreferrer"
         target="_blank"
@@ -122,7 +122,7 @@ import {
 import { parseValidInt } from "@/services";
 import MultiSelect from "@/components/MultiSelect.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
-import { useCurrentUserRoles } from "@/features/user";
+import { useHasRole, Roles } from "@/features/user";
 
 const { pubBeheerUrl } = window;
 
@@ -135,7 +135,7 @@ const currentSkills = ref<number[]>([]);
 
 const berichtTypes = useBerichtTypes();
 const skills = useSkills();
-const roles = useCurrentUserRoles();
+const isAdmin = useHasRole(Roles.admin);
 
 const selectedSkills = computed(() => {
   if (skills.state !== "success") return undefined;

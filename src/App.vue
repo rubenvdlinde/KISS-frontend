@@ -1,15 +1,17 @@
 <template>
-  <!-- <a :href="loginUrl" v-if="!roles.length">Login</a> -->
-  <a :href="loginUrl" v-if="false">Login</a>
-  <template v-else>
-    <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-      <global-search>
-        <template #articleFooter="{ id, title }">
-          <search-feedback :id="id" :name="title"></search-feedback>
-        </template>
-      </global-search>
-    </header>
-    <router-view />
+  <simple-spinner v-if="user.loading" />
+  <template v-if="user.success">
+    <a :href="loginUrl" v-if="!user.data.isLoggedIn">Login</a>
+    <template v-else>
+      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+        <global-search>
+          <template #articleFooter="{ id, title }">
+            <search-feedback :id="id" :name="title"></search-feedback>
+          </template>
+        </global-search>
+      </header>
+      <router-view />
+    </template>
   </template>
 </template>
 
@@ -18,11 +20,11 @@ import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { useCurrentUserRoles } from "./features/user";
+import { useCurrentUser, loginUrl } from "./features/user";
+import SimpleSpinner from "./components/SimpleSpinner.vue";
 
 const contactmoment = useContactmomentStore();
-const roles = useCurrentUserRoles();
-const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
+const user = useCurrentUser();
 </script>
 
 <style lang="scss">
