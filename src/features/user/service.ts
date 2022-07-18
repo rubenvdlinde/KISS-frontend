@@ -1,5 +1,6 @@
-import { ServiceResult } from "@/services";
-import { computed } from "vue";
+import { ServiceResult, type ServiceData } from "@/services";
+import { handleLoginChange } from "@/services/wait-for-login";
+import { watch } from "vue";
 
 export type User =
   | {
@@ -12,7 +13,7 @@ export type User =
     };
 
 export enum Roles {
-  admin = "ROLE_scope.POST.admin",
+  adminPost = "ROLE_scope.POST.admin",
 }
 
 function fetchUser(url: string): Promise<User> {
@@ -41,11 +42,18 @@ function fetchUser(url: string): Promise<User> {
 export const useCurrentUser = () =>
   ServiceResult.fromFetcher(window.gatewayBaseUri + "/me", fetchUser);
 
-export function useHasRole(role: Roles) {
-  const user = useCurrentUser();
-  return computed(
-    () => user.success && user.data.isLoggedIn && user.data.roles.includes(role)
-  );
+const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
+
+export function ensureLoggedIn() {
+  const currentUser = useCurrentUser();
+  watch(currentUser, (u) => {
+    if (u.loading) {
+      return;
+    }
+    handleLoginChange(u.success && u.data.isLoggedIn, loginUrl);
+  });
+
+  return currentUser as ServiceData<void>;
 }
 
-export const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
+export const logoutUrl = window.gatewayBaseUri + "/logout";

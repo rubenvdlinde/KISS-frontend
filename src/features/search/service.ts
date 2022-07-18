@@ -1,4 +1,5 @@
 import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
+import { fetchLoggedIn } from "@/services/wait-for-login";
 import type { Ref } from "vue";
 import type { SearchResult } from "./types";
 
@@ -39,9 +40,8 @@ export function useGlobalSearch(
 
   async function fetcher(url: string): Promise<Paginated<SearchResult>> {
     if (!url) throw new Error();
-    const r = await fetch(url, {
+    const r = await fetchLoggedIn(url, {
       method: "POST",
-      credentials: "include",
       headers: {
         "content-type": "application/json",
       },

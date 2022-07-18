@@ -1,4 +1,5 @@
 import { ServiceResult } from "@/services";
+import { fetchLoggedIn } from "@/services/wait-for-login";
 import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
@@ -12,9 +13,8 @@ export function useContactmomentService() {
     window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
 
   const save = (data: Contactmoment) => {
-    return fetch(contactmomentenUrl, {
+    return fetchLoggedIn(contactmomentenUrl, {
       method: "POST",
-      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -29,9 +29,7 @@ export function useContactmomentService() {
   };
 
   const getGespreksResultaten = () => {
-    const fetchBerichten = fetch(gespreksResultatenBaseUri, {
-      credentials: "include",
-    })
+    const fetchBerichten = fetchLoggedIn(gespreksResultatenBaseUri)
       .then((r) => {
         if (!r.ok) {
           throw new Error(

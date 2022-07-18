@@ -1,6 +1,7 @@
 import type { Feedback } from "./types";
 import { ref } from "vue";
 import { ServiceResult } from "@/services";
+import { fetchLoggedIn } from "@/services/wait-for-login";
 
 export function useFeedbackService() {
   if (!window.gatewayBaseUri) {
@@ -10,9 +11,8 @@ export function useFeedbackService() {
   const feedbackUrl = window.gatewayBaseUri + "/api/reviews";
 
   const postFeedback = (data: Feedback) => {
-    const promise = fetch(feedbackUrl, {
+    const promise = fetchLoggedIn(feedbackUrl, {
       method: "POST",
-      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

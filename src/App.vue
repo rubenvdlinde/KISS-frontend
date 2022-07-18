@@ -1,17 +1,15 @@
 <template>
-  <simple-spinner v-if="user.loading" />
-  <template v-if="user.success">
-    <a :href="loginUrl" v-if="!user.data.isLoggedIn">Login</a>
-    <template v-else>
-      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-        <global-search>
-          <template #articleFooter="{ id, title }">
-            <search-feedback :id="id" :name="title"></search-feedback>
-          </template>
-        </global-search>
-      </header>
-      <router-view />
-    </template>
+  <simple-spinner v-if="loggedIn.loading" />
+  <template v-else>
+    <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+      <global-search>
+        <template #articleFooter="{ id, title }">
+          <search-feedback :id="id" :name="title"></search-feedback>
+        </template>
+      </global-search>
+    </header>
+    <a :href="logoutUrl">Uitloggen</a>
+    <router-view />
   </template>
 </template>
 
@@ -20,11 +18,10 @@ import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { useCurrentUser, loginUrl } from "./features/user";
+import { ensureLoggedIn, logoutUrl } from "./features/user";
 import SimpleSpinner from "./components/SimpleSpinner.vue";
-
+const loggedIn = ensureLoggedIn();
 const contactmoment = useContactmomentStore();
-const user = useCurrentUser();
 </script>
 
 <style lang="scss">

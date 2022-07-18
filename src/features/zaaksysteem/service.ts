@@ -1,3 +1,4 @@
+import { fetchLoggedIn } from "@/services/wait-for-login";
 import type { ContactmomentObject, Zaak } from "./types";
 
 export function useZaaksysteemService() {
@@ -10,7 +11,7 @@ export function useZaaksysteemService() {
   const findByZaak = (zaaknummer: number) => {
     const url = `${zaaksysteemBaseUri}/api/zaken?identificatie=${zaaknummer}&extend[]=all`;
 
-    return fetch(url, { credentials: "include" })
+    return fetchLoggedIn(url)
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -52,7 +53,7 @@ export function useZaaksysteemService() {
   const findByBsn = (bsn: number) => {
     const url = `${zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
 
-    return fetch(url, { credentials: "include" })
+    return fetchLoggedIn(url)
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -102,9 +103,8 @@ export function useZaaksysteemService() {
     window.gatewayBaseUri + "/api/objectcontactmomenten";
 
   const saveZaak = (data: ContactmomentObject) => {
-    return fetch(objectcontactmomentenUrl, {
+    return fetchLoggedIn(objectcontactmomentenUrl, {
       method: "POST",
-      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

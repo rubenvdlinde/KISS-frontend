@@ -8,6 +8,7 @@ import {
   type ServiceData,
 } from "@/services";
 import type { Ref } from "vue";
+import { fetchLoggedIn } from "@/services/wait-for-login";
 
 export type UseWerkberichtenParams = {
   typeId?: number;
@@ -67,7 +68,7 @@ function parseWerkbericht(
  * @param url
  */
 function fetchLookupList(url: string): Promise<LookupList<number, string>> {
-  return fetch(url, { credentials: "include" })
+  return fetchLoggedIn(url)
     .then((r) => r.json())
     .then((json) => {
       if (!Array.isArray(json))
@@ -148,7 +149,7 @@ export function useWerkberichten(
         "this should never happen, we already check this in the url function"
       );
 
-    const r = await fetch(url, { credentials: "include" });
+    const r = await fetchLoggedIn(url);
     if (!r.ok) throw new Error(r.status.toString());
 
     const json = await r.json();

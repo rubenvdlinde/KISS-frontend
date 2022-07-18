@@ -1,3 +1,4 @@
+import { fetchLoggedIn } from "@/services/wait-for-login";
 import type { Persoon } from "./types";
 
 export function useBrpService() {
@@ -36,7 +37,7 @@ export function useBrpService() {
   ) => {
     const url = `${brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}&extend[]=all`;
 
-    return fetch(url, { credentials: "include" })
+    return fetchLoggedIn(url)
       .then((r) => {
         if (!r.ok) {
           throw new Error();
