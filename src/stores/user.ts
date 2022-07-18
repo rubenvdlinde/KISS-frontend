@@ -1,19 +1,14 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
-import type { Ref } from "vue";
-
-type Preferences = Ref<{
-  kanaal: string;
-}>;
 
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
-      preferences: useStorage("preferences", { kanaal: "" }) as Preferences,
+      preferences: useStorage("preferences", { kanaal: "" }),
     };
   },
   actions: {
-    setKanaal(kanaal: string) {
+    setKanaal(kanaal) {
       this.preferences.kanaal = kanaal;
     },
   },

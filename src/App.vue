@@ -1,14 +1,16 @@
 <template>
-  <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-    <global-search>
-      <template #articleFooter="{ id, title }">
-        <search-feedback :id="id" :name="title"></search-feedback>
-      </template>
-    </global-search>
-    <!-- tijdelijk om te testen -->
-    <a :href="loginUrl">Login</a>
-  </header>
-  <router-view />
+  <!-- <a :href="loginUrl" v-if="!roles.length">Login</a> -->
+  <a :href="loginUrl" v-if="false">Login</a>
+  <template v-else>
+    <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+      <global-search>
+        <template #articleFooter="{ id, title }">
+          <search-feedback :id="id" :name="title"></search-feedback>
+        </template>
+      </global-search>
+    </header>
+    <router-view />
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -16,9 +18,10 @@ import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { useLoggedinUser } from "./features/user/service";
+import { useCurrentUserRoles } from "./features/user";
+
 const contactmoment = useContactmomentStore();
-useLoggedinUser();
+const roles = useCurrentUserRoles();
 const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
 </script>
 

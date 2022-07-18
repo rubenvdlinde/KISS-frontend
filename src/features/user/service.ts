@@ -1,26 +1,29 @@
 import { ServiceResult } from "@/services";
-import { watchEffect } from "vue";
+import { computed } from "vue";
 
-function fetchUser(url: string) {
+function fetchUserRoles(url: string) {
   console.warn("cookie:" + document.cookie);
   return fetch(url, {
     credentials: "include",
-  }).then((r) => {
-    if (!r.ok) throw new Error();
-    return r.json();
-  });
+  })
+    .then((r) => {
+      if (!r.ok) throw new Error();
+      return r.json();
+    })
+    .then((json) => {
+      if (!json.data?.roles?.length)
+        throw new Error(
+          "Gebruiker is niet ingelogd of heeft geen rollen. json: " + json
+        );
+      return json.data.roles as string[];
+    });
 }
 
-export function useLoggedinUser() {
-  const result = ServiceResult.fromFetcher(
+export function useCurrentUserRoles() {
+  const state = ServiceResult.fromFetcher(
     window.gatewayBaseUri + "/me",
-    fetchUser
+    fetchUserRoles
   );
-  const dispose = watchEffect(() => {
-    if (result.error || (result.success && !result.data?.roles?.length)) {
-      dispose();
-      // document.location.href = window.gatewayBaseUri + "/login/oidc/dex";
-    }
-  });
-  return result;
+  const roles = computed(() => (state.success ? state.data : []));
+  return roles;
 }
