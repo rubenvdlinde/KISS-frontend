@@ -2,7 +2,6 @@ import { ServiceResult } from "@/services";
 import { computed } from "vue";
 
 function fetchUserRoles(url: string) {
-  console.warn("cookie:" + document.cookie);
   return fetch(url, {
     credentials: "include",
   })
