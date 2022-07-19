@@ -13,6 +13,7 @@ config:
   zaaksysteemBaseUri:
   brpBaseUri:
   organizationIds: []
+  gatewayBaseUri:
 
 image:
   repository: ghcr.io/klantinteractie-servicesysteem/kiss-frontend
