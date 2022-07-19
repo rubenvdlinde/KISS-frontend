@@ -7,6 +7,7 @@ import HomeView from "../views/HomeView.vue";
 import AfhandelingView from "../views/AfhandelingView.vue";
 import ContactmomentView from "../views/ContactmomentView.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import { loginUrl } from "@/features/user";
 
 const guardContactMoment: NavigationGuard = (to, from, next) => {
   const contactmoment = useContactmomentStore();
@@ -36,6 +37,15 @@ const router = createRouter({
       name: "contactmoment",
       component: ContactmomentView,
       beforeEnter: guardContactMoment,
+    },
+    {
+      path: "/redirect-to-login",
+      beforeEnter: (_, __, next) => {
+        sessionStorage.setItem("kiss_close", "true");
+        window.location.href = loginUrl;
+        return next();
+      },
+      component: HomeView,
     },
   ],
 });

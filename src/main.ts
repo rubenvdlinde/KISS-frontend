@@ -9,6 +9,7 @@ declare global {
     organisatieIds: string[];
     pubBeheerUrl: string;
     gatewayBaseUri: string;
+    delegatedClose?: () => void;
   }
 }
 

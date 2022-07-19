@@ -1,6 +1,5 @@
 <template>
-  <simple-spinner v-if="loggedIn.loading" />
-  <template v-else>
+  <login-overlay>
     <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
       <global-search>
         <template #articleFooter="{ id, title }">
@@ -10,7 +9,7 @@
     </header>
     <a :href="logoutUrl">Uitloggen</a>
     <router-view />
-  </template>
+  </login-overlay>
 </template>
 
 <script setup lang="ts">
@@ -18,9 +17,8 @@ import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { ensureLoggedIn, logoutUrl } from "./features/user";
-import SimpleSpinner from "./components/SimpleSpinner.vue";
-const loggedIn = ensureLoggedIn();
+import { logoutUrl, LoginOverlay } from "./features/user";
+
 const contactmoment = useContactmomentStore();
 </script>
 

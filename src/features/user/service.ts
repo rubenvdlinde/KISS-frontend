@@ -1,6 +1,4 @@
-import { ServiceResult, type ServiceData } from "@/services";
-import { handleLoginChange } from "@/services/wait-for-login";
-import { watch } from "vue";
+import { ServiceResult } from "@/services";
 
 export type User =
   | {
@@ -39,21 +37,8 @@ function fetchUser(url: string): Promise<User> {
     });
 }
 
-export const useCurrentUser = () =>
-  ServiceResult.fromFetcher(window.gatewayBaseUri + "/me", fetchUser);
-
-const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
-
-export function ensureLoggedIn() {
-  const currentUser = useCurrentUser();
-  watch(currentUser, (u) => {
-    if (u.loading) {
-      return;
-    }
-    handleLoginChange(u.success && u.data.isLoggedIn, loginUrl);
-  });
-
-  return currentUser as ServiceData<void>;
-}
-
+const meUrl = window.gatewayBaseUri + "/me";
+export const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
 export const logoutUrl = window.gatewayBaseUri + "/logout";
+
+export const useCurrentUser = () => ServiceResult.fromFetcher(meUrl, fetchUser);
