@@ -1,5 +1,5 @@
 import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
-import { fetchLoggedIn } from "@/services/wait-for-login";
+import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type { SearchResult } from "./types";
 

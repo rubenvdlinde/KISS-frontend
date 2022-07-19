@@ -1,4 +1,4 @@
-import { fetchLoggedIn } from "@/services/wait-for-login";
+import { fetchLoggedIn } from "@/services";
 import type { Persoon } from "./types";
 
 export function useBrpService() {

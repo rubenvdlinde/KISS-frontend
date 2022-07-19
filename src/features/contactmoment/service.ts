@@ -1,5 +1,5 @@
 import { ServiceResult } from "@/services";
-import { fetchLoggedIn } from "@/services/wait-for-login";
+import { fetchLoggedIn } from "@/services";
 import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {

@@ -8,7 +8,7 @@ import {
   type ServiceData,
 } from "@/services";
 import type { Ref } from "vue";
-import { fetchLoggedIn } from "@/services/wait-for-login";
+import { fetchLoggedIn } from "@/services";
 
 export type UseWerkberichtenParams = {
   typeId?: number;

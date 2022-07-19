@@ -1,6 +1,8 @@
 import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
+export * from "./wait-for-login";
+
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
   : // eslint-disable-next-line @typescript-eslint/no-empty-function

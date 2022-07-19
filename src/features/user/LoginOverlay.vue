@@ -18,7 +18,7 @@
 import { watch, computed, ref, watchEffect } from "vue";
 import { useCurrentUser } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
-import { handleLogin } from "@/services/wait-for-login";
+import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
 
 let newTab: Window | null = null;

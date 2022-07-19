@@ -1,7 +1,7 @@
 import type { Feedback } from "./types";
 import { ref } from "vue";
 import { ServiceResult } from "@/services";
-import { fetchLoggedIn } from "@/services/wait-for-login";
+import { fetchLoggedIn } from "@/services";
 
 export function useFeedbackService() {
   if (!window.gatewayBaseUri) {
