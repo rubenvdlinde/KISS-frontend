@@ -37,8 +37,7 @@ function fetchUser(url: string): Promise<User> {
     });
 }
 
-const meUrl = window.gatewayBaseUri + "/me";
-export const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
-export const logoutUrl = window.gatewayBaseUri + "/logout";
+
+
 
 export const useCurrentUser = () => ServiceResult.fromFetcher(meUrl, fetchUser);

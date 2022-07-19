@@ -6,8 +6,8 @@
           <search-feedback :id="id" :name="title"></search-feedback>
         </template>
       </global-search>
+      <a :href="logoutUrl">Uitloggen</a>
     </header>
-    <a :href="logoutUrl">Uitloggen</a>
     <router-view />
   </login-overlay>
 </template>
