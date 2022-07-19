@@ -1,4 +1,5 @@
 import { ServiceResult } from "@/services";
+import { meUrl } from "./config";
 
 export type User =
   | {
@@ -36,8 +37,5 @@ function fetchUser(url: string): Promise<User> {
       };
     });
 }
-
-
-
 
 export const useCurrentUser = () => ServiceResult.fromFetcher(meUrl, fetchUser);

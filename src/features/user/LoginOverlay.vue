@@ -107,7 +107,7 @@ function onLinkClick(e: Event) {
   } catch (error) {
     // popups are blocked, handle the link as usual.
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
