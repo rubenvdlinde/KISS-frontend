@@ -35,9 +35,9 @@ export function fetchLoggedIn(...args: FetchArgs): FetchReturn {
 
   return fetch(...args).then((r) => {
     if (r.status === 401) {
-      console.warn("session expired. waiting for user to log in");
+      console.warn("session expired. waiting for user to log in...");
       return waitForLogin.promise.then(() => {
-        console.log("user is logged in again, resuming");
+        console.log("user is logged in again, resuming...");
         return fetchLoggedIn(...args);
       });
     }
