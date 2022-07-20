@@ -15,3 +15,4 @@ data:
       window.zaaksysteemBaseUri = '{{ .Values.config.zaaksysteemBaseUri }}';
       window.brpBaseUri = '{{ .Values.config.brpBaseUri }}';
       window.organisatieIds = ["{{ join "\",\"" .Values.config.organizationIds }}"];
+      window.gatewayBaseUri = '{{ .Values.config.gatewayBaseUri }}';
