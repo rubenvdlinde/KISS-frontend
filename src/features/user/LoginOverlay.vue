@@ -8,7 +8,8 @@
         target="_blank"
         @click="onLinkClick"
         @keydown.enter="onLinkClick"
-        >Uw sessie is verlopen. Klik in het scherm om opnieuw in te loggen.</a
+        >Uw sessie is verlopen. Klik in het scherm om opnieuw in te loggen. Als
+        u dit binnen {{ timer }} seconden doet verliest u geen werk</a
       >
     </dialog>
   </template>
@@ -22,6 +23,9 @@ import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
 
 let newTab: Window | null = null;
+
+const loginTimeoutInSeconds = 60;
+const timer = ref(loginTimeoutInSeconds);
 
 const messageTypes = {
   refresh: "refresh",
@@ -44,6 +48,13 @@ function tryCloseTab() {
   newTab = null;
 }
 
+function countDownToExpiry() {
+  setInterval(() => {
+    const currentValue = timer.value;
+    timer.value = currentValue < 1 ? loginTimeoutInSeconds : currentValue - 1;
+  }, 1000);
+}
+
 function refresh() {
   currentUserState.refresh();
   // in case of a session expiry, you have a minute to log in again.
@@ -53,7 +64,8 @@ function refresh() {
     if (!isLoggedInRef.value) {
       document.location.reload();
     }
-  }, 60000);
+  }, loginTimeoutInSeconds * 1000);
+  countDownToExpiry();
 }
 
 const channel = new BroadcastChannel(
