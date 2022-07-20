@@ -9,7 +9,8 @@
         @click="onLinkClick"
         @keydown.enter="onLinkClick"
         >Uw sessie is verlopen. Klik in het scherm om opnieuw in te loggen. Als
-        u dit binnen {{ timer }} seconden doet, verliest u geen werk.</a
+        u dit binnen {{ loginTimeoutInSeconds }} seconden doet, verliest u geen
+        werk.</a
       >
     </dialog>
   </template>
@@ -48,29 +49,16 @@ function tryCloseTab() {
   newTab = null;
 }
 
-// in case of a session expiry, you have a minute to log in again.
-// after that, we refresh the page.
-// otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
-function countDownToExpiry() {
-  timer.value = loginTimeoutInSeconds;
-  const interValId = setInterval(() => {
-    const currentValue = timer.value;
-    if (currentValue > 0) {
-      timer.value = currentValue - 1;
-      return;
-    }
-
-    clearInterval(interValId);
-
+function refresh() {
+  currentUserState.refresh();
+  // in case of a session expiry, you have a minute to log in again.
+  // after that, we refresh the page.
+  // otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
+  setTimeout(() => {
     if (!isLoggedInRef.value) {
       location.reload();
     }
-  }, 1000);
-}
-
-function refresh() {
-  currentUserState.refresh();
-  countDownToExpiry();
+  }, loginTimeoutInSeconds * 1000);
 }
 
 const channel = new BroadcastChannel(
@@ -112,7 +100,7 @@ function onLogin() {
   if (sessionStorage.getItem(sessionStorageKey)) {
     sessionStorage.removeItem(sessionStorageKey);
     document.body.innerHTML =
-      "<p>U ben ingelogd. U kunt dit tabblad sluiten.</p>";
+      "<p>U bent ingelogd. U kunt dit tabblad sluiten.</p>";
   }
 
   if (dialogRef.value) {
