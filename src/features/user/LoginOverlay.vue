@@ -48,23 +48,28 @@ function tryCloseTab() {
   newTab = null;
 }
 
+// in case of a session expiry, you have a minute to log in again.
+// after that, we refresh the page.
+// otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
 function countDownToExpiry() {
-  setInterval(() => {
+  timer.value = loginTimeoutInSeconds;
+  const interValId = setInterval(() => {
     const currentValue = timer.value;
-    timer.value = currentValue < 1 ? loginTimeoutInSeconds : currentValue - 1;
+    if (currentValue > 0) {
+      timer.value = currentValue - 1;
+      return;
+    }
+
+    clearInterval(interValId);
+
+    if (!isLoggedInRef.value) {
+      location.reload();
+    }
   }, 1000);
 }
 
 function refresh() {
   currentUserState.refresh();
-  // in case of a session expiry, you have a minute to log in again.
-  // after that, we refresh the page.
-  // otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
-  setTimeout(() => {
-    if (!isLoggedInRef.value) {
-      document.location.reload();
-    }
-  }, loginTimeoutInSeconds * 1000);
   countDownToExpiry();
 }
 
