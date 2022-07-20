@@ -26,7 +26,6 @@ import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
 let newTab: Window | null = null;
 
 const loginTimeoutInSeconds = 60;
-const timer = ref(loginTimeoutInSeconds);
 
 const messageTypes = {
   refresh: "refresh",
