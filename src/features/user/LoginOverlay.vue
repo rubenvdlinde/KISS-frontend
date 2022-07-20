@@ -9,7 +9,7 @@
         @click="onLinkClick"
         @keydown.enter="onLinkClick"
         >Uw sessie is verlopen. Klik in het scherm om opnieuw in te loggen. Als
-        u dit binnen {{ timer }} seconden doet verliest u geen werk</a
+        u dit binnen {{ timer }} seconden doet, verliest u geen werk.</a
       >
     </dialog>
   </template>
