@@ -1,5 +1,5 @@
 <template>
-  <SimpleSpinner v-if="currentUserState.loading" />
+  <simple-spinner v-if="currentUserState.loading" />
   <template v-else>
     <slot v-if="initialized" :onLogout="onLogout"></slot>
     <dialog ref="dialogRef" @keyup.escape.prevent @keydown.escape.prevent>
@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { watch, computed, ref } from "vue";
 import { useCurrentUser } from "./service";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
 
