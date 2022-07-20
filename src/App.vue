@@ -79,13 +79,13 @@ button:hover {
   cursor: pointer;
 }
 
-.tabs-component {
-  ul li.is-active {
+.tabs-component-zaken {
+  > ul li.is-active {
     background-color: var(--color-secondary);
     border-radius: var(--radius-default) var(--radius-default) 0 0;
   }
 
-  ul li {
+  > ul li {
     display: inline-block;
     padding: var(--spacing-default);
 
@@ -98,6 +98,26 @@ button:hover {
 
   > div {
     background-color: var(--color-secondary);
+  }
+}
+
+.tabs-component-contactmoment {
+  > ul {
+    background-color: var(--color-secondary);
+  }
+  > ul li.is-active {
+    background-color: white;
+  }
+
+  > ul li {
+    display: inline-block;
+    padding: var(--spacing-default);
+
+    a {
+      text-decoration: none;
+      font-size: var(--utrecht-typography-scale-lg);
+      color: var(--utrecht-document-color);
+    }
   }
 }
 
