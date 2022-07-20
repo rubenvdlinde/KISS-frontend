@@ -6,7 +6,7 @@
       :to="{ name: 'contactmoment' }"
       >terug</router-link
     >
-    <section>
+    <div>
       <section v-if="saving"><simple-spinner></simple-spinner></section>
 
       <application-message v-else-if="saved" messageType="confirm">
@@ -29,7 +29,7 @@
           <contactmoment-afhandel-form @save="saveContact" />
         </section>
       </template>
-    </section>
+    </div>
   </main>
 </template>
 
@@ -53,11 +53,10 @@ const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 const saved = ref(false);
 
-const zakenToevoegenAanContactmoment = (id: string) => {
+const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
   contactmoment?.zaken.forEach((zaak) => {
     const data = {
-      contactmoment:
-        window.contactmomentenBaseUri + "/objectcontactmomenten/" + id, //todo de hele url zou uit de response van het aanmaken contactmoment moeten komen
+      contactmoment: contactMomentUrl,
       object: zaak.url,
       objectType: "zaak",
     } as ContactmomentObject;
@@ -81,7 +80,7 @@ const saveContact = (contactmoment: Contactmoment) => {
     .save(contactmoment)
     .then((savedContactmoment) => {
       // nu ook de zaken opslaan bij het contactmoment
-      zakenToevoegenAanContactmoment(savedContactmoment.id);
+      zakenToevoegenAanContactmoment(savedContactmoment.url);
 
       //status bijwekren
       saved.value = true;

@@ -34,8 +34,9 @@ export const useContactmomentStore = defineStore("contactmoment", {
         return existingZaak.shouldStore;
       }
     },
-    findById(id: string) {
-      return this.zaken.find((element) => element.id === id);
+    isZaakLinkedToContactmoment(id: string) {
+      const zaak = this.zaken.find((element) => element.id === id);
+      return zaak ? zaak.shouldStore : false;
     },
   },
 });

@@ -1,9 +1,8 @@
 <template>
-  <button
-    @click="koppel"
-    class="icon-button icon-after icon-large check"
-    :class="{ selected: selected }"
-  ></button>
+  <label>
+    <input type="checkbox" @change="koppel" v-model="selected" />
+    <span>Opslaan bij contactmoment</span>
+  </label>
 </template>
 <script lang="ts" setup>
 import { useContactmomentStore } from "@/stores/contactmoment";
@@ -22,25 +21,19 @@ const koppel = () => {
 };
 
 onMounted(() => {
-  const stored = contactmoment.findById(props.zaak.id);
-
-  selected.value = stored ? stored.shouldStore : false;
+  selected.value = contactmoment.isZaakLinkedToContactmoment(props.zaak.id);
 });
-
-// const isZaakSelected = computed(() => {
-//   const stored = contactmoment.findById(props.zaak.id);
-
-//   return stored ? stored.shouldStore : false;
-// });
 </script>
 
 <style lang="scss" scoped>
-.icon-button {
-  color: var(--color-tertiary);
-  border: none;
-  background-color: transparent;
+input {
+  accent-color: var(--color-primary);
+  transform: scale(1.25);
+  margin: 0;
+  margin-inline-start: 2px;
 }
-.selected {
-  color: var(--color-accent);
+
+label span {
+  margin-left: var(--spacing-small);
 }
 </style>
