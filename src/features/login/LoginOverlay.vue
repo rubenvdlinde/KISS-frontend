@@ -22,6 +22,7 @@ import { useCurrentUser } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
+import { useUserStore, type User } from "@/stores/user";
 
 let newTab: Window | null = null;
 
@@ -72,6 +73,7 @@ channel.onmessage = (e) => {
 const dialogRef = ref<HTMLDialogElement>();
 
 const currentUserState = useCurrentUser();
+const userStore = useUserStore();
 
 const initialized = ref(false);
 
@@ -152,6 +154,14 @@ watch(
     }
   }
 );
+
+const computedUser = computed<User>(() =>
+  !currentUserState.success ? { isLoggedIn: false } : currentUserState.data
+);
+
+watch(computedUser, (u) => {
+  userStore.setUser(u);
+});
 </script>
 
 <style lang="scss" scoped>

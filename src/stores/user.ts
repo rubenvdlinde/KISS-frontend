@@ -1,26 +1,42 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
-import { useCurrentUser, Roles } from "@/features/user";
+import type { Ref } from "vue";
+
+export type User =
+  | {
+      isLoggedIn: false;
+    }
+  | {
+      isLoggedIn: true;
+      id: string;
+      roles: string[];
+    };
+
+enum Roles {
+  adminPost = "ROLE_scope.POST.admin",
+}
 
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
-      preferences: useStorage("preferences", { kanaal: "" }),
-      userData: useCurrentUser(),
+      preferences: useStorage("preferences", { kanaal: "" }) as Ref<{
+        kanaal: string;
+      }>,
+      user: {
+        isLoggedIn: false,
+      } as User,
     };
   },
   actions: {
-    setKanaal(kanaal) {
+    setKanaal(kanaal: string) {
       this.preferences.kanaal = kanaal;
+    },
+    setUser(user: User) {
+      this.user = user;
     },
   },
   getters: {
-    hasAdminPostRole(state) {
-      return (
-        state.userData.success &&
-        state.userData.data.isLoggedIn &&
-        state.userData.data.roles.includes(Roles.adminPost)
-      );
-    },
+    hasAdminPostRole: (state) =>
+      state.user.isLoggedIn && state.user.roles.includes(Roles.adminPost),
   },
 });

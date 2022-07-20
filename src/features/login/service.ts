@@ -1,20 +1,6 @@
 import { ServiceResult } from "@/services";
 import { meUrl } from "./config";
 
-export type User =
-  | {
-      isLoggedIn: false;
-    }
-  | {
-      isLoggedIn: true;
-      id: string;
-      roles: string[];
-    };
-
-export enum Roles {
-  adminPost = "ROLE_scope.POST.admin",
-}
-
 const anonymousUser = Object.freeze({
   isLoggedIn: false,
 });
