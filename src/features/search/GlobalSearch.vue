@@ -132,7 +132,6 @@ const buttonText = computed(() =>
 
 <style lang="scss" scoped>
 form {
-  background-color: var(--color-primary);
   grid-area: bar;
   padding-block: var(--spacing-default);
   max-width: 40rem;
