@@ -50,14 +50,6 @@ function tryCloseTab() {
 
 function refresh() {
   currentUserState.refresh();
-  // in case of a session expiry, you have a minute to log in again.
-  // after that, we refresh the page.
-  // otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
-  setTimeout(() => {
-    if (!isLoggedInRef.value) {
-      location.reload();
-    }
-  }, loginTimeoutInSeconds * 1000);
 }
 
 const channel = new BroadcastChannel(
@@ -126,6 +118,21 @@ function redirectToLogin() {
   window.location.href = loginUrl;
 }
 
+// in case of a session expiry, you have a minute to log in again.
+// after that, we refresh the page.
+// otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
+let currentLoginTimoutId: number | undefined;
+function resetLoginTimeout() {
+  if (currentLoginTimoutId) {
+    clearTimeout(currentLoginTimoutId);
+  }
+  currentLoginTimoutId = setTimeout(() => {
+    if (!isLoggedInRef.value) {
+      location.reload();
+    }
+  }, loginTimeoutInSeconds * 1000);
+}
+
 watch(
   [isLoadingRef, isLoggedInRef, dialogRef, initialized],
   ([loading, isLoggedIn, dialog, isInitialized]) => {
@@ -140,6 +147,7 @@ watch(
       return;
     }
     if (dialog) {
+      resetLoginTimeout();
       dialog.showModal();
     }
   }
