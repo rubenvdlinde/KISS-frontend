@@ -90,7 +90,6 @@ body {
   grid-template-columns: var(--container-padding) 1fr 2fr 1fr var(
       --container-padding
     );
-  justify-content: space-between;
   align-items: center;
 
   .log-out {
