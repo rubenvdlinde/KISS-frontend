@@ -1,20 +1,19 @@
 <template>
   <form
     method="get"
+    class="search-bar"
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
   >
-    <section class="search-bar">
-      <label
-        ><input
-          type="search"
-          v-model="searchInput"
-          placeholder="Zoeken"
-          @search.prevent="applySearch"
-        />Zoekterm</label
-      >
-      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
-    </section>
+    <label
+      ><input
+        type="search"
+        v-model="searchInput"
+        placeholder="Zoeken"
+        @search.prevent="applySearch"
+      />Zoekterm</label
+    >
+    <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
   </form>
   <template v-if="currentSearch">
     <template v-if="searchResults.state === 'success'">
@@ -83,7 +82,7 @@
         {{ buttonText }}
       </button>
     </template>
-    <simple-spinner v-if="searchResults.state === 'loading'" />
+    <simple-spinner class="spinner" v-if="searchResults.state === 'loading'" />
   </template>
 </template>
 
@@ -133,12 +132,10 @@ const buttonText = computed(() =>
 
 <style lang="scss" scoped>
 form {
-  min-height: var(--header-height);
   background-color: var(--color-primary);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-inline: var(--spacing-default);
+  grid-area: bar;
+  padding-block: var(--spacing-default);
+  max-width: 40rem;
 }
 
 form > section {
@@ -154,12 +151,20 @@ label {
   width: 100%;
 }
 
+.spinner {
+  position: fixed;
+  top: 0;
+  left: 50vw;
+  transform: translate(50%);
+}
+
 .search-results {
   --search-results-width: calc(var(--container-width) * 0.75);
   --container-padding: max(
     var(--spacing-default),
     calc(50vw - var(--search-results-width) / 2)
   );
+  grid-area: results;
   display: grid;
   padding-inline: var(--container-padding);
   padding-block-end: 1rem;
@@ -185,6 +190,7 @@ label {
 }
 
 .expand-button {
+  grid-area: expand;
   width: 100%;
   height: fit-content;
   padding-block: 0.25rem;

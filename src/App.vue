@@ -7,7 +7,11 @@
             <search-feedback :id="id" :name="title"></search-feedback>
           </template>
         </global-search>
-        <a :href="logoutUrl" @click="onLogout" @keydown.enter="onLogout"
+        <a
+          :href="logoutUrl"
+          @click="onLogout"
+          @keydown.enter="onLogout"
+          class="log-out utrecht-button"
           >Uitloggen</a
         >
       </header>
@@ -74,6 +78,28 @@ body {
 
 #app {
   position: relative;
+}
+
+#app > header {
+  background-color: var(--color-primary);
+  display: grid;
+  grid-template-areas:
+    "padleft gap bar logout padright"
+    "results results results results results"
+    "expand expand expand expand expand";
+  grid-template-columns: var(--container-padding) 1fr 2fr 1fr var(
+      --container-padding
+    );
+  justify-content: space-between;
+  align-items: center;
+
+  .log-out {
+    grid-area: logout;
+    color: white;
+    background-color: var(--color-primary);
+    padding: var(--spacing-small);
+    margin-left: auto;
+  }
 }
 
 #app > header.contactmomentLoopt {
