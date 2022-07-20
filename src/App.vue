@@ -95,7 +95,6 @@ body {
   .log-out {
     grid-area: logout;
     color: white;
-    background-color: var(--color-primary);
     padding: var(--spacing-small);
     margin-left: auto;
   }
