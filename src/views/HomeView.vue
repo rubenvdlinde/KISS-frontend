@@ -191,7 +191,7 @@ header {
 }
 
 .admin-link {
-  margin-inline-end: var(--spacing-default);
+  padding: var(--spacing-small);
   color: var(--color-headings);
 }
 
