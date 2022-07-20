@@ -26,13 +26,13 @@ export function handleLogin() {
 }
 
 export function fetchLoggedIn(...args: FetchArgs): FetchReturn {
-  const init = args[1];
-  if (!init?.credentials) {
-    args[1] = {
-      ...(init || {}),
-      credentials: "include",
-    };
+  const init = args[1] || {};
+
+  if (!init.credentials) {
+    init.credentials = "include";
+    args[1] = init;
   }
+
   return fetch(...args).then((r) => {
     if (r.status === 401) {
       console.warn("session expired. waiting for user to log in");
