@@ -113,7 +113,7 @@ export const ServiceResult = {
     url: string | (() => string),
     fetcher: (url: string) => Promise<T>,
     config?: FetcherConfig<T>
-  ): ServiceData<T> {
+  ): ServiceData<T> & { refresh: () => void } {
     const result =
       config?.initialData !== undefined
         ? ServiceResult.success<T>(config.initialData)
@@ -123,7 +123,7 @@ export const ServiceResult = {
     const getRequestUniqueId = config?.getUniqueId || getUrl;
     const fetcherWithoutParameters = () => fetcher(getUrl());
 
-    const { data, error, isValidating } = useSWRV<T, any>(
+    const { data, error, isValidating, mutate } = useSWRV<T, any>(
       getRequestUniqueId,
       fetcherWithoutParameters,
       {
@@ -176,7 +176,7 @@ export const ServiceResult = {
       dispose2();
     });
 
-    return result;
+    return Object.assign(result, { refresh: mutate });
   },
 };
 

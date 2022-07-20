@@ -2,7 +2,7 @@
   <SimpleSpinner v-if="currentUserState.loading" />
   <template v-else>
     <slot v-if="initialized"></slot>
-    <dialog ref="dialog" @keyup.escape.prevent @keydown.escape.prevent>
+    <dialog ref="dialogRef" @keyup.escape.prevent @keydown.escape.prevent>
       <a
         :href="redirectUrl"
         target="_blank"
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, computed, ref, watchEffect } from "vue";
+import { watch, computed, ref } from "vue";
 import { useCurrentUser } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { handleLogin } from "@/services";
@@ -45,59 +45,37 @@ const channel = new BroadcastChannel(
 );
 
 channel.onmessage = () => {
-  shouldShowLogin.value = false;
+  currentUserState.refresh();
   tryCloseTab();
 };
 
-const dialog = ref<HTMLDialogElement>();
+const dialogRef = ref<HTMLDialogElement>();
 
 const currentUserState = useCurrentUser();
 
-const shouldShowLogin = ref(true);
-
 const initialized = ref(false);
 
-watchEffect(() => {
-  shouldShowLogin.value =
-    !currentUserState.success || !currentUserState.data.isLoggedIn;
-});
-
-const isLoggedIn = computed(
+const isLoggedInRef = computed(
   () => currentUserState.success && currentUserState.data.isLoggedIn
 );
 
-const disposeOnInitialLoginCheck = watchEffect(() => {
-  if (!currentUserState.success) return;
-  if (currentUserState.data.isLoggedIn) {
-    initialized.value = true;
-  } else {
-    window.location.href = loginUrl;
-  }
-  disposeOnInitialLoginCheck();
-});
+const isLoadingRef = computed(() => currentUserState.loading);
 
-watch([shouldShowLogin, dialog], ([x, d]) => {
-  if (!initialized.value) return;
-  if (x) {
-    if (d) {
-      d.showModal();
-    }
-  } else if (d) {
-    d.close();
-  }
-});
+function onLogin() {
+  initialized.value = true;
 
-watch(isLoggedIn, (x) => {
-  if (x) {
-    handleLogin();
-    channel.postMessage("close");
-    const shouldClose = !!sessionStorage.getItem(sessionStorageKey);
-    if (shouldClose) {
-      document.body.innerHTML =
-        "<p>U ben ingelogd. U kunt deze tab sluiten.</p>";
-    }
+  handleLogin();
+  channel.postMessage("close");
+
+  const shouldClose = !!sessionStorage.getItem(sessionStorageKey);
+  if (shouldClose) {
+    document.body.innerHTML = "<p>U ben ingelogd. U kunt deze tab sluiten.</p>";
   }
-});
+
+  if (dialogRef.value) {
+    dialogRef.value.close();
+  }
+}
 
 function onLinkClick(e: Event) {
   try {
@@ -108,6 +86,29 @@ function onLinkClick(e: Event) {
     // popups are blocked, handle the link as usual.
   }
 }
+
+function redirectToLogin() {
+  window.location.href = loginUrl;
+}
+
+watch(
+  [isLoadingRef, isLoggedInRef, dialogRef, initialized],
+  ([loading, isLoggedIn, dialog, isInitialized]) => {
+    if (loading) return;
+    if (isLoggedIn) {
+      onLogin();
+      return;
+    }
+    // not logged in
+    if (!isInitialized) {
+      redirectToLogin();
+      return;
+    }
+    if (dialog) {
+      dialog.showModal();
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>
