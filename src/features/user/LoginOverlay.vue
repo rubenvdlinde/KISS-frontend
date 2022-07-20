@@ -94,7 +94,8 @@ function onLogin() {
 
   if (sessionStorage.getItem(sessionStorageKey)) {
     sessionStorage.removeItem(sessionStorageKey);
-    document.body.innerHTML = "<p>U ben ingelogd. U kunt deze tab sluiten.</p>";
+    document.body.innerHTML =
+      "<p>U ben ingelogd. U kunt dit tabblad sluiten.</p>";
   }
 
   if (dialogRef.value) {

@@ -7,7 +7,9 @@
             <search-feedback :id="id" :name="title"></search-feedback>
           </template>
         </global-search>
-        <a :href="logoutUrl" @click="onLogout">Uitloggen</a>
+        <a :href="logoutUrl" @click="onLogout" @keydown.enter="onLogout"
+          >Uitloggen</a
+        >
       </header>
       <router-view />
     </template>
