@@ -1,7 +1,7 @@
 <template>
   <SimpleSpinner v-if="currentUserState.loading" />
   <template v-else>
-    <slot v-if="initialized"></slot>
+    <slot v-if="initialized" :onLogout="onLogout"></slot>
     <dialog ref="dialogRef" @keyup.escape.prevent @keydown.escape.prevent>
       <a
         :href="redirectUrl"
@@ -22,6 +22,11 @@ import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
 
 let newTab: Window | null = null;
+
+const messageTypes = {
+  refresh: "refresh",
+  closeTab: "closeTab",
+} as const;
 
 function tryCreateNewTab() {
   if (newTab && !newTab.closed) {
@@ -44,9 +49,16 @@ const channel = new BroadcastChannel(
   "kiss-close-tab-channel-" + window.location.host
 );
 
-channel.onmessage = () => {
-  currentUserState.refresh();
-  tryCloseTab();
+channel.onmessage = (e) => {
+  switch (e.data) {
+    case messageTypes.closeTab:
+      tryCloseTab();
+      break;
+
+    case messageTypes.refresh:
+      currentUserState.refresh();
+      break;
+  }
 };
 
 const dialogRef = ref<HTMLDialogElement>();
@@ -65,16 +77,22 @@ function onLogin() {
   initialized.value = true;
 
   handleLogin();
-  channel.postMessage("close");
+  channel.postMessage(messageTypes.refresh);
+  channel.postMessage(messageTypes.closeTab);
 
-  const shouldClose = !!sessionStorage.getItem(sessionStorageKey);
-  if (shouldClose) {
+  if (sessionStorage.getItem(sessionStorageKey)) {
+    sessionStorage.removeItem(sessionStorageKey);
     document.body.innerHTML = "<p>U ben ingelogd. U kunt deze tab sluiten.</p>";
   }
 
   if (dialogRef.value) {
     dialogRef.value.close();
   }
+}
+
+function onLogout() {
+  channel.postMessage(messageTypes.refresh);
+  setTimeout(() => currentUserState.refresh(), 1000);
 }
 
 function onLinkClick(e: Event) {

@@ -1,14 +1,16 @@
 <template>
   <login-overlay>
-    <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-      <global-search>
-        <template #articleFooter="{ id, title }">
-          <search-feedback :id="id" :name="title"></search-feedback>
-        </template>
-      </global-search>
-      <a :href="logoutUrl">Uitloggen</a>
-    </header>
-    <router-view />
+    <template #default="{ onLogout }">
+      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+        <global-search>
+          <template #articleFooter="{ id, title }">
+            <search-feedback :id="id" :name="title"></search-feedback>
+          </template>
+        </global-search>
+        <a :href="logoutUrl" @click="onLogout">Uitloggen</a>
+      </header>
+      <router-view />
+    </template>
   </login-overlay>
 </template>
 
