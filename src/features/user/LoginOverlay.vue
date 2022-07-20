@@ -44,6 +44,18 @@ function tryCloseTab() {
   newTab = null;
 }
 
+function refresh() {
+  currentUserState.refresh();
+  // in case of a session expiry, you have a minute to log in again.
+  // after that, we refresh the page.
+  // otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
+  setTimeout(() => {
+    if (!isLoggedInRef.value) {
+      document.location.reload();
+    }
+  }, 60000);
+}
+
 const channel = new BroadcastChannel(
   // unique name per environment
   "kiss-close-tab-channel-" + window.location.host
@@ -56,7 +68,7 @@ channel.onmessage = (e) => {
       break;
 
     case messageTypes.refresh:
-      currentUserState.refresh();
+      refresh();
       break;
   }
 };
@@ -92,7 +104,7 @@ function onLogin() {
 
 function onLogout() {
   channel.postMessage(messageTypes.refresh);
-  setTimeout(() => currentUserState.refresh(), 1000);
+  setTimeout(() => refresh(), 1000);
 }
 
 function onLinkClick(e: Event) {
