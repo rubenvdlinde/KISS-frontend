@@ -115,6 +115,7 @@ function onLinkClick(e: Event) {
   if (tryCreateNewTab()) {
     e.preventDefault();
   }
+  // if we can't open a new tab, handle the link normally
 }
 
 function redirectToLogin() {
