@@ -2,8 +2,8 @@
   <!-- https://web.dev/building-a-toast-component/ -->
   <section>
     <output
-      v-for="({ message, type, show }, i) in messages"
-      :key="i"
+      v-for="({ message, type, show, key }, i) in messages"
+      :key="key"
       role="status"
       :class="[type, { show }]"
       >{{ message }}</output
@@ -18,15 +18,16 @@ type Message = {
   type: "confirm" | "error";
 };
 
-const messages = reactive<(Message & { show: boolean })[]>([]);
+const messages = reactive<(Message & { show: boolean; key: number })[]>([]);
 
 function pushMessage(message: Message) {
   const m = reactive({
     ...message,
     show: false,
+    key: Math.random(),
   });
   messages.unshift(m);
-  nextTick(() => {
+  setTimeout(() => {
     m.show = true;
   });
   setTimeout(() => {
@@ -36,16 +37,16 @@ function pushMessage(message: Message) {
       if (index !== -1) {
         messages.splice(index, 1);
       }
-    }, 1000);
+    }, 250);
   }, 3000);
 }
 
 setInterval(() => {
   pushMessage({
-    message: "Item added to cart",
+    message: Math.random().toString(),
     type: "confirm",
   });
-}, 6000);
+}, 2000);
 </script>
 
 <style scoped lang="scss">
