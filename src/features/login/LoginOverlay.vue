@@ -58,6 +58,7 @@ function refresh() {
   currentUserState.refresh();
 }
 
+// this channel is used to communicate between browser tabs/windows
 const channel = new BroadcastChannel(
   // unique name per environment
   "kiss-close-tab-channel-" + window.location.host
@@ -95,10 +96,17 @@ function onLogin() {
   channel.postMessage(messageTypes.refresh);
   channel.postMessage(messageTypes.closeTab);
 
+  // session storage is owned per tab.
+  // this value is set on the /redirect-to-login page.
+  // if the value is present, it means this tab got redirected from that page.
+  // this means the user has KISS open in another tab, so we can close this one.
+  // if the user allows popups, we can do this automatically from the parent.
+  // just in case popups are blocked, we indicate to the user that they can do this themselves.
   if (sessionStorage.getItem(sessionStorageKey)) {
     sessionStorage.removeItem(sessionStorageKey);
     document.body.innerHTML =
       "<p>U bent ingelogd. U kunt dit tabblad sluiten.</p>";
+    return;
   }
 
   if (dialogRef.value) {
@@ -145,11 +153,18 @@ watch(
       onLogin();
       return;
     }
+
     // not logged in
     if (!isInitialized) {
+      // this is the first time you open this window.
+      // we can just directly redirect to login.
       redirectToLogin();
       return;
     }
+
+    // you were logged in, but got logged out in another window or your session expired
+    // the dialog element should be in the dom by now, so it shouldn't be undefined
+    // the if is just there for type safety
     if (dialog) {
       resetLoginTimeout();
       dialog.showModal();
