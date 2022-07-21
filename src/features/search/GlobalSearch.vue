@@ -16,73 +16,77 @@
     <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
   </form>
   <template v-if="currentSearch">
-    <template v-if="searchResults.state === 'success'">
-      <section
-        ref="searchResultsRef"
-        :class="['search-results', { isExpanded }]"
-      >
-        <nav v-show="!currentId">
+    <section ref="searchResultsRef" :class="['search-results', { isExpanded }]">
+      <template v-if="searchResults.success">
+        <p v-if="!hasResults" class="no-results">Geen resultaten gevonden</p>
+        <template v-else>
+          <nav v-show="!currentId">
+            <ul>
+              <li
+                v-for="{ id, title, source } in searchResults.data.page"
+                :key="'nav_' + id"
+              >
+                <a
+                  href="#"
+                  @click="currentId = id"
+                  class="icon-after chevron-down"
+                  ><span :class="`category-${source}`">{{ source }}</span
+                  ><span>{{ title }}</span></a
+                >
+              </li>
+            </ul>
+          </nav>
+          <pagination
+            class="pagination"
+            :pagination="searchResults.data"
+            @navigate="handlePaginationNavigation"
+            v-show="!currentId"
+          />
           <ul>
             <li
-              v-for="{ id, title, source } in searchResults.data.page"
-              :key="'nav_' + id"
+              v-for="{ id, title, source, content, url } in searchResults.data
+                .page"
+              :key="'searchResult_' + id"
+              v-show="id === currentId"
             >
-              <a
-                href="#"
-                @click="currentId = id"
-                class="icon-after chevron-down"
-                ><span :class="`category-${source}`">{{ source }}</span
-                ><span>{{ title }}</span></a
+              <a class="back-to-results" href="#" @click="currentId = ''"
+                >Alle zoekresultaten</a
               >
+              <article>
+                <header>
+                  <utrecht-heading model-value :level="2"
+                    ><a
+                      v-if="url"
+                      :href="url.toString()"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ title }}
+                    </a>
+                    <template v-else>{{ title }}</template>
+                  </utrecht-heading>
+                  <small :class="`category-${source}`">{{ source }}</small>
+                </header>
+                <p v-if="content">{{ content }}</p>
+                <slot name="articleFooter" :id="url" :title="title"></slot>
+              </article>
             </li>
           </ul>
-        </nav>
-        <pagination
-          class="pagination"
-          :pagination="searchResults.data"
-          @navigate="handlePaginationNavigation"
-          v-show="!currentId"
-        />
-        <ul>
-          <li
-            v-for="{ id, title, source, content, url } in searchResults.data
-              .page"
-            :key="'searchResult_' + id"
-            v-show="id === currentId"
-          >
-            <a class="back-to-results" href="#" @click="currentId = ''"
-              >Alle zoekresultaten</a
-            >
-            <article>
-              <header>
-                <utrecht-heading model-value :level="2"
-                  ><a
-                    v-if="url"
-                    :href="url.toString()"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {{ title }}
-                  </a>
-                  <template v-else>{{ title }}</template>
-                </utrecht-heading>
-                <small :class="`category-${source}`">{{ source }}</small>
-              </header>
-              <p v-if="content">{{ content }}</p>
-              <slot name="articleFooter" :id="url" :title="title"></slot>
-            </article>
-          </li>
-        </ul>
-      </section>
-      <button
-        type="button"
-        :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
-        @click="isExpanded = !isExpanded"
-      >
-        {{ buttonText }}
-      </button>
-    </template>
-    <simple-spinner class="spinner" v-if="searchResults.state === 'loading'" />
+        </template>
+      </template>
+      <simple-spinner
+        class="spinner"
+        v-if="searchResults.state === 'loading'"
+      />
+    </section>
+    <button
+      type="button"
+      :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
+      @click="isExpanded = !isExpanded"
+      v-if="searchResults.success && searchResults.data.page.length"
+    >
+      {{ buttonText }}
+    </button>
   </template>
 </template>
 
@@ -91,7 +95,7 @@ import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useGlobalSearch } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
@@ -128,12 +132,22 @@ function handlePaginationNavigation(page: number) {
 const buttonText = computed(() =>
   isExpanded.value ? "Inklappen" : "Uitklappen"
 );
+
+const hasResults = computed(
+  () => searchResults.success && !!searchResults.data.page.length
+);
+
+watch(hasResults, (x) => {
+  if (!x) {
+    isExpanded.value = true;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
 form {
   grid-area: bar;
-  padding-block: var(--spacing-default);
+  padding-block: var(--spacing-large);
   max-width: 40rem;
 }
 
@@ -150,13 +164,6 @@ label {
   width: 100%;
 }
 
-.spinner {
-  position: fixed;
-  top: 0;
-  left: 50vw;
-  transform: translate(50%);
-}
-
 .search-results {
   --search-results-width: calc(var(--container-width) * 0.75);
   --container-padding: max(
@@ -165,8 +172,9 @@ label {
   );
   grid-area: results;
   display: grid;
+  justify-items: stretch;
   padding-inline: var(--container-padding);
-  padding-block-end: 1rem;
+  padding-block: var(--spacing-default);
   background-color: var(--color-secondary);
   //
   position: relative;
@@ -188,6 +196,14 @@ label {
   }
 }
 
+.no-results {
+  justify-self: center;
+}
+
+.spinner {
+  font-size: 2rem;
+}
+
 .expand-button {
   grid-area: expand;
   width: 100%;
@@ -197,6 +213,7 @@ label {
   white-space: nowrap;
   display: flex;
   justify-content: center;
+  margin-block-start: calc(var(--spacing-default) * -0.5);
 
   &.isExpanded::after {
     transform: rotate(180deg);
