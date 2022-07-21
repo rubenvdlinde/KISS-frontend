@@ -1,16 +1,17 @@
 import type { Feedback } from "./types";
 import { ref } from "vue";
 import { ServiceResult } from "@/services";
+import { fetchLoggedIn } from "@/services";
 
 export function useFeedbackService() {
   if (!window.gatewayBaseUri) {
     console.error("contactmomentenBaseUri missing");
   }
 
-  const feedbackUrl = window.gatewayBaseUri + "/reviews";
+  const feedbackUrl = window.gatewayBaseUri + "/api/reviews";
 
   const postFeedback = (data: Feedback) => {
-    const promise = fetch(feedbackUrl, {
+    const promise = fetchLoggedIn(feedbackUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",

@@ -6,14 +6,8 @@ import { createPinia } from "pinia";
 
 declare global {
   interface Window {
-    openPubBaseUri: string;
-    contactmomentenBaseUri: string;
     organisatieIds: string[];
-    globalSearchBaseUri: string;
     pubBeheerUrl: string;
-    zaaksysteemBaseUri: string;
-    brpBaseUri: string;
-    gespreksResultatenBaseUri: string;
     gatewayBaseUri: string;
   }
 }

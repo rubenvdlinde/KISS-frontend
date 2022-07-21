@@ -1,12 +1,23 @@
 <template>
-  <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-    <global-search>
-      <template #articleFooter="{ id, title }">
-        <search-feedback :id="id" :name="title"></search-feedback>
-      </template>
-    </global-search>
-  </header>
-  <router-view />
+  <login-overlay>
+    <template #default="{ onLogout }">
+      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+        <global-search>
+          <template #articleFooter="{ id, title }">
+            <search-feedback :id="id" :name="title"></search-feedback>
+          </template>
+        </global-search>
+        <a
+          :href="logoutUrl"
+          @click="onLogout"
+          @keydown.enter="onLogout"
+          class="log-out utrecht-button"
+          >Uitloggen</a
+        >
+      </header>
+      <router-view />
+    </template>
+  </login-overlay>
 </template>
 
 <script setup lang="ts">
@@ -14,6 +25,8 @@ import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
+import { logoutUrl, LoginOverlay } from "./features/login";
+
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -65,6 +78,26 @@ body {
 
 #app {
   position: relative;
+}
+
+#app > header {
+  background-color: var(--color-primary);
+  display: grid;
+  grid-template-areas:
+    "padleft gap bar logout padright"
+    "results results results results results"
+    "expand expand expand expand expand";
+  grid-template-columns: var(--container-padding) 1fr 2fr 1fr var(
+      --container-padding
+    );
+  align-items: center;
+
+  .log-out {
+    grid-area: logout;
+    color: white;
+    padding: var(--spacing-small);
+    margin-left: auto;
+  }
 }
 
 #app > header.contactmomentLoopt {
