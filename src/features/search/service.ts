@@ -1,4 +1,5 @@
 import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
+import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type { SearchResult } from "./types";
 
@@ -24,6 +25,9 @@ function mapResult(obj: any): SearchResult {
   };
 }
 
+const globalSearchBaseUri =
+  window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-search/search";
+
 export function useGlobalSearch(
   parameters: Ref<{ search?: string; page?: number }>
 ) {
@@ -31,12 +35,12 @@ export function useGlobalSearch(
     const query = parameters.value.search;
     if (!query) return "";
 
-    return `${window.globalSearchBaseUri}?query=${query}`;
+    return `${globalSearchBaseUri}?query=${query}`;
   }
 
   async function fetcher(url: string): Promise<Paginated<SearchResult>> {
     if (!url) throw new Error();
-    const r = await fetch(url, {
+    const r = await fetchLoggedIn(url, {
       method: "POST",
       headers: {
         "content-type": "application/json",

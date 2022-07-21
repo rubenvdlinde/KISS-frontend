@@ -1,14 +1,32 @@
 <template>
-  <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-    <global-search />
-  </header>
-  <router-view />
+  <login-overlay>
+    <template #default="{ onLogout }">
+      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+        <global-search>
+          <template #articleFooter="{ id, title }">
+            <search-feedback :id="id" :name="title"></search-feedback>
+          </template>
+        </global-search>
+        <a
+          :href="logoutUrl"
+          @click="onLogout"
+          @keydown.enter="onLogout"
+          class="log-out utrecht-button"
+          >Uitloggen</a
+        >
+      </header>
+      <router-view />
+    </template>
+  </login-overlay>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import SearchFeedback from "./features/feedback/SearchFeedback.vue";
+import { logoutUrl, LoginOverlay } from "./features/login";
+
 const contactmoment = useContactmomentStore();
 </script>
 
@@ -37,6 +55,9 @@ const contactmoment = useContactmomentStore();
     calc(50vw - var(--container-width) / 2)
   );
   --section-width: 30.75rem;
+  --section-width-small: 20rem;
+  --section-width-large: 60rem;
+
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
@@ -47,6 +68,8 @@ const contactmoment = useContactmomentStore();
   --radius-default: 0.5rem;
   --radius-medium: 1rem;
   --radius-large: 1.5rem;
+
+  --height-body: 100vh;
 }
 
 body {
@@ -55,6 +78,26 @@ body {
 
 #app {
   position: relative;
+}
+
+#app > header {
+  background-color: var(--color-primary);
+  display: grid;
+  grid-template-areas:
+    "padleft gap bar logout padright"
+    "results results results results results"
+    "expand expand expand expand expand";
+  grid-template-columns: var(--container-padding) 1fr 2fr 1fr var(
+      --container-padding
+    );
+  align-items: center;
+
+  .log-out {
+    grid-area: logout;
+    color: white;
+    padding: var(--spacing-small);
+    margin-left: auto;
+  }
 }
 
 #app > header.contactmomentLoopt {
@@ -126,6 +169,10 @@ a[aria-current="page"] {
   }
 }
 
+h2 {
+  margin-top: var(--spacing-large);
+}
+
 ::placeholder {
   color: red;
 }
@@ -180,6 +227,7 @@ a[aria-current="page"] {
     font-size: 0;
     display: flex;
     align-items: stretch;
+    color: var(--color-error);
   }
 
   input[type="search"] {
@@ -210,6 +258,12 @@ a[aria-current="page"] {
   height: 1rem;
 }
 
+.icon-large::after,
+.icon-large::before {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .icon-before.chevron-down::before,
 .icon-after.chevron-down::after {
   height: 0.6rem;
@@ -224,6 +278,21 @@ a[aria-current="page"] {
 .icon-before.filter::before,
 .icon-after.filter::after {
   mask-image: url("@/assets/icons/filter.svg");
+}
+
+.icon-before.check::before,
+.icon-after.check::after {
+  mask-image: url("@/assets/icons/check.svg");
+}
+
+//forms
+form {
+  label {
+    span.required {
+      color: var(--color-error);
+      padding-left: var(--spacing-small);
+    }
+  }
 }
 
 .kiss-theme {
@@ -278,7 +347,8 @@ a[aria-current="page"] {
   --utrecht-form-input-placeholder-color: #999;
 }
 
-utrecht-button {
+utrecht-button,
+.utrecht-button {
   --utrecht-button-border-radius: 100px;
   --utrecht-button-min-inline-size: 150px;
 
@@ -288,6 +358,8 @@ utrecht-button {
 
   --utrecht-button-padding-block-start: 0.6rem;
   --utrecht-button-padding-block-end: 0.6rem;
+
+  --utrecht-button-secondary-action-background-color: transparent;
 }
 
 utrecht-button.button-small {

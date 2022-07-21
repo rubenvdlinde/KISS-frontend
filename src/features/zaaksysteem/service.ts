@@ -1,17 +1,17 @@
-import type { Zaak } from "./types";
+import { fetchLoggedIn } from "@/services";
+import type { ContactmomentObject, Zaak } from "./types";
 
 export function useZaaksysteemService() {
-  //todo
-  //window.zaaksysteemBaseUri = "/api/zaaksysteem/";
-
-  if (!window.zaaksysteemBaseUri) {
-    console.error("zaaksysteemBaseUri missing");
+  if (!window.gatewayBaseUri) {
+    console.error("gatewayBaseUri missing");
   }
 
-  const findByZaak = (zaaknummer: number) => {
-    const url = `${window.zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=all`;
+  const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
-    return fetch(url)
+  const findByZaak = (zaaknummer: number) => {
+    const url = `${zaaksysteemBaseUri}/api/zaken?identificatie=${zaaknummer}&extend[]=all`;
+
+    return fetchLoggedIn(url)
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -51,9 +51,9 @@ export function useZaaksysteemService() {
   };
 
   const findByBsn = (bsn: number) => {
-    const url = `${window.zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
+    const url = `${zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
 
-    return fetch(url)
+    return fetchLoggedIn(url)
       .then((r) => {
         if (!r.ok) {
           throw new Error();
@@ -93,8 +93,33 @@ export function useZaaksysteemService() {
       });
   };
 
+  //   {
+  //     "contactmoment": "http://kissdevelopment-dimpact.commonground.nu/api/contactmomenten/10ec6633-aa70-4d52-9e54-f7cf4c70b680",
+  //     "object": "http://kissdevelopment-dimpact.commonground.nu/api/zaken/4cad808a-6011-4d07-b0c6-cd5c98a3dfae",
+  //     "objectType": "zaak"
+  // }
+
+  const objectcontactmomentenUrl =
+    window.gatewayBaseUri + "/api/objectcontactmomenten";
+
+  const saveZaak = (data: ContactmomentObject) => {
+    return fetchLoggedIn(objectcontactmomentenUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+    });
+  };
+
   return {
     findByZaak,
     findByBsn,
+    saveZaak,
   };
 }

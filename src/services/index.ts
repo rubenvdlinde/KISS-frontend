@@ -1,6 +1,8 @@
 import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
+export * from "./fetch-logged-in";
+
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
   : // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -9,14 +11,22 @@ const logError = import.meta.env.DEV
 type Result<T> =
   | {
       state: "loading";
+      loading: true;
+      success: false;
+      error: false;
     }
   | {
       state: "error";
       error: Error;
+      loading: false;
+      success: false;
     }
   | {
       state: "success";
       data: T;
+      loading: false;
+      success: true;
+      error: false;
     };
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
@@ -45,14 +55,18 @@ export const ServiceResult = {
     return reactive({
       state: "success",
       data,
-      error: null,
+      error: false,
+      success: true,
+      loading: false,
     });
   },
   loading<T>(): ServiceData<T> {
     return reactive({
       state: "loading",
       data: null,
-      error: null,
+      error: false,
+      success: false,
+      loading: true,
     });
   },
   error<T>(error: Error): ServiceData<T> {
@@ -60,6 +74,8 @@ export const ServiceResult = {
       state: "error",
       data: null,
       error,
+      success: false,
+      loading: false,
     });
   },
 
@@ -71,12 +87,17 @@ export const ServiceResult = {
         Object.assign(result, {
           state: "success",
           data: r,
+          loading: false,
+          error: false,
+          success: true,
         });
       })
       .catch((e) => {
         Object.assign(result, {
           state: "error",
           error: e instanceof Error ? e : new Error(e),
+          loading: false,
+          success: false,
         });
       });
 
@@ -92,7 +113,7 @@ export const ServiceResult = {
     url: string | (() => string),
     fetcher: (url: string) => Promise<T>,
     config?: FetcherConfig<T>
-  ): ServiceData<T> {
+  ): ServiceData<T> & { refresh: () => void } {
     const result =
       config?.initialData !== undefined
         ? ServiceResult.success<T>(config.initialData)
@@ -102,7 +123,7 @@ export const ServiceResult = {
     const getRequestUniqueId = config?.getUniqueId || getUrl;
     const fetcherWithoutParameters = () => fetcher(getUrl());
 
-    const { data, error, isValidating } = useSWRV<T, any>(
+    const { data, error, isValidating, mutate } = useSWRV<T, any>(
       getRequestUniqueId,
       fetcherWithoutParameters,
       {
@@ -116,13 +137,21 @@ export const ServiceResult = {
         if (e) {
           logError(e);
           const errorInstance = e instanceof Error ? e : new Error(e);
-          Object.assign(result, { state: "error", error: errorInstance });
+          Object.assign(result, {
+            state: "error",
+            error: errorInstance,
+            loading: false,
+            success: false,
+          });
           return;
         }
         if (d !== undefined) {
           Object.assign(result, {
             data: d,
             state: "success",
+            loading: false,
+            error: false,
+            success: true,
           });
         }
       },
@@ -135,6 +164,9 @@ export const ServiceResult = {
       if (uid && isValidating.value) {
         Object.assign(result, {
           state: "loading",
+          loading: true,
+          error: false,
+          success: false,
         });
       }
     });
@@ -144,7 +176,7 @@ export const ServiceResult = {
       dispose2();
     });
 
-    return result;
+    return Object.assign(result, { refresh: mutate });
   },
 };
 

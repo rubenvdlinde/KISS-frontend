@@ -49,6 +49,8 @@ More ports that will be used are: :82, :5342
 ```sh
 npm run dev
 ```
+The front-end is run on https in this scenario, on port 3000 (if available).
+If you have issues logging in from an incognito window, [have a look at this url](https://stackoverflow.com/a/63587751)
 
 ### Type-Check, Compile and Minify for Production
 

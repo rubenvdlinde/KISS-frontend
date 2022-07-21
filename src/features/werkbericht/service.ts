@@ -1,6 +1,6 @@
 import type { Werkbericht } from "./types";
 import {
-  createLookupList as createLookupList,
+  createLookupList,
   parseValidInt,
   ServiceResult,
   type LookupList,
@@ -8,6 +8,9 @@ import {
   type ServiceData,
 } from "@/services";
 import type { Ref } from "vue";
+import { fetchLoggedIn } from "@/services";
+
+const WP_MAX_ALLOWED_PAGE_SIZE = "100";
 
 export type UseWerkberichtenParams = {
   typeId?: number;
@@ -16,6 +19,18 @@ export type UseWerkberichtenParams = {
   page?: number;
   pagesize?: number;
 };
+
+const timezoneRegex = /T[0-9|:]*[+|-|Z]+/;
+
+function parseDateStrWithTimezone(dateStr: string) {
+  if (timezoneRegex.test(dateStr)) return new Date(dateStr);
+  // if no timezone info is present we assume UTC
+  return new Date(dateStr + "Z");
+}
+
+function maxDate(dates: Date[]) {
+  return new Date(Math.max(...dates.map((x) => x.getTime())));
+}
 
 /**
  * Tries to parse a json object returned by the api as a Werkbericht
@@ -53,10 +68,15 @@ function parseWerkbericht(
       )
     : ["onbekend"];
 
+  const createdDate = parseDateStrWithTimezone(jsonObject.date);
+  const modifiedDate = parseDateStrWithTimezone(jsonObject.modified);
+
+  const latestDate = maxDate([createdDate, modifiedDate]);
+
   return {
     title: jsonObject.title.rendered,
     content: jsonObject.content.rendered,
-    date: new Date(jsonObject.date),
+    date: latestDate,
     types: typeNames,
     skills: skillNames,
   };
@@ -66,8 +86,15 @@ function parseWerkbericht(
  * Fetches a lookuplist from the api
  * @param url
  */
-function fetchLookupList(url: string): Promise<LookupList<number, string>> {
-  return fetch(url)
+function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
+  const url = new URL(urlStr);
+
+  // having pagination here is a nuisance.
+  if (!url.searchParams.has("page")) {
+    url.searchParams.set("per_page", WP_MAX_ALLOWED_PAGE_SIZE);
+  }
+
+  return fetchLoggedIn(url)
     .then((r) => r.json())
     .then((json) => {
       if (!Array.isArray(json))
@@ -75,8 +102,8 @@ function fetchLookupList(url: string): Promise<LookupList<number, string>> {
           "Invalide json, verwacht een lijst: " + JSON.stringify(json)
         );
       return json
-        .filter((x) => typeof x?.id === "number" && typeof x?.name === "string")
-        .map((x) => [x.id, x.name] as [number, string]);
+        .filter((x) => typeof x?.id === "number" && typeof x?.slug === "string")
+        .map((x) => [x.id, x.slug] as [number, string]);
     })
     .then(createLookupList);
 }
@@ -85,7 +112,7 @@ function fetchLookupList(url: string): Promise<LookupList<number, string>> {
  * Returns a reactive ServiceData object promising a LookupList of berichttypes
  */
 export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
-  const url = window.openPubBaseUri + "/openpub-type";
+  const url = window.gatewayBaseUri + "/api/openpub/openpub-type";
   return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
@@ -93,7 +120,7 @@ export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
  * Returns a reactive ServiceData object promising a LookupList of skills
  */
 export function useSkills(): ServiceData<LookupList<number, string>> {
-  const url = window.openPubBaseUri + "/openpub_skill";
+  const url = window.gatewayBaseUri + "/api/openpub/openpub_skill";
   return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
@@ -115,11 +142,11 @@ export function useWerkberichten(
     if (typesResult.state !== "success" || skillsResult.state !== "success")
       return "";
 
-    const url = window.openPubBaseUri + "/kiss_openpub_pub";
+    const url = window.gatewayBaseUri + "/api/openpub/kiss_openpub_pub";
     if (!parameters?.value) return url;
 
     const { typeId, search, page, skillIds } = parameters.value;
-    const params: [string, string][] = [];
+    const params: [string, string][] = [["orderby", "modified"]];
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
@@ -131,9 +158,6 @@ export function useWerkberichten(
     }
     if (skillIds?.length) {
       params.push(["openpub_skill", skillIds.join(",")]);
-    }
-    if (!params.length) {
-      return url;
     }
     return `${url}?${new URLSearchParams(params)}`;
   }
@@ -148,7 +172,7 @@ export function useWerkberichten(
         "this should never happen, we already check this in the url function"
       );
 
-    const r = await fetch(url);
+    const r = await fetchLoggedIn(url);
     if (!r.ok) throw new Error(r.status.toString());
 
     const json = await r.json();

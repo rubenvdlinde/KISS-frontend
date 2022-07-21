@@ -1,0 +1,71 @@
+<template>
+  <section v-if="isOpen">
+    <utrecht-heading model-value :level="2">Feedback</utrecht-heading>
+    <feedback-form
+      @cancelled="feedbackCancelled"
+      @saved="feedbackSaved"
+      :id="id"
+      :name="name"
+    ></feedback-form>
+  </section>
+  <menu v-else>
+    <li>
+      <button
+        @click="openFeedbackForm"
+        class="utrecht-button utrecht-button--action"
+      >
+        Feedback
+      </button>
+    </li>
+  </menu>
+  <application-message
+    v-if="isSaved"
+    message="Uw feedback is verzonden"
+    :autoClose="true"
+  ></application-message>
+</template>
+
+<script lang="ts" setup>
+import { ref, defineProps } from "vue";
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import FeedbackForm from "./components/FeedbackForm.vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
+
+defineProps<{
+  id: unknown | URL;
+  name: string;
+}>();
+
+const isOpen = ref(false);
+const isSaved = ref(false);
+
+const openFeedbackForm = () => {
+  isSaved.value = false;
+  isOpen.value = true;
+};
+
+const feedbackSaved = () => {
+  isOpen.value = false;
+  isSaved.value = true;
+};
+
+const feedbackCancelled = () => {
+  isOpen.value = false;
+};
+</script>
+
+<style lang="scss" scoped>
+@import "@utrecht/component-library-css";
+
+section {
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-default);
+  padding: var(--spacing-large);
+}
+utrecht-heading {
+  margin-bottom: var(--spacing-large);
+}
+menu {
+  list-style: none;
+}
+</style>

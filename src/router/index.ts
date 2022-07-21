@@ -7,6 +7,7 @@ import HomeView from "../views/HomeView.vue";
 import AfhandelingView from "../views/AfhandelingView.vue";
 import ContactmomentView from "../views/ContactmomentView.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import { redirectRoute } from "@/features/login";
 
 const guardContactMoment: NavigationGuard = (to, from, next) => {
   const contactmoment = useContactmomentStore();
@@ -37,6 +38,7 @@ const router = createRouter({
       component: ContactmomentView,
       beforeEnter: guardContactMoment,
     },
+    redirectRoute,
   ],
 });
 

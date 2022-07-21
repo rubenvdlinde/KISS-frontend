@@ -1,31 +1,19 @@
 import { ServiceResult } from "@/services";
+import { fetchLoggedIn } from "@/services";
 import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
-  //   save: (data: Contactmoment) => Promise<void>;
-  // } {
-  // fetch("http://localhost/api/contactmomenten")
-  //   .then((r) => {
-  //     if (!r.ok) console.log(r);
-  //     return r.json();
-  //   })
-  //   .then((json) => {
-  //     console.log(json);
-  //   });
-
-  if (!window.contactmomentenBaseUri) {
-    console.error("contactmomentenBaseUri missing");
+  if (!window.gatewayBaseUri) {
+    console.error("gatewayBaseUri missing");
   }
 
-  if (!window.gespreksResultatenBaseUri) {
-    console.error("gespreksResultatenBaseUri missing");
-  }
+  const contactmomentenUrl = window.gatewayBaseUri + "/api/contactmomenten";
 
-  const contactmomentenBaseUri = window.contactmomentenBaseUri;
-  const gespreksResultatenBaseUri = window.gespreksResultatenBaseUri;
+  const gespreksResultatenBaseUri =
+    window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
 
   const save = (data: Contactmoment) => {
-    return fetch(contactmomentenBaseUri, {
+    return fetchLoggedIn(contactmomentenUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -36,11 +24,12 @@ export function useContactmomentService() {
       if (!r.ok) {
         throw new Error();
       }
+      return r.json();
     });
   };
 
   const getGespreksResultaten = () => {
-    const fetchBerichten = fetch(gespreksResultatenBaseUri)
+    const fetchBerichten = fetchLoggedIn(gespreksResultatenBaseUri)
       .then((r) => {
         if (!r.ok) {
           throw new Error(
@@ -62,5 +51,6 @@ export function useContactmomentService() {
   return {
     save,
     getGespreksResultaten,
+    // saveZaak,
   };
 }

@@ -30,7 +30,7 @@
   width: 1em;
   height: 1em;
   border-radius: 50%;
-  margin: 72px auto;
+  margin: 0.8em auto;
   position: relative;
   transform: translateZ(0);
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
