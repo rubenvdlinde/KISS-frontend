@@ -3,7 +3,6 @@
     <header>
       <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
       <a
-        v-if="userStore.hasAdminPostRole"
         :href="pubBeheerUrl"
         rel="noopener noreferrer"
         target="_blank"
@@ -122,8 +121,6 @@ import {
 import { parseValidInt } from "@/services";
 import MultiSelect from "@/components/MultiSelect.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
-import { useUserStore } from "@/stores/user";
-const userStore = useUserStore();
 
 const { pubBeheerUrl } = window;
 

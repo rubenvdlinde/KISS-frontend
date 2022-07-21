@@ -12,10 +12,6 @@ export type User =
       roles: string[];
     };
 
-enum Roles {
-  adminPost = "ROLE_scope.POST.admin",
-}
-
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
@@ -34,9 +30,5 @@ export const useUserStore = defineStore("user", {
     setUser(user: User) {
       this.user = user;
     },
-  },
-  getters: {
-    hasAdminPostRole: (state) =>
-      state.user.isLoggedIn && state.user.roles.includes(Roles.adminPost),
   },
 });
