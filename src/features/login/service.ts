@@ -1,4 +1,5 @@
 import { ServiceResult } from "@/services";
+import type { User } from "@/stores/user";
 import { meUrl } from "./config";
 
 const anonymousUser = Object.freeze({
