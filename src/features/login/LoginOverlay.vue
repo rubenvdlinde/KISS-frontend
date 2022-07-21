@@ -132,7 +132,7 @@ function redirectToLogin() {
 
 // in case of a session expiry, you have a minute to log in again.
 // after that, we refresh the page.
-// otherwise, another user might be able to see sensitive data by inspecting the HTML with DevTools.
+// otherwise, an unauthorized person might be able to see sensitive data by inspecting the HTML with DevTools.
 let currentLoginTimoutId: number | undefined;
 function resetLoginTimeout() {
   if (currentLoginTimoutId) {
