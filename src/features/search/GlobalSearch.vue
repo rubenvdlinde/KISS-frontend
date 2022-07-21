@@ -23,7 +23,8 @@
           <nav v-show="!currentId">
             <ul>
               <li
-                v-for="{ id, title, source } in searchResults.data.page"
+                v-for="{ id, title, source, jsonObject } in searchResults.data
+                  .page"
                 :key="'nav_' + id"
               >
                 <a
@@ -33,6 +34,13 @@
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
+                <a v-if="source === 'smoelenboek'">
+                  <span></span
+                  ><span
+                    >{{ jsonObject?.function }}
+                    {{ jsonObject?.department }}</span
+                  >
+                </a>
               </li>
             </ul>
           </nav>

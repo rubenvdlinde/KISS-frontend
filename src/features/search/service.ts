@@ -9,12 +9,14 @@ function mapResult(obj: any): SearchResult {
   const title = obj?.headings?.raw?.[0] ?? obj?.title?.raw;
   const content = obj?.body_content?.raw;
   const url = parseValidUrl(obj?.url?.raw);
+  const jsonObject = JSON.parse(obj?.object?.raw ?? null);
   return {
     source,
     id,
     title,
     content,
     url,
+    jsonObject,
   };
 }
 

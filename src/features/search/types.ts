@@ -4,4 +4,5 @@ export type SearchResult = {
   source: string;
   content: string;
   url?: URL;
+  jsonObject: any;
 };
