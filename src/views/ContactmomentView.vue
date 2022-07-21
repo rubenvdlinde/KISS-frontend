@@ -42,7 +42,7 @@
         <div v-if="activeTabContactmoment === tabsContactmoment.klanten">
           <utrecht-heading :level="2">Klanten</utrecht-heading>
 
-          <klant-zoeker></klant-zoeker>
+          <klant-zoeker @onKlantSelected="setKlant"></klant-zoeker>
           <klant-details
             v-if="'er is een klant geselecteerd' != false"
           ></klant-details>
@@ -115,7 +115,6 @@ import KlantZoeker from "@/features/klant/KlantZoeker.vue";
 import KlantDetails from "@/features/klant/KlantDetails.vue";
 
 //layout view tabs
-
 const tabsContactmoment = { klanten: "klanten", zaken: "zaken" };
 const activeTabContactmoment = ref(tabsContactmoment.klanten);
 
@@ -129,6 +128,11 @@ const curentBsn = ref<number>();
 const onZakenZoeken = (bsn: number) => {
   curentBsn.value = bsn;
   activeTab.value = tabs.zakenZoeker;
+};
+
+//klant functies
+const setKlant = (klant: any) => {
+  console.log(" klantselected", klant);
 };
 </script>
 
