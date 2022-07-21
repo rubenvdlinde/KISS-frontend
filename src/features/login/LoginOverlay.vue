@@ -38,8 +38,13 @@ function tryCreateNewTab() {
     newTab.focus();
     return true;
   }
-  newTab = window.open(redirectUrl);
-  return newTab != null;
+  try {
+    newTab = window.open(redirectUrl);
+  } catch {
+    // popups are probably blocked
+  }
+
+  return !!newTab;
 }
 
 function tryCloseTab() {
@@ -107,12 +112,8 @@ function onLogout() {
 }
 
 function onLinkClick(e: Event) {
-  try {
-    if (tryCreateNewTab()) {
-      e.preventDefault();
-    }
-  } catch (error) {
-    // popups are blocked, handle the link as usual.
+  if (tryCreateNewTab()) {
+    e.preventDefault();
   }
 }
 
