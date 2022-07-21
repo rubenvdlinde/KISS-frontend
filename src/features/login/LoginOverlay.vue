@@ -165,10 +165,14 @@ watch(
     // you were logged in, but got logged out in another window or your session expired
     // the dialog element should be in the dom by now, so it shouldn't be undefined
     // the if is just there for type safety
-    if (dialog) {
-      resetLoginTimeout();
-      dialog.showModal();
+    if (!dialog) {
+      console.error(
+        "we expected a dialog in the dom, but it seems to be missing..."
+      );
     }
+
+    resetLoginTimeout();
+    dialog?.showModal();
   }
 );
 
