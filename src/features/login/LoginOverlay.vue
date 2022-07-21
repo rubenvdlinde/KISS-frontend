@@ -157,7 +157,7 @@ watch(
     // not logged in
     if (!isInitialized) {
       // this is the first time you open this window.
-      // we can just directly redirect to login.
+      // we can immediately redirect to login.
       redirectToLogin();
       return;
     }
