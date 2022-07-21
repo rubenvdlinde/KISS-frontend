@@ -8,6 +8,7 @@ import {
   type ServiceData,
 } from "@/services";
 import type { Ref } from "vue";
+import { fetchLoggedIn } from "@/services";
 
 const WP_MAX_ALLOWED_PAGE_SIZE = "100";
 
@@ -93,7 +94,7 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
     url.searchParams.set("per_page", WP_MAX_ALLOWED_PAGE_SIZE);
   }
 
-  return fetch(url)
+  return fetchLoggedIn(url)
     .then((r) => r.json())
     .then((json) => {
       if (!Array.isArray(json))
@@ -111,7 +112,7 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
  * Returns a reactive ServiceData object promising a LookupList of berichttypes
  */
 export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
-  const url = window.openPubBaseUri + "/openpub-type";
+  const url = window.gatewayBaseUri + "/api/openpub/openpub-type";
   return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
@@ -119,7 +120,7 @@ export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
  * Returns a reactive ServiceData object promising a LookupList of skills
  */
 export function useSkills(): ServiceData<LookupList<number, string>> {
-  const url = window.openPubBaseUri + "/openpub_skill";
+  const url = window.gatewayBaseUri + "/api/openpub/openpub_skill";
   return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
@@ -141,7 +142,7 @@ export function useWerkberichten(
     if (typesResult.state !== "success" || skillsResult.state !== "success")
       return "";
 
-    const url = window.openPubBaseUri + "/kiss_openpub_pub";
+    const url = window.gatewayBaseUri + "/api/openpub/kiss_openpub_pub";
     if (!parameters?.value) return url;
 
     const { typeId, search, page, skillIds } = parameters.value;
@@ -171,7 +172,7 @@ export function useWerkberichten(
         "this should never happen, we already check this in the url function"
       );
 
-    const r = await fetch(url);
+    const r = await fetchLoggedIn(url);
     if (!r.ok) throw new Error(r.status.toString());
 
     const json = await r.json();
