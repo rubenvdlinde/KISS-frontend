@@ -1,28 +1,18 @@
 <template>
-
-
-  <form
- 
-           
-          class="search-bar"
-           @submit.prevent="handleSearch"
-        >
-
- <label for="searchInput"
-            ><span>Klanten zoeken</span>
-            <input
-              type="search"
-              name="search"
-              id="searchInput"
-              placeholder="Zoek op e-mailadres of telefoonnummer"
-              @search.prevent="handleSearch"
-              v-model="searchQuery"
-          /></label>
-          <button title="Zoeken">
-            <span>Zoeken</span><utrecht-icon-loupe model-value />
-          </button>
-{{serviceResult?.state}}
-</form>
+  <form class="search-bar" @submit.prevent="handleSearch">
+    <label for="searchInput"
+      ><span>Klanten zoeken</span>
+      <input
+        type="search"
+        placeholder="Zoek op e-mailadres of telefoonnummer"
+        @search.prevent="handleSearch"
+        v-model="searchQuery"
+    /></label>
+    <button title="Zoeken">
+      <span>Zoeken</span><utrecht-icon-loupe model-value />
+    </button>
+    {{ serviceResult?.state }}
+  </form>
 
   <p>klantzoeker...</p>
 
@@ -37,42 +27,32 @@
 
     van de resultaten tonen we : "voornaam": "string", "voorvoegselAchternaam":
     "string", "achternaam": "string", "telefoonnummer": "string", "emailadres":
-    "example@hotmail.com" "klantnummer": "string",
-
-    todo: <br/>
-    loding en error states afhandelen<br/>
-    zoeken op telnr<br/>
-    validatie op input format en lengte<br/>
-
+    "example@hotmail.com" "klantnummer": "string", todo: <br />
+    loding en error states afhandelen<br />
+    zoeken op telnr<br />
+    validatie op input format en lengte<br />
   </p>
 </template>
 
-
 <script lang="ts" setup>
-
 import type { ServiceData } from "@/services";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
 import { useKlantService } from "./service";
 import type { Klant } from "./types";
 
-const searchQuery  = ref('');
-const service  = useKlantService();
+const searchQuery = ref("");
+const service = useKlantService();
 const serviceResult = ref<ServiceData<Klant>>();
 
-const handleSearch = ()=> {
-
-   const result = service.searchByEmail(searchQuery.value);
+const handleSearch = () => {
+  const result = service.searchByEmail(searchQuery.value);
   serviceResult.value = result.state;
-
-
-   
-}
-
+};
 </script>
 
 <style lang="scss" scoped>
 input {
-  width  : var(--section-width);
+  width: var(--section-width);
 }
 </style>

@@ -17,7 +17,12 @@ export function useKlantService() {
         return jsonResult.map((item: any) => {
           return (obj: any): Klant => {
             return {
+              klantnummer: obj.klantnummer,
+              voornaam: obj.voornaam,
+              voorvoegselAchternaam: obj.voorvoegselAchternaam,
               achternaam: obj.achternaam,
+              telefoonnummer: obj.telefoonnummer,
+              emailadres: obj.emailadres,
             };
           };
         });
