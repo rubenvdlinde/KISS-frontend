@@ -14,5 +14,5 @@ data:
       window.globalSearchBaseUri = '{{ .Values.config.globalSearchBaseUri }}';
       window.zaaksysteemBaseUri = '{{ .Values.config.zaaksysteemBaseUri }}';
       window.brpBaseUri = '{{ .Values.config.brpBaseUri }}';
-      window.organisatieIds = ["{{ join "\",\"" .Values.config.organizationIds }}"];
       window.gatewayBaseUri = '{{ .Values.config.gatewayBaseUri }}';
+      window.organisatieIds = ["{{ join "\",\"" (.Values.config.organizationIds | toStrings) }}"];
