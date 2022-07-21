@@ -3,15 +3,8 @@ import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type { SearchResult } from "./types";
 
-function mapSource(engine: unknown) {
-  if (typeof engine !== "string") return "onbekend";
-  if (engine.endsWith("-crawler")) return "Website";
-  if (engine === "pdc") return "Kennisbank";
-  return "onbekend";
-}
-
 function mapResult(obj: any): SearchResult {
-  const source = mapSource(obj?._meta?.engine);
+  const source = obj?.object_bron?.raw ?? "Website";
   const id = obj?.id?.raw;
   const title = obj?.headings?.raw?.[0] ?? obj?.title?.raw;
   const content = obj?.body_content?.raw;
