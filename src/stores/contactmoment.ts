@@ -1,15 +1,22 @@
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
+import type { Klant } from "./contactmoment/types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };
+
+interface ContactmomentState {
+  contactmomentLoopt: boolean;
+  zaken: ContactmomentZaak[];
+  klant: Klant | null;
+}
 
 export const useContactmomentStore = defineStore("contactmoment", {
   state: () => {
     return {
       contactmomentLoopt: false,
-      // zaken: <Zaak[]>[],
       zaken: <ContactmomentZaak[]>[],
-    };
+      klant: null,
+    } as ContactmomentState;
   },
   actions: {
     start() {
@@ -37,6 +44,9 @@ export const useContactmomentStore = defineStore("contactmoment", {
     isZaakLinkedToContactmoment(id: string) {
       const zaak = this.zaken.find((element) => element.id === id);
       return zaak ? zaak.shouldStore : false;
+    },
+    setKlant(klant: Klant) {
+      this.klant = klant;
     },
   },
 });

@@ -38,6 +38,33 @@ function searchKlant(url: string) {
             JSON.stringify(jsonResult.results)
         );
 
+      return [
+        {
+          klantnummer: "111",
+          voornaam: "vvv",
+          voorvoegselAchternaam: null,
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+        {
+          klantnummer: "111",
+          voornaam: "vvv",
+          voorvoegselAchternaam: null,
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+        {
+          klantnummer: "111",
+          voornaam: "vvv",
+          voorvoegselAchternaam: null,
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+      ];
+
       return jsonResult.results.map((obj: any): Klant => {
         return {
           klantnummer: obj.klantnummer,

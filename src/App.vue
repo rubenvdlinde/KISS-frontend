@@ -33,6 +33,7 @@ const contactmoment = useContactmomentStore();
 <style lang="scss">
 @import "@/assets/reset.css";
 @import "@/assets/fonts/fonts.css";
+@import "@utrecht/component-library-css";
 
 /* Design Tokens */
 @import "@gemeente-denhaag/design-tokens-components/dist/index.css";
@@ -135,9 +136,6 @@ button:hover {
 }
 
 .tabs-component-contactmoment {
-  > ul {
-    background-color: var(--color-secondary);
-  }
   > ul li.is-active {
     background-color: white;
   }
@@ -315,6 +313,9 @@ form {
   }
 }
 
+menu {
+  list-style: none;
+}
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -328,6 +329,8 @@ form {
   --utrecht-heading-font-weight: 600;
   --denhaag-pagination-color: var(--color-primary);
   --denhaag-pagination-link-current-color: var(--color-headings);
+  --utrecht-border-width-sm: 1px;
+  --utrecht-color-grey-90: var(--color-tertiary);
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;

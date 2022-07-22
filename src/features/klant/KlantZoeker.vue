@@ -30,10 +30,14 @@
   <p>0612345789<br />test@conduction.nl</p>
   <h2>todo</h2>
   <p>
-    als er 1 resultaat direct de details tonen<br />
     nog bepalen hoe om te gaan met zeer groot aantal resultaten<br />
     validatie op input format en lengte<br />
-    zorgen dat gegevens niet verdwijenn als je van tab wisselt
+    zorgen dat gegevens niet verdwijenn als je van tab wisselt<br />
+    in en uitklappen hoofd search ziet er raar uit<br />
+    nldesign table styles worden niet overgenomen. bv
+    --utrecht-table-row-border-block-end-color zou toegepast moeten worden als
+    er een utrecht-html class op de container div staat. zie
+    https://nl-design-system.github.io/utrecht/storybook/?path=/docs/html-table--default-story
   </p>
 </template>
 

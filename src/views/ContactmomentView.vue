@@ -4,6 +4,7 @@
     <!-- todo: 'trecht-heading errors irriteren. component verwijderen?-->
 
     <div class="tabs-component-contactmoment">
+      <div class="tabs-component-tabs-background"></div>
       <ul role="tablist" class="tabs-component-tabs">
         <li
           :class="{
@@ -42,12 +43,25 @@
         <div v-if="activeTabContactmoment === tabsContactmoment.klanten">
           <utrecht-heading :level="2">Klanten</utrecht-heading>
 
-          <klant-zoeker @onKlantSelected="setKlant"></klant-zoeker>
-          <klant-details
-            v-if="'er is een klant geselecteerd' != false"
-          ></klant-details>
+          <klant-zoeker
+            v-if="showKlantenSearch"
+            @onKlantSelected="klantGevonden"
+          ></klant-zoeker>
+          <template v-else-if="contactmomentStore.klant">
+            <menu>
+              <li>
+                <button
+                  @click="showKlantenSearch = true"
+                  class="utrecht-button utrecht-button--action"
+                >
+                  Klanten zoeken
+                </button>
+              </li>
+            </menu>
+            <klant-details :klant="contactmomentStore.klant"></klant-details>
+          </template>
         </div>
-        <div v-else>
+        <template v-else>
           <utrecht-heading :level="2">Zaken</utrecht-heading>
           <div class="tabs-component-zaken">
             <ul role="tablist" class="tabs-component-tabs">
@@ -97,7 +111,7 @@
               </section>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </main>
@@ -113,6 +127,8 @@ import { ref } from "vue";
 
 import KlantZoeker from "@/features/klant/KlantZoeker.vue";
 import KlantDetails from "@/features/klant/KlantDetails.vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
+import type { Klant } from "@/stores/contactmoment/types";
 
 //layout view tabs
 const tabsContactmoment = { klanten: "klanten", zaken: "zaken" };
@@ -131,8 +147,12 @@ const onZakenZoeken = (bsn: number) => {
 };
 
 //klant functies
-const setKlant = (klant: any) => {
-  console.log(" klantselected", klant);
+const showKlantenSearch = ref(true);
+const contactmomentStore = useContactmomentStore();
+
+const klantGevonden = (klant: unknown) => {
+  showKlantenSearch.value = false;
+  contactmomentStore.setKlant(klant as Klant);
 };
 </script>
 
@@ -142,12 +162,26 @@ main {
   padding-block: 0;
 }
 
-.tabs-component-tabs,
-utrecht-heading,
+.tabs-component-contactmoment {
+  display: grid;
+  grid-template-columns: 1fr 10fr 1fr;
+  grid-template-rows: 3.2rem 1fr;
+  row-gap: var(--spacing-large);
+}
+
+.tabs-component-tabs {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .tabs-component-panels {
-  padding-inline: var(--spacing-default);
-  > div {
-    padding: var(--spacing-default);
-  }
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.tabs-component-tabs-background {
+  grid-column: 1/-1;
+  grid-row: 1;
+  background-color: var(--color-secondary);
 }
 </style>
