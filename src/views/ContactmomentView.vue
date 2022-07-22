@@ -52,7 +52,7 @@
               <li>
                 <button
                   @click="showKlantenSearch = true"
-                  class="utrecht-button utrecht-button--action"
+                  class="utrecht-button utrecht-button--secondary-action"
                 >
                   Klanten zoeken
                 </button>
@@ -183,5 +183,9 @@ main {
   grid-column: 1/-1;
   grid-row: 1;
   background-color: var(--color-secondary);
+}
+
+.tabs-component-panels utrecht-heading {
+  margin-block-end: var(--spacing-default);
 }
 </style>

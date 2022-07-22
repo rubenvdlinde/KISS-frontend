@@ -64,6 +64,7 @@ const isEmail = (val: string) =>
   );
 
 const handleSearch = () => {
+  service.getKlant("ssss");
   const result = isEmail(searchQuery.value)
     ? service.searchByEmail(searchQuery.value)
     : service.searchByTelnr(searchQuery.value);
