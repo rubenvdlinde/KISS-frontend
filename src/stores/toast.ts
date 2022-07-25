@@ -17,7 +17,7 @@ interface Message {
 
 let key = 0;
 
-const useStore = defineStore("toast", {
+const storeDefinition = defineStore("toast", {
   state: () => ({
     messages: [] as Array<Message>,
   }),
@@ -39,4 +39,4 @@ const useStore = defineStore("toast", {
   },
 });
 
-export const useToast = asReadOnly(useStore);
+export const useToast = asReadOnly(storeDefinition);
