@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { ReadonlyStoreDefinition } from "./types";
 
 type MessageType = "confirm" | "error";
 
@@ -9,17 +10,10 @@ interface ToastParams {
 }
 
 interface Message {
-  readonly text: string;
-  readonly type: MessageType;
-  readonly key: number;
+  text: string;
+  type: MessageType;
+  key: number;
 }
-
-interface ToastStore {
-  readonly messages: readonly Message[];
-  readonly toast: (params: ToastParams) => void;
-}
-
-type UseToastStore = () => ToastStore;
 
 const useStore = defineStore("toast", {
   state: () => ({
@@ -44,4 +38,7 @@ const useStore = defineStore("toast", {
   },
 });
 
-export const useToast = useStore as UseToastStore;
+export const useToast = useStore as ReadonlyStoreDefinition<
+  typeof useStore,
+  "messages" | "toast"
+>;
