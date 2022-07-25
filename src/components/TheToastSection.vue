@@ -1,43 +1,19 @@
 <template>
   <!-- https://web.dev/building-a-toast-component/ -->
-  <transition-group name="toast">
-    <section>
-      <output
-        v-for="({ message, type }, key) in messages"
-        :key="key"
-        role="status"
-        :class="type"
-        >{{ message }}</output
-      >
-    </section>
+  <transition-group name="toast" tag="section">
+    <output
+      v-for="{ message, type, key } in messages"
+      :key="key"
+      role="status"
+      :class="type"
+      >{{ message }}</output
+    >
   </transition-group>
 </template>
 
 <script lang="ts" setup>
-import { reactive } from "vue";
-type Message = {
-  message: string;
-  type: "confirm" | "error";
-};
-
-const messages = reactive<Message[]>([]);
-
-function pushMessage(m: Message) {
-  messages.push(m);
-  setTimeout(() => {
-    const index = messages.indexOf(m);
-    if (index !== -1) {
-      messages.splice(index, 1);
-    }
-  }, 3000);
-}
-
-setInterval(() => {
-  pushMessage({
-    message: Math.random().toString(),
-    type: "confirm",
-  });
-}, 2000);
+import { useToast } from "@/stores/toast";
+const { messages } = useToast();
 </script>
 
 <style scoped lang="scss">
@@ -75,7 +51,6 @@ output {
 .toast-enter-from,
 .toast-leave-to {
   opacity: 0;
-  // transform: translateX(30px);
 }
 
 /* ensure leaving items are taken out of layout flow so that moving
