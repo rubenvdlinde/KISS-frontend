@@ -8,5 +8,5 @@ import type { DeepReadonly } from "vue";
 export function asReadOnly<S, G, A>(
   storeDefinition: StoreDefinition<string, S, G, A>
 ) {
-  return storeDefinition as () => DeepReadonly<S> & G & A;
+  return storeDefinition as () => DeepReadonly<S & G & A>;
 }
