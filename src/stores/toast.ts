@@ -38,7 +38,7 @@ const useStore = defineStore("toast", {
   },
 });
 
-export const useToast = useStore as ReadonlyStoreDefinition<
-  typeof useStore,
-  "messages" | "toast"
+export const useToast = useStore as Omit<
+  ReadonlyStoreDefinition<typeof useStore>,
+  "key"
 >;
