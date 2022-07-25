@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { ReadonlyStoreDefinition } from "./types";
+import { asReadOnly } from "./helpers";
 
 type MessageType = "confirm" | "error";
 
@@ -39,4 +39,4 @@ const useStore = defineStore("toast", {
   },
 });
 
-export const useToast = useStore as ReadonlyStoreDefinition<typeof useStore>;
+export const useToast = asReadOnly(useStore);
