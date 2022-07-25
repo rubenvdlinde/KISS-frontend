@@ -39,5 +39,8 @@ const useStore = defineStore("toast", {
 
 export const useToast = () => {
   const store = useStore();
-  return readonly(store);
+  return {
+    messages: readonly(store.messages),
+    toast: store.toast,
+  };
 };
