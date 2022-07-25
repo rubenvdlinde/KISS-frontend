@@ -1,13 +1,18 @@
-import type { StoreDefinition } from "pinia";
+import type { StoreDefinition, StateTree, _GettersTree } from "pinia";
 import type { DeepReadonly } from "vue";
 
-type ReadonlyStoreDefinition<T extends StoreDefinition> =
-  T extends StoreDefinition<string, infer S, infer G, infer A>
-    ? () => DeepReadonly<S> & G & A
-    : never;
+type ReadonlyStoreDefinition<
+  S extends StateTree,
+  G extends _GettersTree<S>,
+  A
+> = () => DeepReadonly<S> & G & A;
 
-export function asReadOnly<T extends StoreDefinition>(
-  storeDefinition: T
-): ReadonlyStoreDefinition<T> {
-  return storeDefinition as unknown as ReadonlyStoreDefinition<T>;
+/**
+ * Cast a store definition as readonly, so the only way to modify state is using mutations
+ * @param storeDefinition
+ */
+export function asReadOnly<S extends StateTree, G extends _GettersTree<S>, A>(
+  storeDefinition: StoreDefinition<string, S, G, A>
+) {
+  return storeDefinition as ReadonlyStoreDefinition<S, G, A>;
 }
