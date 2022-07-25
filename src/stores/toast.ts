@@ -12,19 +12,20 @@ type ToastParams = {
 type Message = {
   message: string;
   type: MessageType;
-  key: string;
+  key: number;
 };
 
 const useStore = defineStore("toast", {
   state: () => ({
     messages: [] as Array<Message>,
+    key: 0,
   }),
   actions: {
     toast(params: ToastParams) {
       const m = {
         message: params.message,
         type: params.type || "confirm",
-        key: nanoid(),
+        key: (this.key += 1),
       };
       this.messages.push(m);
       setTimeout(() => {
