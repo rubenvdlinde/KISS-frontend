@@ -15,17 +15,18 @@ interface Message {
   key: number;
 }
 
+let key = 0;
+
 const useStore = defineStore("toast", {
   state: () => ({
     messages: [] as Array<Message>,
-    key: 0,
   }),
   actions: {
     toast(params: ToastParams) {
       const m = {
         text: params.text,
         type: params.type || "confirm",
-        key: (this.key += 1),
+        key: (key += 1),
       };
       this.messages.push(m);
       setTimeout(() => {
@@ -38,7 +39,4 @@ const useStore = defineStore("toast", {
   },
 });
 
-export const useToast = useStore as ReadonlyStoreDefinition<
-  typeof useStore,
-  "key"
->;
+export const useToast = useStore as ReadonlyStoreDefinition<typeof useStore>;
