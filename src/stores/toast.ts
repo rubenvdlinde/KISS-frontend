@@ -2,22 +2,22 @@ import { defineStore } from "pinia";
 
 type MessageType = "confirm" | "error";
 
-type ToastParams = {
+interface ToastParams {
   text: string;
   type?: MessageType;
   timeout?: number;
-};
+}
 
-type Message = {
-  text: string;
-  type: MessageType;
-  key: number;
-};
+interface Message {
+  readonly text: string;
+  readonly type: MessageType;
+  readonly key: number;
+}
 
-type ToastStore = {
-  messages: ReadonlyArray<Readonly<Message>>;
+interface ToastStore {
+  messages: readonly Message[];
   toast: (params: ToastParams) => void;
-};
+}
 
 type UseToastStore = () => ToastStore;
 
