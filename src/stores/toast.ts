@@ -15,8 +15,8 @@ interface Message {
 }
 
 interface ToastStore {
-  messages: readonly Message[];
-  toast: (params: ToastParams) => void;
+  readonly messages: readonly Message[];
+  readonly toast: (params: ToastParams) => void;
 }
 
 type UseToastStore = () => ToastStore;
