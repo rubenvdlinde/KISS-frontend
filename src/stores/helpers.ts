@@ -8,7 +8,7 @@ type ReadonlyStoreDefinition<
 > = () => DeepReadonly<S> & G & A;
 
 /**
- * Cast a store definition as readonly, so the only way to modify state is using mutations
+ * Cast a store definition as readonly, so the only way to modify state is by using actions
  * @param storeDefinition
  */
 export function asReadOnly<S extends StateTree, G extends _GettersTree<S>, A>(
