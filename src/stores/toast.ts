@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { readonly } from "vue";
 
 type MessageType = "confirm" | "error";
 
@@ -14,6 +13,13 @@ type Message = {
   type: MessageType;
   key: number;
 };
+
+type ToastStore = {
+  messages: ReadonlyArray<Readonly<Message>>;
+  toast: (params: ToastParams) => void;
+};
+
+type UseToastStore = () => ToastStore;
 
 const useStore = defineStore("toast", {
   state: () => ({
@@ -38,10 +44,4 @@ const useStore = defineStore("toast", {
   },
 });
 
-export const useToast = () => {
-  const store = useStore();
-  return {
-    messages: readonly(store.messages),
-    toast: store.toast,
-  };
-};
+export const useToast = useStore as UseToastStore;
