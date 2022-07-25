@@ -1,16 +1,16 @@
 import { defineStore } from "pinia";
 import { readonly } from "vue";
-import { nanoid } from "nanoid";
+
 type MessageType = "confirm" | "error";
 
 type ToastParams = {
-  message: string;
+  text: string;
   type?: MessageType;
   timeout?: number;
 };
 
 type Message = {
-  message: string;
+  text: string;
   type: MessageType;
   key: number;
 };
@@ -23,7 +23,7 @@ const useStore = defineStore("toast", {
   actions: {
     toast(params: ToastParams) {
       const m = {
-        message: params.message,
+        text: params.text,
         type: params.type || "confirm",
         key: (this.key += 1),
       };

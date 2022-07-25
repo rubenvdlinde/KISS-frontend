@@ -77,7 +77,7 @@ const saveContact = (contactmoment: Contactmoment) => {
     .then((savedContactmoment) => {
       // nu ook de zaken opslaan bij het contactmoment
       zakenToevoegenAanContactmoment(savedContactmoment.id);
-      toast({ message: "Het contactmoment is opgeslagen" });
+      toast({ text: "Het contactmoment is opgeslagen" });
       router.push("/");
     })
     .catch(() => {

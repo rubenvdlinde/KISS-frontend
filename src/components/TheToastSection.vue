@@ -2,11 +2,11 @@
   <!-- https://web.dev/building-a-toast-component/ -->
   <transition-group name="toast" tag="section">
     <output
-      v-for="{ message, type, key } in messages"
+      v-for="{ text, type, key } in messages"
       :key="key"
       role="status"
       :class="type"
-      >{{ message }}</output
+      >{{ text }}</output
     >
   </transition-group>
 </template>
