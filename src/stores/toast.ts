@@ -20,10 +20,10 @@ const useStore = defineStore("toast", {
     messages: [] as Array<Message>,
   }),
   actions: {
-    toast(message: ToastParams) {
+    toast(params: ToastParams) {
       const m = {
-        ...message,
-        type: message.type || "confirm",
+        message: params.message,
+        type: params.type || "confirm",
         key: nanoid(),
       };
       this.messages.push(m);
@@ -32,7 +32,7 @@ const useStore = defineStore("toast", {
         if (index !== -1) {
           this.messages.splice(index, 1);
         }
-      }, message.timeout || 3000);
+      }, params.timeout || 3000);
     },
   },
 });
