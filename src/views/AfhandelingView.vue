@@ -32,7 +32,6 @@ import { ContactmomentAfhandelForm } from "@/features/contactmoment";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 import { ref } from "vue";
-import type { ContactmomentObject } from "@/features/zaaksysteem/types";
 import { useZaaksysteemService } from "@/features/zaaksysteem/service";
 import { useContactmomentService } from "@/features/contactmoment";
 import type { Contactmoment } from "@/features/contactmoment/types";
