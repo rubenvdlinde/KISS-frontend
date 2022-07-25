@@ -2,7 +2,7 @@
   <main>
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
     <router-link
-      v-if="contactmoment.contactmomentLoopt"
+      v-if="contactmomentStore.contactmomentLoopt"
       :to="{ name: 'contactmoment' }"
       >terug</router-link
     >
@@ -14,9 +14,9 @@
         :message="errorMessage"
       ></application-message>
 
-      <template v-else-if="contactmoment.contactmomentLoopt">
-        <section v-if="contactmoment.zaken.length > 0">
-          <zaken-overzicht :zaken="contactmoment.zaken"></zaken-overzicht>
+      <template v-else-if="contactmomentStore.contactmomentLoopt">
+        <section v-if="contactmomentStore.zaken.length > 0">
+          <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
         </section>
         <section>
           <contactmoment-afhandel-form @save="saveContact" />
@@ -43,28 +43,22 @@ import { useRouter } from "vue-router";
 
 const { toast } = useToast();
 const router = useRouter();
-const contactmoment = useContactmomentStore();
+const contactmomentStore = useContactmomentStore();
 const saving = ref(false);
 const service = useZaaksysteemService();
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
-const zakenToevoegenAanContactmoment = (id: string) => {
-  contactmoment?.zaken.forEach((zaak) => {
-    const data = {
-      contactmoment: window.gatewayBaseUri + "/api/objectcontactmomenten/" + id, //todo de hele url zou uit de response van het aanmaken contactmoment moeten komen
+const zakenToevoegenAanContactmoment = (contactMoment: { url: string }) => {
+  const promises = contactmomentStore?.zaken.map((zaak) =>
+    service.saveZaak({
+      contactmoment: contactMoment.url,
       object: zaak.url,
       objectType: "zaak",
-    } as ContactmomentObject;
+    })
+  );
 
-    service.saveZaak(data).catch(() => {
-      errorMessage.value =
-        "Er is een fout opgetreden bij het toevoegen van een zaak bij het contactmoment";
-    });
-  });
-
-  //klaar
-  contactmoment.stop();
+  return Promise.all(promises ?? []);
 };
 
 const saveContact = (contactmoment: Contactmoment) => {
@@ -72,11 +66,12 @@ const saveContact = (contactmoment: Contactmoment) => {
 
   errorMessage.value = "";
 
-  contactmomentService
+  return contactmomentService
     .save(contactmoment)
-    .then((savedContactmoment) => {
-      // nu ook de zaken opslaan bij het contactmoment
-      zakenToevoegenAanContactmoment(savedContactmoment.id);
+    .then(zakenToevoegenAanContactmoment)
+    .then(() => {
+      //klaar
+      contactmomentStore.stop();
       toast({ text: "Het contactmoment is opgeslagen" });
       router.push("/");
     })
