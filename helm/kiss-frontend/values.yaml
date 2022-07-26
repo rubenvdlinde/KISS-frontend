@@ -4,14 +4,8 @@
 
 replicaCount: 1
 
-config:
-  openPubBaseUri:
-  contactmomentenBaseUri:
-  gespreksResultatenBaseUri:
-  pubBeheerUrl:
-  globalSearchBaseUri:
-  zaaksysteemBaseUri:
-  brpBaseUri:
+config:  
+  pubBeheerUrl:  
   organizationIds: []
   gatewayBaseUri:
 

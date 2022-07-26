@@ -12,8 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useToast } from "@/stores/toast";
-const { messages } = useToast();
+import { messages } from "@/stores/toast";
 </script>
 
 <style scoped lang="scss">
