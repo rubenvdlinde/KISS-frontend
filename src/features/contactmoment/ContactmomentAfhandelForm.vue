@@ -10,7 +10,7 @@
       contactmomentStore.contactmomentLoopt &&
       gespresResultatenServiceResult.state === 'success'
     "
-    @submit.prevent="submitDialog.reveal"
+    @submit.prevent="submit"
   >
     <fieldset class="utrecht-form-fieldset">
       <legend
@@ -99,26 +99,6 @@
       >
     </template>
   </modal-template>
-
-  <!-- Submit Dialog -->
-
-  <modal-template v-if="submitDialogRevealed">
-    <template #message>
-      <p>Weet u zeker dat u het contactmoment wilt opslaan?</p>
-    </template>
-    <template #menu>
-      <utrecht-button
-        modelValue
-        @click="submitDialog.cancel"
-        appearance="secondary-action-button"
-        >Nee</utrecht-button
-      >
-      <utrecht-button modelValue @click="submitDialog.confirm"
-        >Ja</utrecht-button
-      >
-    </template>
-    >
-  </modal-template>
 </template>
 
 <script lang="ts" setup>
@@ -141,9 +121,7 @@ const contactmomentStore = useContactmomentStore();
 const service = useContactmomentService();
 
 const cancelDialogRevealed = ref(false);
-const submitDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
-const submitDialog = useConfirmDialog(submitDialogRevealed);
 const contactmoment: Contactmoment = reactive({
   vorigContactmoment: null,
   voorkeurskanaal: "",
@@ -168,8 +146,6 @@ const validationMessage = ref("");
 const emit = defineEmits(["save"]);
 
 cancelDialog.onConfirm(() => annuleren());
-
-submitDialog.onConfirm(() => submit());
 
 // voorkeurs kanaal voorselecteren
 // organisatieId instellen, nb een medewerker kan voor meerdere organisaties tegelijk werken. vooralsnog is er geen mogelijkheid om een organisatie te selecteren. we kiezen altijd de eerste

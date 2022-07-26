@@ -1,6 +1,6 @@
 <template>
   <main>
-    <utrecht-heading :level="1">Afhandeling</utrecht-heading>
+    <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
     <router-link
       v-if="contactmoment.contactmomentLoopt"
       :to="{ name: 'contactmoment' }"
@@ -8,13 +8,6 @@
     >
     <div>
       <section v-if="saving"><simple-spinner></simple-spinner></section>
-
-      <application-message v-else-if="saved" messageType="confirm">
-        <span
-          >Het contactmoment is opgeslagen. Ga terug naar het
-          <router-link :to="{ name: 'home' }">startscherm</router-link></span
-        >
-      </application-message>
       <application-message
         v-else-if="errorMessage != ''"
         messageType="error"
@@ -45,13 +38,15 @@ import { useContactmomentService } from "@/features/contactmoment";
 import type { Contactmoment } from "@/features/contactmoment/types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import { toast } from "@/stores/toast";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const contactmoment = useContactmomentStore();
 const saving = ref(false);
 const service = useZaaksysteemService();
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
-const saved = ref(false);
 
 const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
   contactmoment?.zaken.forEach((zaak) => {
@@ -82,8 +77,8 @@ const saveContact = (contactmoment: Contactmoment) => {
       // nu ook de zaken opslaan bij het contactmoment
       zakenToevoegenAanContactmoment(savedContactmoment.url);
 
-      //status bijwekren
-      saved.value = true;
+      toast({ text: "Het contactmoment is opgeslagen" });
+      router.push("/");
     })
     .catch(() => {
       errorMessage.value =

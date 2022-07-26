@@ -21,12 +21,15 @@ async function fetchUser(url: string): Promise<User> {
 
   const roles = json?.roles;
   const id = json?.id;
-  if (typeof id !== "string" || !id) return anonymousUser;
+  const email = json?.email;
+  if (typeof id !== "string" || !id || typeof email !== "string" || !email)
+    return anonymousUser;
 
   return {
     isLoggedIn: true,
     roles: Array.isArray(roles) ? roles : [],
     id,
+    email,
   };
 }
 
