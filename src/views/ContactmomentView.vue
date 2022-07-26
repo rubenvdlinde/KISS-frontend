@@ -122,5 +122,10 @@ main {
 
 .zaak-tabs {
   --tab-bg: var(--color-secondary);
+  --tab-size: 1.25rem;
+}
+
+utrecht-heading {
+  margin-block-end: var(--spacing-default);
 }
 </style>

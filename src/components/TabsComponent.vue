@@ -107,6 +107,8 @@ watch(
   text-decoration: none;
   color: inherit;
   padding: 1rem;
+  border-start-end-radius: var(--radius-default);
+  border-start-start-radius: var(--radius-default);
 }
 
 [role="tabpanel"],
