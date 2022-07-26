@@ -101,11 +101,11 @@
                 role="tabpanel"
               >
                 <zaak-zoeker
-                  v-if="activeTab === Tabs.zakenZoeker"
+                  v-show="activeTab === Tabs.zakenZoeker"
                   :populatedBsn="curentBsn"
                 ></zaak-zoeker>
                 <persoon-zoeker
-                  v-else
+                  v-show="activeTab === Tabs.personenZoeker"
                   @zakenZoeken="onZakenZoeken"
                 ></persoon-zoeker>
               </section>
