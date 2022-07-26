@@ -1,7 +1,12 @@
-import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
+import {
+  parseValidUrl,
+  ServiceResult,
+  type Paginated,
+  type Meta,
+} from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
-import type { SearchResult } from "./types";
+import type { SearchResult, SearchJSON } from "./types";
 
 function mapResult(obj: any): SearchResult {
   const source = obj?.object_bron?.raw ?? "Website";
@@ -41,6 +46,7 @@ export function useGlobalSearch(
         "content-type": "application/json",
       },
       body: JSON.stringify({
+        query: parameters.value.search,
         page: {
           current: parameters.value.page || 1,
         },
@@ -72,4 +78,27 @@ export function useGlobalSearch(
   return ServiceResult.fromFetcher(getUrl, fetcher, {
     getUniqueId,
   });
+}
+
+export function useBodySearch(body?: SearchJSON) {
+  async function fetcher(url: string): Promise<Meta<SearchResult>> {
+    if (!url) throw new Error();
+    const r = await fetchLoggedIn(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) throw new Error();
+    const json = await r.json();
+    const { results, meta } = json ?? {};
+    const result = Array.isArray(results) ? results.map(mapResult) : [];
+    return {
+      result,
+      meta,
+    };
+  }
+
+  return ServiceResult.fromFetcher(globalSearchBaseUri, fetcher);
 }
