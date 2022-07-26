@@ -72,7 +72,7 @@ const saveContact = (contactmoment: Contactmoment) => {
 
   errorMessage.value = "";
 
-  return contactmomentService
+  contactmomentService
     .save(contactmoment)
     .then((savedContactmoment) => {
       // nu ook de zaken opslaan bij het contactmoment
