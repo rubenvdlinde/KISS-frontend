@@ -61,10 +61,10 @@ const zakenToevoegenAanContactmoment = (id: string) => {
       errorMessage.value =
         "Er is een fout opgetreden bij het toevoegen van een zaak bij het contactmoment";
     });
-
-    //klaar
-    contactmoment.stop();
   });
+
+  //klaar
+  contactmoment.stop();
 };
 
 const saveContact = (contactmoment: Contactmoment) => {
