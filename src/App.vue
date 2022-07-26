@@ -1,6 +1,7 @@
 <template>
   <login-overlay>
     <template #default="{ onLogout }">
+      <the-toast-section />
       <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
         <global-search>
           <template #articleFooter="{ id, title }">
@@ -26,6 +27,7 @@ import { GlobalSearch } from "./features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import SearchFeedback from "./features/feedback/SearchFeedback.vue";
 import { logoutUrl, LoginOverlay } from "./features/login";
+import TheToastSection from "./components/TheToastSection.vue";
 
 const contactmoment = useContactmomentStore();
 </script>
