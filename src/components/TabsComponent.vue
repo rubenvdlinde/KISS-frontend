@@ -72,7 +72,7 @@ const entries = computed(() =>
       isActive,
       name,
       label: props.labels?.[name] || name,
-      href: isActive ? undefined : "#" + name,
+      href: isActive ? undefined : "#" + encodeURIComponent(name),
       tag: isActive ? "span" : "a",
       tabId: id + "_tab",
       panelId: id + "_panel",

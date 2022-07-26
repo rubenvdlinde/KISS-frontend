@@ -211,10 +211,6 @@ input {
   margin-top: var(--spacing-small);
 }
 
-form:last-child {
-  margin-top: var(--spacing-large);
-}
-
 menu {
   margin-top: var(--spacing-large);
   display: flex;
