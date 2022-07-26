@@ -32,6 +32,7 @@ import { ContactmomentAfhandelForm } from "@/features/contactmoment";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 import { ref } from "vue";
+import type { ContactmomentObject } from "@/features/zaaksysteem/types";
 import { useZaaksysteemService } from "@/features/zaaksysteem/service";
 import { useContactmomentService } from "@/features/contactmoment";
 import type { Contactmoment } from "@/features/contactmoment/types";
@@ -39,7 +40,6 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { useToast } from "@/stores/toast";
 import { useRouter } from "vue-router";
-import type { ContactmomentObject } from "@/features/zaaksysteem/types";
 
 const { toast } = useToast();
 const router = useRouter();
