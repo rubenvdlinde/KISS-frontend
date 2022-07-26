@@ -1,5 +1,4 @@
-import { defineStore } from "pinia";
-import { asReadOnly } from "./helpers";
+import { reactive } from "vue";
 
 type MessageType = "confirm" | "error";
 
@@ -10,33 +9,28 @@ interface ToastParams {
 }
 
 interface Message {
-  text: string;
-  type: MessageType;
-  key: number;
+  readonly text: string;
+  readonly type: MessageType;
+  readonly key: number;
 }
 
 let key = 0;
 
-const storeDefinition = defineStore("toast", {
-  state: () => ({
-    messages: [] as Array<Message>,
-  }),
-  actions: {
-    toast(params: ToastParams) {
-      const m = {
-        text: params.text,
-        type: params.type || "confirm",
-        key: (key += 1),
-      };
-      this.messages.push(m);
-      setTimeout(() => {
-        const index = this.messages.indexOf(m);
-        if (index !== -1) {
-          this.messages.splice(index, 1);
-        }
-      }, params.timeout || 3000);
-    },
-  },
-});
+const _messages = reactive<Message[]>([]);
 
-export const useToast = asReadOnly(storeDefinition);
+export const messages = _messages as readonly Message[];
+
+export function toast(params: ToastParams) {
+  const m = {
+    text: params.text,
+    type: params.type || "confirm",
+    key: (key += 1),
+  };
+  _messages.push(m);
+  setTimeout(() => {
+    const index = _messages.indexOf(m);
+    if (index !== -1) {
+      _messages.splice(index, 1);
+    }
+  }, params.timeout || 3000);
+}

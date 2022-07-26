@@ -38,10 +38,9 @@ import { useContactmomentService } from "@/features/contactmoment";
 import type { Contactmoment } from "@/features/contactmoment/types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import { useToast } from "@/stores/toast";
+import { toast } from "@/stores/toast";
 import { useRouter } from "vue-router";
 
-const { toast } = useToast();
 const router = useRouter();
 const contactmoment = useContactmomentStore();
 const saving = ref(false);
