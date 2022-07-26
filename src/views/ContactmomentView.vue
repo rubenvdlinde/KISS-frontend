@@ -8,7 +8,7 @@
       <ul role="tablist" class="tabs-component-tabs">
         <li
           :class="{
-            'is-active': activeTabContactmoment === tabsContactmoment.klanten,
+            'is-active': activeTabContactmoment === TabsContactmoment.klanten,
           }"
           class="tabs-component-tab"
           role="presentation"
@@ -18,13 +18,13 @@
             class="tabs-component-tab-a"
             role="tab"
             aria-selected="true"
-            @click.prevent="activeTabContactmoment = tabsContactmoment.klanten"
+            @click.prevent="activeTabContactmoment = TabsContactmoment.klanten"
             >Klanten</a
           >
         </li>
         <li
           :class="{
-            'is-active': activeTabContactmoment === tabsContactmoment.zaken,
+            'is-active': activeTabContactmoment === TabsContactmoment.zaken,
           }"
           class="tabs-component-tab"
           role="presentation"
@@ -34,14 +34,14 @@
             class="tabs-component-tab-a"
             role="tab"
             aria-selected="false"
-            @click.prevent="activeTabContactmoment = tabsContactmoment.zaken"
+            @click.prevent="activeTabContactmoment = TabsContactmoment.zaken"
             >Zaken</a
           >
         </li>
       </ul>
       <div class="tabs-component-panels">
-        <div v-if="activeTabContactmoment === tabsContactmoment.klanten">
-          <utrecht-heading :level="2">Klanten</utrecht-heading>
+        <article v-show="activeTabContactmoment === TabsContactmoment.klanten">
+          <utrecht-heading :level="2" model-value>Klanten</utrecht-heading>
 
           <klant-zoeker
             v-if="showKlantenSearch"
@@ -60,13 +60,13 @@
             </menu>
             <klant-details :klant="contactmomentStore.klant"></klant-details>
           </template>
-        </div>
-        <template v-else>
-          <utrecht-heading :level="2">Zaken</utrecht-heading>
+        </article>
+        <article v-show="activeTabContactmoment === TabsContactmoment.zaken">
+          <utrecht-heading :level="2" model-value>Zaken</utrecht-heading>
           <div class="tabs-component-zaken">
             <ul role="tablist" class="tabs-component-tabs">
               <li
-                :class="{ 'is-active': activeTab === tabs.personenZoeker }"
+                :class="{ 'is-active': activeTab === Tabs.personenZoeker }"
                 class="tabs-component-tab"
                 role="presentation"
               >
@@ -75,12 +75,12 @@
                   class="tabs-component-tab-a"
                   role="tab"
                   aria-selected="true"
-                  @click.prevent="activeTab = tabs.personenZoeker"
+                  @click.prevent="activeTab = Tabs.personenZoeker"
                   >Personen</a
                 >
               </li>
               <li
-                :class="{ 'is-active': activeTab === tabs.zakenZoeker }"
+                :class="{ 'is-active': activeTab === Tabs.zakenZoeker }"
                 class="tabs-component-tab"
                 role="presentation"
               >
@@ -89,7 +89,7 @@
                   class="tabs-component-tab-a"
                   role="tab"
                   aria-selected="false"
-                  @click.prevent="activeTab = tabs.zakenZoeker"
+                  @click.prevent="activeTab = Tabs.zakenZoeker"
                   >Zaken</a
                 >
               </li>
@@ -101,7 +101,7 @@
                 role="tabpanel"
               >
                 <zaak-zoeker
-                  v-if="activeTab === tabs.zakenZoeker"
+                  v-if="activeTab === Tabs.zakenZoeker"
                   :populatedBsn="curentBsn"
                 ></zaak-zoeker>
                 <persoon-zoeker
@@ -111,7 +111,7 @@
               </section>
             </div>
           </div>
-        </template>
+        </article>
       </div>
     </div>
   </main>
@@ -131,19 +131,25 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import type { Klant } from "@/stores/contactmoment/types";
 
 //layout view tabs
-const tabsContactmoment = { klanten: "klanten", zaken: "zaken" };
-const activeTabContactmoment = ref(tabsContactmoment.klanten);
+enum TabsContactmoment {
+  klanten = "klanten",
+  zaken = "zaken",
+}
+const activeTabContactmoment = ref(TabsContactmoment.klanten);
 
 //zaak tabs
-const tabs = { zakenZoeker: "zakenZoeker", personenZoeker: "personenZoeker" };
-const activeTab = ref(tabs.personenZoeker);
+enum Tabs {
+  zakenZoeker = "zakenZoeker",
+  personenZoeker = "personenZoeker",
+}
+const activeTab = ref(Tabs.personenZoeker);
 const curentBsn = ref<number>();
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab
 const onZakenZoeken = (bsn: number) => {
   curentBsn.value = bsn;
-  activeTab.value = tabs.zakenZoeker;
+  activeTab.value = Tabs.zakenZoeker;
 };
 
 //klant functies
