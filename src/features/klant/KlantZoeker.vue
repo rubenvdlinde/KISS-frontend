@@ -31,9 +31,11 @@
   <h2>todo</h2>
   <p>
     nog bepalen hoe om te gaan met zeer groot aantal resultaten<br />
-    validatie op input format en lengte<br />
+
+    testen en anders bespreken of ook partial matches ondersteund kunnen worden.
+    zo ja dan ook validatie aanpassen<br />
     zorgen dat gegevens niet verdwijenn als je van tab wisselt<br />
-    in en uitklappen hoofd search ziet er raar uit<br />
+    in en uitklappen hoofd search ziet er raar uit (ligt bij gina)<br />
     nldesign table styles worden niet overgenomen. bv
     --utrecht-table-row-border-block-end-color zou toegepast moeten worden als
     er een utrecht-html class op de container div staat. zie
