@@ -106,7 +106,9 @@ watch(
 [role="tab"] {
   text-decoration: none;
   color: inherit;
-  padding: 1rem;
+  --tab-spacing: var(--spacing-default);
+  padding: var(--tab-spacing);
+  margin-inline-start: calc(-1 * var(--tab-spacing));
   border-start-end-radius: var(--radius-default);
   border-start-start-radius: var(--radius-default);
 }

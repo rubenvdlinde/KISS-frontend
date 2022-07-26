@@ -103,15 +103,13 @@ main {
   margin-inline: var(--container-padding);
 }
 
-::v-deep {
-  [role="tablist"],
-  .zaak-tabs [role="tabpanel"] {
-    padding-inline: var(--container-padding);
-  }
+:deep([role="tablist"]),
+.zaak-tabs :deep([role="tabpanel"]) {
+  padding-inline: var(--container-padding);
+}
 
-  [role="tabpanel"] {
-    padding-block: var(--spacing-default);
-  }
+:deep([role="tabpanel"]) {
+  padding-block: var(--spacing-default);
 }
 
 .klant-panel {

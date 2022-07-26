@@ -131,8 +131,6 @@ watch(
 .grid {
   display: grid;
   grid-template-columns: 1fr 4fr;
-
-  padding: var(--spacing-large);
   grid-gap: 2rem;
 }
 
