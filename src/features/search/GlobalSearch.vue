@@ -52,8 +52,14 @@
           />
           <ul>
             <li
-              v-for="{ id, title, source, content, url } in searchResults.data
-                .page"
+              v-for="{
+                id,
+                title,
+                source,
+                content,
+                url,
+                jsonObject,
+              } in searchResults.data.page"
               :key="'searchResult_' + id"
               v-show="id === currentId"
             >
@@ -75,7 +81,80 @@
                   </utrecht-heading>
                   <small :class="`category-${source}`">{{ source }}</small>
                 </header>
-                <p v-if="content">{{ content }}</p>
+                <div v-if="jsonObject">
+                  <div class="left">
+                    <h2>Algemene contactgegevens</h2>
+                    <p>
+                      <label><strong>E-mailadres: </strong></label
+                      ><span>{{ jsonObject?.user }}</span>
+                    </p>
+                    <p>
+                      <label><strong>Telefoonnummer 1: </strong></label
+                      ><span>{{ jsonObject?.contact?.telefoonnummer1 }}</span>
+                    </p>
+                    <h2>Agenda</h2>
+                    <table class="availability">
+                      <thead>
+                        <tr>
+                          <td></td>
+                          <td
+                            v-for="(_, day) in jsonObject?.calendar
+                              ?.availabilities"
+                            :key="day"
+                          >
+                            {{ day }}
+                          </td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>ochtend</td>
+                          <td
+                            v-for="(value, day) in jsonObject?.calendar
+                              ?.availabilities"
+                            :key="day"
+                            :class="[value.ochtend ? 'groen' : 'rood']"
+                          ></td>
+                        </tr>
+                        <tr>
+                          <td>middag</td>
+                          <td
+                            v-for="(value, day) in jsonObject?.calendar
+                              ?.availabilities"
+                            :key="day"
+                            :class="[value.middag ? 'groen' : 'rood']"
+                          ></td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <p>
+                      <label><strong>Vervanger: </strong></label
+                      ><span>{{ jsonObject?.replacement }}</span>
+                    </p>
+                  </div>
+
+                  <div>
+                    <img
+                      v-if="jsonObject.optionalProfilePicture"
+                      :src="jsonObject.optionalProfilePicture"
+                      width="128"
+                    />
+                    <p>
+                      <label><strong>Functie: </strong></label
+                      ><span>{{ jsonObject?.function }}</span>
+                    </p>
+                    <p>
+                      <label><strong>Afdeling: </strong></label
+                      ><span>{{ jsonObject?.department }}</span>
+                    </p>
+                    <p>
+                      {{ jsonObject?.skills }}
+                    </p>
+                  </div>
+                </div>
+                <p v-else-if="content">{{ content }}</p>
+
                 <slot name="articleFooter" :id="url" :title="title"></slot>
               </article>
             </li>
@@ -281,5 +360,26 @@ article {
 
 .pagination {
   margin-inline: auto;
+}
+
+.left {
+  float: left;
+  margin-right: 5em;
+}
+
+table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-spacing: 10px;
+}
+table td {
+  padding-right: 10px;
+  margin: 10px;
+}
+.groen {
+  background-color: green;
+}
+.rood {
+  background-color: red;
 }
 </style>

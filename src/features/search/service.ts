@@ -21,7 +21,7 @@ function mapResult(obj: any): SearchResult {
 }
 
 const globalSearchBaseUri =
-  window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-search/search";
+  window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-engine/search";
 
 export function useGlobalSearch(
   parameters: Ref<{ search?: string; page?: number }>
