@@ -184,6 +184,8 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
 import { useGlobalSearch } from "./service";
+import { useBodySearch } from "./service";
+import type { SearchJSON } from "./types";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
@@ -201,6 +203,19 @@ const searchParameters = computed(() => ({
 }));
 
 const searchResults = useGlobalSearch(searchParameters);
+const body = encodeFacetSearch();
+const getFacets = useBodySearch(body);
+
+function encodeFacetSearch(): SearchJSON {
+  return {
+    query: searchInput.value,
+    facets: {
+      object_bron: {
+        type: "value",
+      },
+    },
+  };
+}
 
 function applySearch() {
   currentSearch.value = searchInput.value;
