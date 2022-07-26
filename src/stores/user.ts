@@ -9,6 +9,7 @@ export type User =
   | {
       isLoggedIn: true;
       id: string;
+      email: string;
       roles: string[];
     };
 

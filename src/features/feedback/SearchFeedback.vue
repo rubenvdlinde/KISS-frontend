@@ -20,7 +20,7 @@
   </menu>
   <application-message
     v-if="isSaved"
-    message="Uw feedback is verzonden"
+    message="Je feedback is verzonden"
     :autoClose="true"
   ></application-message>
 </template>

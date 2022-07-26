@@ -94,11 +94,14 @@ import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import type { ServiceData } from "@/services/index";
+import { useUserStore } from "@/stores/user";
 
 const props = defineProps<{
   id: unknown | URL;
   name: string;
 }>();
+
+const userStore = useUserStore();
 
 const serviceResult = ref<ServiceData<Feedback>>();
 const service = useFeedbackService();
@@ -111,7 +114,7 @@ const feedback: Feedback = reactive({
   content: "",
   opmerking: "",
   aanleiding: "",
-  contactgegevens: "",
+  contactgegevens: userStore.user.isLoggedIn ? userStore.user.email : "",
 });
 
 cancelDialog.onConfirm(() => annuleren());
