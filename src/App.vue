@@ -12,7 +12,7 @@
           :href="logoutUrl"
           @click="onLogout"
           @keydown.enter="onLogout"
-          class="log-out utrecht-button"
+          class="log-out"
           >Uitloggen</a
         >
       </header>
