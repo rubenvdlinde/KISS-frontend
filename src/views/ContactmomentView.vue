@@ -2,51 +2,14 @@
   <main>
     <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
     <!-- todo: 'trecht-heading errors irriteren. component verwijderen?-->
-
-    <div class="tabs-component-contactmoment">
-      <div class="tabs-component-tabs-background"></div>
-      <ul role="tablist" class="tabs-component-tabs">
-        <li
-          :class="{
-            'is-active': activeTabContactmoment === TabsContactmoment.klanten,
-          }"
-          class="tabs-component-tab"
-          role="presentation"
-        >
-          <a
-            href=""
-            class="tabs-component-tab-a"
-            role="tab"
-            aria-selected="true"
-            @click.prevent="activeTabContactmoment = TabsContactmoment.klanten"
-            >Klanten</a
-          >
-        </li>
-        <li
-          :class="{
-            'is-active': activeTabContactmoment === TabsContactmoment.zaken,
-          }"
-          class="tabs-component-tab"
-          role="presentation"
-        >
-          <a
-            href=""
-            class="tabs-component-tab-a"
-            role="tab"
-            aria-selected="false"
-            @click.prevent="activeTabContactmoment = TabsContactmoment.zaken"
-            >Zaken</a
-          >
-        </li>
-      </ul>
-      <div class="tabs-component-panels">
-        <article v-show="activeTabContactmoment === TabsContactmoment.klanten">
-          <utrecht-heading :level="2" model-value>Klanten</utrecht-heading>
-
+    <tabs-component v-model="activeTabContactmoment" class="main-tabs">
+      <template #[TabsContactmoment.klanten]>
+        <article class="klant-panel">
+          <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
           <klant-zoeker
             v-if="showKlantenSearch"
             @onKlantSelected="klantGevonden"
-          ></klant-zoeker>
+          />
           <template v-else-if="contactmomentStore.klant">
             <menu>
               <li>
@@ -58,62 +21,26 @@
                 </button>
               </li>
             </menu>
-            <klant-details :klant="contactmomentStore.klant"></klant-details>
+            <klant-details :klant="contactmomentStore.klant" />
           </template>
         </article>
-        <article v-show="activeTabContactmoment === TabsContactmoment.zaken">
-          <utrecht-heading :level="2" model-value>Zaken</utrecht-heading>
-          <div class="tabs-component-zaken">
-            <ul role="tablist" class="tabs-component-tabs">
-              <li
-                :class="{ 'is-active': activeTab === Tabs.personenZoeker }"
-                class="tabs-component-tab"
-                role="presentation"
-              >
-                <a
-                  href=""
-                  class="tabs-component-tab-a"
-                  role="tab"
-                  aria-selected="true"
-                  @click.prevent="activeTab = Tabs.personenZoeker"
-                  >Personen</a
-                >
-              </li>
-              <li
-                :class="{ 'is-active': activeTab === Tabs.zakenZoeker }"
-                class="tabs-component-tab"
-                role="presentation"
-              >
-                <a
-                  href=""
-                  class="tabs-component-tab-a"
-                  role="tab"
-                  aria-selected="false"
-                  @click.prevent="activeTab = Tabs.zakenZoeker"
-                  >Zaken</a
-                >
-              </li>
-            </ul>
-            <div class="tabs-component-panels">
-              <section
-                aria-hidden="true"
-                class="tabs-component-panel"
-                role="tabpanel"
-              >
-                <zaak-zoeker
-                  v-show="activeTab === Tabs.zakenZoeker"
-                  :populatedBsn="curentBsn"
-                ></zaak-zoeker>
-                <persoon-zoeker
-                  v-show="activeTab === Tabs.personenZoeker"
-                  @zakenZoeken="onZakenZoeken"
-                ></persoon-zoeker>
-              </section>
-            </div>
-          </div>
-        </article>
-      </div>
-    </div>
+      </template>
+      <template #[TabsContactmoment.zaken]>
+        <section>
+          <utrecht-heading :level="1" model-value class="zaak-title">
+            Zaken
+          </utrecht-heading>
+          <tabs-component v-model="activeTab" class="zaak-tabs">
+            <template #[Tabs.personenZoeker]>
+              <persoon-zoeker @zakenZoeken="onZakenZoeken" />
+            </template>
+            <template #[Tabs.zakenZoeker]>
+              <zaak-zoeker :populatedBsn="curentBsn" />
+            </template>
+          </tabs-component>
+        </section>
+      </template>
+    </tabs-component>
   </main>
   <contactmoment-starter />
 </template>
@@ -129,18 +56,19 @@ import KlantZoeker from "@/features/klant/KlantZoeker.vue";
 import KlantDetails from "@/features/klant/KlantDetails.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import type { Klant } from "@/stores/contactmoment/types";
+import TabsComponent from "@/components/TabsComponent.vue";
 
 //layout view tabs
 enum TabsContactmoment {
-  klanten = "klanten",
-  zaken = "zaken",
+  klanten = "Klanten",
+  zaken = "Zaken",
 }
 const activeTabContactmoment = ref(TabsContactmoment.klanten);
 
 //zaak tabs
 enum Tabs {
-  zakenZoeker = "zakenZoeker",
-  personenZoeker = "personenZoeker",
+  zakenZoeker = "Via zaaknummer",
+  personenZoeker = "Via persoon",
 }
 const activeTab = ref(Tabs.personenZoeker);
 const curentBsn = ref<number>();
@@ -168,30 +96,31 @@ main {
   padding-block: 0;
 }
 
-.tabs-component-contactmoment {
-  display: grid;
-  grid-template-columns: 1fr 10fr 1fr;
-  grid-template-rows: 3.2rem 1fr;
-  row-gap: var(--spacing-large);
+.zaak-title {
+  margin-inline: var(--container-padding);
 }
 
-.tabs-component-tabs {
-  grid-column: 2;
-  grid-row: 1;
+::v-deep {
+  [role="tablist"],
+  .zaak-tabs [role="tabpanel"] {
+    padding-inline: var(--container-padding);
+  }
+
+  [role="tabpanel"] {
+    padding-block: var(--spacing-default);
+  }
 }
 
-.tabs-component-panels {
-  grid-column: 2;
-  grid-row: 2;
+.klant-panel {
+  margin-inline: var(--container-padding);
 }
 
-.tabs-component-tabs-background {
-  grid-column: 1/-1;
-  grid-row: 1;
+.main-tabs {
+  --tab-bg: white;
   background-color: var(--color-secondary);
 }
 
-.tabs-component-panels utrecht-heading {
-  margin-block-end: var(--spacing-default);
+.zaak-tabs {
+  --tab-bg: var(--color-secondary);
 }
 </style>
