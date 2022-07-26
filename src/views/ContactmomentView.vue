@@ -3,6 +3,7 @@
     <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
     <!-- todo: 'trecht-heading errors irriteren. component verwijderen?-->
     <tabs-component v-model="activeTabContactmoment" class="main-tabs">
+      <!-- KLANTEN -->
       <template #[TabsContactmoment.klanten]>
         <article class="klant-panel">
           <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
@@ -25,8 +26,10 @@
           </template>
         </article>
       </template>
+
+      <!-- ZAKEN -->
       <template #[TabsContactmoment.zaken]>
-        <section>
+        <article>
           <utrecht-heading :level="1" model-value class="zaak-title">
             Zaken
           </utrecht-heading>
@@ -38,7 +41,7 @@
               <zaak-zoeker :populatedBsn="curentBsn" />
             </template>
           </tabs-component>
-        </section>
+        </article>
       </template>
     </tabs-component>
   </main>
