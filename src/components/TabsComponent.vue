@@ -3,7 +3,6 @@
     <nav role="tablist">
       <component
         v-for="{
-          name,
           label,
           tag,
           href,
@@ -12,7 +11,7 @@
           tabId,
           enable,
         } in entries"
-        :key="name + '_tabnav'"
+        :key="tabId"
         role="tab"
         :aria-selected="isActive"
         :aria-controls="panelId"
@@ -27,7 +26,7 @@
     <ul>
       <li
         v-for="{ name, isActive, panelId, tabId } in entries"
-        :key="name + '_tab'"
+        :key="panelId"
         :id="panelId"
         role="tabpanel"
         :aria-labelledby="tabId"
@@ -45,13 +44,9 @@ const getCounter = () => (counter += 1);
 </script>
 
 <script lang="ts" setup>
-import { watch, computed, type PropType, useSlots } from "vue";
+import { watch, computed, useSlots } from "vue";
 
 const props = defineProps({
-  labels: {
-    type: Object as PropType<{ [k: string]: string }>,
-    default: () => ({}),
-  },
   modelValue: {
     type: String,
     required: true,
@@ -62,16 +57,16 @@ const slots = useSlots();
 const emit = defineEmits(["update:modelValue"]);
 
 const currentCounter = getCounter();
-const slotKeys = computed(() => Object.keys(slots));
+const slotKeys = Object.keys(slots);
 const entries = computed(() =>
-  slotKeys.value.map((name) => {
+  slotKeys.map((name) => {
     const id = currentCounter + "_" + name;
     const isActive = props.modelValue === name;
 
     return {
       isActive,
       name,
-      label: props.labels?.[name] || name,
+      label: name,
       href: isActive ? undefined : "#" + encodeURIComponent(name),
       tag: isActive ? "span" : "a",
       tabId: id + "_tab",
@@ -86,7 +81,7 @@ watch(
   [slotKeys],
   ([s]) => {
     if (!s.length) return;
-    if (!s.includes(props.modelValue)) {
+    if (!props.modelValue || !s.includes(props.modelValue)) {
       emit("update:modelValue", s[0]);
     }
   },
