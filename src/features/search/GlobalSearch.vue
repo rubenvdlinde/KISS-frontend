@@ -255,11 +255,12 @@ button {
 }
 
 input[type="checkbox"] {
-  accent-color: white;
+  accent-color: var(--color-tertiary);
 }
 
 fieldset {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-default);
   color: white;
 }
