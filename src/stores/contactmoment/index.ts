@@ -8,7 +8,7 @@ export type ContactmomentZaak = Zaak & { shouldStore: boolean };
 interface ContactmomentState {
   contactmomentLoopt: boolean;
   zaken: ContactmomentZaak[];
-  klant: Klant | null;
+  klanten: { klant: Klant; shouldStore: boolean }[];
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -16,8 +16,12 @@ export const useContactmomentStore = defineStore("contactmoment", {
     return {
       contactmomentLoopt: false,
       zaken: <ContactmomentZaak[]>[],
-      klant: null,
+      klanten: [],
     } as ContactmomentState;
+  },
+  getters: {
+    klant: (state) =>
+      state.klanten.filter((x) => x.shouldStore).map((x) => x.klant)[0],
   },
   actions: {
     start() {
@@ -47,7 +51,19 @@ export const useContactmomentStore = defineStore("contactmoment", {
       return zaak ? zaak.shouldStore : false;
     },
     setKlant(klant: Klant) {
-      this.klant = klant;
+      this.klanten.forEach((x) => {
+        x.shouldStore = false;
+      });
+      const match = this.klanten.find((x) => x.klant.id === klant.id);
+      if (match) {
+        match.klant = klant;
+        match.shouldStore = true;
+      } else {
+        this.klanten.push({
+          shouldStore: true,
+          klant,
+        });
+      }
     },
   },
 });
