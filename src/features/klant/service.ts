@@ -26,7 +26,7 @@ const isEmail = (val: string) =>
 
 type KlantSearchParameters = {
   search: Ref<string>;
-  page?: Ref<number>;
+  page: Ref<number | undefined>;
 };
 
 export function useKlanten(params: KlantSearchParameters) {
