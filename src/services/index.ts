@@ -39,6 +39,16 @@ export interface Paginated<T> {
   page: T[];
 }
 
+export function emptyPage<T>(): Paginated<T> {
+  return {
+    pageSize: 0,
+    pageNumber: 0,
+    totalPages: 0,
+    totalRecords: 0,
+    page: [],
+  };
+}
+
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.

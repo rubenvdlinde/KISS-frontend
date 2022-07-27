@@ -1,54 +1,87 @@
-import { ServiceResult } from "@/services";
-import { fetchLoggedIn } from "@/services";
+import { ServiceResult, fetchLoggedIn, type Paginated } from "@/services";
+
+import type { Ref } from "vue";
 import type { Klant } from "./types";
 
-const apiUrl = `${window.gatewayBaseUri}/api/klanten`;
+// er zijn endpoints voor het ophalen van:
+//  - een klant /api/klanten/{uuid}
+//  - contactmomenten van een klant /api/klantcontactmomenten
+// -  zaken bij contactmomenten /api/objectcontactmomenten
 
-export function useKlantService() {
-  const searchByEmail = (data: string) =>
-    searchKlant(`${apiUrl}?extend=all&emailadres=${data}`);
+//onduidelijk wat we nu moeten gebruiken voor het opbouwen van het klantbeeld
+//idiealiter alleen een call naar /api/klanten/{uuid} met ?extend[]=all
+//en dan in een keer alles binnenkrijgen. Kan dat?? zo ja, testdata svp
 
-  const searchByTelnr = (data: string) =>
-    searchKlant(`${apiUrl}?extend=all&telefoonnummer=${data}`);
+//als dat niet kan, zouden we ook de andere calls kunnen gebruiken,
+//maar daar heb ik ook een paar vragen over:
+//in de docs voor het ophalen van klantcontactmometen staan een aantal queryparemeters als 'verplicht' (https://redocly.github.io/redoc/?nocors&url=https://kissdevelopment-dimpact.commonground.nu/openapi.json#tag/KlantContactMoment-contactmomenten-collection/operation/klantcontactmomenten%20KlantContactMoment_get)
+//klopt dat? krijg geen error als ik die niet gebruik
+//zit er nu geen testdata in of is de query fout? als ik hem toepas voor de testklant krijg ik niets terug:
+//https://kissdevelopment-dimpact.commonground.nu/api/klantcontactmomenten?klant.bronorganisatie=999990639&klant.klantnummer=00000221&klant.websiteUrl=/api/KlantAdres/96a1cbcd-3ac3-415f-a62b-0c5270bfae59&contactmoment.bronorganisatie=999990639&rol=gesprekspartner&extend[]=ContactMoment
 
-  const getKlant = (klantnummer: string) => {
-    // er zijn endpoints voor het ophalen van:
-    //  - een klant /api/klanten/{uuid}
-    //  - contactmomenten van een klant /api/klantcontactmomenten
-    // -  zaken bij contactmomenten /api/objectcontactmomenten
+const isEmail = (val: string) =>
+  val.match(
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
+  );
 
-    //onduidelijk wat we nu moeten gebruiken voor het opbouwen van het klantbeeld
-    //idiealiter alleen een call naar /api/klanten/{uuid} met ?extend[]=all
-    //en dan in een keer alles binnenkrijgen. Kan dat?? zo ja, testdata svp
+type KlantSearchParameters = {
+  search: Ref<string>;
+  page?: Ref<number>;
+};
 
-    //als dat niet kan, zouden we ook de andere calls kunnen gebruiken,
-    //maar daar heb ik ook een paar vragen over:
-    //in de docs voor het ophalen van klantcontactmometen staan een aantal queryparemeters als 'verplicht' (https://redocly.github.io/redoc/?nocors&url=https://kissdevelopment-dimpact.commonground.nu/openapi.json#tag/KlantContactMoment-contactmomenten-collection/operation/klantcontactmomenten%20KlantContactMoment_get)
-    //klopt dat? krijg geen error als ik die niet gebruik
-    //zit er nu geen testdata in of is de query fout? als ik hem toepas voor de testklant krijg ik niets terug:
-    //https://kissdevelopment-dimpact.commonground.nu/api/klantcontactmomenten?klant.bronorganisatie=999990639&klant.klantnummer=00000221&klant.websiteUrl=/api/KlantAdres/96a1cbcd-3ac3-415f-a62b-0c5270bfae59&contactmoment.bronorganisatie=999990639&rol=gesprekspartner&extend[]=ContactMoment
+export function useKlanten(params: KlantSearchParameters) {
+  function getUrl() {
+    const search = params.search.value;
 
-    const promise = fetchLoggedIn("???").then((result) => {
-      if (!result.ok) {
-        throw new Error();
-      }
-      return result.json();
-    });
+    if (!search) return "";
 
-    const state = ServiceResult.fromPromise(promise);
+    const page = params.page?.value || 2;
 
-    return { state: state, promise: promise };
-  };
+    const url = new URL(`${window.gatewayBaseUri}/api/klantcontactmomenten`);
+    url.searchParams.set("extend[]", "all");
+    url.searchParams.set("fields[]", "contactmoment");
+    url.searchParams.set("page", page.toString());
 
+    if (isEmail(search)) {
+      url.searchParams.set("klant.emailadres", search);
+    } else {
+      url.searchParams.set("klant.telefoonnummer", search);
+    }
+    return url.toString();
+  }
+
+  return ServiceResult.fromFetcher(getUrl, searchKlanten);
+}
+
+export function useKlant(id: Ref<string>) {
+  const getUrl = () => `${window.gatewayBaseUri}/api/klanten/${id.value}`;
+  return ServiceResult.fromFetcher(getUrl, fetchKlant);
+}
+
+function mapKlant(obj: any): Klant {
   return {
-    searchByEmail,
-    searchByTelnr,
-    getKlant,
+    klantnummer: obj.klantnummer,
+    voornaam: obj.voornaam,
+    voorvoegselAchternaam: obj.voorvoegselAchternaam,
+    achternaam: obj.achternaam,
+    telefoonnummer: obj.telefoonnummer,
+    emailadres: obj.emailadres,
   };
 }
 
-function searchKlant(url: string) {
-  const promise = fetchLoggedIn(url)
+function fetchKlant(url: string) {
+  return fetchLoggedIn(url)
+    .then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+      return r.json();
+    })
+    .then(mapKlant);
+}
+
+function searchKlanten(url: string): Promise<Paginated<Klant>> {
+  return fetchLoggedIn(url)
     .then((result) => {
       if (!result.ok) {
         throw new Error();
@@ -56,16 +89,16 @@ function searchKlant(url: string) {
       return result.json();
     })
     .then((jsonResult) => {
-      if (!jsonResult.results)
+      const { results, limit, total, page, pages } = jsonResult;
+      if (!results)
         throw new Error(
           "Invalide response, ontbrekende property 'results'" +
             JSON.stringify(jsonResult)
         );
 
-      if (!Array.isArray(jsonResult.results))
+      if (!Array.isArray(results))
         throw new Error(
-          "Invalide response, verwacht een lijst: " +
-            JSON.stringify(jsonResult.results)
+          "Invalide response, verwacht een lijst: " + JSON.stringify(results)
         );
 
       //for testing multiple records
@@ -94,21 +127,13 @@ function searchKlant(url: string) {
       //     telefoonnummer: "1111111",
       //     emailadres: "emailadres",
       //   },
-      // ];
-
-      return jsonResult.results.map((obj: any): Klant => {
-        return {
-          klantnummer: obj.klantnummer,
-          voornaam: obj.voornaam,
-          voorvoegselAchternaam: obj.voorvoegselAchternaam,
-          achternaam: obj.achternaam,
-          telefoonnummer: obj.telefoonnummer,
-          emailadres: obj.emailadres,
-        };
-      });
+      // ] as Klant[];
+      return {
+        page: results.map(mapKlant),
+        pageNumber: page,
+        pageSize: limit,
+        totalPages: pages,
+        totalRecords: total,
+      };
     });
-
-  const state = ServiceResult.fromPromise(promise);
-
-  return { state: state, promise: promise };
 }

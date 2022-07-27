@@ -5,26 +5,30 @@
       <input
         type="search"
         placeholder="Zoek op e-mailadres of telefoonnummer"
-        v-model="searchQuery"
+        v-model="currentSearch"
+        @search="handleSearch"
     /></label>
     <button title="Zoeken">
       <span>Zoeken</span><utrecht-icon-loupe model-value />
     </button>
   </form>
 
-  <simple-spinner v-if="serviceResult?.loading"></simple-spinner>
-
-  <klanten-overzicht
-    @onKlantSelected="handleKlantSelected"
-    v-if="serviceResult?.success"
-    :klanten="klanten"
-  ></klanten-overzicht>
-
-  <application-message
-    v-if="serviceResult?.error"
-    messageType="error"
-    message="Er is een fout opgetreden"
-  ></application-message>
+  <template v-if="searchQuery">
+    <simple-spinner v-if="klanten.loading"></simple-spinner>
+    <template v-if="klanten.success">
+      <klanten-overzicht :klanten="klanten.data.page" />
+      <pagination
+        v-if="klanten.data.totalRecords"
+        :pagination="klanten.data"
+        @navigate="navigate"
+      />
+    </template>
+    <application-message
+      v-if="serviceResult?.error"
+      messageType="error"
+      message="Er is een fout opgetreden"
+    ></application-message>
+  </template>
 
   <h2>test data</h2>
   <p>0612345789<br />test@conduction.nl</p>
@@ -47,41 +51,28 @@
 import type { ServiceData } from "@/services";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
-import { useKlantService } from "./service";
+import { useKlanten } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 
+const currentSearch = ref("");
 const searchQuery = ref("");
-const klanten = ref<Klant[]>([]);
-const service = useKlantService();
+const page = ref(1);
+const klanten = useKlanten({ search: searchQuery, page });
+const navigate = (val: number) => {
+  page.value = val;
+};
+
 const serviceResult = ref<ServiceData<Klant>>();
 
 const emit = defineEmits(["onKlantSelected"]);
 
-const isEmail = (val: string) =>
-  val.match(
-    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
-  );
-
 const handleSearch = () => {
-  service.getKlant("ssss");
-  const result = isEmail(searchQuery.value)
-    ? service.searchByEmail(searchQuery.value)
-    : service.searchByTelnr(searchQuery.value);
-  serviceResult.value = result.state;
-  result.promise.then((data) => {
-    klanten.value = data;
-
-    if (klanten.value.length === 1) {
-      emit("onKlantSelected", klanten.value[0]);
-    }
-  });
-};
-
-const handleKlantSelected = (klant: any) => {
-  emit("onKlantSelected", klant);
+  searchQuery.value = currentSearch.value;
+  page.value = 1;
 };
 </script>
 

@@ -37,13 +37,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, watch, type PropType } from "vue";
+import { defineProps, type PropType } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { useKlantService } from "./service";
-import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { Klant } from "./types";
 
-const props = defineProps({
+defineProps({
   klant: {
     type: Object as PropType<Klant>,
     default: () => {
@@ -61,14 +59,6 @@ const props = defineProps({
     type: Number as PropType<1 | 2 | 3 | 4 | 5>,
     default: 2,
   },
-});
-
-const klantService = useKlantService();
-
-const klant = ref(props.klant);
-const klantData = ref({});
-watch(klant, (newValue) => {
-  klantData.value = klantService.getKlant(newValue.klantnummer);
 });
 </script>
 
