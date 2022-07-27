@@ -40,8 +40,9 @@ export interface Paginated<T> {
 }
 
 export interface Meta<T> {
-  result: T[];
+  results: T[];
   meta: any;
+  facets: any;
 }
 
 interface FetcherConfig<T = unknown> {

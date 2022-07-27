@@ -80,7 +80,7 @@ export function useGlobalSearch(
   });
 }
 
-export function useBodySearch(body?: SearchJSON) {
+export function useSources() {
   async function fetcher(url: string): Promise<Meta<SearchResult>> {
     if (!url) throw new Error();
     const r = await fetchLoggedIn(url, {
@@ -88,15 +88,26 @@ export function useBodySearch(body?: SearchJSON) {
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        query: "",
+        facets: {
+          object_bron: {
+            type: "value",
+          },
+          domains: {
+            type: "value",
+          },
+        },
+      }),
     });
     if (!r.ok) throw new Error();
     const json = await r.json();
-    const { results, meta } = json ?? {};
-    const result = Array.isArray(results) ? results.map(mapResult) : [];
+    const { jsonRsult, meta, facets } = json ?? {};
+    const results = Array.isArray(jsonRsult) ? jsonRsult.map(mapResult) : [];
     return {
-      result,
+      results,
       meta,
+      facets,
     };
   }
 

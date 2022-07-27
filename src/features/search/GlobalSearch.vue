@@ -5,6 +5,13 @@
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
   >
+    <template v-if="sources.success">
+      <div v-for="{ facet } in sources.data.facets" :key="facet">
+        <p v-for="{ data } in facet" :key="data">
+          {{ data.toString() }}
+        </p>
+      </div>
+    </template>
     <label
       ><input
         type="search"
@@ -183,9 +190,7 @@ import {
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
-import { useGlobalSearch } from "./service";
-import { useBodySearch } from "./service";
-import type { SearchJSON } from "./types";
+import { useGlobalSearch, useSources } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
@@ -203,18 +208,9 @@ const searchParameters = computed(() => ({
 }));
 
 const searchResults = useGlobalSearch(searchParameters);
-const body = encodeFacetSearch();
-const getFacets = useBodySearch(body);
-
-function encodeFacetSearch(): SearchJSON {
-  return {
-    query: searchInput.value,
-    facets: {
-      object_bron: {
-        type: "value",
-      },
-    },
-  };
+const sources = useSources();
+if (sources.success) {
+  var meta = sources.data.meta;
 }
 
 function applySearch() {
@@ -383,8 +379,7 @@ article {
 }
 
 table {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  border-collapse: separate;
   border-spacing: 10px;
 }
 table td {
