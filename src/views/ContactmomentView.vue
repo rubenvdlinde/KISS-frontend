@@ -9,7 +9,7 @@
           <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
           <klant-zoeker
             v-if="showKlantenSearch"
-            @onKlantSelected="klantGevonden"
+            @klant-selected="klantGevonden"
           />
           <template v-else-if="contactmomentStore.klant">
             <menu>
@@ -55,10 +55,8 @@ import { ContactmomentStarter } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
 
-import KlantZoeker from "@/features/klant/KlantZoeker.vue";
-import KlantDetails from "@/features/klant/KlantDetails.vue";
+import { KlantZoeker, KlantDetails, type Klant } from "@/features/klant";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import type { Klant } from "@/stores/contactmoment/types";
 import TabsComponent from "@/components/TabsComponent.vue";
 
 //layout view tabs

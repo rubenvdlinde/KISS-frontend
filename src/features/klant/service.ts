@@ -107,29 +107,29 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
         );
 
       //for testing multiple records
-      // return defaultPagination<Klant>([
-      //   {
-      //     klantnummer: "111",
-      //     voornaam: "vvv",
-      //     achternaam: "kkk",
-      //     telefoonnummer: "1111111",
-      //     emailadres: "emailadres",
-      //   },
-      //   {
-      //     klantnummer: "111",
-      //     voornaam: "vvv",
-      //     achternaam: "kkk",
-      //     telefoonnummer: "1111111",
-      //     emailadres: "emailadres",
-      //   },
-      //   {
-      //     klantnummer: "111",
-      //     voornaam: "vvv",
-      //     achternaam: "kkk",
-      //     telefoonnummer: "1111111",
-      //     emailadres: "emailadres",
-      //   },
-      // ]);
+      return defaultPagination<Klant>([
+        {
+          klantnummer: "111",
+          voornaam: "vvv",
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+        {
+          klantnummer: "111",
+          voornaam: "vvv",
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+        {
+          klantnummer: "111",
+          voornaam: "vvv",
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+      ]);
       return {
         page: results.map(mapKlant),
         pageNumber: page,

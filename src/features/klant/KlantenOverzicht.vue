@@ -18,7 +18,7 @@
           <tr
             v-for="klant in klanten"
             :key="klant.klantnummer"
-            @click="emit('onKlantSelected', klant)"
+            @click="emit('KlantSelected', klant)"
           >
             <td>{{ klant.klantnummer }}</td>
             <td>
@@ -47,7 +47,7 @@ defineProps({
   klanten: { type: Array as PropType<Klant[]>, default: () => [] },
 });
 
-const emit = defineEmits(["onKlantSelected"]);
+const emit = defineEmits(["KlantSelected"]);
 </script>
 
 <style lang="scss" scoped>

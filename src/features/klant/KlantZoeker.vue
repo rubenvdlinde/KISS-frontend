@@ -16,7 +16,10 @@
   <section v-if="searchQuery" class="search-section">
     <simple-spinner v-if="klanten.loading"></simple-spinner>
     <template v-if="klanten.success">
-      <klanten-overzicht :klanten="klanten.data.page" />
+      <klanten-overzicht
+        :klanten="klanten.data.page"
+        v-on:[KLANT_SELECTED]="emitKlantSelected"
+      />
       <pagination
         class="pagination"
         v-if="klanten.data.totalRecords"
@@ -51,13 +54,14 @@
 <script lang="ts" setup>
 import type { ServiceData } from "@/services";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useKlanten } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
+import { KLANT_SELECTED } from "./config";
 
 const currentSearch = ref("");
 const searchQuery = ref("");
@@ -69,7 +73,14 @@ const navigate = (val: number) => {
 
 const serviceResult = ref<ServiceData<Klant>>();
 
-const emit = defineEmits(["onKlantSelected"]);
+const emit = defineEmits([KLANT_SELECTED]);
+const emitKlantSelected = (klant: Klant) => emit(KLANT_SELECTED, klant);
+
+watch(klanten, (k) => {
+  if (k.success && k.data.page.length === 1) {
+    emitKlantSelected(k.data.page[0]);
+  }
+});
 
 const handleSearch = () => {
   searchQuery.value = currentSearch.value;
