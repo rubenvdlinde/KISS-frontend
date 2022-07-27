@@ -1,4 +1,9 @@
-import { ServiceResult, fetchLoggedIn, type Paginated } from "@/services";
+import {
+  ServiceResult,
+  fetchLoggedIn,
+  type Paginated,
+  defaultPagination,
+} from "@/services";
 
 import type { Ref } from "vue";
 import type { Klant } from "./types";
@@ -102,11 +107,10 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
         );
 
       //for testing multiple records
-      // return [
+      // return defaultPagination<Klant>([
       //   {
       //     klantnummer: "111",
       //     voornaam: "vvv",
-      //     voorvoegselAchternaam: null,
       //     achternaam: "kkk",
       //     telefoonnummer: "1111111",
       //     emailadres: "emailadres",
@@ -114,7 +118,6 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
       //   {
       //     klantnummer: "111",
       //     voornaam: "vvv",
-      //     voorvoegselAchternaam: null,
       //     achternaam: "kkk",
       //     telefoonnummer: "1111111",
       //     emailadres: "emailadres",
@@ -122,12 +125,11 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
       //   {
       //     klantnummer: "111",
       //     voornaam: "vvv",
-      //     voorvoegselAchternaam: null,
       //     achternaam: "kkk",
       //     telefoonnummer: "1111111",
       //     emailadres: "emailadres",
       //   },
-      // ] as Klant[];
+      // ]);
       return {
         page: results.map(mapKlant),
         pageNumber: page,

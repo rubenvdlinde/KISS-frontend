@@ -13,11 +13,12 @@
     </button>
   </form>
 
-  <template v-if="searchQuery">
+  <section v-if="searchQuery" class="search-section">
     <simple-spinner v-if="klanten.loading"></simple-spinner>
     <template v-if="klanten.success">
       <klanten-overzicht :klanten="klanten.data.page" />
       <pagination
+        class="pagination"
         v-if="klanten.data.totalRecords"
         :pagination="klanten.data"
         @navigate="navigate"
@@ -28,7 +29,7 @@
       messageType="error"
       message="Er is een fout opgetreden"
     ></application-message>
-  </template>
+  </section>
 
   <h2>test data</h2>
   <p>0612345789<br />test@conduction.nl</p>
@@ -82,5 +83,14 @@ input {
 }
 .search-bar {
   margin-bottom: var(--spacing-large);
+}
+
+.pagination {
+  margin-inline: auto;
+}
+
+.search-section {
+  display: grid;
+  gap: var(--spacing-small);
 }
 </style>

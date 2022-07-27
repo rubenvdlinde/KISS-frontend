@@ -2,6 +2,7 @@ import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
 export * from "./fetch-logged-in";
+export * from "./pagination";
 
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
@@ -30,25 +31,6 @@ type Result<T> =
     };
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
-
-export interface Paginated<T> {
-  pageSize: number;
-  pageNumber: number;
-  totalPages: number;
-  totalRecords?: number;
-  page: T[];
-}
-
-export function emptyPage<T>(): Paginated<T> {
-  return {
-    pageSize: 0,
-    pageNumber: 0,
-    totalPages: 0,
-    totalRecords: 0,
-    page: [],
-  };
-}
-
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
