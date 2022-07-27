@@ -67,7 +67,7 @@ import {
   useKlantContactmomenten,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
@@ -110,9 +110,37 @@ const klantId = computed(() => contactmomentStore.klant?.id || "");
 
 const zaken = ref<Zaak[]>([]);
 const contactmomenten = useKlantContactmomenten(klantId);
-const contacmomentUrls = computed(() =>
-  contactmomenten.success ? contactmomenten.data.page.map((x) => x.url) : []
+
+// TODO: is dit nou echt de route om de zaken op te halen?
+// Zo ja: bedenken in welke service dit moet komen
+const contactmomentIds = computed(() =>
+  contactmomenten.success ? contactmomenten.data.page.map((x) => x.id) : []
 );
+
+const zaakUrls = ref<string[]>([]);
+
+watch(contactmomentIds, (ids) => {
+  const promises = ids.map((x) =>
+    fetch(`${window.gatewayBaseUri}/api/objectcontactmomenten/${x}`, {
+      credentials: "include",
+    }).then((r) => r.json())
+  );
+  Promise.all(promises)
+    .then((co) => co.filter((x) => x.objectType === "zaak"))
+    .then((co) => co.map((x) => x.object))
+    .then((x) => {
+      zaakUrls.value = x;
+    });
+});
+
+watch(zaakUrls, (urls) => {
+  const promises = urls.map((u) =>
+    fetch(u, { credentials: "include" }).then((r) => r.json())
+  );
+  Promise.all(promises).then((z) => {
+    zaken.value = z;
+  });
+});
 </script>
 
 <style scoped lang="scss">

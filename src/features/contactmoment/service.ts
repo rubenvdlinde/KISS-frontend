@@ -82,6 +82,6 @@ function fetchKlantContactmomenten(
       return r.json();
     })
     .then((json) => {
-      return parsePagination(json, (x) => x as Contactmoment);
+      return parsePagination(json, (x) => x.contactmomment as Contactmoment);
     });
 }
