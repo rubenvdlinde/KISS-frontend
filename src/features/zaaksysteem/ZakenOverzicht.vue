@@ -29,7 +29,7 @@ import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
 
 defineProps({
-  zaken: { type: Array as PropType<Zaak[]>, default: () => [] },
+  zaken: { type: Array as PropType<Zaak[]>, required: true },
 });
 </script>
 

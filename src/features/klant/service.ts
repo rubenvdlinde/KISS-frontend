@@ -6,7 +6,7 @@ import {
 } from "@/services";
 
 import type { Ref } from "vue";
-import type { Klant } from "./types";
+import type { Klant } from "@/stores/contactmoment";
 
 // er zijn endpoints voor het ophalen van:
 //  - een klant /api/klanten/{uuid}
@@ -42,15 +42,14 @@ export function useKlanten(params: KlantSearchParameters) {
 
     const page = params.page?.value || 1;
 
-    const url = new URL(`${window.gatewayBaseUri}/api/klantcontactmomenten`);
+    const url = new URL(`${window.gatewayBaseUri}/api/klanten`);
     url.searchParams.set("extend[]", "all");
-    url.searchParams.set("fields[]", "contactmoment");
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
-      url.searchParams.set("klant.emailadres", search);
+      url.searchParams.set("emailadres", search);
     } else {
-      url.searchParams.set("klant.telefoonnummer", search);
+      url.searchParams.set("telefoonnummer", search);
     }
     return url.toString();
   }
@@ -58,13 +57,14 @@ export function useKlanten(params: KlantSearchParameters) {
   return ServiceResult.fromFetcher(getUrl, searchKlanten);
 }
 
-export function useKlant(id: Ref<string>) {
+export function useKlantDetails(id: Ref<string>) {
   const getUrl = () => `${window.gatewayBaseUri}/api/klanten/${id.value}`;
   return ServiceResult.fromFetcher(getUrl, fetchKlant);
 }
 
 function mapKlant(obj: any): Klant {
   return {
+    id: obj.id,
     klantnummer: obj.klantnummer,
     voornaam: obj.voornaam,
     voorvoegselAchternaam: obj.voorvoegselAchternaam,
@@ -107,29 +107,29 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
         );
 
       //for testing multiple records
-      return defaultPagination<Klant>([
-        {
-          klantnummer: "111",
-          voornaam: "vvv",
-          achternaam: "kkk",
-          telefoonnummer: "1111111",
-          emailadres: "emailadres",
-        },
-        {
-          klantnummer: "111",
-          voornaam: "vvv",
-          achternaam: "kkk",
-          telefoonnummer: "1111111",
-          emailadres: "emailadres",
-        },
-        {
-          klantnummer: "111",
-          voornaam: "vvv",
-          achternaam: "kkk",
-          telefoonnummer: "1111111",
-          emailadres: "emailadres",
-        },
-      ]);
+      // return defaultPagination<Klant>([
+      //   {
+      //     klantnummer: "111",
+      //     voornaam: "vvv",
+      //     achternaam: "kkk",
+      //     telefoonnummer: "1111111",
+      //     emailadres: "emailadres",
+      //   },
+      //   {
+      //     klantnummer: "111",
+      //     voornaam: "vvv",
+      //     achternaam: "kkk",
+      //     telefoonnummer: "1111111",
+      //     emailadres: "emailadres",
+      //   },
+      //   {
+      //     klantnummer: "111",
+      //     voornaam: "vvv",
+      //     achternaam: "kkk",
+      //     telefoonnummer: "1111111",
+      //     emailadres: "emailadres",
+      //   },
+      // ]);
       return {
         page: results.map(mapKlant),
         pageNumber: page,

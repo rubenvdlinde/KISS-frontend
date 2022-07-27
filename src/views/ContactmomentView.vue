@@ -6,12 +6,14 @@
       <!-- KLANTEN -->
       <template #[TabsContactmoment.klanten]>
         <article class="klant-panel">
-          <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
-          <klant-zoeker
-            v-if="showKlantenSearch"
-            @klant-selected="klantGevonden"
-          />
+          <template v-if="showKlantenSearch">
+            <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
+            <klant-zoeker @klant-selected="klantGevonden" />
+          </template>
           <template v-else-if="contactmomentStore.klant">
+            <utrecht-heading :level="1" model-value
+              >Klantinformatie</utrecht-heading
+            >
             <menu>
               <li>
                 <button
@@ -23,6 +25,11 @@
               </li>
             </menu>
             <klant-details :klant="contactmomentStore.klant" />
+            <zaken-overzicht v-if="zaken.length" :zaken="zaken" />
+            <contactmomenten-overzicht
+              v-if="contactmomenten.length"
+              :contactmomenten="contactmomenten"
+            />
           </template>
         </article>
       </template>
@@ -49,15 +56,19 @@
 </template>
 
 <script setup lang="ts">
-import ZaakZoeker from "@/features/zaaksysteem/ZaakZoeker.vue";
 import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
-import { ContactmomentStarter } from "@/features/contactmoment";
+import {
+  ContactmomentStarter,
+  ContactmomentenOverzicht,
+  type Contactmoment,
+} from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
 
-import { KlantZoeker, KlantDetails, type Klant } from "@/features/klant";
-import { useContactmomentStore } from "@/stores/contactmoment";
+import { KlantZoeker, KlantDetails } from "@/features/klant";
+import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
+import { ZaakZoeker, ZakenOverzicht, type Zaak } from "@/features/zaaksysteem";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -89,6 +100,9 @@ const klantGevonden = (klant: Klant) => {
   showKlantenSearch.value = false;
   contactmomentStore.setKlant(klant);
 };
+
+const zaken = ref<Zaak[]>([]);
+const contactmomenten = ref<Contactmoment[]>([]);
 </script>
 
 <style scoped lang="scss">

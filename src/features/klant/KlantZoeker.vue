@@ -56,7 +56,7 @@ import type { ServiceData } from "@/services";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { ref, watch } from "vue";
 import { useKlanten } from "./service";
-import type { Klant } from "./types";
+import type { Klant } from "@/stores/contactmoment";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";

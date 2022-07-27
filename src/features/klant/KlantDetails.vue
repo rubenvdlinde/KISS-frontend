@@ -39,7 +39,7 @@
 <script lang="ts" setup>
 import { defineProps, type PropType } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import type { Klant } from "./types";
+import type { Klant } from "@/stores/contactmoment";
 
 defineProps({
   klant: {
@@ -65,7 +65,7 @@ defineProps({
 <style lang="scss" scoped>
 article {
   background-color: var(--color-secondary);
-  padding: var(--spacing-large);
+  padding: var(--spacing-default);
   margin-block: var(--spacing-large);
 }
 table {
