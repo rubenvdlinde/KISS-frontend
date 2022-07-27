@@ -3,6 +3,7 @@ import {
   fetchLoggedIn,
   type Paginated,
   defaultPagination,
+  parsePagination,
 } from "@/services";
 
 import type { Ref } from "vue";
@@ -94,48 +95,34 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
       return result.json();
     })
     .then((jsonResult) => {
-      const { results, limit, total, page, pages } = jsonResult;
-      if (!results)
-        throw new Error(
-          "Invalide response, ontbrekende property 'results'" +
-            JSON.stringify(jsonResult)
-        );
-
-      if (!Array.isArray(results))
-        throw new Error(
-          "Invalide response, verwacht een lijst: " + JSON.stringify(results)
-        );
-
       //for testing multiple records
-      // return defaultPagination<Klant>([
-      //   {
-      //     klantnummer: "111",
-      //     voornaam: "vvv",
-      //     achternaam: "kkk",
-      //     telefoonnummer: "1111111",
-      //     emailadres: "emailadres",
-      //   },
-      //   {
-      //     klantnummer: "111",
-      //     voornaam: "vvv",
-      //     achternaam: "kkk",
-      //     telefoonnummer: "1111111",
-      //     emailadres: "emailadres",
-      //   },
-      //   {
-      //     klantnummer: "111",
-      //     voornaam: "vvv",
-      //     achternaam: "kkk",
-      //     telefoonnummer: "1111111",
-      //     emailadres: "emailadres",
-      //   },
-      // ]);
-      return {
-        page: results.map(mapKlant),
-        pageNumber: page,
-        pageSize: limit,
-        totalPages: pages,
-        totalRecords: total,
-      };
+      return defaultPagination<Klant>([
+        {
+          id: "deb5046c-6ef8-424b-b6ce-94ecb27e9826",
+          klantnummer: "111",
+          voornaam: "vvv",
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+        {
+          id: "74cde8e5-c5f5-4f57-8cdb-e9679cbfa946",
+          klantnummer: "111",
+          voornaam: "vvv",
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+        {
+          id: "cab7f6bf-27ab-41ec-a448-aa5107d8aa20",
+          klantnummer: "111",
+          voornaam: "vvv",
+          achternaam: "kkk",
+          telefoonnummer: "1111111",
+          emailadres: "emailadres",
+        },
+      ]);
+
+      return parsePagination(jsonResult, mapKlant);
     });
 }

@@ -5,32 +5,36 @@
     <tabs-component v-model="activeTabContactmoment" class="main-tabs">
       <!-- KLANTEN -->
       <template #[TabsContactmoment.klanten]>
-        <article class="klant-panel">
-          <template v-if="showKlantenSearch">
-            <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
-            <klant-zoeker @klant-selected="klantGevonden" />
-          </template>
-          <template v-else-if="contactmomentStore.klant">
-            <utrecht-heading :level="1" model-value
-              >Klantinformatie</utrecht-heading
-            >
-            <menu>
-              <li>
-                <button
-                  @click="showKlantenSearch = true"
-                  class="utrecht-button utrecht-button--secondary-action"
-                >
-                  Klanten zoeken
-                </button>
-              </li>
-            </menu>
-            <klant-details :klant="contactmomentStore.klant" />
-            <zaken-overzicht v-if="zaken.length" :zaken="zaken" />
-            <contactmomenten-overzicht
-              v-if="contactmomenten.length"
-              :contactmomenten="contactmomenten"
-            />
-          </template>
+        <article class="klant-panel" v-show="showKlantenSearch">
+          <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
+          <klant-zoeker @klant-selected="klantGevonden" />
+        </article>
+        <article
+          class="klant-panel"
+          v-show="!showKlantenSearch && contactmomentStore.klant"
+        >
+          <utrecht-heading :level="1" model-value
+            >Klantinformatie</utrecht-heading
+          >
+          <menu>
+            <li>
+              <button
+                @click="showKlantenSearch = true"
+                class="utrecht-button utrecht-button--secondary-action"
+              >
+                Klanten zoeken
+              </button>
+            </li>
+          </menu>
+          <klant-details
+            v-if="contactmomentStore.klant"
+            :klant="contactmomentStore.klant"
+          />
+          <zaken-overzicht v-if="zaken.length" :zaken="zaken" />
+          <contactmomenten-overzicht
+            v-if="contactmomenten.success"
+            :contactmomenten="contactmomenten.data.page"
+          />
         </article>
       </template>
 
@@ -60,7 +64,7 @@ import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
 import {
   ContactmomentStarter,
   ContactmomentenOverzicht,
-  type Contactmoment,
+  useKlantContactmomenten,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
@@ -69,6 +73,7 @@ import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker, ZakenOverzicht, type Zaak } from "@/features/zaaksysteem";
+import { computed } from "@vue/reactivity";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -101,8 +106,13 @@ const klantGevonden = (klant: Klant) => {
   contactmomentStore.setKlant(klant);
 };
 
+const klantId = computed(() => contactmomentStore.klant?.id || "");
+
 const zaken = ref<Zaak[]>([]);
-const contactmomenten = ref<Contactmoment[]>([]);
+const contactmomenten = useKlantContactmomenten(klantId);
+const contacmomentUrls = computed(() =>
+  contactmomenten.success ? contactmomenten.data.page.map((x) => x.url) : []
+);
 </script>
 
 <style scoped lang="scss">

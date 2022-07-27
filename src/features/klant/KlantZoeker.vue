@@ -18,7 +18,7 @@
     <template v-if="klanten.success">
       <klanten-overzicht
         :klanten="klanten.data.page"
-        v-on:[KLANT_SELECTED]="emitKlantSelected"
+        @klant-selected="emitKlantSelected"
       />
       <pagination
         class="pagination"
@@ -74,7 +74,9 @@ const navigate = (val: number) => {
 const serviceResult = ref<ServiceData<Klant>>();
 
 const emit = defineEmits([KLANT_SELECTED]);
-const emitKlantSelected = (klant: Klant) => emit(KLANT_SELECTED, klant);
+const emitKlantSelected = (klant: Klant) => {
+  emit(KLANT_SELECTED, klant);
+};
 
 watch(klanten, (k) => {
   if (k.success && k.data.page.length === 1) {

@@ -1,5 +1,6 @@
-import { ServiceResult } from "@/services";
+import { parsePagination, ServiceResult, type Paginated } from "@/services";
 import { fetchLoggedIn } from "@/services";
+import type { Ref } from "vue";
 import type { Contactmoment, Gespreksresultaat } from "./types";
 
 export function useContactmomentService() {
@@ -53,4 +54,34 @@ export function useContactmomentService() {
     getGespreksResultaten,
     // saveZaak,
   };
+}
+
+export function useKlantContactmomenten(id: Ref<string>) {
+  const getUrl = () => {
+    const { value } = id;
+    if (!value) return "";
+
+    const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
+    url.searchParams.set("klant.id", value);
+    url.searchParams.set("extend[]", "contactmoment");
+    url.searchParams.set("fields[]", "contactmoment");
+    return url.toString();
+  };
+
+  return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
+}
+
+function fetchKlantContactmomenten(
+  url: string
+): Promise<Paginated<Contactmoment>> {
+  return fetchLoggedIn(url)
+    .then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+      return r.json();
+    })
+    .then((json) => {
+      return parsePagination(json, (x) => x as Contactmoment);
+    });
 }

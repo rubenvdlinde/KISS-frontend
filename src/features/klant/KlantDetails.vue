@@ -44,16 +44,7 @@ import type { Klant } from "@/stores/contactmoment";
 defineProps({
   klant: {
     type: Object as PropType<Klant>,
-    default: () => {
-      return {
-        klantnummer: "",
-        voornaam: "",
-        voorvoegselAchternaam: "",
-        achternaam: "",
-        telefoonnummer: "",
-        emailadres: "",
-      };
-    },
+    required: true,
   },
   level: {
     type: Number as PropType<1 | 2 | 3 | 4 | 5>,

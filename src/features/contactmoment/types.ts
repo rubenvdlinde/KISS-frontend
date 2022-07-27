@@ -6,6 +6,7 @@ export interface MedewerkerIdentificatie {
 }
 
 export interface Contactmoment {
+  url: string;
   vorigContactmoment: string | null;
   bronorganisatie: string;
   registratiedatum: string;

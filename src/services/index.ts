@@ -3,6 +3,7 @@ import useSWRV from "swrv";
 
 export * from "./fetch-logged-in";
 export * from "./pagination";
+export * from "./gateway";
 
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
