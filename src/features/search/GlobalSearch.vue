@@ -245,7 +245,10 @@ watch(hasResults, (x) => {
 <style lang="scss" scoped>
 form {
   grid-area: bar;
-  padding-block: var(--spacing-large);
+  padding-block-start: var(--spacing-small);
+  padding-block-end: var(--spacing-large);
+  display: grid;
+  gap: var(--spacing-small);
 }
 
 .search-bar {
@@ -266,6 +269,7 @@ fieldset {
   flex-wrap: wrap;
   gap: var(--spacing-default);
   color: white;
+  margin-inline: auto;
 }
 
 .search-results {
