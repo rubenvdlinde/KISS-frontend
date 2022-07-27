@@ -1,6 +1,6 @@
 <template>
   <article>
-    <utrecht-heading :level="level">Klantgegevens</utrecht-heading>
+    <utrecht-heading model-value :level="level">Klantgegevens</utrecht-heading>
     <table>
       <thead>
         <th>Klantnummer</th>
@@ -14,11 +14,9 @@
           <td>{{ klant.klantnummer }}</td>
           <td>
             {{
-              [
-                klant.voornaam,
-                klant.voorvoegselAchternaam,
-                klant.achternaam,
-              ].join(" ")
+              [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
+                .filter((x) => x)
+                .join(" ")
             }}
           </td>
           <td>{{ klant.telefoonnummer }}</td>

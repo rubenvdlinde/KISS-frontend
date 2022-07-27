@@ -87,9 +87,9 @@ const onZakenZoeken = (bsn: number) => {
 const showKlantenSearch = ref(true);
 const contactmomentStore = useContactmomentStore();
 
-const klantGevonden = (klant: unknown) => {
+const klantGevonden = (klant: Klant) => {
   showKlantenSearch.value = false;
-  contactmomentStore.setKlant(klant as Klant);
+  contactmomentStore.setKlant(klant);
 };
 </script>
 

@@ -1,13 +1,13 @@
 <template>
   <form class="search-bar" @submit.prevent="handleSearch">
-    <label for="searchInput"
+    <label
       ><span>Klanten zoeken</span>
       <input
         type="search"
         placeholder="Zoek op e-mailadres of telefoonnummer"
         v-model="searchQuery"
     /></label>
-    <button type="submit" title="Zoeken" @click.prevent="handleSearch">
+    <button title="Zoeken">
       <span>Zoeken</span><utrecht-icon-loupe model-value />
     </button>
   </form>
