@@ -35,7 +35,7 @@ export function useKlanten(params: KlantSearchParameters) {
 
     if (!search) return "";
 
-    const page = params.page?.value || 2;
+    const page = params.page?.value || 1;
 
     const url = new URL(`${window.gatewayBaseUri}/api/klantcontactmomenten`);
     url.searchParams.set("extend[]", "all");
