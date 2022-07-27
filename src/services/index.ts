@@ -39,12 +39,6 @@ export interface Paginated<T> {
   page: T[];
 }
 
-export interface Meta<T> {
-  results: T[];
-  meta: any;
-  facets: any;
-}
-
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.

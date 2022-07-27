@@ -5,13 +5,14 @@
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
   >
-    <template v-if="sources.success">
-      <div v-for="{ facet } in sources.data.facets" :key="facet">
-        <p v-for="{ data } in facet" :key="data">
-          {{ data.toString() }}
-        </p>
-      </div>
-    </template>
+    <label class="bronnen">
+      <select v-if="sources.success">
+        <option value="">Alle</option>
+        <option v-for="bron in sources.data" :key="bron" :value="bron">
+          {{ bron }}
+        </option>
+      </select>
+    </label>
     <label
       ><input
         type="search"
@@ -209,9 +210,6 @@ const searchParameters = computed(() => ({
 
 const searchResults = useGlobalSearch(searchParameters);
 const sources = useSources();
-if (sources.success) {
-  var meta = sources.data.meta;
-}
 
 function applySearch() {
   currentSearch.value = searchInput.value;
@@ -255,11 +253,6 @@ form > section {
 
 button {
   font-size: 0;
-}
-
-input,
-label {
-  width: 100%;
 }
 
 .search-results {
@@ -391,5 +384,10 @@ table td {
 }
 .rood {
   background-color: red;
+}
+
+.bronnen select {
+  background-color: var(--color-secondary);
+  border-inline-end: var(--border-style);
 }
 </style>

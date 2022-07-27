@@ -6,16 +6,3 @@ export type SearchResult = {
   url?: URL;
   jsonObject: any;
 };
-
-export type SearchJSON = {
-  query: string;
-  facets: facets;
-};
-
-export type facets = {
-  object_bron: facet;
-};
-
-export type facet = {
-  type: string;
-};
