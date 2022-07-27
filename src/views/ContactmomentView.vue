@@ -117,30 +117,31 @@ const contactmomentIds = computed(() =>
   contactmomenten.success ? contactmomenten.data.page.map((x) => x.id) : []
 );
 
-const zaakUrls = ref<string[]>([]);
+const contactmomentObjectUrls = computed(() =>
+  contactmomentIds.value.map((x) => {
+    const url = new URL(window.gatewayBaseUri + "/api/objectcontactmomenten");
+    url.searchParams.set("contactmoment", x);
+    return url.toString();
+  })
+);
 
-watch(contactmomentIds, (ids) => {
-  const promises = ids.map((x) =>
-    fetch(`${window.gatewayBaseUri}/api/objectcontactmomenten/${x}`, {
-      credentials: "include",
-    }).then((r) => r.json())
-  );
-  Promise.all(promises)
-    .then((co) => co.filter((x) => x.objectType === "zaak"))
-    .then((co) => co.map((x) => x.object))
-    .then((x) => {
-      zaakUrls.value = x;
+watch(contactmomentObjectUrls, (urls) => {
+  getAllJson(urls)
+    .then((co) =>
+      co.filter((x) => x.objectType === "zaak").map((x) => x.object)
+    )
+    .then(getAllJson)
+    .then((z) => {
+      zaken.value = z;
     });
 });
 
-watch(zaakUrls, (urls) => {
+const getAllJson = (urls: string[]) => {
   const promises = urls.map((u) =>
     fetch(u, { credentials: "include" }).then((r) => r.json())
   );
-  Promise.all(promises).then((z) => {
-    zaken.value = z;
-  });
-});
+  return Promise.all(promises);
+};
 </script>
 
 <style scoped lang="scss">
