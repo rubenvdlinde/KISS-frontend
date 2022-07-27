@@ -1,27 +1,26 @@
 <template>
   <form
     method="get"
-    class="search-bar"
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
   >
-    <label class="bronnen">
-      <select v-if="sources.success">
-        <option value="">Alle</option>
-        <option v-for="bron in sources.data" :key="bron" :value="bron">
-          {{ bron }}
-        </option>
-      </select>
-    </label>
-    <label
-      ><input
-        type="search"
-        v-model="searchInput"
-        placeholder="Zoeken"
-        @search.prevent="applySearch"
-      />Zoekterm</label
-    >
-    <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+    <fieldset class="bronnen" v-if="sources.success">
+      <label v-for="bron in sources.data" :key="bron" :value="bron">
+        <input type="checkbox" />
+        {{ bron }}
+      </label>
+    </fieldset>
+    <div class="search-bar">
+      <label
+        ><input
+          type="search"
+          v-model="searchInput"
+          placeholder="Zoeken"
+          @search.prevent="applySearch"
+        />Zoekterm</label
+      >
+      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+    </div>
   </form>
   <template v-if="currentSearch">
     <section ref="searchResultsRef" :class="['search-results', { isExpanded }]">
@@ -244,15 +243,25 @@ watch(hasResults, (x) => {
 form {
   grid-area: bar;
   padding-block: var(--spacing-large);
-  max-width: 40rem;
 }
 
-form > section {
-  width: 40rem;
+.search-bar {
+  max-width: 40rem;
+  width: 100%;
 }
 
 button {
   font-size: 0;
+}
+
+input[type="checkbox"] {
+  accent-color: white;
+}
+
+fieldset {
+  display: flex;
+  gap: var(--spacing-default);
+  color: white;
 }
 
 .search-results {
@@ -384,10 +393,5 @@ table td {
 }
 .rood {
   background-color: red;
-}
-
-.bronnen select {
-  background-color: var(--color-secondary);
-  border-inline-end: var(--border-style);
 }
 </style>
