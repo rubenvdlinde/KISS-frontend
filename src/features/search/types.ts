@@ -6,3 +6,8 @@ export type SearchResult = {
   url?: URL;
   jsonObject: any;
 };
+
+export type Source = {
+  type: string;
+  name: string;
+};

@@ -1,7 +1,7 @@
 import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
-import type { SearchResult } from "./types";
+import type { SearchResult, Source } from "./types";
 
 function mapResult(obj: any): SearchResult {
   const source = obj?.object_bron?.raw ?? "Website";
@@ -76,7 +76,7 @@ export function useGlobalSearch(
 }
 
 export function useSources() {
-  async function fetcher(url: string): Promise<string[]> {
+  async function fetcher(url: string): Promise<Source[]> {
     if (!url) throw new Error();
     const r = await fetchLoggedIn(url, {
       method: "POST",
@@ -103,12 +103,19 @@ export function useSources() {
       throw new Error();
     }
 
-    return Object.values(
-      facets as Record<string, { data: { value: string }[] }[]>
-    )
-      .flat()
-      .flatMap((x) => x.data)
-      .map((x) => x.value);
+    const entries = Object.entries(facets) as [
+      string,
+      { data: { value: string }[] }[]
+    ][];
+
+    return entries.flatMap(([k, v]) =>
+      v.flatMap((x) =>
+        x.data.map((x) => ({
+          name: x.value,
+          type: k,
+        }))
+      )
+    );
   }
 
   return ServiceResult.fromFetcher(globalSearchBaseUri, fetcher);

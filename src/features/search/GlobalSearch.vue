@@ -5,9 +5,9 @@
     @submit.prevent="applySearch"
   >
     <fieldset class="bronnen" v-if="sources.success">
-      <label v-for="bron in sources.data" :key="bron" :value="bron">
-        <input type="checkbox" />
-        {{ bron }}
+      <label v-for="bron in sources.data" :key="bron.name + bron.type">
+        <input type="checkbox" v-model="selectedSources" :value="bron" />
+        {{ bron.name }}
       </label>
     </fieldset>
     <div class="search-bar">
@@ -194,6 +194,7 @@ import { useGlobalSearch, useSources } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import type { Source } from "./types";
 
 const searchInput = ref("");
 const currentSearch = ref("");
@@ -206,6 +207,8 @@ const searchParameters = computed(() => ({
   search: currentSearch.value,
   page: currentPage.value,
 }));
+
+const selectedSources = ref<Source[]>([]);
 
 const searchResults = useGlobalSearch(searchParameters);
 const sources = useSources();
@@ -255,7 +258,7 @@ button {
 }
 
 input[type="checkbox"] {
-  accent-color: var(--color-tertiary);
+  accent-color: var(--color-secondary);
 }
 
 fieldset {
