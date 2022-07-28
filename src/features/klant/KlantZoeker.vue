@@ -62,6 +62,7 @@ import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
 import { KLANT_SELECTED } from "./config";
+import { computed } from "@vue/reactivity";
 
 const currentSearch = ref("");
 const searchQuery = ref("");
@@ -78,9 +79,15 @@ const emitKlantSelected = (klant: Klant) => {
   emit(KLANT_SELECTED, klant);
 };
 
-watch(klanten, (k) => {
-  if (k.success && k.data.page.length === 1) {
-    emitKlantSelected(k.data.page[0]);
+const singleKlant = computed(() =>
+  klanten.success && klanten.data.page.length === 1
+    ? klanten.data.page[0]
+    : undefined
+);
+
+watch(singleKlant, (n, o) => {
+  if (n && n.id !== o?.id) {
+    emitKlantSelected(n);
   }
 });
 

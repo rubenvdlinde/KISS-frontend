@@ -51,10 +51,13 @@ export const useContactmomentStore = defineStore("contactmoment", {
       return zaak ? zaak.shouldStore : false;
     },
     setKlant(klant: Klant) {
+      const match = this.klanten.find((x) => x.klant.id === klant.id);
+      if (match?.shouldStore) return false;
+
       this.klanten.forEach((x) => {
         x.shouldStore = false;
       });
-      const match = this.klanten.find((x) => x.klant.id === klant.id);
+
       if (match) {
         match.klant = klant;
         match.shouldStore = true;
@@ -64,6 +67,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
           klant,
         });
       }
+
+      return true;
     },
   },
 });

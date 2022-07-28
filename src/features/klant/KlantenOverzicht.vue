@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Klant } from "./types";
+import type { Klant } from "@/stores/contactmoment";
 import type { PropType } from "vue";
 
 defineProps({
