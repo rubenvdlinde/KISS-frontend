@@ -30,7 +30,7 @@
             v-if="contactmomentStore.klant"
             :klant="contactmomentStore.klant"
           />
-          <zaken-overzicht v-if="zaken.length" :zaken="zaken" />
+          <zaken-overzicht :zaken="zaken" />
           <contactmomenten-overzicht
             v-if="contactmomenten.success"
             :contactmomenten="contactmomenten.data.page"

@@ -25,7 +25,7 @@
       </tbody>
     </table>
   </article>
-  <p>
+  <!-- <p>
     hier tonen we dezelfde gegevens als in het zoekresultaat plus zaken en
     contactmomenten (notities volgen later)<br />
     via /api/klantcontactmomenten?extend[]=al halen we de contactmomenten op.<br />
@@ -33,7 +33,7 @@
     terug naar zoeken knop<br />
     in het ontwerp staan zaken los in het klantbeeld... denk dat die alleen bij
     de contactmomenten mnoeten staan: overleggen met gina
-  </p>
+  </p> -->
 </template>
 
 <script lang="ts" setup>
