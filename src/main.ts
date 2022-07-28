@@ -13,9 +13,13 @@ declare global {
 }
 
 // HACK VOOR RARE ORGANISATIE IDS
-window.organisatieIds = window.organisatieIds.map((x) =>
-  Number.parseFloat(x).toFixed(0)
-);
+try {
+  window.organisatieIds = window.organisatieIds.map((x) =>
+    Number.parseFloat(x).toFixed(0)
+  );
+} catch (error) {
+  console.error(error);
+}
 
 const app = createApp(App);
 
