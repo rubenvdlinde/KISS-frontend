@@ -12,6 +12,11 @@ declare global {
   }
 }
 
+// HACK VOOR RARE ORGANISATIE IDS
+window.organisatieIds = window.organisatieIds.map((x) =>
+  Number.parseFloat(x).toFixed(0)
+);
+
 const app = createApp(App);
 
 app.use(createPinia());
