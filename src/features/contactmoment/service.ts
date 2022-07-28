@@ -88,7 +88,7 @@ function fetchKlantContactmomenten(
     .then((json) => {
       return parsePagination(
         json,
-        (x) => x.contactmomment as ContacmomentViewModel
+        (x) => (x as any).contactmomment as ContacmomentViewModel
       );
     });
 }

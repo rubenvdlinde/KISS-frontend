@@ -1,12 +1,20 @@
 import type { Paginated } from "./pagination";
 
 export function parsePagination<T>(
-  json: any,
-  map: (jObj: any) => T
+  json: unknown,
+  map: (jObj: unknown) => T
 ): Paginated<T> {
-  const { results, limit, total, page, pages } = json;
-  if (!Array.isArray(results))
-    throw new Error("expected an array: " + JSON.stringify(results));
+  const { results, limit, total, page, pages } = json as {
+    [key: string]: unknown;
+  };
+  if (
+    !Array.isArray(results) ||
+    typeof limit !== "number" ||
+    typeof total !== "number" ||
+    typeof page !== "number" ||
+    typeof pages !== "number"
+  )
+    throw new Error("unexpected json: " + JSON.stringify(json));
   return {
     page: results.map(map),
     pageNumber: page,
