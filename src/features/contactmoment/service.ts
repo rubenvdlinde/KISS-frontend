@@ -1,7 +1,11 @@
 import { parsePagination, ServiceResult, type Paginated } from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
-import type { Contactmoment, Gespreksresultaat } from "./types";
+import type {
+  ContacmomentViewModel,
+  Contactmoment,
+  Gespreksresultaat,
+} from "./types";
 
 export function useContactmomentService() {
   if (!window.gatewayBaseUri) {
@@ -73,7 +77,7 @@ export function useKlantContactmomenten(id: Ref<string>) {
 
 function fetchKlantContactmomenten(
   url: string
-): Promise<Paginated<Contactmoment>> {
+): Promise<Paginated<ContacmomentViewModel>> {
   return fetchLoggedIn(url)
     .then((r) => {
       if (!r.ok) {
@@ -82,6 +86,9 @@ function fetchKlantContactmomenten(
       return r.json();
     })
     .then((json) => {
-      return parsePagination(json, (x) => x.contactmomment as Contactmoment);
+      return parsePagination(
+        json,
+        (x) => x.contactmomment as ContacmomentViewModel
+      );
     });
 }

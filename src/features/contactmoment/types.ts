@@ -6,8 +6,6 @@ export interface MedewerkerIdentificatie {
 }
 
 export interface Contactmoment {
-  id: string;
-  url: string;
   vorigContactmoment: string | null;
   bronorganisatie: string;
   registratiedatum: string;
@@ -20,6 +18,11 @@ export interface Contactmoment {
   medewerker: string;
   resultaat: string;
   medewerkerIdentificatie: MedewerkerIdentificatie | null;
+}
+
+export interface ContacmomentViewModel extends Contactmoment {
+  id: string;
+  url: string;
 }
 
 export interface Gespreksresultaat {

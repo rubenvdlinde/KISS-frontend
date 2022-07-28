@@ -22,11 +22,11 @@
 </template>
 <script lang="ts" setup>
 import type { PropType } from "vue";
-import type { Contactmoment } from "./types";
+import type { ContacmomentViewModel } from "./types";
 
 defineProps({
   contactmomenten: {
-    type: Array as PropType<Contactmoment[]>,
+    type: Array as PropType<ContacmomentViewModel[]>,
     required: true,
   },
 });

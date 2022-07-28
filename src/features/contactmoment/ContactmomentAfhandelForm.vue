@@ -123,8 +123,6 @@ const service = useContactmomentService();
 const cancelDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
 const contactmoment: Contactmoment = reactive({
-  url: "",
-  id: "",
   vorigContactmoment: null,
   voorkeurskanaal: "",
   voorkeurstaal: "",
