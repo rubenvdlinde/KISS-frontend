@@ -136,12 +136,19 @@ watch(contactmomentObjectUrls, (urls) => {
     });
 });
 
-const getAllJson = (urls: string[]) => {
-  const promises = urls.map((u) =>
-    fetch(u, { credentials: "include" }).then((r) => r.json())
+function getAllJson(urls: string[]) {
+  const promises = urls.map(async (u) => {
+    const r = await fetch(u, { credentials: "include" });
+    if (!r.ok) return { ok: false };
+    return {
+      ok: true,
+      json: await r.json(),
+    };
+  });
+  return Promise.all(promises).then((x) =>
+    x.filter((xx) => xx.ok).map((xx) => xx.json)
   );
-  return Promise.all(promises);
-};
+}
 </script>
 
 <style scoped lang="scss">

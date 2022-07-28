@@ -20,7 +20,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
     } as ContactmomentState;
   },
   getters: {
-    klant: (state) =>
+    klant: (state): Klant | undefined =>
       state.klanten.filter((x) => x.shouldStore).map((x) => x.klant)[0],
   },
   actions: {
