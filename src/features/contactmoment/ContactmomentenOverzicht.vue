@@ -9,7 +9,7 @@
       <span id="gespreksresultaat-header">Gespreksresultaat</span>
     </li>
     <li v-for="contactmoment in contactmomenten" :key="contactmoment.id">
-      <details>
+      <details @click="toggleDetails">
         <summary>
           <span aria-labelledby="datum-header" class="first-column">{{
             localeDate(contactmoment?.startdatum)
@@ -90,6 +90,14 @@ const contactmomenten: Partial<ContacmomentViewModel>[] = [
     tekst: "Lorem ipsum",
   },
 ];
+
+// toggle <details> open status on click anywhere within <details>, not only on <summary>
+const toggleDetails = (e: MouseEvent) => {
+  e.preventDefault();
+  if (e.currentTarget instanceof HTMLDetailsElement) {
+    e.currentTarget.open = !e.currentTarget.open;
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -145,7 +153,7 @@ details {
   gap: var(--spacing-default);
 }
 
-summary:hover {
+details:hover {
   cursor: pointer;
 }
 
