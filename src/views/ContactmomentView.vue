@@ -67,13 +67,12 @@ import {
   useKlantContactmomenten,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
-import { ZaakZoeker, ZakenOverzicht, type Zaak } from "@/features/zaaksysteem";
-import { computed } from "@vue/reactivity";
+import { ZaakZoeker, type Zaak } from "@/features/zaaksysteem";
 import { toast } from "@/stores/toast";
 
 //layout view tabs
