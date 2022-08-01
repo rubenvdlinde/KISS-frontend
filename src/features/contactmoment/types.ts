@@ -23,6 +23,7 @@ export interface Contactmoment {
 export interface ContacmomentViewModel extends Contactmoment {
   id: string;
   url: string;
+  startdatum: Date;
 }
 
 export interface Gespreksresultaat {

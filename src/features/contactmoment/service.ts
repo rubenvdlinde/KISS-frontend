@@ -86,9 +86,11 @@ function fetchKlantContactmomenten(
       return r.json();
     })
     .then((json) => {
-      return parsePagination(
-        json,
-        (x) => (x as any).contactmomment as ContacmomentViewModel
-      );
+      return parsePagination(json, (x) => {
+        const moment = (x as any).embedded
+          .contactmoment as ContacmomentViewModel;
+        moment.startdatum = new Date(moment.startdatum as unknown as string);
+        return moment;
+      });
     });
 }
