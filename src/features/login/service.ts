@@ -37,6 +37,5 @@ export const useCurrentUser = () => ServiceResult.fromFetcher(meUrl, fetchUser);
 
 export const logOut = () =>
   fetch(logoutUrl, { credentials: "include" }).then((r) => {
-    //TODO: what do we do if this fails?
-    if (!r.ok) throw new Error("Login failed");
+    if (!r.ok) throw new Error("Logout failed");
   });
