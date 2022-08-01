@@ -35,10 +35,15 @@ output {
   border-radius: var(--radius-default);
   font-size: 1rem;
   color: white;
+  line-height: 1.5rem;
 }
 
 .confirm {
   background-color: var(--color-accent);
+}
+
+.error {
+  background-color: var(--color-error);
 }
 
 .toast-move, /* apply transition to moving elements */
