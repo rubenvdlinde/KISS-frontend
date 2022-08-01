@@ -8,15 +8,11 @@
       <span id="kanaal-header">Kanaal</span>
       <span id="gespreksresultaat-header">Gespreksresultaat</span>
     </li>
-    <li
-      v-for="contactmoment in contactmomenten"
-      :key="contactmoment.id"
-      ref="rows"
-    >
+    <li v-for="contactmoment in contactmomenten" :key="contactmoment.id">
       <details>
         <summary>
           <span aria-labelledby="datum-header" class="first-column">{{
-            localeDate(contactmoment.startdatum)
+            localeDate(contactmoment?.startdatum)
           }}</span>
           <span aria-labelledby="medewerker-header">{{
             contactmoment.medewerker
@@ -41,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, type DetailsHTMLAttributes, type PropType } from "vue";
+import { type PropType } from "vue";
 import type { ContacmomentViewModel } from "./types";
 
 // defineProps({
@@ -51,10 +47,8 @@ import type { ContacmomentViewModel } from "./types";
 //   },
 // });
 
-const rows = ref<HTMLElement[]>([]);
-
-const localeDate = (d: Date) =>
-  d.toLocaleString("nl-NL", {
+const localeDate = (d?: Date) =>
+  d?.toLocaleString("nl-NL", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -62,13 +56,13 @@ const localeDate = (d: Date) =>
     minute: undefined,
   });
 
-const localeTime = (d: Date) =>
-  d.toLocaleString("nl-NL", {
+const localeTime = (d?: Date) =>
+  d?.toLocaleString("nl-NL", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-const contactmomenten = [
+const contactmomenten: Partial<ContacmomentViewModel>[] = [
   {
     id: "1234",
     registratiedatum: "10-10-2020",
@@ -100,13 +94,17 @@ const contactmomenten = [
 
 <style lang="scss" scoped>
 ul {
+  --column-width: 25ch;
+  --gap: var(--spacing-small);
+
   display: grid;
   list-style: none;
   padding: 0;
+}
 
-  summary {
-    list-style: none;
-  }
+summary,
+ul {
+  list-style: none;
 }
 
 li:not(:first-child):not(:last-child) {
@@ -116,11 +114,6 @@ li:not(:first-child):not(:last-child) {
 .header-row,
 dd {
   font-weight: bold;
-}
-
-ul {
-  --column-width: 25ch;
-  --gap: var(--spacing-small);
 }
 
 .header-row,
