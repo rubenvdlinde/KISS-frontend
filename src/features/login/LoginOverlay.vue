@@ -118,7 +118,6 @@ function onLogout(e: Event) {
   e.preventDefault();
   logOut().then(() => {
     channel.postMessage(messageTypes.refresh);
-    refresh();
     location.reload();
   });
 }
