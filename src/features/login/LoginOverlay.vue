@@ -18,7 +18,7 @@
 
 <script lang="ts" setup>
 import { watch, computed, ref } from "vue";
-import { useCurrentUser } from "./service";
+import { logOut, useCurrentUser } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
@@ -114,9 +114,13 @@ function onLogin() {
   }
 }
 
-function onLogout() {
-  channel.postMessage(messageTypes.refresh);
-  setTimeout(() => refresh(), 1000);
+function onLogout(e: Event) {
+  e.preventDefault();
+  logOut().then(() => {
+    channel.postMessage(messageTypes.refresh);
+    refresh();
+    location.reload();
+  });
 }
 
 function onLinkClick(e: Event) {
