@@ -92,7 +92,7 @@ const contactmomenten: Partial<ContacmomentViewModel>[] = [
 ];
 
 // toggle <details> open status on click anywhere within <details>, not only on <summary>
-const toggleDetails = (e: MouseEvent) => {
+const toggleDetails = (e: Event) => {
   e.preventDefault();
   if (e.currentTarget instanceof HTMLDetailsElement) {
     e.currentTarget.open = !e.currentTarget.open;
