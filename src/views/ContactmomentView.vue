@@ -30,11 +30,18 @@
             v-if="contactmomentStore.klant"
             :klant="contactmomentStore.klant"
           />
-          <zaken-overzicht :zaken="zaken" />
-          <contactmomenten-overzicht
-            v-if="contactmomenten.success"
-            :contactmomenten="contactmomenten.data.page"
-          />
+          <template v-if="contactmomenten.success">
+            <utrecht-heading
+              class="contactmomenten-header"
+              model-value
+              :level="2"
+            >
+              Contactmomenten
+            </utrecht-heading>
+            <contactmomenten-overzicht
+              :contactmomenten="contactmomenten.data.page"
+            />
+          </template>
         </article>
       </template>
 
@@ -67,8 +74,7 @@ import {
   useKlantContactmomenten,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, watch, computed } from "vue";
-
+import { ref, computed } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
@@ -111,45 +117,6 @@ const klantId = computed(() => contactmomentStore.klant?.id || "");
 
 const zaken = ref<Zaak[]>([]);
 const contactmomenten = useKlantContactmomenten(klantId);
-
-// TODO: is dit nou echt de route om de zaken op te halen?
-// Zo ja: bedenken in welke service dit moet komen
-const contactmomentIds = computed(() =>
-  contactmomenten.success ? contactmomenten.data.page.map((x) => x.id) : []
-);
-
-const contactmomentObjectUrls = computed(() =>
-  contactmomentIds.value.map((x) => {
-    const url = new URL(window.gatewayBaseUri + "/api/objectcontactmomenten");
-    url.searchParams.set("contactmoment", x);
-    return url.toString();
-  })
-);
-
-watch(contactmomentObjectUrls, (urls) => {
-  getAllJson(urls)
-    .then((co) =>
-      co.filter((x) => x.objectType === "zaak").map((x) => x.object)
-    )
-    .then(getAllJson)
-    .then((z) => {
-      zaken.value = z;
-    });
-});
-
-function getAllJson(urls: string[]) {
-  const promises = urls.map(async (u) => {
-    const r = await fetch(u, { credentials: "include" });
-    if (!r.ok) return { ok: false };
-    return {
-      ok: true,
-      json: await r.json(),
-    };
-  });
-  return Promise.all(promises).then((x) =>
-    x.filter((xx) => xx.ok).map((xx) => xx.json)
-  );
-}
 </script>
 
 <style scoped lang="scss">
@@ -187,5 +154,9 @@ main {
 
 utrecht-heading {
   margin-block-end: var(--spacing-default);
+}
+
+.contactmomenten-header {
+  margin-inline-start: var(--spacing-default);
 }
 </style>

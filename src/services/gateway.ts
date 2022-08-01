@@ -23,3 +23,15 @@ export function parsePagination<T>(
     totalRecords: total,
   };
 }
+
+export async function parsePaginationAsync<T>(
+  json: unknown,
+  map: (jObj: unknown) => Promise<T>
+) {
+  const parsed = parsePagination(json, map);
+  const page = await Promise.all(parsed.page);
+  return {
+    ...parsed,
+    page,
+  };
+}

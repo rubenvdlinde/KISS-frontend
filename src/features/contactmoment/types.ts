@@ -20,10 +20,11 @@ export interface Contactmoment {
   medewerkerIdentificatie: MedewerkerIdentificatie | null;
 }
 
-export interface ContacmomentViewModel extends Contactmoment {
+export interface ContactmomentViewModel extends Contactmoment {
   id: string;
   url: string;
   startdatum: Date;
+  zaken: { status: string; zaaktype: string; zaaknummer: string }[];
 }
 
 export interface Gespreksresultaat {

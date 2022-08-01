@@ -1,8 +1,12 @@
-import { parsePagination, ServiceResult, type Paginated } from "@/services";
+import {
+  parsePaginationAsync,
+  ServiceResult,
+  type Paginated,
+} from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type {
-  ContacmomentViewModel,
+  ContactmomentViewModel,
   Contactmoment,
   Gespreksresultaat,
 } from "./types";
@@ -67,7 +71,7 @@ export function useKlantContactmomenten(id: Ref<string>) {
 
     const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
     url.searchParams.set("klant.id", value);
-    url.searchParams.set("extend[]", "contactmoment");
+    url.searchParams.set("extend[]", "contactmoment.objectcontactmomenten");
     url.searchParams.set("fields[]", "contactmoment");
     return url.toString();
   };
@@ -75,22 +79,39 @@ export function useKlantContactmomenten(id: Ref<string>) {
   return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
 }
 
+const mapZaak = (result: any) => ({
+  status: result.embedded.status.statustoelichting,
+  zaaktype: result.embedded.zaaktype.onderwerp,
+  zaaknummer: result.identificatie,
+});
+
+const fetchZaak = (o: { object: string }) =>
+  fetchLoggedIn(window.gatewayBaseUri + o.object)
+    .then((or) => or.json())
+    .then(mapZaak);
+
+const fetchZaken = (c: any) =>
+  Promise.all(
+    c.embedded.objectcontactmomenten
+      .filter((x: any) => x.objectType === "zaak")
+      .map(fetchZaak)
+  );
+
+const mapContactmomentAsync = (r: any) => {
+  const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
+  return fetchZaken(contactmoment).then((zaken) => ({
+    ...contactmoment,
+    zaken,
+  }));
+};
+
 function fetchKlantContactmomenten(
   url: string
-): Promise<Paginated<ContacmomentViewModel>> {
+): Promise<Paginated<ContactmomentViewModel>> {
   return fetchLoggedIn(url)
     .then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
+      if (!r.ok) throw new Error();
       return r.json();
     })
-    .then((json) => {
-      return parsePagination(json, (x) => {
-        const moment = (x as any).embedded
-          .contactmoment as ContacmomentViewModel;
-        moment.startdatum = new Date(moment.startdatum as unknown as string);
-        return moment;
-      });
-    });
+    .then((json) => parsePaginationAsync(json, mapContactmomentAsync));
 }
