@@ -64,6 +64,8 @@ const contactmoment = useContactmomentStore();
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
+  --spacing-extralarge: 6rem;
+
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
@@ -75,12 +77,20 @@ const contactmoment = useContactmomentStore();
   --height-body: 100vh;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+}
+
 body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
 #app {
   position: relative;
+  display: grid;
+  grid-template-rows: 6rem 1fr;
 }
 
 #app > header {
@@ -113,6 +123,10 @@ utrecht-icon-loupe {
 
 button:hover {
   cursor: pointer;
+}
+
+.main-tabs > nav {
+  background-color: var(--color-secondary);
 }
 
 .tabs-component-zaken {
@@ -151,32 +165,6 @@ button:hover {
       font-size: var(--utrecht-typography-scale-lg);
       color: var(--utrecht-document-color);
     }
-  }
-}
-
-main {
-  gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
-  padding-block: var(--spacing-large);
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
-}
-
-main > section {
-  &:not(:only-of-type) {
-    max-width: var(--section-width);
-  }
-
-  > utrecht-heading:first-child {
-    padding-left: var(--text-margin);
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-tertiary);
   }
 }
 

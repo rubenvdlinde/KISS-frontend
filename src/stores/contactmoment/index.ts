@@ -9,6 +9,7 @@ interface ContactmomentState {
   contactmomentLoopt: boolean;
   zaken: ContactmomentZaak[];
   klanten: { klant: Klant; shouldStore: boolean }[];
+  notitie: string;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -17,6 +18,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       contactmomentLoopt: false,
       zaken: <ContactmomentZaak[]>[],
       klanten: [],
+      notitie: "",
     } as ContactmomentState;
   },
   getters: {
@@ -69,6 +71,9 @@ export const useContactmomentStore = defineStore("contactmoment", {
       }
 
       return true;
+    },
+    setNotitie(notitie: string) {
+      this.notitie = notitie;
     },
   },
 });

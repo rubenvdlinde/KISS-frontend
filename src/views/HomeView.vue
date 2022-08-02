@@ -175,6 +175,32 @@ function handleSearch(e: Event) {
 </script>
 
 <style scoped lang="scss">
+main {
+  gap: var(--spacing-default);
+  padding-inline: var(--container-padding);
+  padding-block: var(--spacing-large);
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  position: relative;
+
+  > * {
+    flex-basis: 100%;
+  }
+}
+
+main > section {
+  &:not(:only-of-type) {
+    max-width: var(--section-width);
+  }
+
+  > utrecht-heading:first-child {
+    padding-left: var(--text-margin);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-tertiary);
+  }
+}
+
 header {
   flex-flow: row wrap;
   display: flex;

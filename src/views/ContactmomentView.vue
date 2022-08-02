@@ -1,5 +1,18 @@
 <template>
   <main>
+    <aside>
+      <menu></menu>
+      <section>
+        <!-- <textarea
+            ref="notitieRef"
+            @change="notitieChanged"
+            v-model="contactmomentStore.notitie"
+          >
+          </textarea> -->
+        <contactmoment-notitie></contactmoment-notitie>
+      </section>
+    </aside>
+
     <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
     <!-- todo: 'trecht-heading errors irriteren. component verwijderen?-->
     <tabs-component v-model="activeTabContactmoment" class="main-tabs">
@@ -75,13 +88,20 @@ import {
   useKlantContactmomenten,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import { toast } from "@/stores/toast";
 import SimpleSpinner from "../components/SimpleSpinner.vue";
+import ContactmomentNotitie from "@/features/notitie/ContactmomentNotitie.vue";
+
+// const notitieRef = ref();
+
+// onMounted(() => {
+//   notitieRef.value.focus();
+// });
 
 //layout view tabs
 enum TabsContactmoment {
@@ -118,13 +138,42 @@ const klantGevonden = (klant: Klant) => {
 const klantId = computed(() => contactmomentStore.klant?.id || "");
 
 const contactmomenten = useKlantContactmomenten(klantId);
+
+// const notitieChanged = (element: any) => {
+//   contactmomentStore.setNotitie(element.target.value);
+// };
 </script>
 
 <style scoped lang="scss">
 main {
   padding-inline: 0;
   padding-block: 0;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  height: 100%;
 }
+
+aside section {
+  border-right: 1px solid var(--color-tertiary);
+  height: 100%;
+  padding: var(--spacing-large);
+}
+menu {
+  height: 3rem;
+  background-color: var(--color-tertiary);
+}
+
+// aside section div {
+//   width: 100%;
+//   height: 100%;
+// }
+
+// aside section textarea {
+//   border: none;
+//   width: 100%;
+//   height: 100%;
+//   outline: none;
+// }
 
 .zaak-title {
   margin-inline: var(--container-padding);
@@ -132,7 +181,7 @@ main {
 
 :deep([role="tablist"]),
 .zaak-tabs :deep([role="tabpanel"]) {
-  padding-inline: var(--container-padding);
+  padding-inline: var(--spacing-extralarge);
 }
 
 :deep([role="tabpanel"]) {
@@ -140,21 +189,20 @@ main {
 }
 
 .klant-panel {
-  margin-inline: var(--container-padding);
+  margin-inline: var(--spacing-extralarge);
 }
 
 .main-tabs {
   --tab-bg: white;
-  background-color: var(--color-secondary);
 }
+
+// .main-tabs article {
+//   // height: 100%;
+// }
 
 .zaak-tabs {
   --tab-bg: var(--color-secondary);
   --tab-size: 1.25rem;
-}
-
-utrecht-heading {
-  margin-block-end: var(--spacing-default);
 }
 
 .contactmomenten-header {
