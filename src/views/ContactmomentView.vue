@@ -30,19 +30,7 @@
             v-if="contactmomentStore.klant"
             :klant="contactmomentStore.klant"
           />
-          <simple-spinner v-if="contactmomenten.loading" />
-          <template v-if="contactmomenten.success">
-            <utrecht-heading
-              class="contactmomenten-header"
-              model-value
-              :level="2"
-            >
-              Contactmomenten
-            </utrecht-heading>
-            <contactmomenten-overzicht
-              :contactmomenten="contactmomenten.data.page"
-            />
-          </template>
+          <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
         </article>
       </template>
 
@@ -72,7 +60,6 @@ import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
 import {
   ContactmomentStarter,
   ContactmomentenOverzicht,
-  useKlantContactmomenten,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ref, computed } from "vue";
@@ -81,7 +68,6 @@ import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import { toast } from "@/stores/toast";
-import SimpleSpinner from "../components/SimpleSpinner.vue";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -116,8 +102,6 @@ const klantGevonden = (klant: Klant) => {
 };
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
-
-const contactmomenten = useKlantContactmomenten(klantId);
 </script>
 
 <style scoped lang="scss">

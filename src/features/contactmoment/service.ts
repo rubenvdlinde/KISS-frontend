@@ -1,8 +1,4 @@
-import {
-  parsePaginationAsync,
-  ServiceResult,
-  type Paginated,
-} from "@/services";
+import { getJson, parsePagination, requireOk, ServiceResult } from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type {
@@ -64,13 +60,17 @@ export function useContactmomentService() {
   };
 }
 
-export function useKlantContactmomenten(id: Ref<string>) {
+export function useKlantContactmomenten(
+  params: Ref<{ id: string; page?: number }>
+) {
   const getUrl = () => {
-    const { value } = id;
-    if (!value) return "";
+    const id = params.value.id;
+    const page = params.value.page || 1;
+    if (!id) return "";
 
     const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
-    url.searchParams.set("klant.id", value);
+    url.searchParams.set("klant.id", id);
+    url.searchParams.set("page", page.toString());
     url.searchParams.set("extend[]", "contactmoment.objectcontactmomenten");
     url.searchParams.set("fields[]", "contactmoment");
     return url.toString();
@@ -92,12 +92,12 @@ const fetchZaak = (o: { object: string }) =>
 
 const fetchZaken = (c: any) =>
   Promise.all(
-    c.embedded.objectcontactmomenten
-      .filter((x: any) => x.objectType === "zaak")
-      .map(fetchZaak)
+    c?.embedded?.objectcontactmomenten
+      ?.filter((x: any) => x.objectType === "zaak")
+      ?.map(fetchZaak) ?? []
   );
 
-const mapContactmomentAsync = (r: any) => {
+const mapContactmoment = (r: any) => {
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
   return fetchZaken(contactmoment).then((zaken) => ({
     ...contactmoment,
@@ -105,13 +105,28 @@ const mapContactmomentAsync = (r: any) => {
   }));
 };
 
-function fetchKlantContactmomenten(
-  url: string
-): Promise<Paginated<ContactmomentViewModel>> {
-  return fetchLoggedIn(url)
-    .then((r) => {
-      if (!r.ok) throw new Error();
-      return r.json();
-    })
-    .then((json) => parsePaginationAsync(json, mapContactmomentAsync));
+const fetchKlantContactmomenten = (url: string) =>
+  fetchLoggedIn(url)
+    .then(requireOk)
+    .then(getJson)
+    .then(parsePagination(mapContactmoment));
+
+export function koppelKlant({
+  klantId,
+  contactmomentId,
+}: {
+  klantId: string;
+  contactmomentId: string;
+}) {
+  return fetchLoggedIn(window.gatewayBaseUri + "/api/klantcontactmomenten", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      klant: klantId,
+      contactmoment: contactmomentId,
+      rol: "gesprekspartner",
+    }),
+  }).then(requireOk);
 }
