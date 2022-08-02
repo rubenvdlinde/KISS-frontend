@@ -30,6 +30,7 @@
             v-if="contactmomentStore.klant"
             :klant="contactmomentStore.klant"
           />
+          <simple-spinner v-if="contactmomenten.loading" />
           <template v-if="contactmomenten.success">
             <utrecht-heading
               class="contactmomenten-header"
@@ -78,8 +79,9 @@ import { ref, computed } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
-import { ZaakZoeker, type Zaak } from "@/features/zaaksysteem";
+import { ZaakZoeker } from "@/features/zaaksysteem";
 import { toast } from "@/stores/toast";
+import SimpleSpinner from "../components/SimpleSpinner.vue";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -115,7 +117,6 @@ const klantGevonden = (klant: Klant) => {
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
 
-const zaken = ref<Zaak[]>([]);
 const contactmomenten = useKlantContactmomenten(klantId);
 </script>
 
