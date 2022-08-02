@@ -1,8 +1,11 @@
 <template>
-  <div class="utrecht-html utrecht-theme">
+  <div class="utrecht-html">
     <p v-if="!klanten.length">Er zijn geen klanten gevonden</p>
     <template v-else>
       <table>
+        <caption>
+          Zoekresultaten
+        </caption>
         <thead>
           <tr>
             <th>Klantnummer</th>
@@ -52,6 +55,14 @@ table {
   width: 100%;
 }
 
+caption {
+  padding-left: var(--spacing-default);
+  padding-block: var(--spacing-small);
+  margin-block: var(--spacing-small);
+  text-align: left;
+  font-size: var(--utrecht-typography-scale-lg);
+  border-bottom: 1px solid var(--color-tertiary);
+}
 th,
 td {
   padding-left: var(--spacing-default);
@@ -62,5 +73,14 @@ td {
 
 tr:nth-child(2n) {
   background-color: var(--color-secondary);
+}
+
+tbody tr {
+  border-bottom: 1px solid transparent;
+  &:hover {
+    background-color: var(--color-tertiary);
+    border-bottom-color: var(--color-primary);
+    cursor: pointer;
+  }
 }
 </style>

@@ -24,7 +24,7 @@
           <details @click="toggleDetails">
             <summary>
               <span aria-labelledby="datum-header" class="first-column">{{
-                localeDate(contactmoment?.startdatum)
+                localeDate(contactmoment.registratiedatum)
               }}</span>
               <span aria-labelledby="medewerker-header">{{
                 contactmoment.medewerker
@@ -38,7 +38,7 @@
             </summary>
             <dl>
               <dd>Starttijd</dd>
-              <dt>{{ localeTime(contactmoment.startdatum) }}</dt>
+              <dt>{{ localeTime(contactmoment.registratiedatum) }}</dt>
               <template
                 v-for="zaak in contactmoment.zaken"
                 :key="zaak.zaaknummer"
@@ -93,8 +93,6 @@ const localeDate = (d?: Date) =>
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-    hour: undefined,
-    minute: undefined,
   });
 
 const localeTime = (d?: Date) =>

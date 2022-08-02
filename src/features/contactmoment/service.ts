@@ -5,6 +5,7 @@ import type {
   ContactmomentViewModel,
   Contactmoment,
   Gespreksresultaat,
+  ContactmomentZaak,
 } from "./types";
 
 export function useContactmomentService() {
@@ -79,7 +80,7 @@ export function useKlantContactmomenten(
   return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
 }
 
-const mapZaak = (result: any) => ({
+const mapZaak = (result: any): ContactmomentZaak => ({
   status: result.embedded.status.statustoelichting,
   zaaktype: result.embedded.zaaktype.onderwerp,
   zaaknummer: result.identificatie,
@@ -90,15 +91,22 @@ const fetchZaak = (o: { object: string }) =>
     .then((or) => or.json())
     .then(mapZaak);
 
-const fetchZaken = (c: any) =>
-  Promise.all(
-    c?.embedded?.objectcontactmomenten
-      ?.filter((x: any) => x.objectType === "zaak")
-      ?.map(fetchZaak) ?? []
-  );
+const fetchZaken = (c: any) => {
+  const objectcontactmomenten = c?.embedded?.objectcontactmomenten;
+  return Array.isArray(objectcontactmomenten)
+    ? Promise.all(
+        objectcontactmomenten
+          .filter((x: any) => x.objectType === "zaak")
+          .map(fetchZaak)
+      )
+    : Promise.resolve([]);
+};
 
-const mapContactmoment = (r: any) => {
+const mapContactmoment = (r: any): Promise<ContactmomentViewModel> => {
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
+  contactmoment.startdatum = new Date(contactmoment.startdatum);
+  contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
+
   return fetchZaken(contactmoment).then((zaken) => ({
     ...contactmoment,
     zaken,
