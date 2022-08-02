@@ -19,11 +19,11 @@
           v-if="contactmomentStore.klanten.length"
           class="gerelateerde-klanten"
         >
-          <utrecht-heading :level="2" model-value
-            >Gerelateerde klant{{
-              contactmomentStore.klanten.length > 1 ? "en" : ""
-            }}</utrecht-heading
-          >
+          <utrecht-heading :level="2" model-value>{{
+            contactmomentStore.klanten.length > 1
+              ? "Gerelateerde klanten"
+              : "Gerelateerde klant"
+          }}</utrecht-heading>
           <ul>
             <li
               v-for="record in contactmomentStore.klanten"
@@ -45,12 +45,11 @@
           </ul>
         </section>
         <section v-if="contactmomentStore.zaken.length > 0">
-          <utrecht-heading :level="2" model-value
-            >Gerelateerde za
-            {{
-              contactmomentStore.zaken.length > 1 ? "ken" : "ak"
-            }}</utrecht-heading
-          >
+          <utrecht-heading :level="2" model-value>{{
+            contactmomentStore.zaken.length > 1
+              ? "Gerelateerde zaken"
+              : "Gerelateerde zaak"
+          }}</utrecht-heading>
           <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
         </section>
         <section>
