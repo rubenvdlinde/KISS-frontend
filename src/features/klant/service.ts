@@ -2,7 +2,6 @@ import {
   ServiceResult,
   fetchLoggedIn,
   type Paginated,
-  defaultPagination,
   parsePagination,
 } from "@/services";
 
@@ -78,5 +77,5 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
       }
       return result.json();
     })
-    .then(parsePagination(mapKlant));
+    .then((j) => parsePagination(j, mapKlant));
 }

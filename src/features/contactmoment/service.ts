@@ -1,4 +1,4 @@
-import { getJson, parsePagination, requireOk, ServiceResult } from "@/services";
+import { parsePagination, throwIfNotOk, ServiceResult } from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type {
@@ -80,10 +80,10 @@ export function useKlantContactmomenten(
   return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
 }
 
-const mapZaak = (result: any): ContactmomentZaak => ({
-  status: result.embedded.status.statustoelichting,
-  zaaktype: result.embedded.zaaktype.onderwerp,
-  zaaknummer: result.identificatie,
+const mapZaak = (json: any): ContactmomentZaak => ({
+  status: json?.embedded?.status?.statustoelichting,
+  zaaktype: json?.embedded?.zaaktype?.onderwerp,
+  zaaknummer: json?.identificatie,
 });
 
 const fetchZaak = (o: { object: string }) =>
@@ -115,9 +115,9 @@ const mapContactmoment = (r: any): Promise<ContactmomentViewModel> => {
 
 const fetchKlantContactmomenten = (url: string) =>
   fetchLoggedIn(url)
-    .then(requireOk)
-    .then(getJson)
-    .then(parsePagination(mapContactmoment));
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then((j) => parsePagination(j, mapContactmoment));
 
 export function koppelKlant({
   klantId,
@@ -136,5 +136,5 @@ export function koppelKlant({
       contactmoment: contactmomentId,
       rol: "gesprekspartner",
     }),
-  }).then(requireOk);
+  }).then(throwIfNotOk) as Promise<void>;
 }
