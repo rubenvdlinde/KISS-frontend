@@ -75,10 +75,12 @@ tr:nth-child(2n) {
   background-color: var(--color-secondary);
 }
 
-tbody tr:hover,
-tbody td:hover {
-  background-color: var(--color-tertiary);
-  border-bottom: 1px solid var(--color-primary);
-  cursor: pointer;
+tbody tr {
+  border-bottom: 1px solid transparent;
+  &:hover {
+    background-color: var(--color-tertiary);
+    border-bottom-color: var(--color-primary);
+    cursor: pointer;
+  }
 }
 </style>

@@ -3,11 +3,13 @@
     <utrecht-heading model-value :level="level">Klantgegevens</utrecht-heading>
     <table>
       <thead>
-        <th>Klantnummer</th>
-        <th>Naam</th>
-        <th>Telefoonnummer</th>
-        <th>Emailadres</th>
-        <th></th>
+        <tr>
+          <th>Klantnummer</th>
+          <th>Naam</th>
+          <th>Telefoonnummer</th>
+          <th>Emailadres</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <tr>
@@ -50,9 +52,6 @@ article {
   padding: var(--spacing-default);
   margin-block: var(--spacing-large);
 }
-table {
-  margin-block-start: var(--spacing-default);
-}
 
 table {
   width: 100%;
@@ -68,7 +67,7 @@ caption {
 }
 th,
 td {
-  padding-block: var(--spacing-small);
   text-align: left;
+  padding-block: var(--spacing-default);
 }
 </style>

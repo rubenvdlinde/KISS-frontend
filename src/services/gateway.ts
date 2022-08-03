@@ -1,9 +1,9 @@
 import type { Paginated } from "./pagination";
 
-export function parsePagination<T>(
+export async function parsePagination<T>(
   json: unknown,
   map: (jObj: unknown) => T
-): Paginated<T> {
+): Promise<Paginated<Awaited<T>>> {
   const { results, limit, total, page, pages } = json as {
     [key: string]: unknown;
   };
@@ -14,24 +14,18 @@ export function parsePagination<T>(
     typeof page !== "number" ||
     typeof pages !== "number"
   )
-    throw new Error("unexpected json: " + JSON.stringify(json));
+    throw new Error(
+      "unexpected in gateway json. expected pagination: " + JSON.stringify(json)
+    );
+
+  // just in case the mapper is async, we wrap the result in a Promise
+  const promises = results.map((x) => Promise.resolve(map(x)));
+
   return {
-    page: results.map(map),
+    page: await Promise.all(promises),
     pageNumber: page,
     pageSize: limit,
     totalPages: pages,
     totalRecords: total,
-  };
-}
-
-export async function parsePaginationAsync<T>(
-  json: unknown,
-  map: (jObj: unknown) => Promise<T>
-) {
-  const parsed = parsePagination(json, map);
-  const page = await Promise.all(parsed.page);
-  return {
-    ...parsed,
-    page,
   };
 }

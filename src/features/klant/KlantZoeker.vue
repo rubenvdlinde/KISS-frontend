@@ -22,7 +22,6 @@
       />
       <pagination
         class="pagination"
-        v-if="klanten.data.totalRecords"
         :pagination="klanten.data"
         @navigate="navigate"
       />

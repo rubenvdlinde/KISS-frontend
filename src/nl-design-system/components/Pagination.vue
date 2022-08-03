@@ -1,5 +1,5 @@
 <template>
-  <nav class="denhaag-pagination">
+  <nav class="denhaag-pagination" v-if="pagination.totalPages > 1">
     <a
       :href="previous.href"
       :class="[
