@@ -136,7 +136,7 @@ main {
   padding-block: 0;
   display: grid;
   grid-template-columns: 1fr 4fr;
-  height: 100%;
+  height: 100vh;
 }
 
 aside section {

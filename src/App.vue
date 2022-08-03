@@ -90,7 +90,9 @@ body {
 #app {
   position: relative;
   display: grid;
-  grid-template-rows: 6rem 1fr;
+  // grid-template-rows: 6rem 1fr;
+
+  grid-auto-rows: minmax(min-content, max-content);
 }
 
 #app > header {
