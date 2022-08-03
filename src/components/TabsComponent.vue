@@ -78,11 +78,11 @@ const entries = computed(() =>
   })
 );
 watch(
-  [slotKeys],
-  ([s]) => {
-    if (!s.length) return;
-    if (!props.modelValue || !s.includes(props.modelValue)) {
-      emit("update:modelValue", s[0]);
+  () => props.modelValue,
+  (val) => {
+    if (!slotKeys.length) return;
+    if (!val || !slotKeys.includes(val)) {
+      emit("update:modelValue", slotKeys[0]);
     }
   },
   { immediate: true }
