@@ -346,9 +346,10 @@ menu {
 
   /* forms */
   --utrecht-form-fieldset-legend-font-size: 1.5rem;
-  --utrecht-form-fieldset-legend-font-weight: bold;
+  --utrecht-form-fieldset-legend-font-weight: 600;
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
+  --utrecht-form-label-font-weight: 600;
   --utrecht-form-label-font-size: 1rem;
 
   --utrecht-form-input-border-color: var(--color-primary);

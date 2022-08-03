@@ -32,6 +32,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
     stop() {
       this.contactmomentLoopt = false;
       this.zaken = [];
+      this.notitie = "";
     },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;

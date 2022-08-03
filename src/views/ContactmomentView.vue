@@ -3,13 +3,9 @@
     <aside>
       <menu></menu>
       <section>
-        <!-- <textarea
-            ref="notitieRef"
-            @change="notitieChanged"
-            v-model="contactmomentStore.notitie"
-          >
-          </textarea> -->
-        <contactmoment-notitie></contactmoment-notitie>
+        <contactmoment-notitie
+          class="notitie utrecht-textarea"
+        ></contactmoment-notitie>
       </section>
     </aside>
 
@@ -86,22 +82,16 @@ import {
   ContactmomentStarter,
   ContactmomentenOverzicht,
   useKlantContactmomenten,
+  ContactmomentNotitie,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import { toast } from "@/stores/toast";
 import SimpleSpinner from "../components/SimpleSpinner.vue";
-import ContactmomentNotitie from "@/features/notitie/ContactmomentNotitie.vue";
-
-// const notitieRef = ref();
-
-// onMounted(() => {
-//   notitieRef.value.focus();
-// });
 
 //layout view tabs
 enum TabsContactmoment {
@@ -138,10 +128,6 @@ const klantGevonden = (klant: Klant) => {
 const klantId = computed(() => contactmomentStore.klant?.id || "");
 
 const contactmomenten = useKlantContactmomenten(klantId);
-
-// const notitieChanged = (element: any) => {
-//   contactmomentStore.setNotitie(element.target.value);
-// };
 </script>
 
 <style scoped lang="scss">
@@ -163,17 +149,10 @@ menu {
   background-color: var(--color-tertiary);
 }
 
-// aside section div {
-//   width: 100%;
-//   height: 100%;
-// }
-
-// aside section textarea {
-//   border: none;
-//   width: 100%;
-//   height: 100%;
-//   outline: none;
-// }
+aside section div {
+  width: 100%;
+  height: 100%;
+}
 
 .zaak-title {
   margin-inline: var(--container-padding);
@@ -196,10 +175,6 @@ menu {
   --tab-bg: white;
 }
 
-// .main-tabs article {
-//   // height: 100%;
-// }
-
 .zaak-tabs {
   --tab-bg: var(--color-secondary);
   --tab-size: 1.25rem;
@@ -207,5 +182,13 @@ menu {
 
 .contactmomenten-header {
   margin-inline-start: var(--spacing-default);
+}
+
+:deep(.notitie) {
+  margin-top: var(--spacing-large);
+  outline: none;
+  border: none;
+  height: 100%;
+  width: 100%;
 }
 </style>

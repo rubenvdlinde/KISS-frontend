@@ -1,31 +1,33 @@
 <template>
   <main>
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
+
     <router-link
       v-if="contactmomentStore.contactmomentLoopt"
       :to="{ name: 'contactmoment' }"
       >terug</router-link
     >
-    <div>
-      <section v-if="saving"><simple-spinner></simple-spinner></section>
-      <application-message
-        v-else-if="errorMessage != ''"
-        messageType="error"
-        :message="errorMessage"
-      ></application-message>
 
-      <template v-else-if="contactmomentStore.contactmomentLoopt">
-        <section>
-          <contactmoment-notitie class="notitie"></contactmoment-notitie>
-        </section>
-        <section v-if="contactmomentStore.zaken.length > 0">
-          <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
-        </section>
-        <section>
-          <contactmoment-afhandel-form @save="saveContact" />
-        </section>
-      </template>
-    </div>
+    <simple-spinner v-if="saving"></simple-spinner>
+
+    <application-message
+      v-else-if="errorMessage != ''"
+      messageType="error"
+      :message="errorMessage"
+    ></application-message>
+
+    <template v-else-if="contactmomentStore.contactmomentLoopt">
+      <contactmoment-notitie
+        class="notitie utrecht-textarea"
+      ></contactmoment-notitie>
+
+      <zaken-overzicht
+        :zaken="contactmomentStore.zaken"
+        v-if="contactmomentStore.zaken.length > 0"
+      ></zaken-overzicht>
+
+      <contactmoment-afhandel-form @save="saveContact" />
+    </template>
   </main>
 </template>
 
@@ -37,13 +39,15 @@ import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 import { ref } from "vue";
 import type { ContactmomentObject } from "@/features/zaaksysteem/types";
 import { useZaaksysteemService } from "@/features/zaaksysteem/service";
-import { useContactmomentService } from "@/features/contactmoment";
+import {
+  useContactmomentService,
+  ContactmomentNotitie,
+} from "@/features/contactmoment";
 import type { Contactmoment } from "@/features/contactmoment/types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { toast } from "@/stores/toast";
 import { useRouter } from "vue-router";
-import ContactmomentNotitie from "@/features/notitie/ContactmomentNotitie.vue";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -53,6 +57,8 @@ const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
 const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
+  const zaakSavePromises: Array<Promise<void>> = [];
+
   contactmomentStore?.zaken.forEach((zaak) => {
     const data = {
       contactmoment: contactMomentUrl,
@@ -60,29 +66,33 @@ const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
       objectType: "zaak",
     } as ContactmomentObject;
 
-    service.saveZaak(data).catch(() => {
-      errorMessage.value =
-        "Er is een fout opgetreden bij het toevoegen van een zaak bij het contactmoment";
-    });
+    zaakSavePromises.push(
+      service.saveZaak(data).catch(() => {
+        errorMessage.value =
+          "Er is een fout opgetreden bij het toevoegen van een zaak bij het contactmoment";
+      })
+    );
   });
 
-  //klaar
-  contactmomentStore.stop();
+  return Promise.all(zaakSavePromises);
 };
 
 const saveContact = (contactmoment: Contactmoment) => {
   saving.value = true;
-
   errorMessage.value = "";
+
+  //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
+  enrichContactmomentWithNotitie(contactmoment);
 
   contactmomentService
     .save(contactmoment)
     .then((savedContactmoment) => {
-      // nu ook de zaken opslaan bij het contactmoment
-      zakenToevoegenAanContactmoment(savedContactmoment.url);
-
-      toast({ text: "Het contactmoment is opgeslagen" });
-      router.push("/");
+      //zaken opslaan bij het contactmoment
+      zakenToevoegenAanContactmoment(savedContactmoment.url).then(() => {
+        contactmomentStore.stop();
+        toast({ text: "Het contactmoment is opgeslagen" });
+        router.push("/");
+      });
     })
     .catch(() => {
       errorMessage.value =
@@ -92,6 +102,10 @@ const saveContact = (contactmoment: Contactmoment) => {
       saving.value = false;
     });
 };
+
+const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
+  contactmoment.tekst = contactmomentStore.notitie;
+};
 </script>
 
 <style scoped lang="scss">
@@ -99,39 +113,20 @@ main {
   //center
   padding-inline: var(--container-padding);
   padding-block: var(--spacing-large);
-
-  //
-
-  display: flex;
-  flex-direction: column;
-  // flex-flow: row wrap;
-  gap: var(--spacing-default);
-  // justify-content: space-between;
-  //position: relative;
-
-  // > * {
-  //   flex-basis: 100%;
-  // }
-}
-
-//main > section {
-// &:not(:only-of-type) {
-//   max-width: var(--section-width);
-// }
-
-// > utrecht-heading:first-child {
-//   padding-left: var(--text-margin);
-//   padding-bottom: 0.5rem;
-//   border-bottom: 1px solid var(--color-tertiary);
-// }
-//}
-
-section {
   max-width: var(--section-width-large);
   margin-bottom: var(--spacing-large);
+
+  //content stacked
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-large);
 }
 
-section.notitie {
-  min-height: 20rem;
+:deep(.notitie) {
+  min-height: 10rem;
+  width: 100%;
+  padding: var(--spacing-default);
+  box-sizing: border-box;
+  margin-top: var(--spacing-default);
 }
 </style>
