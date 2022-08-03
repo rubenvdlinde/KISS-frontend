@@ -3,6 +3,7 @@ import {
   fetchLoggedIn,
   type Paginated,
   parsePagination,
+  throwIfNotOk,
 } from "@/services";
 
 import type { Ref } from "vue";
@@ -58,24 +59,12 @@ export function useKlanten(params: KlantSearchParameters) {
 }
 
 function mapKlant(obj: any): Klant {
-  return {
-    id: obj.id,
-    klantnummer: obj.klantnummer,
-    voornaam: obj.voornaam,
-    voorvoegselAchternaam: obj.voorvoegselAchternaam,
-    achternaam: obj.achternaam,
-    telefoonnummer: obj.telefoonnummer,
-    emailadres: obj.emailadres,
-  };
+  return obj;
 }
 
 function searchKlanten(url: string): Promise<Paginated<Klant>> {
   return fetchLoggedIn(url)
-    .then((result) => {
-      if (!result.ok) {
-        throw new Error();
-      }
-      return result.json();
-    })
+    .then(throwIfNotOk)
+    .then((r) => r.json())
     .then((j) => parsePagination(j, mapKlant));
 }
