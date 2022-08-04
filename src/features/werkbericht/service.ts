@@ -201,5 +201,5 @@ export function useWerkberichten(
     };
   }
 
-  return ServiceResult.fromFetcher(getUrl, fetchBerichten);
+  return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
 }

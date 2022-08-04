@@ -24,7 +24,11 @@ const globalSearchBaseUri =
   window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-engine/search";
 
 export function useGlobalSearch(
-  parameters: Ref<{ search?: string; page?: number }>
+  parameters: Ref<{
+    search?: string;
+    page?: number;
+    filters: Source[];
+  }>
 ) {
   function getUrl() {
     const query = parameters.value.search;
@@ -33,19 +37,46 @@ export function useGlobalSearch(
     return `${globalSearchBaseUri}?query=${query}`;
   }
 
+  function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
+    return array.reduce((store, item) => {
+      const key = grouper(item);
+      if (!store.has(key)) {
+        store.set(key, [item]);
+      } else {
+        store.get(key).push(item);
+      }
+      return store;
+    }, new Map<K, V[]>());
+  }
+
   async function fetcher(url: string): Promise<Paginated<SearchResult>> {
     if (!url) throw new Error();
+    const payLoad = {
+      query: parameters.value.search,
+      page: {
+        current: parameters.value.page || 1,
+      },
+      filters: { any: [] },
+    };
+    if (
+      parameters?.value?.filters !== undefined &&
+      parameters?.value?.filters?.length > 0
+    ) {
+      const groupedFilters = groupBy(parameters.value.filters, (x) => x.type);
+      groupedFilters.forEach((key, value) => {
+        const sourceNames = key.map((source) => source.name);
+        const filter = {};
+        filter[value] = sourceNames;
+        payLoad.filters.any.push(filter);
+      });
+    }
+
     const r = await fetchLoggedIn(url, {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({
-        query: parameters.value.search,
-        page: {
-          current: parameters.value.page || 1,
-        },
-      }),
+      body: JSON.stringify(payLoad),
     });
     if (!r.ok) throw new Error();
     const json = await r.json();
@@ -65,9 +96,11 @@ export function useGlobalSearch(
   }
 
   function getUniqueId() {
-    const { search, page } = parameters.value;
+    const { search, page, filters } = parameters.value ?? {};
     if (!search) return "";
-    return `${search}|${page || 1}`;
+    return `${search}|${page || 1}|${filters.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )}`;
   }
 
   return ServiceResult.fromFetcher(getUrl, fetcher, {
