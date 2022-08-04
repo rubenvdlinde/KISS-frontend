@@ -56,9 +56,11 @@
         <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
       </section>
 
-      <contactmoment-notitie
-        class="notitie utrecht-textarea"
-      ></contactmoment-notitie>
+      <section>
+        <contactmoment-notitie
+          class="notitie utrecht-textarea"
+        ></contactmoment-notitie>
+      </section>
 
       <contactmoment-afhandel-form @save="saveContact" />
     </template>

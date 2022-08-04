@@ -181,10 +181,6 @@ h2 {
   margin-top: var(--spacing-large);
 }
 
-::placeholder {
-  color: red;
-}
-
 .search-bar {
   display: inline-flex;
   align-items: stretch;

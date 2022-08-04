@@ -129,9 +129,8 @@ aside {
     height: 100%;
     padding: var(--spacing-large);
 
-    div {
-      width: 100%;
-      height: 100%;
+    :deep(textarea.utrecht-textarea) {
+      padding: 0px;
     }
   }
 

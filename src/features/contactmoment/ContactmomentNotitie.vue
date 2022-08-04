@@ -1,15 +1,14 @@
 <template>
-  <div>
-    <utrecht-heading model-value :level="2">Notitieblok</utrecht-heading>
-    <textarea
-      ref="notitieRef"
-      @change="notitieChanged"
-      v-model="contactmomentStore.notitie"
-      v-focus
-      v-bind="$attrs"
-    >
-    </textarea>
-  </div>
+  <utrecht-heading model-value :level="2">Notitieblok</utrecht-heading>
+  <textarea
+    ref="notitieRef"
+    @change="notitieChanged"
+    v-model="contactmomentStore.notitie"
+    v-focus
+    v-bind="$attrs"
+    placeholder="Voeg hier je notites toe"
+  >
+  </textarea>
 </template>
 
 <script lang="ts" setup>
