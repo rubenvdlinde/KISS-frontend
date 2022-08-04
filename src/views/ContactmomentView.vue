@@ -123,22 +123,25 @@ main {
   height: 100vh;
 }
 
-aside section {
-  border-right: 1px solid var(--color-tertiary);
-  height: 100%;
-  padding: var(--spacing-large);
-}
-menu {
-  height: 3rem;
-  background-color: var(--color-tertiary);
+aside {
+  section {
+    border-right: 1px solid var(--color-tertiary);
+    height: 100%;
+    padding: var(--spacing-large);
+
+    div {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  menu {
+    height: 3rem;
+    background-color: var(--color-tertiary);
+  }
 }
 
-aside section div {
-  width: 100%;
-  height: 100%;
-}
-
-.zaak-title {
+aside section .zaak-title {
   margin-inline: var(--container-padding);
 }
 
