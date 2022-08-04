@@ -6,6 +6,7 @@
         type="search"
         placeholder="Zoek op e-mailadres of telefoonnummer"
         v-model="currentSearch"
+        v-focus
         @search="handleSearch"
     /></label>
     <button title="Zoeken">
