@@ -3,7 +3,7 @@ import RedirectPage from "./RedirectPage.vue";
 
 export const meUrl = window.gatewayBaseUri + "/me";
 export const loginUrl = window.gatewayBaseUri + "/login/oidc/dex";
-export const logoutUrl = window.gatewayBaseUri + "/logout";
+export const logoutUrl = window.gatewayBaseUri + "/api/users/logout";
 export const redirectUrl = "/redirect-to-login";
 export const sessionStorageKey = "kiss_close";
 
