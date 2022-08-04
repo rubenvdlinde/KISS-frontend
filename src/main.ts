@@ -1,9 +1,9 @@
-import { createApp, watch } from "vue";
+import { createApp } from "vue";
 import { defineCustomElements } from "@utrecht/web-component-library-stencil";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
-import { useElementVisibility, useIntersectionObserver } from "@vueuse/core";
+import { useIntersectionObserver } from "@vueuse/core";
 
 declare global {
   interface Window {
