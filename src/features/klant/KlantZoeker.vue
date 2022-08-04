@@ -1,21 +1,23 @@
 <template>
   <form class="search-bar" @submit.prevent="handleSearch">
-    <label title="0612345789 test@conduction.nl"
-      ><span>Klanten zoeken</span>
+    <label>
+      <span>Klanten zoeken</span>
       <input
         type="search"
         placeholder="Zoek op e-mailadres of telefoonnummer"
         v-model="currentSearch"
         v-focus
         @search="handleSearch"
-    /></label>
+        title="0612345789 test@conduction.nl"
+      />
+    </label>
     <button title="Zoeken">
       <span>Zoeken</span><utrecht-icon-loupe model-value />
     </button>
   </form>
 
   <section v-if="searchQuery" class="search-section">
-    <simple-spinner v-if="klanten.loading"></simple-spinner>
+    <simple-spinner v-if="klanten.loading" />
     <template v-if="klanten.success">
       <klanten-overzicht
         :klanten="klanten.data.page"
@@ -31,7 +33,7 @@
       v-if="serviceResult?.error"
       messageType="error"
       message="Er is een fout opgetreden"
-    ></application-message>
+    />
   </section>
 </template>
 
