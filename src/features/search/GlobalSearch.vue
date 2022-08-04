@@ -404,11 +404,9 @@ article {
 
 table {
   border-collapse: separate;
-  border-spacing: 10px;
+  border-spacing: var(--spacing-small);
 }
 table td {
-  padding-right: 10px;
-  margin: 10px;
   font-size: 0;
 }
 .groen {

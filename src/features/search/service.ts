@@ -43,7 +43,7 @@ export function useGlobalSearch(
       if (!store.has(key)) {
         store.set(key, [item]);
       } else {
-        store.get(key).push(item);
+        store.get(key)?.push(item);
       }
       return store;
     }, new Map<K, V[]>());
@@ -56,17 +56,18 @@ export function useGlobalSearch(
       page: {
         current: parameters.value.page || 1,
       },
-      filters: { any: [] },
+      filters: { any: [] as Record<string, string[]>[] },
     };
     if (
       parameters?.value?.filters !== undefined &&
       parameters?.value?.filters?.length > 0
     ) {
       const groupedFilters = groupBy(parameters.value.filters, (x) => x.type);
-      groupedFilters.forEach((key, value) => {
-        const sourceNames = key.map((source) => source.name);
-        const filter = {};
-        filter[value] = sourceNames;
+      groupedFilters.forEach((value, key) => {
+        const sourceNames = value.map((source) => source.name);
+        const filter = {
+          [key]: sourceNames,
+        };
         payLoad.filters.any.push(filter);
       });
     }
