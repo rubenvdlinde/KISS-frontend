@@ -67,7 +67,6 @@ import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
-import { toast } from "@/stores/toast";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -98,7 +97,6 @@ const contactmomentStore = useContactmomentStore();
 const klantGevonden = (klant: Klant) => {
   showKlantenSearch.value = false;
   contactmomentStore.setKlant(klant);
-  toast({ text: "Klant gekoppeld aan contactmoment" });
 };
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
