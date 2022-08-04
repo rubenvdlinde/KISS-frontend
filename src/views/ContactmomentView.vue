@@ -154,12 +154,12 @@ aside section .zaak-title {
   padding-block: var(--spacing-default);
 }
 
-.klant-panel {
-  margin-inline: var(--spacing-extralarge);
-}
-
 .main-tabs {
   --tab-bg: white;
+
+  ul li article {
+    margin-inline: var(--spacing-extralarge);
+  }
 }
 
 .zaak-tabs {
