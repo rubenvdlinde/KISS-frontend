@@ -64,6 +64,8 @@ const contactmoment = useContactmomentStore();
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
+  --spacing-extralarge: 6rem;
+
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
@@ -75,12 +77,20 @@ const contactmoment = useContactmomentStore();
   --height-body: 100vh;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+}
+
 body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
 #app {
   position: relative;
+  display: grid;
+  grid-auto-rows: auto;
 }
 
 #app > header {
@@ -113,6 +123,10 @@ utrecht-icon-loupe {
 
 button:hover {
   cursor: pointer;
+}
+
+.main-tabs > nav {
+  background-color: var(--color-secondary);
 }
 
 .tabs-component-zaken {
@@ -154,32 +168,6 @@ button:hover {
   }
 }
 
-main {
-  gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
-  padding-block: var(--spacing-large);
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
-}
-
-main > section {
-  &:not(:only-of-type) {
-    max-width: var(--section-width);
-  }
-
-  > utrecht-heading:first-child {
-    padding-left: var(--text-margin);
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-tertiary);
-  }
-}
-
 a[aria-current="page"] {
   color: inherit;
   pointer-events: none;
@@ -191,10 +179,6 @@ a[aria-current="page"] {
 
 h2 {
   margin-top: var(--spacing-large);
-}
-
-::placeholder {
-  color: red;
 }
 
 .search-bar {
@@ -358,9 +342,10 @@ menu {
 
   /* forms */
   --utrecht-form-fieldset-legend-font-size: 1.5rem;
-  --utrecht-form-fieldset-legend-font-weight: bold;
+  --utrecht-form-fieldset-legend-font-weight: 600;
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
+  --utrecht-form-label-font-weight: 600;
   --utrecht-form-label-font-size: 1rem;
 
   --utrecht-form-input-border-color: var(--color-primary);

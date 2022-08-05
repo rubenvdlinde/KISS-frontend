@@ -1,62 +1,69 @@
 <template>
   <main>
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
+
     <router-link
       v-if="contactmomentStore.contactmomentLoopt"
       :to="{ name: 'contactmoment' }"
       >terug</router-link
     >
-    <div>
-      <section v-if="saving"><simple-spinner></simple-spinner></section>
-      <application-message
-        v-else-if="errorMessage != ''"
-        messageType="error"
-        :message="errorMessage"
-      ></application-message>
 
-      <template v-else-if="contactmomentStore.contactmomentLoopt">
-        <section
-          v-if="contactmomentStore.klanten.length"
-          class="gerelateerde-klanten"
-        >
-          <utrecht-heading :level="2" model-value>{{
-            contactmomentStore.klanten.length > 1
-              ? "Gerelateerde klanten"
-              : "Gerelateerde klant"
-          }}</utrecht-heading>
-          <ul>
-            <li
-              v-for="record in contactmomentStore.klanten"
-              :key="record.klant.id"
-            >
-              <label>
-                <span>{{
-                  [
-                    record.klant.voornaam,
-                    record.klant.voorvoegselAchternaam,
-                    record.klant.achternaam,
-                  ]
-                    .filter((x) => x)
-                    .join(" ")
-                }}</span>
-                <input type="checkbox" v-model="record.shouldStore" />
-              </label>
-            </li>
-          </ul>
-        </section>
-        <section v-if="contactmomentStore.zaken.length > 0">
-          <utrecht-heading :level="2" model-value>{{
-            contactmomentStore.zaken.length > 1
-              ? "Gerelateerde zaken"
-              : "Gerelateerde zaak"
-          }}</utrecht-heading>
-          <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
-        </section>
-        <section>
-          <contactmoment-afhandel-form @save="saveContact" />
-        </section>
-      </template>
-    </div>
+    <simple-spinner v-if="saving"></simple-spinner>
+
+    <application-message
+      v-else-if="errorMessage != ''"
+      messageType="error"
+      :message="errorMessage"
+    ></application-message>
+
+    <template v-else-if="contactmomentStore.contactmomentLoopt">
+      <section
+        v-if="contactmomentStore.klanten.length"
+        class="gerelateerde-klanten"
+      >
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.klanten.length > 1
+            ? "Gerelateerde klanten"
+            : "Gerelateerde klant"
+        }}</utrecht-heading>
+        <ul>
+          <li
+            v-for="record in contactmomentStore.klanten"
+            :key="record.klant.id"
+          >
+            <label>
+              <span>{{
+                [
+                  record.klant.voornaam,
+                  record.klant.voorvoegselAchternaam,
+                  record.klant.achternaam,
+                ]
+                  .filter((x) => x)
+                  .join(" ")
+              }}</span>
+              <input type="checkbox" v-model="record.shouldStore" />
+            </label>
+          </li>
+        </ul>
+      </section>
+
+      <section v-if="contactmomentStore.zaken.length > 0">
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.zaken.length > 1
+            ? "Gerelateerde zaken"
+            : "Gerelateerde zaak"
+        }}</utrecht-heading>
+        <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
+      </section>
+
+      <section>
+        <contactmoment-notitie
+          class="notitie utrecht-textarea"
+        ></contactmoment-notitie>
+      </section>
+
+      <contactmoment-afhandel-form @save="saveContact" />
+    </template>
   </main>
 </template>
 
@@ -70,7 +77,10 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 import { ref } from "vue";
 import { useZaaksysteemService } from "@/features/zaaksysteem/service";
-import { useContactmomentService } from "@/features/contactmoment";
+import {
+  useContactmomentService,
+  ContactmomentNotitie,
+} from "@/features/contactmoment";
 import type { Contactmoment } from "@/features/contactmoment/types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -109,8 +119,10 @@ const koppelKlanten = (contactmomentId: string) => {
 
 const saveContact = (contactmoment: Contactmoment) => {
   saving.value = true;
-
   errorMessage.value = "";
+
+  //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
+  enrichContactmomentWithNotitie(contactmoment);
 
   contactmomentService
     .save(contactmoment)
@@ -134,12 +146,32 @@ const saveContact = (contactmoment: Contactmoment) => {
       saving.value = false;
     });
 };
+
+const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
+  contactmoment.tekst = contactmomentStore.notitie;
+};
 </script>
 
 <style scoped lang="scss">
-section {
+main {
+  //center
+  padding-inline: var(--container-padding);
+  padding-block: var(--spacing-large);
   max-width: var(--section-width-large);
   margin-bottom: var(--spacing-large);
+
+  //content stacked
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-large);
+}
+
+:deep(.notitie) {
+  min-height: 10rem;
+  width: 100%;
+  padding: var(--spacing-default);
+  box-sizing: border-box;
+  margin-top: var(--spacing-default);
 }
 
 .gerelateerde-klanten {
