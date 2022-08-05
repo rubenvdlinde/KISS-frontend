@@ -1,19 +1,26 @@
 <template>
   <form
     method="get"
-    class="search-bar"
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
   >
-    <label
-      ><input
-        type="search"
-        v-model="searchInput"
-        placeholder="Zoeken"
-        @search.prevent="applySearch"
-      />Zoekterm</label
-    >
-    <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+    <fieldset class="bronnen" v-if="sources.success">
+      <label v-for="bron in sources.data" :key="bron.name + bron.type">
+        <input type="checkbox" v-model="selectedSources" :value="bron" />
+        {{ bron.name.replace(/(^\w+:|^)\/\//, "").replace("www.", "") }}
+      </label>
+    </fieldset>
+    <div class="search-bar">
+      <label
+        ><input
+          type="search"
+          v-model="searchInput"
+          placeholder="Zoeken"
+          @search.prevent="applySearch"
+        />Zoekterm</label
+      >
+      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+    </div>
   </form>
   <template v-if="currentSearch">
     <section ref="searchResultsRef" :class="['search-results', { isExpanded }]">
@@ -23,16 +30,34 @@
           <nav v-show="!currentId">
             <ul>
               <li
-                v-for="{ id, title, source } in searchResults.data.page"
+                v-for="{ id, title, source, jsonObject, url } in searchResults
+                  .data.page"
                 :key="'nav_' + id"
               >
                 <a
+                  v-if="!url"
                   href="#"
                   @click="currentId = id"
                   class="icon-after chevron-down"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
+                <a
+                  v-else
+                  :href="url.toString()"
+                  class="icon-after chevron-down"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  ><span :class="`category-${source}`">{{ source }}</span
+                  ><span>{{ title }}</span></a
+                >
+                <a v-if="source === 'Smoelenboek'">
+                  <span></span
+                  ><span
+                    >{{ jsonObject?.function }}
+                    {{ jsonObject?.department }}</span
+                  >
+                </a>
               </li>
             </ul>
           </nav>
@@ -44,8 +69,14 @@
           />
           <ul>
             <li
-              v-for="{ id, title, source, content, url } in searchResults.data
-                .page"
+              v-for="{
+                id,
+                title,
+                source,
+                content,
+                url,
+                jsonObject,
+              } in searchResults.data.page"
               :key="'searchResult_' + id"
               v-show="id === currentId"
             >
@@ -67,9 +98,92 @@
                   </utrecht-heading>
                   <small :class="`category-${source}`">{{ source }}</small>
                 </header>
-                <p v-if="content">{{ content }}</p>
-                <slot name="articleFooter" :id="url" :title="title"></slot>
+                <template v-if="jsonObject">
+                  <div>
+                    <section>
+                      <h2>Algemene contactgegevens</h2>
+                      <dl>
+                        <dd>E-mailadres:</dd>
+                        <dt>{{ jsonObject?.user }}</dt>
+                        <dd>Telefoonnummer:</dd>
+                        <dt>{{ jsonObject?.contact?.telefoonnummer1 }}</dt>
+                      </dl>
+                    </section>
+                    <section>
+                      <h2>Agenda</h2>
+                      <table class="availability">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th
+                              v-for="(_, day) in jsonObject?.calendar
+                                ?.availabilities"
+                              :key="day"
+                            >
+                              {{ day }}
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">ochtend</th>
+                            <td
+                              v-for="(value, day) in jsonObject?.calendar
+                                ?.availabilities"
+                              :key="day"
+                              :class="[value.ochtend ? 'groen' : 'rood']"
+                            >
+                              {{
+                                value.ochtend
+                                  ? "beschikbaar"
+                                  : "niet beschikbaar"
+                              }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <th scope="row">middag</th>
+                            <td
+                              v-for="(value, day) in jsonObject?.calendar
+                                ?.availabilities"
+                              :key="day"
+                              :class="[value.middag ? 'groen' : 'rood']"
+                            >
+                              {{
+                                value.middag
+                                  ? "beschikbaar"
+                                  : "niet beschikbaar"
+                              }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </section>
+                  </div>
+                  <section>
+                    <h2>Detailgegevens</h2>
+                    <img
+                      v-if="jsonObject.optionalProfilePicture"
+                      :src="jsonObject.optionalProfilePicture"
+                      width="128"
+                    />
+                    <dl>
+                      <dd>Functie:</dd>
+                      <dt>{{ jsonObject?.function }}</dt>
+
+                      <dd>Afdeling:</dd>
+                      <dt>{{ jsonObject?.department }}</dt>
+
+                      <dd>Wat kun je en wat doe je:</dd>
+                      <dt>{{ jsonObject?.skills }}</dt>
+
+                      <dd>Vervanger:</dd>
+                      <dt>{{ jsonObject?.replacement }}</dt>
+                    </dl>
+                  </section>
+                </template>
+                <p v-else-if="content">{{ content }}</p>
               </article>
+              <slot name="articleFooter" :id="url" :title="title"></slot>
             </li>
           </ul>
         </template>
@@ -96,10 +210,11 @@ import {
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
-import { useGlobalSearch } from "./service";
+import { useGlobalSearch, useSources } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import type { Source } from "./types";
 
 const searchInput = ref("");
 const currentSearch = ref("");
@@ -111,9 +226,13 @@ const searchResultsRef = ref<Element>();
 const searchParameters = computed(() => ({
   search: currentSearch.value,
   page: currentPage.value,
+  filters: selectedSources.value,
 }));
 
+const selectedSources = ref<Source[]>([]);
+
 const searchResults = useGlobalSearch(searchParameters);
+const sources = useSources();
 
 function applySearch() {
   currentSearch.value = searchInput.value;
@@ -147,21 +266,31 @@ watch(hasResults, (x) => {
 <style lang="scss" scoped>
 form {
   grid-area: bar;
-  padding-block: var(--spacing-large);
-  max-width: 40rem;
+  padding-block-start: var(--spacing-small);
+  padding-block-end: var(--spacing-large);
+  display: grid;
+  gap: var(--spacing-small);
 }
 
-form > section {
-  width: 40rem;
+.search-bar {
+  max-width: 40rem;
+  width: 100%;
 }
 
 button {
   font-size: 0;
 }
 
-input,
-label {
-  width: 100%;
+input[type="checkbox"] {
+  accent-color: var(--color-secondary);
+}
+
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-default);
+  color: white;
+  margin-inline: auto;
 }
 
 .search-results {
@@ -253,8 +382,11 @@ nav ul {
 article {
   display: grid;
   gap: 0.5rem;
+  grid-template-columns: 50% 1fr;
+  column-gap: var(--spacing-large);
 
   header {
+    grid-column: span 2;
     display: grid;
     justify-items: start;
     gap: 0.5rem;
@@ -269,9 +401,41 @@ article {
       margin-bottom: 1em;
     }
   }
+
+  img {
+    margin-bottom: var(--spacing-default);
+  }
 }
 
 .pagination {
   margin-inline: auto;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: var(--spacing-small);
+}
+table td {
+  font-size: 0;
+}
+.groen {
+  background-color: green;
+}
+.rood {
+  background-color: red;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: var(--spacing-small);
+}
+
+dd {
+  font-weight: bold;
+}
+
+h2 {
+  margin-bottom: 1em;
 }
 </style>

@@ -199,7 +199,7 @@ const findzaken = (bsn: number) => {
   display: grid;
   grid-template-columns: 1fr 4fr;
 
-  grid-gap: 2rem;
+  gap: var(--spacing-large);
 }
 
 label {

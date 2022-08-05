@@ -90,7 +90,7 @@ body {
 #app {
   position: relative;
   display: grid;
-  grid-auto-rows: auto;
+  grid-auto-rows: minmax(min-content, max-content);
 }
 
 #app > header {
@@ -234,16 +234,18 @@ h2 {
     color: var(--color-error);
   }
 
+  > :nth-last-child(2) {
+    flex: 1;
+    > input {
+      width: 100%;
+    }
+  }
+
   input[type="search"] {
     padding-inline-start: 1rem;
     &::placeholder {
       color: black;
     }
-  }
-
-  input,
-  select {
-    width: 100%;
   }
 }
 
