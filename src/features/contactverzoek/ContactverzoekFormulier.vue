@@ -92,7 +92,7 @@
       </li>
       <li>
         <button class="utrecht-button utrecht-button--submit" type="submit">
-          Toevoegen aan het contactmoment
+          Versturen
         </button>
       </li>
     </menu>
