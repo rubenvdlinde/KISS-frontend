@@ -30,18 +30,28 @@
           <nav v-show="!currentId">
             <ul>
               <li
-                v-for="{ id, title, source, jsonObject } in searchResults.data
-                  .page"
+                v-for="{ id, title, source, jsonObject, url } in searchResults
+                  .data.page"
                 :key="'nav_' + id"
               >
                 <a
+                  v-if="!url"
                   href="#"
                   @click="currentId = id"
                   class="icon-after chevron-down"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
-                <a v-if="source === 'smoelenboek'">
+                <a
+                  v-else
+                  :href="url.toString()"
+                  class="icon-after chevron-down"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  ><span :class="`category-${source}`">{{ source }}</span
+                  ><span>{{ title }}</span></a
+                >
+                <a v-if="source === 'Smoelenboek'">
                   <span></span
                   ><span
                     >{{ jsonObject?.function }}
