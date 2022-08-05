@@ -1,5 +1,14 @@
 <template>
   <main>
+    <aside>
+      <menu></menu>
+      <section>
+        <contactmoment-notitie
+          class="notitie utrecht-textarea"
+        ></contactmoment-notitie>
+      </section>
+    </aside>
+
     <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
     <!-- todo: 'trecht-heading errors irriteren. component verwijderen?-->
     <tabs-component v-model="activeTabContactmoment" class="main-tabs">
@@ -60,6 +69,7 @@ import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
 import {
   ContactmomentStarter,
   ContactmomentenOverzicht,
+  ContactmomentNotitie,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { ref, computed } from "vue";
@@ -106,28 +116,47 @@ const klantId = computed(() => contactmomentStore.klant?.id || "");
 main {
   padding-inline: 0;
   padding-block: 0;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  height: 100vh;
 }
 
-.zaak-title {
+aside {
+  section {
+    border-right: 1px solid var(--color-tertiary);
+    height: 100%;
+    padding: var(--spacing-large);
+
+    :deep(textarea.utrecht-textarea) {
+      padding: 0px;
+    }
+  }
+
+  menu {
+    height: 3rem;
+    background-color: var(--color-tertiary);
+  }
+}
+
+aside section .zaak-title {
   margin-inline: var(--container-padding);
 }
 
 :deep([role="tablist"]),
 .zaak-tabs :deep([role="tabpanel"]) {
-  padding-inline: var(--container-padding);
+  padding-inline: var(--spacing-extralarge);
 }
 
 :deep([role="tabpanel"]) {
   padding-block: var(--spacing-default);
 }
 
-.klant-panel {
-  margin-inline: var(--container-padding);
-}
-
 .main-tabs {
   --tab-bg: white;
-  background-color: var(--color-secondary);
+
+  ul li article {
+    margin-inline: var(--spacing-extralarge);
+  }
 }
 
 .zaak-tabs {
@@ -135,11 +164,15 @@ main {
   --tab-size: 1.25rem;
 }
 
-utrecht-heading {
-  margin-block-end: var(--spacing-default);
-}
-
 .contactmomenten-header {
   margin-inline-start: var(--spacing-default);
+}
+
+:deep(.notitie) {
+  margin-top: var(--spacing-large);
+  outline: none;
+  border: none;
+  height: 100%;
+  width: 100%;
 }
 </style>
