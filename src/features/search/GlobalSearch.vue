@@ -182,9 +182,8 @@
                   </section>
                 </template>
                 <p v-else-if="content">{{ content }}</p>
-
-                <slot name="articleFooter" :id="url" :title="title"></slot>
               </article>
+              <slot name="articleFooter" :id="url" :title="title"></slot>
             </li>
           </ul>
         </template>
