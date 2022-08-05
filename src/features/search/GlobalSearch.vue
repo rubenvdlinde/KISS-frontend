@@ -37,7 +37,7 @@
                 <a
                   v-if="!url"
                   href="#"
-                  @click="currentId = id"
+                  @click="selectSearchResult(id, source, jsonObject, title)"
                   class="icon-after chevron-down"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
@@ -51,7 +51,7 @@
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
-                <a v-if="source === 'Smoelenboek'">
+                <a v-if="source === smoelenboek">
                   <span></span
                   ><span
                     >{{ jsonObject?.function }}
@@ -216,6 +216,9 @@ import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 
+const emit = defineEmits(["medewerkerSelected"]);
+
+const smoelenboek = "Smoelenboek";
 const searchInput = ref("");
 const currentSearch = ref("");
 const currentId = ref("");
@@ -261,6 +264,22 @@ watch(hasResults, (x) => {
     isExpanded.value = true;
   }
 });
+
+const selectSearchResult = (
+  id: string,
+  source: string,
+  jsonObject: any,
+  title: string
+) => {
+  currentId.value = id;
+  if (source === smoelenboek) {
+    emit("medewerkerSelected", {
+      email: jsonObject?.user,
+      telefoonnummer: jsonObject?.contact?.telefoonnummer1,
+      naam: title,
+    });
+  }
+};
 </script>
 
 <style lang="scss" scoped>

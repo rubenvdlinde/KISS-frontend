@@ -3,7 +3,7 @@
     <template #default="{ onLogout }">
       <the-toast-section />
       <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-        <global-search>
+        <global-search @medewerkerSelected="addMedewerkerToContactmoment">
           <template #articleFooter="{ id, title }">
             <search-feedback :id="id" :name="title"></search-feedback>
           </template>
@@ -30,6 +30,16 @@ import { logoutUrl, LoginOverlay } from "./features/login";
 import TheToastSection from "./components/TheToastSection.vue";
 
 const contactmoment = useContactmomentStore();
+
+const addMedewerkerToContactmoment = (
+  email: string,
+  telefoonnummer: string,
+  naam: string
+) => {
+  if (contactmoment.contactmomentLoopt) {
+    contactmoment.addMedewerker(email, telefoonnummer, naam);
+  }
+};
 </script>
 
 <style lang="scss">

@@ -3,6 +3,18 @@
     <aside>
       <menu></menu>
       <section>
+        <menu>
+          <li>
+            <button @click="showContactverzoek = true">contactverzoek</button>
+          </li>
+        </menu>
+        <contactverzoek-formulier
+          naam=""
+          email=""
+          telefoonnummer1=""
+          telefoonnummer2=""
+          v-if="showContactverzoek"
+        ></contactverzoek-formulier>
         <contactmoment-notitie
           class="notitie utrecht-textarea"
         ></contactmoment-notitie>
@@ -77,6 +89,7 @@ import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
+import ContactverzoekFormulier from "../features/contactverzoek/ContactverzoekFormulier.vue";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -110,6 +123,8 @@ const klantGevonden = (klant: Klant) => {
 };
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
+
+const showContactverzoek = ref(false);
 </script>
 
 <style scoped lang="scss">

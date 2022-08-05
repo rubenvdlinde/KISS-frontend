@@ -7,3 +7,11 @@ export interface Klant {
   telefoonnummer: string;
   emailadres: string;
 }
+
+export interface Medewerker {
+  id: string;
+  voornaam: string;
+  voorvoegselAchternaam?: string;
+  achternaam: string;
+  emailadres: string;
+}

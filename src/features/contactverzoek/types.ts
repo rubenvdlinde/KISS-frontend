@@ -27,9 +27,14 @@ export interface Contactverzoek {
   };
 }
 
-export interface MedewerkerIdentificatie {
-  identificatie: string;
-  achternaam: string;
-  voorletters: string;
-  voorvoegselAchternaam: string;
+// export interface MedewerkerIdentificatie {
+//   identificatie: string;
+//   achternaam: string;
+//   voorletters: string;
+//   voorvoegselAchternaam: string;
+// }
+
+export interface MedewerkerOptie {
+  email: string;
+  naam: string;
 }

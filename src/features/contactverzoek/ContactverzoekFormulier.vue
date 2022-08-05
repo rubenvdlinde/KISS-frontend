@@ -7,14 +7,14 @@
           algemene zoekveld
         </legend>
 
-        <div v-for="medewerker in medewerkers" :key="medewerker.value">
+        <div v-for="medewerker in medewerkers" :key="medewerker.email">
           <input
             type="radio"
-            :id="medewerker.value"
+            :id="medewerker.email"
             name="medewerker"
-            :value="medewerker.value"
+            :value="medewerker.email"
           />
-          <label :for="medewerker.value">{{ medewerker.label }}</label>
+          <label :for="medewerker.email">{{ medewerker.naam.naam }}</label>
         </div>
       </fieldset>
 
@@ -120,12 +120,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineProps } from "vue";
+import { ref, reactive, defineProps, watch } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import { useContactmomentStore } from "@/stores/contactmoment/index.js";
-import type { Contactverzoek } from "./types.js";
+import type { Contactverzoek, MedewerkerOptie } from "./types.js";
 import { useContactverzoekService } from "./service.js";
 import type { ServiceData } from "@/services/index.js";
+import type { Medewerker } from "@/stores/contactmoment/types";
+
 // import SimpleSpinner from "@/components/SimpleSpinner.vue";
 // import ApplicationMessage from "@/components/ApplicationMessage.vue";
 // import ModalTemplate from "@/components/ModalTemplate.vue";
@@ -158,11 +160,17 @@ const contactverzoek = reactive<Contactverzoek>({
 //available medewerkers
 
 const contactmomentStore = useContactmomentStore();
-const medewerkers = contactmomentStore.medewerkers
-  ? contactmomentStore.medewerkers.map(({ achternaam, email }) => {
-      return { label: achternaam, value: email };
-    })
-  : [];
+const medewerkers = ref<MedewerkerOptie[]>([]);
+
+watch(
+  contactmomentStore.medewerkers,
+  (newVal) => {
+    medewerkers.value = newVal.map(({ achternaam, emailadres }) => {
+      return { email: achternaam, naam: emailadres } as MedewerkerOptie;
+    });
+  },
+  { immediate: true }
+);
 
 // cancel
 
@@ -197,7 +205,7 @@ const submit = () => {
 //terug zettten naar de initiele waarde
 
 const clear = () => {
-  contactverzoek.todo.naam = props.naam;
+  contactverzoek.todo.naam = props.naam ?? "";
   contactverzoek.todo.email = props.email;
   contactverzoek.todo.telefoonnummer1 = props.telefoonnummer1;
   contactverzoek.todo.telefoonnummer2 = props.telefoonnummer2;
