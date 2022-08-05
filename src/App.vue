@@ -12,7 +12,7 @@
           :href="logoutUrl"
           @click="onLogout"
           @keydown.enter="onLogout"
-          class="log-out utrecht-button"
+          class="log-out"
           >Uitloggen</a
         >
       </header>
@@ -35,6 +35,7 @@ const contactmoment = useContactmomentStore();
 <style lang="scss">
 @import "@/assets/reset.css";
 @import "@/assets/fonts/fonts.css";
+@import "@utrecht/component-library-css";
 
 /* Design Tokens */
 @import "@gemeente-denhaag/design-tokens-components/dist/index.css";
@@ -63,6 +64,8 @@ const contactmoment = useContactmomentStore();
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
+  --spacing-extralarge: 6rem;
+
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
@@ -74,12 +77,20 @@ const contactmoment = useContactmomentStore();
   --height-body: 100vh;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+}
+
 body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
 #app {
   position: relative;
+  display: grid;
+  grid-auto-rows: auto;
 }
 
 #app > header {
@@ -114,13 +125,17 @@ button:hover {
   cursor: pointer;
 }
 
-.tabs-component {
-  ul li.is-active {
+.main-tabs > nav {
+  background-color: var(--color-secondary);
+}
+
+.tabs-component-zaken {
+  > ul li.is-active {
     background-color: var(--color-secondary);
     border-radius: var(--radius-default) var(--radius-default) 0 0;
   }
 
-  ul li {
+  > ul li {
     display: inline-block;
     padding: var(--spacing-default);
 
@@ -136,29 +151,20 @@ button:hover {
   }
 }
 
-main {
-  gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
-  padding-block: var(--spacing-large);
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
-}
-
-main > section {
-  &:not(:only-of-type) {
-    max-width: var(--section-width);
+.tabs-component-contactmoment {
+  > ul li.is-active {
+    background-color: white;
   }
 
-  > utrecht-heading:first-child {
-    padding-left: var(--text-margin);
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-tertiary);
+  > ul li {
+    display: inline-block;
+    padding: var(--spacing-default);
+
+    a {
+      text-decoration: none;
+      font-size: var(--utrecht-typography-scale-lg);
+      color: var(--utrecht-document-color);
+    }
   }
 }
 
@@ -173,10 +179,6 @@ a[aria-current="page"] {
 
 h2 {
   margin-top: var(--spacing-large);
-}
-
-::placeholder {
-  color: red;
 }
 
 .search-bar {
@@ -299,6 +301,9 @@ form {
   }
 }
 
+menu {
+  list-style: none;
+}
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -312,6 +317,8 @@ form {
   --utrecht-heading-font-weight: 600;
   --denhaag-pagination-color: var(--color-primary);
   --denhaag-pagination-link-current-color: var(--color-headings);
+  --utrecht-border-width-sm: 1px;
+  --utrecht-color-grey-90: var(--color-tertiary);
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;
@@ -337,9 +344,10 @@ form {
 
   /* forms */
   --utrecht-form-fieldset-legend-font-size: 1.5rem;
-  --utrecht-form-fieldset-legend-font-weight: bold;
+  --utrecht-form-fieldset-legend-font-weight: 600;
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
+  --utrecht-form-label-font-weight: 600;
   --utrecht-form-label-font-size: 1rem;
 
   --utrecht-form-input-border-color: var(--color-primary);

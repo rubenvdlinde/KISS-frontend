@@ -18,3 +18,7 @@
 
 # contactmoment zaak/persoon zoeken
 * geen utrecht tab component. wel tab react component van denhaag, maar dat is een wrapper op een  @material-ui/core tab. een designsytem in een designsystem? dat levert classes op die ik niet in het uiteindelijke nldesign system verwacht, dus dit gaan we nu niet gebruiken/nabouwen
+
+# table styles
+nldesign table styles worden niet overgenomen. bv --utrecht-table-row-border-block-end-color zou toegepast moeten worden als er een utrecht-html class op de container div staat, maar dat werkt niet. zie https://nl-design-system.github.io/utrecht/storybook/?path=/docs/html-table--default-story
+waarschijnlijk zijn er nog aanvullende packages of extra body classes nodig oid... verder uitzoeken kost teveel tijd

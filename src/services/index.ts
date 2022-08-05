@@ -2,6 +2,8 @@ import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
 export * from "./fetch-logged-in";
+export * from "./pagination";
+export * from "./gateway";
 
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
@@ -30,15 +32,6 @@ type Result<T> =
     };
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
-
-export interface Paginated<T> {
-  pageSize: number;
-  pageNumber: number;
-  totalPages: number;
-  totalRecords?: number;
-  page: T[];
-}
-
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
@@ -242,4 +235,9 @@ export function createLookupList<K, V>(entries: [K, V][]): LookupList<K, V> {
     },
     entries,
   };
+}
+
+export function throwIfNotOk(response: Response) {
+  if (!response.ok) throw new Error(response.statusText);
+  return response as Response & { ok: true };
 }

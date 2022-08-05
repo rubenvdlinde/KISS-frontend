@@ -1,5 +1,4 @@
 <template>
-  <h2>Zaken</h2>
   <table v-if="zaken.length > 0">
     <thead>
       <th>Zaaknummer</th>
@@ -30,7 +29,7 @@ import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
 
 defineProps({
-  zaken: { type: Array as PropType<Zaak[]>, default: null },
+  zaken: { type: Array as PropType<Zaak[]>, required: true },
 });
 </script>
 

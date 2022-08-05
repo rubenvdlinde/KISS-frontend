@@ -1,15 +1,29 @@
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
+import type { Klant } from "./types";
+export * from "./types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };
+
+interface ContactmomentState {
+  contactmomentLoopt: boolean;
+  zaken: ContactmomentZaak[];
+  klanten: { klant: Klant; shouldStore: boolean }[];
+  notitie: string;
+}
 
 export const useContactmomentStore = defineStore("contactmoment", {
   state: () => {
     return {
       contactmomentLoopt: false,
-      // zaken: <Zaak[]>[],
       zaken: <ContactmomentZaak[]>[],
-    };
+      klanten: [],
+      notitie: "",
+    } as ContactmomentState;
+  },
+  getters: {
+    klant: (state): Klant | undefined =>
+      state.klanten.filter((x) => x.shouldStore).map((x) => x.klant)[0],
   },
   actions: {
     start() {
@@ -18,6 +32,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
     stop() {
       this.contactmomentLoopt = false;
       this.zaken = [];
+      this.notitie = "";
     },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
@@ -34,8 +49,32 @@ export const useContactmomentStore = defineStore("contactmoment", {
         return existingZaak.shouldStore;
       }
     },
-    findById(id: string) {
-      return this.zaken.find((element) => element.id === id);
+    isZaakLinkedToContactmoment(id: string) {
+      const zaak = this.zaken.find((element) => element.id === id);
+      return zaak ? zaak.shouldStore : false;
+    },
+    setKlant(klant: Klant) {
+      const match = this.klanten.find((x) => x.klant.id === klant.id);
+      if (match?.shouldStore) return false;
+
+      this.klanten.forEach((x) => {
+        x.shouldStore = false;
+      });
+
+      if (match) {
+        match.klant = klant;
+        match.shouldStore = true;
+      } else {
+        this.klanten.push({
+          shouldStore: true,
+          klant,
+        });
+      }
+
+      return true;
+    },
+    setNotitie(notitie: string) {
+      this.notitie = notitie;
     },
   },
 });

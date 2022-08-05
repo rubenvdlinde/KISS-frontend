@@ -1,6 +1,12 @@
-import { ServiceResult } from "@/services";
+import { parsePagination, throwIfNotOk, ServiceResult } from "@/services";
 import { fetchLoggedIn } from "@/services";
-import type { Contactmoment, Gespreksresultaat } from "./types";
+import type { Ref } from "vue";
+import type {
+  ContactmomentViewModel,
+  Contactmoment,
+  Gespreksresultaat,
+  ContactmomentZaak,
+} from "./types";
 
 export function useContactmomentService() {
   if (!window.gatewayBaseUri) {
@@ -53,4 +59,83 @@ export function useContactmomentService() {
     getGespreksResultaten,
     // saveZaak,
   };
+}
+
+export function useKlantContactmomenten(
+  params: Ref<{ id: string; page?: number }>
+) {
+  const getUrl = () => {
+    const id = params.value.id;
+    const page = params.value.page || 1;
+    if (!id) return "";
+
+    const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
+    url.searchParams.set("klant.id", id);
+    url.searchParams.set("page", page.toString());
+    url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
+    url.searchParams.append("extend[]", "contactmoment.medewerker");
+    url.searchParams.append("fields[]", "contactmoment");
+    return url.toString();
+  };
+
+  return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
+}
+
+const mapZaak = (json: any): ContactmomentZaak => ({
+  status: json?.embedded?.status?.statustoelichting,
+  zaaktype: json?.embedded?.zaaktype?.onderwerp,
+  zaaknummer: json?.identificatie,
+});
+
+const fetchZaak = (o: { object: string }) =>
+  fetchLoggedIn(window.gatewayBaseUri + o.object)
+    .then((or) => or.json())
+    .then(mapZaak);
+
+const fetchZaken = (c: any) => {
+  const objectcontactmomenten = c?.embedded?.objectcontactmomenten;
+  return Array.isArray(objectcontactmomenten)
+    ? Promise.all(
+        objectcontactmomenten
+          .filter((x: any) => x.objectType === "zaak")
+          .map(fetchZaak)
+      )
+    : Promise.resolve([]);
+};
+
+const mapContactmoment = (r: any): Promise<ContactmomentViewModel> => {
+  const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
+  contactmoment.startdatum = new Date(contactmoment.startdatum);
+  contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
+
+  return fetchZaken(contactmoment).then((zaken) => ({
+    ...contactmoment,
+    zaken,
+  }));
+};
+
+const fetchKlantContactmomenten = (url: string) =>
+  fetchLoggedIn(url)
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then((j) => parsePagination(j, mapContactmoment));
+
+export function koppelKlant({
+  klantId,
+  contactmomentId,
+}: {
+  klantId: string;
+  contactmomentId: string;
+}) {
+  return fetchLoggedIn(window.gatewayBaseUri + "/api/klantcontactmomenten", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      klant: klantId,
+      contactmoment: contactmomentId,
+      rol: "gesprekspartner",
+    }),
+  }).then(throwIfNotOk) as Promise<void>;
 }
