@@ -90,7 +90,7 @@ body {
 #app {
   position: relative;
   display: grid;
-  grid-auto-rows: auto;
+  grid-auto-rows: minmax(min-content, max-content);
 }
 
 #app > header {
