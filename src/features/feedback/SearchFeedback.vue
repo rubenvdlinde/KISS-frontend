@@ -55,8 +55,6 @@ const feedbackCancelled = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@utrecht/component-library-css";
-
 section {
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-default);

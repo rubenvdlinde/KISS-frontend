@@ -12,7 +12,7 @@
           :href="logoutUrl"
           @click="onLogout"
           @keydown.enter="onLogout"
-          class="log-out utrecht-button"
+          class="log-out"
           >Uitloggen</a
         >
       </header>
@@ -35,6 +35,7 @@ const contactmoment = useContactmomentStore();
 <style lang="scss">
 @import "@/assets/reset.css";
 @import "@/assets/fonts/fonts.css";
+@import "@utrecht/component-library-css";
 
 /* Design Tokens */
 @import "@gemeente-denhaag/design-tokens-components/dist/index.css";
@@ -114,13 +115,13 @@ button:hover {
   cursor: pointer;
 }
 
-.tabs-component {
-  ul li.is-active {
+.tabs-component-zaken {
+  > ul li.is-active {
     background-color: var(--color-secondary);
     border-radius: var(--radius-default) var(--radius-default) 0 0;
   }
 
-  ul li {
+  > ul li {
     display: inline-block;
     padding: var(--spacing-default);
 
@@ -133,6 +134,23 @@ button:hover {
 
   > div {
     background-color: var(--color-secondary);
+  }
+}
+
+.tabs-component-contactmoment {
+  > ul li.is-active {
+    background-color: white;
+  }
+
+  > ul li {
+    display: inline-block;
+    padding: var(--spacing-default);
+
+    a {
+      text-decoration: none;
+      font-size: var(--utrecht-typography-scale-lg);
+      color: var(--utrecht-document-color);
+    }
   }
 }
 
@@ -297,6 +315,9 @@ form {
   }
 }
 
+menu {
+  list-style: none;
+}
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -310,6 +331,8 @@ form {
   --utrecht-heading-font-weight: 600;
   --denhaag-pagination-color: var(--color-primary);
   --denhaag-pagination-link-current-color: var(--color-headings);
+  --utrecht-border-width-sm: 1px;
+  --utrecht-color-grey-90: var(--color-tertiary);
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;
