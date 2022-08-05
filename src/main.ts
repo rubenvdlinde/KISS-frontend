@@ -7,10 +7,17 @@ import { createPinia } from "pinia";
 declare global {
   interface Window {
     organisatieIds: string[];
+    activeOrganisatieId: string;
     pubBeheerUrl: string;
     gatewayBaseUri: string;
   }
 }
+
+//nog onduidelijk hoe dit in de praktijk gaat weken, voorlopig uitgaan van 1 org
+window.activeOrganisatieId =
+  window.organisatieIds && window.organisatieIds[0]
+    ? window.organisatieIds[0]
+    : "";
 
 // HACK VOOR RARE ORGANISATIE IDS
 try {

@@ -10,6 +10,7 @@ interface ContactmomentState {
   zaken: ContactmomentZaak[];
   klanten: { klant: Klant; shouldStore: boolean }[];
   notitie: string;
+  medewerkers: []; // hier zullen geselecteerde medewerkers uit de zoekresultaten bewaard moeten worde, zodat ze bij het contactmoment gebruikt kunnen worden (bv bij een terugbel notite)
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -19,6 +20,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       zaken: <ContactmomentZaak[]>[],
       klanten: [],
       notitie: "",
+      medewerkers: [],
     } as ContactmomentState;
   },
   getters: {
