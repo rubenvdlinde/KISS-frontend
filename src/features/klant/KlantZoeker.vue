@@ -6,7 +6,6 @@
         type="search"
         placeholder="Zoek op e-mailadres of telefoonnummer"
         v-model="currentSearch"
-        v-focus
         @search="handleSearch"
         title="0612345789 test@conduction.nl"
       />
@@ -89,6 +88,7 @@ input {
 }
 .search-bar {
   margin-bottom: var(--spacing-large);
+  width: min(100%, 20rem);
 }
 
 .pagination {

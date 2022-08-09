@@ -160,6 +160,7 @@ dl {
 .tekst {
   max-width: 90ch;
   line-height: 1.5rem;
+  white-space: pre-wrap;
 }
 
 .headers {
