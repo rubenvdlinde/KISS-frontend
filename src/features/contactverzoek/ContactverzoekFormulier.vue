@@ -1,72 +1,75 @@
 <template>
   <form @submit.prevent="submit">
+    <fieldset>
+      <legend v-if="!medewerkers || medewerkers.length == 0">
+        Zoek de medewerker voor wie het contactverzoek bestemd is via het
+        algemene zoekveld
+      </legend>
+      <legend v-else class="utrecht-form-label">
+        <span class="required">Contactverzoek versturen naar</span>
+      </legend>
+
+      <label
+        v-for="medewerker in medewerkers"
+        :key="medewerker.email"
+        class="radio"
+      >
+        <input
+          type="radio"
+          name="medewerker"
+          :value="medewerker.email"
+          required
+        />
+        {{ medewerker.naam.naam }}
+      </label>
+    </fieldset>
     <fieldset class="utrecht-form-fieldset">
-      <fieldset>
-        <legend v-if="!medewerkers || medewerkers.length == 0">
-          Zoek de medewerker voor wie het contactverzoek bestemd is via het
-          algemene zoekveld
-        </legend>
+      <label class="utrecht-form-label">
+        <span class="required">Naam van de klant</span>
+        <input
+          type="text"
+          v-model="contactverzoek.todo.naam"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          required
+        />
+      </label>
 
-        <div v-for="medewerker in medewerkers" :key="medewerker.email">
-          <input
-            type="radio"
-            :id="medewerker.email"
-            name="medewerker"
-            :value="medewerker.email"
-          />
-          <label :for="medewerker.email">{{ medewerker.naam.naam }}</label>
-        </div>
-      </fieldset>
+      <label class="utrecht-form-label">
+        E-mailadres van de klant
+        <input
+          type="text"
+          v-model="contactverzoek.todo.email"
+          class="utrecht-textbox utrecht-textbox--html-input"
+        />
+      </label>
 
-      <label for="naam" class="utrecht-form-label"
-        >Naam<span class="required">*</span></label
-      >
-      <input
-        type="text"
-        id="naam"
-        v-model="contactverzoek.todo.naam"
-        class="utrecht-textbox utrecht-textbox--html-input"
-        required
-      />
+      <label class="utrecht-form-label">
+        Telefoonnummer 1 van de klant
+        <input
+          type="text"
+          v-model="contactverzoek.todo.telefoonnummer1"
+          class="utrecht-textbox utrecht-textbox--html-input"
+        />
+      </label>
 
-      <label for="email" class="utrecht-form-label">E-mailadres</label>
-      <input
-        type="text"
-        id="email"
-        v-model="contactverzoek.todo.email"
-        class="utrecht-textbox utrecht-textbox--html-input"
-      />
+      <label class="utrecht-form-label">
+        Telefoonnummer 2 van de klant
+        <input
+          type="text"
+          v-model="contactverzoek.todo.telefoonnummer2"
+          class="utrecht-textbox utrecht-textbox--html-input"
+        />
+      </label>
+    </fieldset>
 
-      <label for="telefoonnummer1" class="utrecht-form-label"
-        >Telefoonnummer 1</label
-      >
-      <input
-        type="text"
-        id="telefoonnummer1"
-        v-model="contactverzoek.todo.telefoonnummer1"
-        class="utrecht-textbox utrecht-textbox--html-input"
-      />
-
-      <label for="telefoonnummer2" class="utrecht-form-label"
-        >Telefoonnummer 2</label
-      >
-      <input
-        type="text"
-        id="telefoonnummer2"
-        v-model="contactverzoek.todo.telefoonnummer2"
-        class="utrecht-textbox utrecht-textbox--html-input"
-      />
-
-      <label for="notitie" class="utrecht-form-label"
-        >Notitie<span class="required">*</span></label
-      >
+    <label class="utrecht-form-label">
+      <span class="required">Notitie bij het contactverzoek</span>
       <textarea
-        id="notitie"
         v-model="contactverzoek.todo.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
-      ></textarea>
-    </fieldset>
+      />
+    </label>
 
     <application-message
       v-if="validationmessage"
@@ -124,7 +127,7 @@ import { ref, reactive, defineProps, watch } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import { useContactmomentStore } from "@/stores/contactmoment/index.js";
 import type { Contactverzoek, MedewerkerOptie } from "./types.js";
-import { useContactverzoekService } from "./service.js";
+import { usePostContactverzoek } from "./service.js";
 import type { ServiceData } from "@/services/index.js";
 import type { Medewerker } from "@/stores/contactmoment/types";
 
@@ -183,8 +186,7 @@ cancelDialog.onConfirm(() => {
 
 //submit
 
-const serviceResult = ref<ServiceData<Contactverzoek>>();
-const service = useContactverzoekService();
+const serviceResult = ref<ServiceData<void>>();
 
 const submit = () => {
   const isValid = validate();
@@ -192,10 +194,10 @@ const submit = () => {
     return;
   }
 
-  const result = service.post(contactverzoek);
-  serviceResult.value = result.state;
+  const result = usePostContactverzoek(contactverzoek);
+  serviceResult.value = result;
 
-  result.promise.then(() => {
+  result.then(() => {
     clear();
     emit("saved");
   });
@@ -242,17 +244,6 @@ const validate = () => {
 <style lang="scss" scoped>
 @import "@utrecht/component-library-css";
 
-fieldset {
-  display: grid;
-  align-items: center;
-  grid-gap: 1rem;
-  grid-template-columns: 1fr 2fr;
-}
-
-label {
-  grid-column: 1 / 2;
-}
-
 menu {
   margin-top: 2rem;
   display: flex;
@@ -263,5 +254,29 @@ menu {
 .error,
 .confirm {
   margin-top: var(--spacing-default);
+}
+
+form,
+fieldset {
+  display: grid;
+  gap: var(--spacing-default);
+}
+
+label {
+  display: grid;
+  gap: var(--spacing-small);
+}
+
+label.radio {
+  grid-template-columns: min-content 1fr;
+  align-items: center;
+
+  input {
+    margin: 0;
+  }
+}
+
+legend {
+  margin-block-end: var(--spacing-small);
 }
 </style>

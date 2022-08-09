@@ -13,7 +13,7 @@
       ></textarea>
 
       <label for="opmerking" class="utrecht-form-label"
-        >Omschrijf wat je feedback is<span class="required">*</span></label
+        ><span class="required">Omschrijf wat je feedback is</span></label
       >
       <textarea
         id="opmerking"

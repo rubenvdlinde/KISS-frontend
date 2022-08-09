@@ -1,37 +1,17 @@
 import type { Contactverzoek } from "./types";
-import { ServiceResult } from "@/services";
-import { fetchLoggedIn } from "@/services";
+import { ServiceResult, fetchLoggedIn, throwIfNotOk } from "@/services";
 
-export function useContactverzoekService() {
-  if (!window.gatewayBaseUri) {
-    console.error("baseUri missing");
-  }
-
+export function usePostContactverzoek(data: Contactverzoek) {
   const url = window.gatewayBaseUri + "/api/contactmomenten";
 
-  const post = (data: Contactverzoek) => {
-    const promise = fetchLoggedIn(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
-      return r.json();
-    });
+  const promise = fetchLoggedIn(url, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then(throwIfNotOk) as Promise<void>;
 
-    const state = ServiceResult.fromPromise(promise);
-
-    const result = { state: state, promise: promise };
-
-    return result;
-  };
-
-  return {
-    post,
-  };
+  return ServiceResult.fromPromise(promise);
 }

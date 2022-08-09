@@ -2,23 +2,30 @@
   <main>
     <aside>
       <menu></menu>
-      <section>
-        <menu>
-          <li>
-            <button @click="showContactverzoek = true">contactverzoek</button>
-          </li>
-        </menu>
-        <contactverzoek-formulier
-          naam=""
-          email=""
-          telefoonnummer1=""
-          telefoonnummer2=""
-          v-if="showContactverzoek"
-        ></contactverzoek-formulier>
-        <contactmoment-notitie
-          class="notitie utrecht-textarea"
-        ></contactmoment-notitie>
-      </section>
+      <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
+        <template #tab="{ tabName }">
+          <span
+            :class="[
+              'icon-after',
+              tabName === NotitieTabs.Terugbel ? 'filter' : 'filter',
+            ]"
+            >{{ tabName }}</span
+          >
+        </template>
+        <template #[NotitieTabs.Terugbel]>
+          <contactmoment-notitie
+            class="notitie utrecht-textarea"
+          ></contactmoment-notitie>
+        </template>
+        <template #[NotitieTabs.Regulier]>
+          <contactverzoek-formulier
+            naam=""
+            email=""
+            telefoonnummer1=""
+            telefoonnummer2=""
+          />
+        </template>
+      </tabs-component>
     </aside>
 
     <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
@@ -125,6 +132,13 @@ const klantGevonden = (klant: Klant) => {
 const klantId = computed(() => contactmomentStore.klant?.id || "");
 
 const showContactverzoek = ref(false);
+
+// sidebar
+enum NotitieTabs {
+  Regulier = "Reguliere notitie",
+  Terugbel = "Contactverzoek",
+}
+const currentNotitieTab = ref(NotitieTabs.Regulier);
 </script>
 
 <style scoped lang="scss">
@@ -133,28 +147,27 @@ main {
   padding-block: 0;
   display: grid;
   grid-template-columns: 1fr 4fr;
-  height: 100vh;
 }
 
 aside {
-  section {
-    border-right: 1px solid var(--color-tertiary);
-    height: 100%;
-    padding: var(--spacing-large);
+  background-color: var(--color-tertiary);
+  padding-inline: 2px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 
-    :deep(textarea.utrecht-textarea) {
-      padding: 0px;
-    }
+  :deep(textarea.utrecht-textarea) {
+    padding: 0px;
   }
 
   menu {
-    height: 3rem;
     background-color: var(--color-tertiary);
   }
-}
 
-aside section .zaak-title {
-  margin-inline: var(--container-padding);
+  menu,
+  :deep([role="tablist"]) {
+    height: 3rem;
+  }
 }
 
 :deep([role="tablist"]),
@@ -187,7 +200,42 @@ aside section .zaak-title {
   margin-top: var(--spacing-large);
   outline: none;
   border: none;
-  height: 100%;
   width: 100%;
+}
+
+.icon-after {
+  font-size: 0;
+  justify-content: center;
+}
+
+.notitie-tabs {
+  --tab-bg: white;
+
+  :deep([role="tablist"]) {
+    padding: 0;
+    justify-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  :deep([role="tabpanel"]) {
+    padding: var(--spacing-default);
+    display: flex;
+    flex-direction: column;
+  }
+
+  :deep([role="tab"]) {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+
+    &[aria-selected="true"] {
+      color: var(--color-tertiary);
+    }
+  }
 }
 </style>

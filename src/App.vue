@@ -99,8 +99,12 @@ body {
 
 #app {
   position: relative;
-  display: grid;
-  grid-auto-rows: minmax(min-content, max-content);
+  flex-direction: column;
+  display: flex;
+}
+
+main {
+  flex: 1;
 }
 
 #app > header {
@@ -303,11 +307,10 @@ h2 {
 
 //forms
 form {
-  label {
-    span.required {
-      color: var(--color-error);
-      padding-left: var(--spacing-small);
-    }
+  span.required::after {
+    content: "*";
+    color: var(--color-error);
+    padding-left: 1ch;
   }
 }
 
