@@ -1,10 +1,10 @@
 <template>
-  <form @submit.prevent="submit">
-    <fieldset>
-      <legend v-if="!medewerkers || medewerkers.length == 0">
+  <form @submit.prevent ref="form">
+    <fieldset class="utrecht-form-fieldset">
+      <p v-if="!medewerkers || medewerkers.length == 0">
         Zoek de medewerker voor wie het contactverzoek bestemd is via het
         algemene zoekveld
-      </legend>
+      </p>
       <legend v-else class="utrecht-form-label">
         <span class="required">Contactverzoek versturen naar</span>
       </legend>
@@ -18,7 +18,9 @@
           type="radio"
           name="medewerker"
           :value="medewerker.email"
+          v-model="contactverzoek.todo.attendees"
           required
+          :checked="medewerker.checked"
         />
         {{ medewerker.naam.naam }}
       </label>
@@ -31,33 +33,38 @@
           v-model="contactverzoek.todo.naam"
           class="utrecht-textbox utrecht-textbox--html-input"
           required
+          :readonly="klantReadonly"
         />
       </label>
 
       <label class="utrecht-form-label">
         E-mailadres van de klant
         <input
-          type="text"
+          type="email"
+          name="klant-email"
           v-model="contactverzoek.todo.email"
           class="utrecht-textbox utrecht-textbox--html-input"
+          :readonly="klantReadonly"
         />
       </label>
 
       <label class="utrecht-form-label">
         Telefoonnummer 1 van de klant
         <input
-          type="text"
+          type="tel"
           v-model="contactverzoek.todo.telefoonnummer1"
           class="utrecht-textbox utrecht-textbox--html-input"
+          :readonly="klantReadonly"
         />
       </label>
 
       <label class="utrecht-form-label">
         Telefoonnummer 2 van de klant
         <input
-          type="text"
+          type="tel"
           v-model="contactverzoek.todo.telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
+          :readonly="klantReadonly"
         />
       </label>
     </fieldset>
@@ -70,75 +77,14 @@
         required
       />
     </label>
-
-    <application-message
-      v-if="validationmessage"
-      messageType="error"
-      :message="validationmessage"
-    ></application-message>
-
-    <application-message
-      v-if="serviceResult?.error"
-      messageType="error"
-      message="Er is een fout opgetreden"
-    ></application-message>
-
-    <menu>
-      <li>
-        <button
-          @click="cancelDialog.reveal"
-          class="utrecht-button utrecht-button--secondary-action"
-          type="button"
-        >
-          Annuleren
-        </button>
-      </li>
-      <li>
-        <button class="utrecht-button utrecht-button--submit" type="submit">
-          Versturen
-        </button>
-      </li>
-    </menu>
   </form>
-
-  <!-- Annuleer Dialog -->
-  <modal-template v-if="cancelDialogRevealed">
-    <template #message>
-      <paragraph>
-        Weet u zeker dat je het contactverzoek wilt annuleren? Alle gegevens
-        worden verwijderd.
-      </paragraph>
-    </template>
-
-    <template #menu>
-      <button
-        @click="cancelDialog.cancel"
-        class="utrecht-button utrecht-button--secondary-action"
-      >
-        Nee
-      </button>
-      <button @click="cancelDialog.confirm" class="utrecht-button">Ja</button>
-    </template>
-  </modal-template>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineProps, watch } from "vue";
-import { useConfirmDialog } from "@vueuse/core";
-import { useContactmomentStore } from "@/stores/contactmoment/index.js";
-import type { Contactverzoek, MedewerkerOptie } from "./types.js";
-import { usePostContactverzoek } from "./service.js";
-import type { ServiceData } from "@/services/index.js";
-import type { Medewerker } from "@/stores/contactmoment/types";
-
-// import SimpleSpinner from "@/components/SimpleSpinner.vue";
-// import ApplicationMessage from "@/components/ApplicationMessage.vue";
-// import ModalTemplate from "@/components/ModalTemplate.vue";
-// import Paragraph from "@/nl-design-system/components/Paragraph.vue";
-// import type { ServiceData } from "@/services/index";
-// import { useContactmomentStore } from "@/stores/contactmoment";
-
-const emit = defineEmits(["cancelled", "saved"]);
+import { ref, reactive, watch, computed } from "vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
+import type { Contactverzoek, MedewerkerOptie } from "./types";
+import { toast } from "@/stores/toast";
 
 //initieel worden de gegevens van de klant, indien beschikbaar, overgenomen
 const props = defineProps<{
@@ -168,77 +114,82 @@ const medewerkers = ref<MedewerkerOptie[]>([]);
 watch(
   contactmomentStore.medewerkers,
   (newVal) => {
-    medewerkers.value = newVal.map(({ achternaam, emailadres }) => {
-      return { email: achternaam, naam: emailadres } as MedewerkerOptie;
+    medewerkers.value = newVal.map(({ achternaam, emailadres }, i) => {
+      return {
+        email: achternaam,
+        naam: emailadres,
+        checked: i === newVal.length - 1,
+      } as MedewerkerOptie;
     });
   },
   { immediate: true }
 );
 
-// cancel
+const klantReadonly = computed(() => !!contactmomentStore.klant);
 
-const cancelDialogRevealed = ref(false);
-const cancelDialog = useConfirmDialog(cancelDialogRevealed);
-cancelDialog.onConfirm(() => {
-  clear();
-  emit("cancelled");
-});
+watch(
+  () => contactmomentStore.klant,
+  (klant) => {
+    contactverzoek.todo.naam = [
+      klant?.voornaam,
+      klant?.voorvoegselAchternaam,
+      klant?.achternaam,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
-//submit
-
-const serviceResult = ref<ServiceData<void>>();
-
-const submit = () => {
-  const isValid = validate();
-  if (!isValid) {
-    return;
+    contactverzoek.todo.email = klant?.emailadres;
+    contactverzoek.todo.telefoonnummer1 = klant?.telefoonnummer;
   }
+);
 
-  const result = usePostContactverzoek(contactverzoek);
-  serviceResult.value = result;
-
-  result.then(() => {
-    clear();
-    emit("saved");
-  });
-};
-
-//leegmaken heeft geen zin
-//terug zettten naar de initiele waarde
-
-const clear = () => {
-  contactverzoek.todo.naam = props.naam ?? "";
-  contactverzoek.todo.email = props.email;
-  contactverzoek.todo.telefoonnummer1 = props.telefoonnummer1;
-  contactverzoek.todo.telefoonnummer2 = props.telefoonnummer2;
-  contactverzoek.todo.description = "";
-  contactverzoek.todo.attendees = "";
-};
-
-//validate
-
-const validationmessage = ref("");
+const form = ref<HTMLFormElement>();
 
 const validate = () => {
-  validationmessage.value = "";
-  if (!contactverzoek.todo.attendees) {
-    validationmessage.value =
-      "Er is geen medewerker geselecteerd. Zoek een medewerker via de algemeen zoekfunctie";
+  if (!form.value) return false;
+  if (!medewerkers.value.length) {
+    toast({
+      type: "error",
+      text: "Zoek eerst een collega in de zoekbalk.",
+    });
+    const globalSearch = document.getElementById("global-search-input");
+    if (globalSearch && globalSearch instanceof HTMLInputElement) {
+      globalSearch.focus();
+    }
     return false;
   }
 
-  if (
-    !contactverzoek.todo.email &&
-    !contactverzoek.todo.telefoonnummer1 &&
-    !contactverzoek.todo.telefoonnummer2
-  ) {
-    validationmessage.value =
-      "Minimaal één emailadres of telefoonnummer is verplicht.";
+  const emailInput = form.value.elements.namedItem("klant-email");
+
+  if (emailInput instanceof HTMLInputElement) {
+    emailInput.setCustomValidity(emailRequiredMessage.value);
+  }
+
+  if (!form.value.reportValidity()) {
+    toast({
+      type: "error",
+      text: "Vul eerst het contactverzoek correct en volledig in.",
+    });
     return false;
   }
 
   return true;
 };
+
+const emailIsRequired = computed(
+  () =>
+    !klantReadonly.value &&
+    !contactverzoek.todo.telefoonnummer1 &&
+    !contactverzoek.todo.telefoonnummer2
+);
+
+const emailRequiredMessage = computed(() =>
+  emailIsRequired.value && !contactverzoek.todo.email
+    ? "Vul een minimaal een e-mailadres of een telefoonnummer van de klant in"
+    : ""
+);
+
+defineExpose({ validate });
 </script>
 
 <style lang="scss" scoped>
@@ -260,6 +211,10 @@ form,
 fieldset {
   display: grid;
   gap: var(--spacing-default);
+}
+
+fieldset fieldset {
+  gap: var(--spacing-small);
 }
 
 label {

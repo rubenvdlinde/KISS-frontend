@@ -17,6 +17,7 @@
           v-model="searchInput"
           placeholder="Zoeken"
           @search.prevent="applySearch"
+          id="global-search-input"
         />Zoekterm</label
       >
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>

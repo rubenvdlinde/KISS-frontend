@@ -19,9 +19,9 @@ export interface Contactverzoek {
 
   todo: {
     naam: string;
-    email: string | null;
-    telefoonnummer1: string | null;
-    telefoonnummer2: string | null;
+    email?: string;
+    telefoonnummer1?: string;
+    telefoonnummer2?: string;
     description: string;
     attendees: string;
   };
@@ -37,4 +37,5 @@ export interface Contactverzoek {
 export interface MedewerkerOptie {
   email: string;
   naam: string;
+  checked: boolean;
 }

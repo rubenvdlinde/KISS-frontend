@@ -5,20 +5,22 @@
       <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
         <template #tab="{ tabName }">
           <span
+            :title="tabName"
             :class="[
               'icon-after',
-              tabName === NotitieTabs.Terugbel ? 'filter' : 'filter',
+              tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
             ]"
             >{{ tabName }}</span
           >
         </template>
-        <template #[NotitieTabs.Terugbel]>
+        <template #[NotitieTabs.Regulier]>
           <contactmoment-notitie
             class="notitie utrecht-textarea"
           ></contactmoment-notitie>
         </template>
-        <template #[NotitieTabs.Regulier]>
+        <template #[NotitieTabs.Terugbel]>
           <contactverzoek-formulier
+            ref="terugbelform"
             naam=""
             email=""
             telefoonnummer1=""
@@ -80,7 +82,7 @@
       </template>
     </tabs-component>
   </main>
-  <contactmoment-starter />
+  <contactmoment-starter :before-stop="terugbelformIsValid" />
 </template>
 
 <script setup lang="ts">
@@ -97,6 +99,7 @@ import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import ContactverzoekFormulier from "../features/contactverzoek/ContactverzoekFormulier.vue";
+import { toast } from "@/stores/toast";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -139,6 +142,14 @@ enum NotitieTabs {
   Terugbel = "Contactverzoek",
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
+
+const terugbelform = ref<{ validate: () => boolean }>();
+const terugbelformIsValid = () => {
+  const isValid =
+    currentNotitieTab.value === NotitieTabs.Regulier ||
+    (!!terugbelform.value?.validate && terugbelform.value.validate());
+  return isValid;
+};
 </script>
 
 <style scoped lang="scss">
@@ -205,7 +216,10 @@ aside {
 
 .icon-after {
   font-size: 0;
+  display: flex;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .notitie-tabs {

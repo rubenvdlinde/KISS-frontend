@@ -305,6 +305,16 @@ h2 {
   mask-image: url("@/assets/icons/check.svg");
 }
 
+.icon-before.phone-flip::before,
+.icon-after.phone-flip::after {
+  mask-image: url("@/assets/icons/phone-flip.svg");
+}
+
+.icon-before.note::before,
+.icon-after.note::after {
+  mask-image: url("@/assets/icons/note.svg");
+}
+
 //forms
 form {
   span.required::after {
