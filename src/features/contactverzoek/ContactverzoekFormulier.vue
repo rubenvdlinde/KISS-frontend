@@ -140,7 +140,8 @@ watch(
 
     contactverzoek.todo.email = klant?.emailadres;
     contactverzoek.todo.telefoonnummer1 = klant?.telefoonnummer;
-  }
+  },
+  { immediate: true }
 );
 
 const form = ref<HTMLFormElement>();
