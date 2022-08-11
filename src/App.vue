@@ -5,7 +5,7 @@
       <header
         :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
       >
-        <global-search @result-selected="addMedewerkerToContactmoment">
+        <global-search @result-selected="handleResultSelected">
           <template #articleFooter="{ id, title }">
             <search-feedback :id="id" :name="title"></search-feedback>
           </template>
@@ -33,10 +33,7 @@ import TheToastSection from "@/components/TheToastSection.vue";
 
 const contactmomentStore = useContactmomentStore();
 
-const addMedewerkerToContactmoment = (result: {
-  jsonObject: any;
-  source: string;
-}) => {
+const handleResultSelected = (result: { jsonObject: any; source: string }) => {
   if (
     result.source === "Smoelenboek" &&
     contactmomentStore.contactmomentLoopt
