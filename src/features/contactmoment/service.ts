@@ -1,11 +1,12 @@
 import { parsePagination, throwIfNotOk, ServiceResult } from "@/services";
 import { fetchLoggedIn } from "@/services";
+import type { Contactmoment } from "@/stores/contactmoment";
 import type { Ref } from "vue";
 import type {
   ContactmomentViewModel,
-  Contactmoment,
   Gespreksresultaat,
   ContactmomentZaak,
+  ContactmomentObject,
 } from "./types";
 
 export function useContactmomentService() {
@@ -30,7 +31,7 @@ export function useContactmomentService() {
       if (!r.ok) {
         throw new Error();
       }
-      return r.json();
+      return r.json() as Promise<{ id: string; url: string }>;
     });
   };
 
@@ -80,6 +81,24 @@ export function useKlantContactmomenten(
 
   return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
 }
+
+const objectcontactmomentenUrl =
+  window.gatewayBaseUri + "/api/objectcontactmomenten";
+
+export const koppelObject = (data: ContactmomentObject) => {
+  return fetchLoggedIn(objectcontactmomentenUrl, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((r) => {
+    if (!r.ok) {
+      throw new Error();
+    }
+  });
+};
 
 const mapZaak = (json: any): ContactmomentZaak => ({
   status: json?.embedded?.status?.statustoelichting,

@@ -5,16 +5,17 @@
     <router-link
       v-if="contactmomentStore.contactmomentLoopt"
       :to="{ name: 'contactmoment' }"
-      >terug</router-link
     >
+      terug
+    </router-link>
 
-    <simple-spinner v-if="saving"></simple-spinner>
+    <simple-spinner v-if="saving" />
 
     <application-message
       v-else-if="errorMessage != ''"
       messageType="error"
       :message="errorMessage"
-    ></application-message>
+    />
 
     <template v-else-if="contactmomentStore.contactmomentLoopt">
       <section
@@ -48,18 +49,18 @@
       </section>
 
       <section v-if="contactmomentStore.zaken.length > 0">
-        <utrecht-heading :level="2" model-value>{{
-          contactmomentStore.zaken.length > 1
-            ? "Gerelateerde zaken"
-            : "Gerelateerde zaak"
-        }}</utrecht-heading>
-        <zaken-overzicht :zaken="contactmomentStore.zaken"></zaken-overzicht>
+        <utrecht-heading :level="2" model-value>
+          {{
+            contactmomentStore.zaken.length > 1
+              ? "Gerelateerde zaken"
+              : "Gerelateerde zaak"
+          }}
+        </utrecht-heading>
+        <zaken-overzicht :zaken="contactmomentStore.zaken" />
       </section>
 
       <section>
-        <contactmoment-notitie
-          class="notitie utrecht-textarea"
-        ></contactmoment-notitie>
+        <contactmoment-notitie class="notitie utrecht-textarea" />
       </section>
 
       <contactmoment-afhandel-form @save="saveContact" />
@@ -75,7 +76,10 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
-import { useContactmomentStore } from "@/stores/contactmoment";
+import {
+  useContactmomentStore,
+  type Contactmoment,
+} from "@/stores/contactmoment";
 import { toast } from "@/stores/toast";
 
 import {
@@ -83,20 +87,21 @@ import {
   koppelKlant,
   useContactmomentService,
   ContactmomentNotitie,
-  type Contactmoment,
+  koppelObject,
 } from "@/features/contactmoment";
-import { useZaaksysteemService, ZakenOverzicht } from "@/features/zaaksysteem";
+import { ZakenOverzicht } from "@/features/zaaksysteem";
+import { saveContactverzoek } from "@/features/contactverzoek";
+import { createKlant } from "@/features/klant/service";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
 const saving = ref(false);
-const service = useZaaksysteemService();
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
 const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
   const promises = contactmomentStore?.zaken.map((zaak) =>
-    service.saveZaak({
+    koppelObject({
       contactmoment: contactMomentUrl,
       object: zaak.url,
       objectType: "zaak",
@@ -106,6 +111,15 @@ const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
 };
 
 const koppelKlanten = (contactmomentId: string) => {
+  if (contactmomentStore.nieuweKlant) {
+    return createKlant(contactmomentStore.nieuweKlant).then((klant) => {
+      contactmomentStore.setKlant(klant);
+      return koppelKlant({
+        contactmomentId,
+        klantId: klant.id,
+      });
+    });
+  }
   const promises = contactmomentStore.klanten
     .filter((x) => x.shouldStore)
     .map((x) =>
@@ -117,6 +131,16 @@ const koppelKlanten = (contactmomentId: string) => {
   return Promise.all(promises);
 };
 
+const koppelContactverzoek = (
+  contactmomentUrl: string,
+  contactverzoekUrl: string
+) =>
+  koppelObject({
+    contactmoment: contactmomentUrl,
+    object: contactverzoekUrl,
+    objectType: "contactmomentobject",
+  });
+
 const saveContact = (contactmoment: Contactmoment) => {
   saving.value = true;
   errorMessage.value = "";
@@ -124,14 +148,31 @@ const saveContact = (contactmoment: Contactmoment) => {
   //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
   enrichContactmomentWithNotitie(contactmoment);
 
-  contactmomentService
-    .save(contactmoment)
-    .then((savedContactmoment) =>
-      Promise.all([
+  const promises = [contactmomentService.save(contactmoment)];
+
+  if (contactmomentStore.contactverzoek) {
+    promises.push(
+      saveContactverzoek(
+        contactmomentStore.contactverzoek,
+        contactmomentStore.notitie
+      )
+    );
+  }
+
+  return Promise.all(promises)
+    .then(([savedContactmoment, savedContactverzoek]) => {
+      const nextPromises: Promise<unknown>[] = [
         zakenToevoegenAanContactmoment(savedContactmoment.url),
         koppelKlanten(savedContactmoment.id),
-      ])
-    )
+      ];
+      if (savedContactverzoek) {
+        nextPromises.push(
+          koppelContactverzoek(savedContactmoment.id, savedContactverzoek.url)
+        );
+        nextPromises.push(koppelKlanten(savedContactverzoek.id));
+      }
+      return Promise.all(nextPromises);
+    })
     .then(() => {
       //klaar
       contactmomentStore.stop();

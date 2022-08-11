@@ -27,10 +27,32 @@
     </fieldset>
     <fieldset class="utrecht-form-fieldset">
       <label class="utrecht-form-label">
-        <span class="required">Naam van de klant</span>
+        <span class="required">Voornaam van de klant</span>
         <input
           type="text"
-          v-model="contactverzoek.todo.naam"
+          v-model="nieuweKlant.voornaam"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          required
+          :disabled="klantReadonly"
+        />
+      </label>
+
+      <label class="utrecht-form-label">
+        <span class="required">Tussenvoegsel van de klant</span>
+        <input
+          type="text"
+          v-model="nieuweKlant.voorvoegselAchternaam"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          required
+          :disabled="klantReadonly"
+        />
+      </label>
+
+      <label class="utrecht-form-label">
+        <span class="required">Achternaam van de klant</span>
+        <input
+          type="text"
+          v-model="nieuweKlant.achternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
@@ -42,23 +64,23 @@
         <input
           type="email"
           name="klant-email"
-          v-model="contactverzoek.todo.email"
+          v-model="nieuweKlant.emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
         />
       </label>
 
       <label class="utrecht-form-label">
-        Telefoonnummer 1 van de klant
+        Telefoonnummer van de klant
         <input
           type="tel"
-          v-model="contactverzoek.todo.telefoonnummer1"
+          v-model="nieuweKlant.telefoonnummer"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
         />
       </label>
 
-      <label class="utrecht-form-label">
+      <!-- <label class="utrecht-form-label">
         Telefoonnummer 2 van de klant
         <input
           type="tel"
@@ -66,7 +88,7 @@
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
         />
-      </label>
+      </label> -->
     </fieldset>
 
     <label class="utrecht-form-label notitie">
@@ -85,6 +107,7 @@ import { ref, reactive, watch, computed } from "vue";
 import {
   useContactmomentStore,
   type Contactverzoek,
+  type NieuweKlant,
 } from "@/stores/contactmoment";
 import { toast } from "@/stores/toast";
 
@@ -95,24 +118,20 @@ type MedewerkerOptie = {
   checked: boolean;
 };
 
-//initieel worden de gegevens van de klant, indien beschikbaar, overgenomen
-const props = defineProps<{
-  naam: string;
-  email: string;
-  telefoonnummer1: string;
-  telefoonnummer2: string;
-}>();
-
 const contactverzoek = reactive<Contactverzoek>({
-  bronorganisatie: window.activeOrganisatieId,
+  bronorganisatie: window.organisatieIds[0],
   todo: {
-    naam: props.naam,
-    email: props.email,
-    telefoonnummer1: props.telefoonnummer1,
-    telefoonnummer2: props.telefoonnummer2,
     description: "",
     attendees: "",
   },
+});
+
+const nieuweKlant = reactive<NieuweKlant>({
+  voornaam: "",
+  voorvoegselAchternaam: "",
+  achternaam: "",
+  telefoonnummer: "",
+  emailadres: "",
 });
 
 //available medewerkers
@@ -123,14 +142,11 @@ const klantReadonly = computed(() => !!contactmomentStore.klant);
 const form = ref<HTMLFormElement>();
 
 const emailIsRequired = computed(
-  () =>
-    !klantReadonly.value &&
-    !contactverzoek.todo.telefoonnummer1 &&
-    !contactverzoek.todo.telefoonnummer2
+  () => !klantReadonly.value && !nieuweKlant.telefoonnummer
 );
 
 const emailRequiredMessage = computed(() =>
-  emailIsRequired.value && !contactverzoek.todo.email
+  emailIsRequired.value && !nieuweKlant.emailadres
     ? "Vul een minimaal een e-mailadres of een telefoonnummer van de klant in"
     : ""
 );
@@ -157,17 +173,11 @@ watch(
 watch(
   () => contactmomentStore.klant,
   (klant) => {
-    contactverzoek.todo.naam = [
-      klant?.voornaam,
-      klant?.voorvoegselAchternaam,
-      klant?.achternaam,
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    contactverzoek.todo.email = klant?.emailadres;
-    contactverzoek.todo.telefoonnummer1 = klant?.telefoonnummer;
-    contactverzoek.todo.telefoonnummer2 = undefined;
+    nieuweKlant.voornaam = klant?.voornaam || "";
+    nieuweKlant.voorvoegselAchternaam = klant?.voorvoegselAchternaam;
+    nieuweKlant.achternaam = klant?.achternaam || "";
+    nieuweKlant.emailadres = klant?.emailadres || "";
+    nieuweKlant.telefoonnummer = klant?.telefoonnummer || "";
   },
   { immediate: true }
 );
@@ -206,6 +216,9 @@ function validate() {
 function submit() {
   if (!validate()) return false;
   contactmomentStore.contactverzoek = contactverzoek;
+  if (!contactmomentStore.klant) {
+    contactmomentStore.nieuweKlant = nieuweKlant;
+  }
   return true;
 }
 

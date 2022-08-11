@@ -1,13 +1,10 @@
-import { ServiceResult, fetchLoggedIn, throwIfNotOk } from "@/services";
+import { fetchLoggedIn, throwIfNotOk } from "@/services";
 import type { Contactverzoek } from "@/stores/contactmoment";
 
-export function usePostContactverzoek(
-  data: Contactverzoek,
-  description: string
-) {
+export function saveContactverzoek(data: Contactverzoek, description: string) {
   const url = window.gatewayBaseUri + "/api/contactmomenten";
 
-  const promise = fetchLoggedIn(url, {
+  return fetchLoggedIn(url, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -17,7 +14,7 @@ export function usePostContactverzoek(
       ...data,
       description,
     }),
-  }).then(throwIfNotOk) as Promise<void>;
-
-  return ServiceResult.fromPromise(promise);
+  })
+    .then(throwIfNotOk)
+    .then((r) => r.json() as Promise<{ id: string; url: string }>);
 }

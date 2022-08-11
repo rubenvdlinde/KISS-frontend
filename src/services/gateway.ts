@@ -29,3 +29,18 @@ export async function parsePagination<T>(
     totalRecords: total,
   };
 }
+
+export function throwIfGatewayError(json: any) {
+  const message = json?.message;
+  if (typeof message === "string" && message.includes("error")) {
+    throw new Error(
+      message +
+        ", " +
+        JSON.stringify({
+          path: json.path,
+          data: json.data,
+        })
+    );
+  }
+  return json;
+}

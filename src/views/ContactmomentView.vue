@@ -19,13 +19,7 @@
           ></contactmoment-notitie>
         </template>
         <template #[NotitieTabs.Terugbel]>
-          <contactverzoek-formulier
-            ref="terugbelform"
-            naam=""
-            email=""
-            telefoonnummer1=""
-            telefoonnummer2=""
-          />
+          <contactverzoek-formulier ref="terugbelform" />
         </template>
       </tabs-component>
     </aside>

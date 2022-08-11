@@ -105,9 +105,11 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
-import { useContactmomentStore } from "@/stores/contactmoment";
+import {
+  useContactmomentStore,
+  type Contactmoment,
+} from "@/stores/contactmoment";
 import { useContactmomentService } from "./service";
-import type { Contactmoment } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import { useConfirmDialog, whenever } from "@vueuse/core";
@@ -131,7 +133,7 @@ const contactmoment: Contactmoment = reactive({
   onderwerpLinks: [],
   initiatiefnemer: "klant", //enum "gemeente" of "klant"
   medewerker: "",
-  medewerkerIdentificatie: null,
+  medewerkerIdentificatie: undefined,
   resultaat: "",
   kanaal: "",
   bronorganisatie:

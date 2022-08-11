@@ -4,10 +4,11 @@ import {
   type Paginated,
   parsePagination,
   throwIfNotOk,
+  throwIfGatewayError,
 } from "@/services";
 
 import type { Ref } from "vue";
-import type { Klant } from "@/stores/contactmoment";
+import type { Klant, NieuweKlant } from "@/stores/contactmoment";
 
 const isEmail = (val: string) =>
   val.match(
@@ -19,6 +20,8 @@ type KlantSearchParameters = {
   page: Ref<number | undefined>;
 };
 
+const rootUrl = `${window.gatewayBaseUri}/api/klanten`;
+
 export function useKlanten(params: KlantSearchParameters) {
   function getUrl() {
     const search = params.search.value;
@@ -27,7 +30,7 @@ export function useKlanten(params: KlantSearchParameters) {
 
     const page = params.page?.value || 1;
 
-    const url = new URL(`${window.gatewayBaseUri}/api/klanten`);
+    const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
     url.searchParams.set("page", page.toString());
 
@@ -40,6 +43,25 @@ export function useKlanten(params: KlantSearchParameters) {
   }
 
   return ServiceResult.fromFetcher(getUrl, searchKlanten);
+}
+
+export function createKlant(klant: NieuweKlant) {
+  return fetchLoggedIn(rootUrl, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      ...klant,
+      bronorganisatie: window.organisatieIds[0],
+      websiteUrl: location.host,
+      klantnummer: "123",
+    }),
+  })
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then(throwIfGatewayError)
+    .then(mapKlant);
 }
 
 function mapKlant(obj: any): Klant {
