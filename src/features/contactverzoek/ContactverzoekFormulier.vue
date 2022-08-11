@@ -172,14 +172,6 @@ watch(
   { immediate: true }
 );
 
-watch(
-  () => contactmomentStore.notitie,
-  (n) => {
-    contactverzoek.todo.description = n;
-  },
-  { immediate: true }
-);
-
 function validate() {
   if (!form.value) return false;
   if (!medewerkers.value.length) {
@@ -207,11 +199,15 @@ function validate() {
     });
     return false;
   }
+}
 
+function submit() {
+  if (!validate()) return false;
+  contactmomentStore.contactverzoek = contactverzoek;
   return true;
 }
 
-defineExpose({ validate });
+defineExpose({ submit });
 </script>
 
 <style lang="scss" scoped>

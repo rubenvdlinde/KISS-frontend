@@ -143,11 +143,12 @@ enum NotitieTabs {
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const terugbelform = ref<{ validate: () => boolean }>();
+const terugbelform = ref<{ submit: () => boolean }>();
 const terugbelformIsValid = () => {
   const isValid =
     currentNotitieTab.value === NotitieTabs.Regulier ||
-    (!!terugbelform.value?.validate && terugbelform.value.validate());
+    (typeof terugbelform.value?.submit === "function" &&
+      terugbelform.value.submit());
   return isValid;
 };
 </script>
