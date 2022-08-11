@@ -3,6 +3,7 @@
     method="get"
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
+    ref="searchBarRef"
   >
     <fieldset class="bronnen" v-if="sources.success">
       <label v-for="bron in sources.data" :key="bron.name + bron.type">
@@ -23,7 +24,7 @@
     </div>
   </form>
   <template v-if="currentSearch">
-    <section ref="searchResultsRef" :class="['search-results', { isExpanded }]">
+    <section :class="['search-results', { isExpanded }]">
       <template v-if="searchResults.success">
         <p v-if="!hasResults" class="no-results">Geen resultaten gevonden</p>
         <template v-else>
@@ -221,7 +222,7 @@ const currentSearch = ref("");
 const currentId = ref("");
 const isExpanded = ref(true);
 const currentPage = ref(1);
-const searchResultsRef = ref<Element>();
+const searchBarRef = ref();
 
 const searchParameters = computed(() => ({
   search: currentSearch.value,
@@ -242,8 +243,8 @@ function applySearch() {
 
 function handlePaginationNavigation(page: number) {
   currentPage.value = page;
-  const el = searchResultsRef.value;
-  if (el) {
+  const el = searchBarRef.value;
+  if (el instanceof Element) {
     el.scrollIntoView();
   }
 }
@@ -433,6 +434,11 @@ dl {
 
 dd {
   font-weight: bold;
+}
+
+dd,
+dt {
+  line-height: normal;
 }
 
 h2 {
