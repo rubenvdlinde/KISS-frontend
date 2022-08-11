@@ -2,8 +2,10 @@
   <login-overlay>
     <template #default="{ onLogout }">
       <the-toast-section />
-      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-        <global-search @medewerkerSelected="addMedewerkerToContactmoment">
+      <header
+        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
+      >
+        <global-search @result-selected="addMedewerkerToContactmoment">
           <template #articleFooter="{ id, title }">
             <search-feedback :id="id" :name="title"></search-feedback>
           </template>
@@ -29,15 +31,20 @@ import SearchFeedback from "./features/feedback/SearchFeedback.vue";
 import { logoutUrl, LoginOverlay } from "./features/login";
 import TheToastSection from "./components/TheToastSection.vue";
 
-const contactmoment = useContactmomentStore();
+const contactmomentStore = useContactmomentStore();
 
-const addMedewerkerToContactmoment = (
-  email: string,
-  telefoonnummer: string,
-  naam: string
-) => {
-  if (contactmoment.contactmomentLoopt) {
-    contactmoment.addMedewerker(email, telefoonnummer, naam);
+const addMedewerkerToContactmoment = (result: {
+  jsonObject: any;
+  source: string;
+}) => {
+  if (
+    result.source === "Smoelenboek" &&
+    contactmomentStore.contactmomentLoopt
+  ) {
+    contactmomentStore.addMedewerker({
+      id: result.jsonObject?.id,
+      ...(result.jsonObject?.contact ?? {}),
+    });
   }
 };
 </script>

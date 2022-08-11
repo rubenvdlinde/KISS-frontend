@@ -217,7 +217,17 @@ import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 
-const emit = defineEmits(["medewerkerSelected"]);
+const emit = defineEmits<{
+  (
+    e: "result-selected",
+    params: {
+      id: string;
+      title: string;
+      jsonObject: any;
+      source: string;
+    }
+  ): void;
+}>();
 
 const smoelenboek = "Smoelenboek";
 const searchInput = ref("");
@@ -273,13 +283,12 @@ const selectSearchResult = (
   title: string
 ) => {
   currentId.value = id;
-  if (source === smoelenboek) {
-    emit("medewerkerSelected", {
-      email: jsonObject?.user,
-      telefoonnummer: jsonObject?.contact?.telefoonnummer1,
-      naam: title,
-    });
-  }
+  emit("result-selected", {
+    id,
+    title,
+    source,
+    jsonObject,
+  });
 };
 </script>
 

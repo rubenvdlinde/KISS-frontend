@@ -1,5 +1,5 @@
-import type { Contactverzoek } from "./types";
 import { ServiceResult, fetchLoggedIn, throwIfNotOk } from "@/services";
+import type { Contactverzoek } from "@/stores/contactmoment";
 
 export function usePostContactverzoek(data: Contactverzoek) {
   const url = window.gatewayBaseUri + "/api/contactmomenten";

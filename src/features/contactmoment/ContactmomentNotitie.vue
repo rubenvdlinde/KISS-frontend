@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { useContactmomentStore } from "@/stores/contactmoment";
-
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 const contactmomentStore = useContactmomentStore();
 
 const notitieChanged = (element: any) => {
