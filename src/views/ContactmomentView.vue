@@ -134,8 +134,6 @@ const klantGevonden = (klant: Klant) => {
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
 
-const showContactverzoek = ref(false);
-
 // sidebar
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
