@@ -10,7 +10,7 @@
       </legend>
 
       <label
-        v-for="{ id, emailadres, naam, checked } in medewerkers"
+        v-for="{ id, emailadres, naam } in medewerkers"
         :key="id"
         class="radio"
       >
@@ -20,7 +20,6 @@
           :value="emailadres"
           v-model="contactverzoek.todo.attendees"
           required
-          :checked="checked"
         />
         {{ naam }}
       </label>
@@ -38,12 +37,11 @@
       </label>
 
       <label class="utrecht-form-label">
-        <span class="required">Tussenvoegsel van de klant</span>
+        <span>Tussenvoegsel van de klant</span>
         <input
           type="text"
           v-model="nieuweKlant.voorvoegselAchternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
-          required
           :disabled="klantReadonly"
         />
       </label>
@@ -76,19 +74,11 @@
           type="tel"
           v-model="nieuweKlant.telefoonnummer"
           class="utrecht-textbox utrecht-textbox--html-input"
+          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
+          title="Vul een valide Nederlands telefoonnummer in"
           :disabled="klantReadonly"
         />
       </label>
-
-      <!-- <label class="utrecht-form-label">
-        Telefoonnummer 2 van de klant
-        <input
-          type="tel"
-          v-model="contactverzoek.todo.telefoonnummer2"
-          class="utrecht-textbox utrecht-textbox--html-input"
-          :disabled="klantReadonly"
-        />
-      </label> -->
     </fieldset>
 
     <label class="utrecht-form-label notitie">
@@ -115,7 +105,6 @@ type MedewerkerOptie = {
   id: string;
   emailadres: string;
   naam: string;
-  checked: boolean;
 };
 
 const contactverzoek = reactive<Contactverzoek>({
@@ -154,18 +143,19 @@ const emailRequiredMessage = computed(() =>
 watch(
   contactmomentStore.medewerkers,
   (newVal) => {
-    medewerkers.value = newVal.map(
-      ({ achternaam, voornaam, voorvoegselAchternaam, emailadres, id }, i) => {
+    const mapped = newVal.map(
+      ({ achternaam, voornaam, voorvoegselAchternaam, emailadres, id }) => {
         return {
           id,
           emailadres,
           naam: [voornaam, voorvoegselAchternaam, achternaam]
             .filter(Boolean)
             .join(" "),
-          checked: i === newVal.length - 1,
         };
       }
     );
+    medewerkers.value = mapped;
+    contactverzoek.todo.attendees = mapped[mapped.length - 1]?.emailadres;
   },
   { immediate: true }
 );

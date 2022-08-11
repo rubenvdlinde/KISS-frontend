@@ -117,6 +117,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
+import { getFormattedUtcDate } from "@/services";
 
 const router = useRouter();
 const user = useUserStore();
@@ -126,7 +127,7 @@ const service = useContactmomentService();
 const cancelDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
 const contactmoment: Contactmoment = reactive({
-  vorigContactmoment: null,
+  vorigContactmoment: undefined,
   voorkeurskanaal: "",
   voorkeurstaal: "",
   tekst: "",
@@ -173,21 +174,6 @@ const submit = () => {
 const annuleren = () => {
   contactmomentStore.stop();
   router.push({ name: "home" });
-};
-
-//date format helper: 2005-12-30UTC01:02:03
-const getFormattedUtcDate = () => {
-  const formatDateTimeElement = (x: number) => ("0" + x).slice(-2);
-
-  var now = new Date();
-
-  return `${now.getFullYear()}-${formatDateTimeElement(
-    now.getMonth() + 1
-  )}-${formatDateTimeElement(now.getDate())}UTC${formatDateTimeElement(
-    now.getUTCHours()
-  )}:${formatDateTimeElement(now.getUTCMinutes())}:${formatDateTimeElement(
-    now.getSeconds()
-  )}`;
 };
 
 const isTerugbelNotitie = computed(() => !!contactmomentStore.contactverzoek);

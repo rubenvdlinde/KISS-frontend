@@ -1,8 +1,9 @@
-import { fetchLoggedIn, throwIfNotOk } from "@/services";
+import { fetchLoggedIn, getFormattedUtcDate, throwIfNotOk } from "@/services";
 import type { Contactverzoek } from "@/stores/contactmoment";
 
 export function saveContactverzoek(data: Contactverzoek, description: string) {
   const url = window.gatewayBaseUri + "/api/contactmomenten";
+  const registratiedatum = getFormattedUtcDate();
 
   return fetchLoggedIn(url, {
     method: "POST",
@@ -12,7 +13,11 @@ export function saveContactverzoek(data: Contactverzoek, description: string) {
     },
     body: JSON.stringify({
       ...data,
-      description,
+      todo: {
+        ...data.todo,
+        description,
+      },
+      registratiedatum,
     }),
   })
     .then(throwIfNotOk)
