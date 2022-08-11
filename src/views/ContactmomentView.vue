@@ -99,7 +99,6 @@ import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import ContactverzoekFormulier from "../features/contactverzoek/ContactverzoekFormulier.vue";
-import { toast } from "@/stores/toast";
 
 //layout view tabs
 enum TabsContactmoment {
