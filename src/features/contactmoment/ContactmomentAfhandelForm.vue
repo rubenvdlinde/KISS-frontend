@@ -106,7 +106,7 @@
 import { ref, reactive, onMounted, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { useContactmomentService } from "@/features/contactmoment";
+import { useContactmomentService } from "./service";
 import type { Contactmoment } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
