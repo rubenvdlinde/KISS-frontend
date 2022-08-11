@@ -55,6 +55,7 @@ export function createKlant(klant: NieuweKlant) {
       ...klant,
       bronorganisatie: window.organisatieIds[0],
       websiteUrl: location.host,
+      // TODO: WAT MOET HIER IN KOMEN?
       klantnummer: "123",
     }),
   })
