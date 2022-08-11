@@ -35,8 +35,11 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     stop() {
       this.contactmomentLoopt = false;
+      this.medewerkers = [];
+      this.klanten = [];
       this.zaken = [];
       this.notitie = "";
+      this.contactverzoek = undefined;
     },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
