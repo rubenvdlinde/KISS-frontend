@@ -4,7 +4,6 @@ import {
   type Paginated,
   parsePagination,
   throwIfNotOk,
-  throwIfGatewayError,
 } from "@/services";
 
 import type { Ref } from "vue";
@@ -61,7 +60,6 @@ export function createKlant(klant: NieuweKlant) {
   })
     .then(throwIfNotOk)
     .then((r) => r.json())
-    .then(throwIfGatewayError)
     .then(mapKlant);
 }
 
