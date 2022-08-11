@@ -1,6 +1,5 @@
-import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
-import type { Klant, Medewerker, Contactverzoek } from "./types";
+import type { Klant, Medewerker, Contactverzoek, Zaak } from "./types";
 export * from "./types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };
@@ -34,12 +33,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       this.contactmomentLoopt = true;
     },
     stop() {
-      this.contactmomentLoopt = false;
-      this.medewerkers = [];
-      this.klanten = [];
-      this.zaken = [];
-      this.notitie = "";
-      this.contactverzoek = undefined;
+      this.$reset();
     },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;

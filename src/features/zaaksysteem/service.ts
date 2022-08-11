@@ -1,5 +1,6 @@
 import { fetchLoggedIn } from "@/services";
-import type { ContactmomentObject, Zaak } from "./types";
+import type { Zaak } from "@/stores/contactmoment";
+import type { ContactmomentObject } from "./types";
 
 export function useZaaksysteemService() {
   if (!window.gatewayBaseUri) {

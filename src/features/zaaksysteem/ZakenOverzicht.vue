@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Zaak } from "./types";
+import type { Zaak } from "@/stores/contactmoment";
 import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
 
