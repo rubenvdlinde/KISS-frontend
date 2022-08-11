@@ -25,11 +25,11 @@
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { GlobalSearch } from "./features/search";
+import { GlobalSearch } from "@/features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { logoutUrl, LoginOverlay } from "./features/login";
-import TheToastSection from "./components/TheToastSection.vue";
+import { SearchFeedback } from "@/features/feedback";
+import { logoutUrl, LoginOverlay } from "@/features/login";
+import TheToastSection from "@/components/TheToastSection.vue";
 
 const contactmomentStore = useContactmomentStore();
 
