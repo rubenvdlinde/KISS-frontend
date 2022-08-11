@@ -103,7 +103,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, watch, computed } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";

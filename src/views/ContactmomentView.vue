@@ -86,19 +86,19 @@
 </template>
 
 <script setup lang="ts">
-import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
+import { ref, computed, watch } from "vue";
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import TabsComponent from "@/components/TabsComponent.vue";
+import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
+import { PersoonZoeker } from "@/features/brp";
 import {
   ContactmomentStarter,
   ContactmomentenOverzicht,
   ContactmomentNotitie,
 } from "@/features/contactmoment";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, computed, watch } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
-import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
-import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
-import ContactverzoekFormulier from "../features/contactverzoek/ContactverzoekFormulier.vue";
+import { ContactverzoekFormulier } from "@/features/contactverzoek";
 
 //layout view tabs
 enum TabsContactmoment {

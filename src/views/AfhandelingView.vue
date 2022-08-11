@@ -68,24 +68,24 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
+
+import { useContactmomentStore } from "@/stores/contactmoment";
+import { toast } from "@/stores/toast";
+
 import {
   ContactmomentAfhandelForm,
   koppelKlant,
-} from "@/features/contactmoment";
-import { useContactmomentStore } from "@/stores/contactmoment";
-import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
-import { ref } from "vue";
-import { useZaaksysteemService } from "@/features/zaaksysteem/service";
-import {
   useContactmomentService,
   ContactmomentNotitie,
+  type Contactmoment,
 } from "@/features/contactmoment";
-import type { Contactmoment } from "@/features/contactmoment/types";
-import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import { toast } from "@/stores/toast";
-import { useRouter } from "vue-router";
+import { useZaaksysteemService, ZakenOverzicht } from "@/features/zaaksysteem";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
