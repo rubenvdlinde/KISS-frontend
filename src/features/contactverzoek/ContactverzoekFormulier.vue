@@ -33,7 +33,7 @@
           v-model="contactverzoek.todo.naam"
           class="utrecht-textbox utrecht-textbox--html-input"
           required
-          :readonly="klantReadonly"
+          :disabled="klantReadonly"
         />
       </label>
 
@@ -44,7 +44,7 @@
           name="klant-email"
           v-model="contactverzoek.todo.email"
           class="utrecht-textbox utrecht-textbox--html-input"
-          :readonly="klantReadonly"
+          :disabled="klantReadonly"
         />
       </label>
 
@@ -54,7 +54,7 @@
           type="tel"
           v-model="contactverzoek.todo.telefoonnummer1"
           class="utrecht-textbox utrecht-textbox--html-input"
-          :readonly="klantReadonly"
+          :disabled="klantReadonly"
         />
       </label>
 
@@ -64,7 +64,7 @@
           type="tel"
           v-model="contactverzoek.todo.telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
-          :readonly="klantReadonly"
+          :disabled="klantReadonly"
         />
       </label>
     </fieldset>
@@ -199,6 +199,8 @@ function validate() {
     });
     return false;
   }
+
+  return true;
 }
 
 function submit() {

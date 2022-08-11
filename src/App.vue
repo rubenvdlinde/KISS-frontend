@@ -387,6 +387,9 @@ menu {
   --utrecht-form-input-padding-block-start: var(--spacing-small);
 
   --utrecht-form-input-placeholder-color: #999;
+
+  --utrecht-form-input-disabled-border-color: #999;
+  --utrecht-form-input-disabled-color: #999;
 }
 
 utrecht-button,

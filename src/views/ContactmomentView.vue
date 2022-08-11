@@ -93,7 +93,7 @@ import {
   ContactmomentNotitie,
 } from "@/features/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
 import TabsComponent from "@/components/TabsComponent.vue";
@@ -142,12 +142,22 @@ const currentNotitieTab = ref(NotitieTabs.Regulier);
 
 const terugbelform = ref<{ submit: () => boolean }>();
 const terugbelformIsValid = () => {
-  const isValid =
-    currentNotitieTab.value === NotitieTabs.Regulier ||
-    (typeof terugbelform.value?.submit === "function" &&
-      terugbelform.value.submit());
-  return isValid;
+  if (currentNotitieTab.value === NotitieTabs.Regulier) return true;
+  return (
+    typeof terugbelform.value?.submit === "function" &&
+    terugbelform.value.submit()
+  );
 };
+
+watch(
+  currentNotitieTab,
+  (t) => {
+    if (t === NotitieTabs.Regulier) {
+      contactmomentStore.contactverzoek = undefined;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped lang="scss">

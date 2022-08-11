@@ -44,6 +44,7 @@
         v-model="contactmoment.resultaat"
         class="utrecht-select utrecht-select--html-select"
         v-focus
+        :disabled="isTerugbelNotitie"
       >
         <option
           v-for="gespreksresultaat in gespresResultatenServiceResult.data"
@@ -102,14 +103,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "@/features/contactmoment";
 import type { Contactmoment } from "./types";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
-import { useConfirmDialog } from "@vueuse/core";
+import { useConfirmDialog, whenever } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -186,6 +187,16 @@ const getFormattedUtcDate = () => {
     now.getSeconds()
   )}`;
 };
+
+const isTerugbelNotitie = computed(() => !!contactmomentStore.contactverzoek);
+
+whenever(
+  isTerugbelNotitie,
+  () => {
+    contactmoment.resultaat = "Terugbelnotitie gemaakt";
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
