@@ -9,7 +9,7 @@ export function useZaaksysteemService() {
   const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
   const findByZaak = (zaaknummer: number) => {
-    const url = `${zaaksysteemBaseUri}/api/zaken?identificatie=${zaaknummer}&extend[]=all`;
+    const url = `${zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=all`;
 
     return fetchLoggedIn(url)
       .then((r) => {
