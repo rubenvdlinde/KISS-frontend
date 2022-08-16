@@ -19,7 +19,7 @@
           ></contactmoment-notitie>
         </template>
         <template #[NotitieTabs.Terugbel]>
-          <contactverzoek-formulier ref="terugbelform" />
+          <contactverzoek-formulier />
         </template>
       </tabs-component>
     </aside>
@@ -76,7 +76,7 @@
       </template>
     </tabs-component>
   </main>
-  <contactmoment-starter :before-stop="terugbelformIsValid" />
+  <contactmoment-starter v-if="showContactmomentStarter" />
 </template>
 
 <script setup lang="ts">
@@ -134,24 +134,10 @@ enum NotitieTabs {
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const terugbelform = ref<{ submit: () => boolean }>();
-const terugbelformIsValid = () => {
+const showContactmomentStarter = computed(() => {
   if (currentNotitieTab.value === NotitieTabs.Regulier) return true;
-  return (
-    typeof terugbelform.value?.submit === "function" &&
-    terugbelform.value.submit()
-  );
-};
-
-watch(
-  currentNotitieTab,
-  (t) => {
-    if (t === NotitieTabs.Regulier) {
-      contactmomentStore.contactverzoek = undefined;
-    }
-  },
-  { immediate: true }
-);
+  return !!contactmomentStore.contactverzoek;
+});
 </script>
 
 <style scoped lang="scss">

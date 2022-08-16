@@ -53,6 +53,11 @@
           {{ gespreksresultaat.definitie }}
         </option>
       </select>
+
+      <p v-if="contactmomentStore.contactverzoek">
+        Contactverzoek verstuurd naar
+        {{ contactmomentStore.contactverzoek.medewerker }}
+      </p>
     </fieldset>
 
     <application-message

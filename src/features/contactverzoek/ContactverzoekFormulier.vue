@@ -1,5 +1,9 @@
 <template>
-  <form @submit.prevent ref="form">
+  <p v-if="submitted">
+    Contactverzoek verstuurd naar
+    {{ contactmomentStore.contactverzoek?.medewerker }}
+  </p>
+  <form @submit.prevent="submit" ref="form" v-else>
     <fieldset class="utrecht-form-fieldset">
       <p v-if="!medewerkers || medewerkers.length == 0">
         Zoek de medewerker voor wie het contactverzoek bestemd is via het
@@ -84,11 +88,15 @@
     <label class="utrecht-form-label notitie">
       <span class="required">Notitie bij het contactverzoek</span>
       <textarea
-        v-model="contactmomentStore.notitie"
+        v-model="contactverzoek.todo.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
       />
     </label>
+
+    <utrecht-button model-value type="submit" v-if="!submitted">
+      Contactverzoek opslaan
+    </utrecht-button>
   </form>
 </template>
 
@@ -96,11 +104,12 @@
 import { ref, reactive, watch, computed } from "vue";
 import {
   useContactmomentStore,
-  type Contactverzoek,
   type NieuweKlant,
 } from "@/stores/contactmoment";
-import { toast } from "@/stores/toast";
-
+import { saveContactverzoek, type Contactverzoek } from "./service";
+import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import { createKlant } from "../klant/service";
+import { koppelKlant } from "../contactmoment";
 type MedewerkerOptie = {
   id: string;
   emailadres: string;
@@ -130,7 +139,10 @@ const nieuweKlant = reactive<NieuweKlant>({
 
 const contactmomentStore = useContactmomentStore();
 const medewerkers = ref<MedewerkerOptie[]>([]);
-const klantReadonly = computed(() => !!contactmomentStore.klant);
+const submitted = computed(() => !!contactmomentStore.contactverzoek);
+const klantReadonly = computed(
+  () => submitted.value || !!contactmomentStore.klant
+);
 const form = ref<HTMLFormElement>();
 
 const emailIsRequired = computed(
@@ -179,19 +191,22 @@ watch(
   { immediate: true }
 );
 
+watch(
+  () => contactmomentStore.notitie,
+  (n, o) => {
+    if (
+      n &&
+      (!contactverzoek.todo.description ||
+        contactverzoek.todo.description === o)
+    ) {
+      contactverzoek.todo.description = n;
+    }
+  },
+  { immediate: true }
+);
+
 function validate() {
   if (!form.value) return false;
-  if (!medewerkers.value.length) {
-    toast({
-      type: "error",
-      text: "Zoek eerst een collega in de zoekbalk, of wissel naar een reguliere notitie.",
-    });
-    const globalSearch = document.getElementById("global-search-input");
-    if (globalSearch && globalSearch instanceof HTMLInputElement) {
-      globalSearch.focus();
-    }
-    return false;
-  }
 
   const emailInput = form.value.elements.namedItem("klant-email");
 
@@ -199,27 +214,30 @@ function validate() {
     emailInput.setCustomValidity(emailRequiredMessage.value);
   }
 
-  if (!form.value.reportValidity()) {
-    toast({
-      type: "error",
-      text: "Vul eerst het contactverzoek correct en volledig in, of wissel naar een reguliere notie.",
-    });
-    return false;
-  }
-
-  return true;
+  return form.value.reportValidity();
 }
 
-function submit() {
-  if (!validate()) return false;
-  contactmomentStore.contactverzoek = contactverzoek;
+async function submit() {
+  if (submitted.value || !validate()) return Promise.resolve();
+  const result = await saveContactverzoek(contactverzoek);
+
+  contactmomentStore.contactverzoek = {
+    url: result.url,
+    medewerker:
+      medewerkers.value.find(
+        (x) => x.emailadres === contactverzoek.todo.attendees[0]
+      )?.naam || "",
+  };
   if (!contactmomentStore.klant) {
-    contactmomentStore.nieuweKlant = nieuweKlant;
+    const klant = await createKlant(nieuweKlant);
+    contactmomentStore.setKlant(klant);
   }
-  return true;
+  const klantId = contactmomentStore.klant?.id;
+  if (!klantId) {
+    throw new Error("kan klant niet koppelen, id ontbreekt");
+  }
+  await koppelKlant({ klantId, contactmomentId: result.id });
 }
-
-defineExpose({ submit });
 </script>
 
 <style lang="scss" scoped>

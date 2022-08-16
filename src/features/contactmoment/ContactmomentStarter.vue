@@ -18,8 +18,6 @@ import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
 
-const props = defineProps<{ beforeStop?: () => boolean }>();
-
 const router = useRouter();
 const contactmoment = useContactmomentStore();
 
@@ -29,7 +27,6 @@ const onStartContactMoment = () => {
 };
 
 const onStopContactMoment = () => {
-  if (props.beforeStop && !props.beforeStop()) return;
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
 </script>

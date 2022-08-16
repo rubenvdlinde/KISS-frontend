@@ -53,6 +53,12 @@
               <dd>Tekst</dd>
               <dt class="tekst">{{ contactmoment.tekst }}</dt>
             </dl>
+            <p
+              v-for="(medewerker, i) in contactmoment.contactverzoeken"
+              :key="i"
+            >
+              Contactverzoek verstuurd aan {{ medewerker }}
+            </p>
           </details>
         </li>
       </ul>

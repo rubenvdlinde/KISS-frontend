@@ -27,25 +27,6 @@ export interface Medewerker {
   telefoonnummer2?: string;
 }
 
-//er is voorlopig voor gekozen om een contactverzoek op te slaan
-//als een contactmoment met een geneste todo
-//de meeste velden worden niet gebruikt, voor transparantie hier wel uitgecommentarieerd getoond.
-//nb nog niet alle velden zitten in de api todo voor conduction
-// export interface MedewerkerIdentificatie {
-//   identificatie: string;
-//   achternaam: string;
-//   voorletters: string;
-//   voorvoegselAchternaam: string;
-// }
-export interface Contactverzoek {
-  bronorganisatie: string; //verplicht in de api
-  todo: {
-    name: string;
-    description: string;
-    attendees: string[];
-  };
-}
-
 export interface Zaak {
   identificatie: string;
   id: string;
