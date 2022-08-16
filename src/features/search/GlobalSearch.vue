@@ -178,8 +178,10 @@
                       <dt>Wat kun je en wat doe je:</dt>
                       <dd>{{ jsonObject?.skills }}</dd>
 
-                      <dt>Vervanger:</dt>
-                      <dd>{{ jsonObject?.replacement }}</dd>
+                      <template v-if="jsonObject?.replacement?.name">
+                        <dt>Vervanger:</dt>
+                        <dd>{{ jsonObject.replacement.name }}</dd>
+                      </template>
                     </dl>
                   </section>
                 </template>
