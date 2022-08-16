@@ -65,9 +65,9 @@ const mappedResult = computed(() =>
   !result.success
     ? []
     : result.data.page.map((x) => {
-        const { contact, department, function: functie } = x.jsonObject;
+        const { contact, department, function: functie } = x?.jsonObject ?? {};
         const { voornaam, voorvoegselAchternaam, achternaam, emailadres } =
-          contact;
+          contact ?? {};
         const naam = [voornaam, voorvoegselAchternaam, achternaam]
           .filter(Boolean)
           .join(" ");
