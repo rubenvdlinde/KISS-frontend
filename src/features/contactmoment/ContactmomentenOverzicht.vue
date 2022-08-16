@@ -37,18 +37,18 @@
               }}</span>
             </summary>
             <dl>
-              <dd>Starttijd</dd>
-              <dt>{{ localeTime(contactmoment.registratiedatum) }}</dt>
+              <dt>Starttijd</dt>
+              <dd>{{ localeTime(contactmoment.registratiedatum) }}</dd>
               <template
                 v-for="zaak in contactmoment.zaken"
                 :key="zaak.zaaknummer"
               >
-                <dd>Zaaknummer</dd>
-                <dt>{{ zaak.zaaknummer }}</dt>
-                <dd>Zaaktype</dd>
-                <dt>{{ zaak.zaaktype }}</dt>
-                <dd>Status</dd>
-                <dt>{{ zaak.status }}</dt>
+                <dt>Zaaknummer</dt>
+                <dd>{{ zaak.zaaknummer }}</dd>
+                <dt>Zaaktype</dt>
+                <dd>{{ zaak.zaaktype }}</dd>
+                <dt>Status</dt>
+                <dd>{{ zaak.status }}</dd>
               </template>
               <dd>Tekst</dd>
               <dt class="tekst">{{ contactmoment.tekst }}</dt>
@@ -144,7 +144,7 @@ li:not(:first-child):not(:last-child) {
 }
 
 .header-row,
-dd {
+dt {
   font-weight: bold;
 }
 
