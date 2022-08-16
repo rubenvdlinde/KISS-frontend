@@ -99,7 +99,7 @@ watch(matchingResult, (val) => {
 
 watch([inputRef, shouldSetValidity], ([r, s]) => {
   if (!(r instanceof HTMLInputElement)) return;
-  r.setCustomValidity(s ? "Kies een medewerker" : "");
+  r.setCustomValidity(s ? "Kies een medewerker uit de lijst" : "");
 });
 </script>
 
