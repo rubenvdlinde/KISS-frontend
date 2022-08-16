@@ -40,8 +40,9 @@ export interface Medewerker {
 export interface Contactverzoek {
   bronorganisatie: string; //verplicht in de api
   todo: {
+    name: string;
     description: string;
-    attendees: string;
+    attendees: string[];
   };
 }
 

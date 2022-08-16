@@ -89,7 +89,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addMedewerker(medewerker: Medewerker) {
-      if (this.medewerkers.some((x) => x.id === medewerker.id)) return;
+      if (this.medewerkers.some((x) => x.emailadres === medewerker.emailadres))
+        return;
       this.medewerkers.push(medewerker);
     },
   },

@@ -18,7 +18,7 @@
           type="radio"
           name="medewerker"
           :value="emailadres"
-          v-model="contactverzoek.todo.attendees"
+          v-model="attendee"
           required
         />
         {{ naam }}
@@ -107,11 +107,14 @@ type MedewerkerOptie = {
   naam: string;
 };
 
+const attendee = ref("");
+
 const contactverzoek = reactive<Contactverzoek>({
   bronorganisatie: window.organisatieIds[0],
   todo: {
     description: "",
-    attendees: "",
+    attendees: [],
+    name: "contactverzoek",
   },
 });
 
@@ -140,6 +143,10 @@ const emailRequiredMessage = computed(() =>
     : ""
 );
 
+watch(attendee, (a) => {
+  contactverzoek.todo.attendees = a ? [a] : [];
+});
+
 watch(
   contactmomentStore.medewerkers,
   (newVal) => {
@@ -155,7 +162,7 @@ watch(
       }
     );
     medewerkers.value = mapped;
-    contactverzoek.todo.attendees = mapped[mapped.length - 1]?.emailadres;
+    attendee.value = mapped[mapped.length - 1]?.emailadres || "";
   },
   { immediate: true }
 );
