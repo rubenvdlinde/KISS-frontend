@@ -3,14 +3,14 @@
     v-bind="$attrs"
     type="search"
     placeholder="Zoek een medewerker"
-    :list="modelValue ? undefined : datalistId"
+    :list="showList ? datalistId : undefined"
     v-model="searchText"
     :title="modelValue"
     ref="inputRef"
   />
-  <datalist :id="datalistId">
-    <option v-for="(r, i) in mappedResult" :key="i" :value="r.emailadres">
-      {{ r.omschrijving }}
+  <datalist v-if="showList" :id="datalistId">
+    <option v-for="(r, i) in listItems" :key="i" :value="r.value">
+      {{ r.description }}
     </option>
   </datalist>
 </template>
@@ -27,6 +27,27 @@ import { debouncedRef } from "@vueuse/core";
 import { nanoid } from "nanoid";
 import { ref, useAttrs, watch } from "vue";
 import { useGlobalSearch, useSources } from "./service";
+import type { SearchResult } from "./types";
+
+type DatalistItem = {
+  value: string;
+  description: string;
+};
+
+function mapDatalistItem(x: SearchResult): DatalistItem {
+  const { contact, department, function: functie } = x?.jsonObject ?? {};
+  const { voornaam, voorvoegselAchternaam, achternaam, emailadres } =
+    contact ?? {};
+  const naam = [voornaam, voorvoegselAchternaam, achternaam]
+    .filter(Boolean)
+    .join(" ");
+  const werk = [functie, department].filter(Boolean).join(" bij ");
+  const description = [naam, werk].filter(Boolean).join(": ");
+  return {
+    value: emailadres,
+    description,
+  };
+}
 
 const props = defineProps({
   modelValue: {
@@ -59,31 +80,28 @@ const searchParams = computed(() => {
   };
 });
 
+const showList = computed(
+  () => !props.modelValue || props.modelValue !== searchText.value
+);
+
 const result = useGlobalSearch(searchParams);
 
-const mappedResult = computed(() =>
-  !result.success
-    ? []
-    : result.data.page.map((x) => {
-        const { contact, department, function: functie } = x?.jsonObject ?? {};
-        const { voornaam, voorvoegselAchternaam, achternaam, emailadres } =
-          contact ?? {};
-        const naam = [voornaam, voorvoegselAchternaam, achternaam]
-          .filter(Boolean)
-          .join(" ");
-        const werk = [functie, department].filter(Boolean).join(" bij ");
-        const omschrijving = [naam, werk].filter(Boolean).join(": ");
-        return {
-          emailadres,
-          omschrijving,
-        };
-      })
-);
+const listItems = ref<DatalistItem[]>([]);
+
+watch(result, (r) => {
+  if (r.loading) return;
+  if (r.error) {
+    listItems.value = [];
+    return;
+  }
+
+  listItems.value = r.data.page.map(mapDatalistItem);
+});
 
 const matchingResult = computed(() => {
   if (
     props.modelValue === searchText.value ||
-    mappedResult.value.some((x) => x.emailadres === searchText.value)
+    listItems.value.some((x) => x.value === searchText.value)
   )
     return searchText.value;
   return "";
@@ -106,5 +124,9 @@ watch([inputRef, shouldSetValidity], ([r, s]) => {
 <style lang="scss" scoped>
 .spinner {
   font-size: 10px;
+}
+
+datalist span {
+  display: absolute;
 }
 </style>
