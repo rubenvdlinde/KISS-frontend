@@ -5,27 +5,13 @@
   </p>
   <form @submit.prevent="submit" ref="form" v-else>
     <fieldset class="utrecht-form-fieldset">
-      <p v-if="!medewerkers || medewerkers.length == 0">
-        Zoek de medewerker voor wie het contactverzoek bestemd is via het
-        algemene zoekveld
-      </p>
-      <legend v-else class="utrecht-form-label">
+      <label class="utrecht-form-label">
         <span class="required">Contactverzoek versturen naar</span>
-      </legend>
-
-      <label
-        v-for="{ id, emailadres, naam } in medewerkers"
-        :key="id"
-        class="radio"
-      >
-        <input
-          type="radio"
-          name="medewerker"
-          :value="emailadres"
+        <medewerker-search
+          class="utrecht-textbox utrecht-textbox--html-input"
           v-model="attendee"
           required
         />
-        {{ naam }}
       </label>
     </fieldset>
     <fieldset class="utrecht-form-fieldset">
@@ -110,11 +96,7 @@ import { saveContactverzoek, type Contactverzoek } from "./service";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { createKlant } from "../klant/service";
 import { koppelKlant } from "../contactmoment";
-type MedewerkerOptie = {
-  id: string;
-  emailadres: string;
-  naam: string;
-};
+import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 
 const attendee = ref("");
 
@@ -138,7 +120,6 @@ const nieuweKlant = reactive<NieuweKlant>({
 //available medewerkers
 
 const contactmomentStore = useContactmomentStore();
-const medewerkers = ref<MedewerkerOptie[]>([]);
 const submitted = computed(() => !!contactmomentStore.contactverzoek);
 const klantReadonly = computed(
   () => submitted.value || !!contactmomentStore.klant
@@ -158,26 +139,6 @@ const emailRequiredMessage = computed(() =>
 watch(attendee, (a) => {
   contactverzoek.todo.attendees = a ? [a] : [];
 });
-
-watch(
-  contactmomentStore.medewerkers,
-  (newVal) => {
-    const mapped = newVal.map(
-      ({ achternaam, voornaam, voorvoegselAchternaam, emailadres, id }) => {
-        return {
-          id,
-          emailadres,
-          naam: [voornaam, voorvoegselAchternaam, achternaam]
-            .filter(Boolean)
-            .join(" "),
-        };
-      }
-    );
-    medewerkers.value = mapped;
-    attendee.value = mapped[mapped.length - 1]?.emailadres || "";
-  },
-  { immediate: true }
-);
 
 watch(
   () => contactmomentStore.klant,

@@ -5,7 +5,7 @@
       <header
         :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
       >
-        <global-search @result-selected="handleResultSelected">
+        <global-search>
           <template #articleFooter="{ id, title }">
             <search-feedback :id="id" :name="title"></search-feedback>
           </template>
@@ -32,18 +32,6 @@ import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
 
 const contactmomentStore = useContactmomentStore();
-
-const handleResultSelected = (result: { jsonObject: any; source: string }) => {
-  if (
-    result.source === "Smoelenboek" &&
-    contactmomentStore.contactmomentLoopt
-  ) {
-    contactmomentStore.addMedewerker({
-      id: result.jsonObject?.id,
-      ...(result.jsonObject?.contact ?? {}),
-    });
-  }
-};
 </script>
 
 <style lang="scss">
