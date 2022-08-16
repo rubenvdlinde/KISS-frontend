@@ -184,10 +184,7 @@ async function submit() {
 
   contactmomentStore.contactverzoek = {
     url: result.url,
-    medewerker:
-      medewerkers.value.find(
-        (x) => x.emailadres === contactverzoek.todo.attendees[0]
-      )?.naam || "",
+    medewerker: contactverzoek.todo.attendees[0],
   };
   if (!contactmomentStore.klant) {
     const klant = await createKlant(nieuweKlant);
