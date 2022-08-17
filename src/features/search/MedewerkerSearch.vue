@@ -255,4 +255,7 @@ article > p,
 article > header {
   font-size: 0.875rem;
 }
+article > header {
+  font-weight: bold;
+}
 </style>
