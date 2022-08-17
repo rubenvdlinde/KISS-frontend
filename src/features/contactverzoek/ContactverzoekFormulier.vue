@@ -313,4 +313,8 @@ textarea {
 utrecht-heading {
   margin-block-end: var(--spacing-default);
 }
+
+utrecht-button {
+  --utrecht-button-min-inline-size: 100%;
+}
 </style>
