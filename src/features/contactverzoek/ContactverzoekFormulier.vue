@@ -1,4 +1,5 @@
 <template>
+  <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
   <p v-if="submitted">
     Contactverzoek verstuurd naar
     {{ contactmomentStore.contactverzoek?.medewerker }}
@@ -88,7 +89,7 @@
       </label>
     </fieldset>
 
-    <label class="utrecht-form-label notitie">
+    <label class="utrecht-form-label notitieveld">
       <span class="required">Notitie bij het contactverzoek</span>
       <textarea
         v-model="contactverzoek.todo.description"
@@ -110,7 +111,10 @@ import {
   type NieuweKlant,
 } from "@/stores/contactmoment";
 import { saveContactverzoek, type Contactverzoek } from "./service";
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import {
+  UtrechtButton,
+  UtrechtHeading,
+} from "@utrecht/web-component-library-vue";
 import { createKlant } from "../klant/service";
 import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
@@ -178,7 +182,7 @@ watch(
 );
 
 watch(
-  () => contactmomentStore.notitie,
+  () => contactmomentStore.notitieveld,
   (n, o) => {
     if (
       n &&
@@ -258,16 +262,21 @@ menu {
 form {
   flex: 1;
   display: flex;
+  gap: var(--spacing-default);
   flex-direction: column;
 }
 
-form,
 fieldset {
-  gap: var(--spacing-default);
-}
-
-fieldset {
+  --gap: var(--spacing-default);
+  gap: var(--gap);
   display: grid;
+
+  &::after {
+    content: "";
+    margin-inline: calc(-1 * var(--gap));
+    height: 0.5rem;
+    background-color: var(--color-tertiary);
+  }
 }
 
 label {
@@ -288,14 +297,19 @@ legend {
   margin-block-end: var(--spacing-small);
 }
 
-.notitie,
+.notitieveld,
 textarea {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.notitie textarea.utrecht-textarea {
+.notitieveld textarea.utrecht-textarea {
   padding: var(--spacing-small);
+  margin-block-start: 0;
+}
+
+utrecht-heading {
+  margin-block-end: var(--spacing-default);
 }
 </style>
