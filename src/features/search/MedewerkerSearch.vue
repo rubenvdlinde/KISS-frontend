@@ -39,8 +39,8 @@
         v-for="(r, i) in listItems"
         :key="i"
         @mouseover="activeIndex = i"
+        @mousedown="selectItem"
         :class="{ active: i === activeIndex }"
-        @click="selectItem"
       >
         <article>
           <header>{{ r.value }}</header>
@@ -60,7 +60,7 @@ export default {
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
 import { debouncedRef, useFocusWithin } from "@vueuse/core";
-import { ref, useAttrs, watch } from "vue";
+import { ref, watch } from "vue";
 import { useGlobalSearch, useSources } from "./service";
 import type { SearchResult } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
@@ -132,7 +132,7 @@ function previousIndex() {
 }
 
 function selectItem() {
-  if (!showList.value || !listItems.value.length) return;
+  if (!listItems.value.length) return;
   searchText.value = listItems.value[activeIndex.value].value;
   const element = inputRef.value;
   if (element instanceof HTMLInputElement) {
@@ -141,7 +141,6 @@ function selectItem() {
 }
 
 const emit = defineEmits(["update:modelValue"]);
-const attrs = useAttrs();
 
 const inputRef = ref();
 const divRef = ref();
@@ -171,7 +170,7 @@ const hasFocus = useFocusWithin(divRef);
 const showList = computed(
   () =>
     listItems.value.length &&
-    hasFocus.focused &&
+    hasFocus.focused.value &&
     (!props.modelValue || props.modelValue !== searchText.value)
 );
 
@@ -191,7 +190,10 @@ watch(result, (r) => {
     listItems.value = [];
     return;
   }
-
+  activeIndex.value = Math.max(
+    0,
+    Math.min(activeIndex.value, r.data.page.length - 1)
+  );
   listItems.value = r.data.page.map(mapDatalistItem);
 });
 
