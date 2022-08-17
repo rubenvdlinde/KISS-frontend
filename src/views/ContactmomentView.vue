@@ -145,7 +145,7 @@ main {
   padding-inline: 0;
   padding-block: 0;
   display: grid;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: minmax(20rem, max-content) 1fr;
 }
 
 aside {
