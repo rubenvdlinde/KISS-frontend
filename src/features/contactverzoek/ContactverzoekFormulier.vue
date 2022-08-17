@@ -307,6 +307,7 @@ textarea {
 .notitieveld textarea.utrecht-textarea {
   padding: var(--spacing-small);
   margin-block-start: 0;
+  min-height: 20rem;
 }
 
 utrecht-heading {
