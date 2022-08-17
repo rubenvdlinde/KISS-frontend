@@ -316,5 +316,6 @@ utrecht-heading {
 
 utrecht-button {
   --utrecht-button-min-inline-size: 100%;
+  --utrecht-button-min-block-size: 3rem;
 }
 </style>
