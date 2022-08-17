@@ -131,8 +131,14 @@ const fetchObjecten = (c: any) => {
     : Promise.resolve([]);
 };
 
-function mapContactverzoek(obj: any): string[] {
-  return obj?.embedded?.todo?.attendees ?? obj?.todo?.attendees ?? [];
+function mapContactverzoek(obj: any) {
+  const todo = obj?.embedded?.todo;
+  const medewerkers = todo?.attendees ?? obj?.todo?.attendees ?? [];
+  const completed = todo?.completed || "";
+  return {
+    medewerkers,
+    completed: completed ? new Date(completed) : undefined,
+  };
 }
 
 const mapContactmoment = async (r: any): Promise<ContactmomentViewModel> => {

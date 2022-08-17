@@ -8,7 +8,7 @@ export interface ContactmomentViewModel {
   resultaat: string;
   tekst: string;
   zaken: ContactmomentZaak[];
-  contactverzoeken: string[];
+  contactverzoeken: { medewerkers: string[]; completed?: Date }[];
 }
 
 export interface ContactmomentZaak {
