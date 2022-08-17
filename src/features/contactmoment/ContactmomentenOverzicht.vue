@@ -50,8 +50,8 @@
                 <dt>Status</dt>
                 <dd>{{ zaak.status }}</dd>
               </template>
-              <dd>Tekst</dd>
-              <dt class="tekst">{{ contactmoment.tekst }}</dt>
+              <dt>Tekst</dt>
+              <dd class="tekst">{{ contactmoment.tekst }}</dd>
             </dl>
             <p
               v-for="(
