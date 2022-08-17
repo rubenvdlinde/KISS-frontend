@@ -64,7 +64,32 @@ export function createKlant(klant: NieuweKlant) {
 }
 
 function mapKlant(obj: any): Klant {
-  return obj;
+  const emails = new Set<string>();
+  const telefoonnummers = new Set<string>();
+
+  if (obj?.emailadres && typeof obj?.emailadres === "string") {
+    emails.add(obj.emailadres);
+  }
+  if (Array.isArray(obj.emails)) {
+    obj.emails.forEach((e: unknown) => {
+      if (e && typeof e === "string") emails.add(e);
+    });
+  }
+
+  if (obj?.telefoonnummer && typeof obj?.telefoonnummer === "string") {
+    telefoonnummers.add(obj.telefoonnummer);
+  }
+  if (Array.isArray(obj.telefoonnummers)) {
+    obj.telefoonnummers.forEach((e: unknown) => {
+      if (e && typeof e === "string") telefoonnummers.add(e);
+    });
+  }
+
+  return {
+    ...obj,
+    emails: [...emails],
+    telefoonnummers: [...telefoonnummers],
+  };
 }
 
 function searchKlanten(url: string): Promise<Paginated<Klant>> {

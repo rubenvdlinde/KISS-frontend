@@ -6,8 +6,8 @@
         <tr>
           <th>Klantnummer</th>
           <th>Naam</th>
-          <th>Telefoonnummer</th>
-          <th>Emailadres</th>
+          <th>Telefoonnummer(s)</th>
+          <th>E-mailadres(sen)</th>
           <th></th>
         </tr>
       </thead>
@@ -21,8 +21,8 @@
                 .join(" ")
             }}
           </td>
-          <td>{{ klant.telefoonnummer }}</td>
-          <td>{{ klant.emailadres }}</td>
+          <td>{{ klant.telefoonnummers.join(", ") }}</td>
+          <td>{{ klant.emails.join(", ") }}</td>
         </tr>
       </tbody>
     </table>

@@ -3,6 +3,8 @@
     Contactverzoek verstuurd naar
     {{ contactmomentStore.contactverzoek?.medewerker }}
   </p>
+  <SimpleSpinner v-else-if="loading" />
+  <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
   <form @submit.prevent="submit" ref="form" v-else>
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
@@ -55,17 +57,29 @@
         <input
           type="email"
           name="klant-email"
-          v-model="nieuweKlant.emailadres"
+          v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
         />
       </label>
 
       <label class="utrecht-form-label">
-        Telefoonnummer van de klant
+        Telefoonnummer 1 van de klant
         <input
           type="tel"
-          v-model="nieuweKlant.telefoonnummer"
+          v-model="telefoonnummer1"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
+          title="Vul een valide Nederlands telefoonnummer in"
+          :disabled="klantReadonly"
+        />
+      </label>
+
+      <label class="utrecht-form-label">
+        Telefoonnummer 2 van de klant
+        <input
+          type="tel"
+          v-model="telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
           pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
           title="Vul een valide Nederlands telefoonnummer in"
@@ -100,8 +114,11 @@ import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { createKlant } from "../klant/service";
 import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
+import SimpleSpinner from "../../components/SimpleSpinner.vue";
 
 const attendee = ref("");
+const loading = ref(false);
+const error = ref(false);
 
 const contactverzoek = reactive<Contactverzoek>({
   bronorganisatie: window.organisatieIds[0],
@@ -116,9 +133,13 @@ const nieuweKlant = reactive<NieuweKlant>({
   voornaam: "",
   voorvoegselAchternaam: "",
   achternaam: "",
-  telefoonnummer: "",
-  emailadres: "",
+  telefoonnummers: [],
+  emails: [],
 });
+
+const telefoonnummer1 = ref("");
+const telefoonnummer2 = ref("");
+const emailadres = ref("");
 
 //available medewerkers
 
@@ -130,11 +151,11 @@ const klantReadonly = computed(
 const form = ref<HTMLFormElement>();
 
 const emailIsRequired = computed(
-  () => !klantReadonly.value && !nieuweKlant.telefoonnummer
+  () => !klantReadonly.value && !telefoonnummer1.value && !telefoonnummer2.value
 );
 
 const emailRequiredMessage = computed(() =>
-  emailIsRequired.value && !nieuweKlant.emailadres
+  emailIsRequired.value && !emailadres.value
     ? "Vul een minimaal een e-mailadres of een telefoonnummer van de klant in"
     : ""
 );
@@ -149,8 +170,9 @@ watch(
     nieuweKlant.voornaam = klant?.voornaam || "";
     nieuweKlant.voorvoegselAchternaam = klant?.voorvoegselAchternaam;
     nieuweKlant.achternaam = klant?.achternaam || "";
-    nieuweKlant.emailadres = klant?.emailadres || "";
-    nieuweKlant.telefoonnummer = klant?.telefoonnummer || "";
+    emailadres.value = klant?.emails?.[0] || "";
+    telefoonnummer1.value = klant?.telefoonnummers?.[0] || "";
+    telefoonnummer2.value = klant?.telefoonnummers?.[1] || "";
   },
   { immediate: true }
 );
@@ -182,22 +204,39 @@ function validate() {
 }
 
 async function submit() {
-  if (submitted.value || !validate()) return Promise.resolve();
-  const result = await saveContactverzoek(contactverzoek);
+  try {
+    if (submitted.value || !validate()) return;
 
-  contactmomentStore.contactverzoek = {
-    url: result.url,
-    medewerker: contactverzoek.todo.attendees[0],
-  };
-  if (!contactmomentStore.klant) {
-    const klant = await createKlant(nieuweKlant);
-    contactmomentStore.setKlant(klant);
+    loading.value = true;
+
+    if (!contactmomentStore.klant) {
+      nieuweKlant.telefoonnummers = [
+        telefoonnummer1.value,
+        telefoonnummer2.value,
+      ].filter(Boolean);
+
+      nieuweKlant.emails = emailadres.value ? [emailadres.value] : [];
+
+      const klant = await createKlant(nieuweKlant);
+      contactmomentStore.setKlant(klant);
+    }
+    const klantId = contactmomentStore.klant?.id;
+    if (!klantId) {
+      throw new Error("kan klant niet koppelen, id ontbreekt");
+    }
+
+    const result = await saveContactverzoek(contactverzoek);
+    await koppelKlant({ klantId, contactmomentId: result.id });
+
+    contactmomentStore.contactverzoek = {
+      url: result.url,
+      medewerker: contactverzoek.todo.attendees[0],
+    };
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
   }
-  const klantId = contactmomentStore.klant?.id;
-  if (!klantId) {
-    throw new Error("kan klant niet koppelen, id ontbreekt");
-  }
-  await koppelKlant({ klantId, contactmomentId: result.id });
 }
 </script>
 
