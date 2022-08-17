@@ -234,7 +234,6 @@ div {
   position: relative;
   display: grid;
   gap: var(--spacing-small);
-  place-items: center;
 }
 ul {
   position: absolute;
