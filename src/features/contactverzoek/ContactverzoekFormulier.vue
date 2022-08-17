@@ -5,14 +5,17 @@
   </p>
   <form @submit.prevent="submit" ref="form" v-else>
     <fieldset class="utrecht-form-fieldset">
-      <label class="utrecht-form-label">
-        <span class="required">Contactverzoek versturen naar</span>
-        <medewerker-search
-          class="utrecht-textbox utrecht-textbox--html-input"
-          v-model="attendee"
-          required
-        />
-      </label>
+      <medewerker-search
+        class="utrecht-textbox utrecht-textbox--html-input"
+        v-model="attendee"
+        required
+      >
+        <template #label
+          ><span class="required utrecht-form-label"
+            >Contactverzoek versturen naar</span
+          ></template
+        >
+      </medewerker-search>
     </fieldset>
     <fieldset class="utrecht-form-fieldset">
       <label class="utrecht-form-label">

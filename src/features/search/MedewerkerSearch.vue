@@ -5,7 +5,7 @@
     @keyup.up="previousIndex"
     @keyup.enter="selectItem"
   >
-    <label :for="inputId" :class="{ required }">
+    <label :id="labelId" :for="inputId" :class="{ required }">
       <slot name="label"></slot>
     </label>
     <input
@@ -59,7 +59,7 @@ export default {
 
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
-import { debouncedRef, useFocus, useFocusWithin } from "@vueuse/core";
+import { debouncedRef, useFocusWithin } from "@vueuse/core";
 import { ref, useAttrs, watch } from "vue";
 import { useGlobalSearch, useSources } from "./service";
 import type { SearchResult } from "./types";
@@ -205,7 +205,7 @@ const matchingResult = computed(() => {
 });
 
 const shouldSetValidity = computed(
-  () => !matchingResult.value && "required" in attrs
+  () => !matchingResult.value && props.required
 );
 
 watch(matchingResult, (val) => {
@@ -214,7 +214,7 @@ watch(matchingResult, (val) => {
 
 watch([inputRef, shouldSetValidity], ([r, s]) => {
   if (!(r instanceof HTMLInputElement)) return;
-  r.setCustomValidity(s ? "Kies een medewerker uit de lijst" : "");
+  r.setCustomValidity(s ? "Kies een optie uit de lijst" : "");
 });
 </script>
 
@@ -226,11 +226,12 @@ watch([inputRef, shouldSetValidity], ([r, s]) => {
 input,
 ul {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 2;
 }
 div {
   position: relative;
   display: grid;
+  gap: var(--spacing-small);
   place-items: center;
 }
 ul {
