@@ -222,7 +222,7 @@ watch([inputRef, shouldSetValidity], ([r, s]) => {
 
 <style lang="scss" scoped>
 .spinner {
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 .spinner,
 input,
@@ -234,6 +234,7 @@ div {
   position: relative;
   display: grid;
   gap: var(--spacing-small);
+  align-items: center;
 }
 ul {
   position: absolute;
