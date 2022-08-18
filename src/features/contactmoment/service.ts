@@ -24,20 +24,17 @@ export function useContactmomentService() {
   const gespreksResultatenBaseUri =
     window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
 
-  const save = async (data: Contactmoment) => {
-    const r = await fetchLoggedIn(contactmomentenUrl, {
+  const save = (data: Contactmoment): Promise<{ id: string; url: string }> =>
+    fetchLoggedIn(contactmomentenUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    });
-    if (!r.ok) {
-      throw new Error();
-    }
-    return await (r.json() as Promise<{ id: string; url: string }>);
-  };
+    })
+      .then(throwIfNotOk)
+      .then((r) => r.json());
 
   const getGespreksResultaten = () => {
     const fetchBerichten = fetchLoggedIn(gespreksResultatenBaseUri)
