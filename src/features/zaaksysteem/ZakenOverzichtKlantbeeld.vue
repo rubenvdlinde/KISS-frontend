@@ -23,7 +23,7 @@
           <td>{{ zaak.identificatie }}</td>
           <td>{{ zaak.zaaktype }}</td>
           <td>{{ zaak.status }}</td>
-          <td>Behandelaar</td>
+          <td>{{ zaak.behandelaar }}</td>
           <td>{{ zaak.startdatum }}</td>
           <td>{{ zaak.fataleDatum }}</td>
         </tr>

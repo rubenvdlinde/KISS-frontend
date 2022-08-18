@@ -84,15 +84,30 @@ export function useZaaksysteemService() {
               })
               .toSQL();
 
+            const getBehandelaarName = (): string => {
+              const behandelaar = zaak.embedded.rollen.find(
+                (rol: any) => rol.betrokkeneType === "medewerker"
+              );
+
+              if (!behandelaar) return "Onbekend";
+
+              const voornaam = behandelaar.voornamen ?? "";
+              const tussenvoegsel = behandelaar.voorvoegselGeslachtsnaam ?? "";
+              const achternaam = behandelaar.geslachtsnaam ?? "";
+
+              return `${voornaam} ${tussenvoegsel} ${achternaam}`;
+            };
+
             return {
               identificatie: zaak.identificatie,
               id: zaak.id,
               startdatum: formatDate(zaak.startdatum),
               url: zaak.url,
-              zaaktype: zaak.embedded.zaaktype.omschrijving,
+              zaaktype: zaak.embedded.zaaktype.onderwerp,
               registratiedatum: zaak.startdatum,
               status: zaak.embedded.status.statustoelichting,
               fataleDatum: formatDate(fataleDatum),
+              behandelaar: getBehandelaarName(),
             } as Zaak;
           });
         });

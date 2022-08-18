@@ -55,6 +55,7 @@ export interface Zaak {
   registratiedatum: string;
   status: string;
   fataleDatum: string;
+  behandelaar: string;
 }
 
 export interface MedewerkerIdentificatie {
