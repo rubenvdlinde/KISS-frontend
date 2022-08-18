@@ -76,7 +76,14 @@
       </template>
     </tabs-component>
   </main>
-  <contactmoment-starter v-if="showContactmomentStarter" />
+  <contactmoment-starter
+    :disabled="disableContactmomentStarter"
+    :title="
+      disableContactmomentStarter
+        ? 'Verstuur eerst het contactverzoek of wissel naar een reguliere notitie'
+        : undefined
+    "
+  />
 </template>
 
 <script setup lang="ts">
@@ -134,9 +141,9 @@ enum NotitieTabs {
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const showContactmomentStarter = computed(() => {
-  if (currentNotitieTab.value === NotitieTabs.Regulier) return true;
-  return !!contactmomentStore.contactverzoek;
+const disableContactmomentStarter = computed(() => {
+  if (currentNotitieTab.value === NotitieTabs.Regulier) return false;
+  return !contactmomentStore.contactverzoek;
 });
 </script>
 

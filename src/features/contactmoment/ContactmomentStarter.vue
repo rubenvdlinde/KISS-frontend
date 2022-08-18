@@ -5,13 +5,27 @@
     type="button"
     class="contactmomentLoopt"
     @click="onStopContactMoment"
-    >Einde contactmoment</utrecht-button
+    v-bind="$attrs"
   >
+    Einde contactmoment
+  </utrecht-button>
 
-  <utrecht-button model-value v-else type="button" @click="onStartContactMoment"
-    >Start contactmoment</utrecht-button
+  <utrecht-button
+    model-value
+    v-else
+    type="button"
+    @click="onStartContactMoment"
+    v-bind="$attrs"
   >
+    Start contactmoment
+  </utrecht-button>
 </template>
+
+<script lang="ts">
+export default {
+  inheritAttrs: false,
+};
+</script>
 
 <script setup lang="ts">
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
