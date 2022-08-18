@@ -64,7 +64,9 @@ export function createKlant(klant: NieuweKlant) {
 }
 
 function mapKlant(obj: any): Klant {
-  return obj;
+  const klant = { ...obj, bsn: obj?.embedded.subjectIdentificatie?.inpBsn };
+
+  return klant;
 }
 
 function searchKlanten(url: string): Promise<Paginated<Klant>> {
