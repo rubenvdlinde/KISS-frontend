@@ -32,10 +32,12 @@
             </td>
             <td>
               {{
-                klant.telefoonnummers.map((t) => t.telefoonnummer).join(", ")
+                klant.telefoonnummers
+                  .map(({ telefoonnummer }) => telefoonnummer)
+                  .join(", ")
               }}
             </td>
-            <td>{{ klant.emails.map((e) => e.email).join(", ") }}</td>
+            <td>{{ klant.emails.map(({ email }) => email).join(", ") }}</td>
           </tr>
         </tbody>
       </table>
