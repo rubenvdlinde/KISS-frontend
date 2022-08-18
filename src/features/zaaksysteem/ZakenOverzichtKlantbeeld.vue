@@ -29,6 +29,8 @@
         </tr>
       </tbody>
     </table>
+
+    <p v-else>Geen zaken gevonden.</p>
   </section>
 </template>
 
@@ -58,7 +60,7 @@ const zaken = zaakService.findByBsn(klantBsn).withFetcher();
 }
 
 .container > *:not(:last-child) {
-  margin-block-end: var(--spacing-large);
+  margin-block-end: var(--spacing-default);
 }
 
 table {
