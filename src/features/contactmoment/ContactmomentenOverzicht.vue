@@ -60,7 +60,7 @@
               :key="i"
             >
               Contactverzoek verstuurd aan {{ medewerkers.join(", ") }}. Dit
-              verzoek {{ completed ? "staat open" : "is afgerond" }}.
+              verzoek {{ completed ? "is afgerond" : "staat open" }}.
             </p>
           </details>
         </li>
