@@ -39,13 +39,13 @@ const router = useRouter();
 const contactmoment = useContactmomentStore();
 
 const onStartContactMoment = () => {
-  if ("disabled" in attrs) return;
+  if (attrs.disabled) return;
   contactmoment.start();
   router.push({ name: "contactmoment" });
 };
 
 const onStopContactMoment = () => {
-  if ("disabled" in attrs) return;
+  if (attrs.disabled) return;
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
 </script>

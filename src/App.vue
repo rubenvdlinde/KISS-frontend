@@ -91,12 +91,8 @@ body {
 
 #app {
   position: relative;
-  flex-direction: column;
-  display: flex;
-}
-
-main {
-  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
 }
 
 #app > header {

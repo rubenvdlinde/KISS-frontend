@@ -158,9 +158,8 @@ main {
 aside {
   background-color: var(--color-tertiary);
   padding-inline: 2px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
 
   :deep(textarea.utrecht-textarea) {
     padding: 0px;
