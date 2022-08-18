@@ -86,19 +86,15 @@ export function useKlantContactmomenten(
 const objectcontactmomentenUrl =
   window.gatewayBaseUri + "/api/objectcontactmomenten";
 
-export const koppelObject = async (data: ContactmomentObject) => {
-  const r = await fetchLoggedIn(objectcontactmomentenUrl, {
+export const koppelObject = (data: ContactmomentObject) =>
+  fetchLoggedIn(objectcontactmomentenUrl, {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  });
-  if (!r.ok) {
-    throw new Error();
-  }
-};
+  }).then(throwIfNotOk);
 
 const mapZaak = (json: any): ContactmomentZaak => ({
   status: json?.embedded?.status?.statustoelichting,
