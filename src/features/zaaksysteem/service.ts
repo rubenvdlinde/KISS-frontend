@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { fetchLoggedIn, ServiceResult } from "@/services";
 import type { Zaak } from "@/stores/contactmoment";
 import type { Ref } from "vue";
-import { formatDate } from "@/services/formatDate";
+import { formatToWrittenDate } from "@/services/formatToWrittenDate";
 
 export function useZaaksysteemService() {
   if (!window.gatewayBaseUri) {
@@ -89,11 +89,15 @@ export function useZaaksysteemService() {
                 (rol: any) => rol.betrokkeneType === "medewerker"
               );
 
-              if (!behandelaar) return "Onbekend";
+              const identificatie =
+                behandelaar?.embedded?.betrokkeneIdentificatie;
 
-              const voornaam = behandelaar.voornamen ?? "";
-              const tussenvoegsel = behandelaar.voorvoegselGeslachtsnaam ?? "";
-              const achternaam = behandelaar.geslachtsnaam ?? "";
+              if (!identificatie) return "Onbekend";
+
+              const voornaam = identificatie.voornamen ?? "";
+              const tussenvoegsel =
+                identificatie.voorvoegselGeslachtsnaam ?? "";
+              const achternaam = identificatie.geslachtsnaam ?? "";
 
               return `${voornaam} ${tussenvoegsel} ${achternaam}`;
             };
@@ -101,12 +105,12 @@ export function useZaaksysteemService() {
             return {
               identificatie: zaak.identificatie,
               id: zaak.id,
-              startdatum: formatDate(zaak.startdatum),
+              startdatum: formatToWrittenDate(zaak.startdatum),
               url: zaak.url,
               zaaktype: zaak.embedded.zaaktype.onderwerp,
               registratiedatum: zaak.startdatum,
               status: zaak.embedded.status.statustoelichting,
-              fataleDatum: formatDate(fataleDatum),
+              fataleDatum: formatToWrittenDate(fataleDatum),
               behandelaar: getBehandelaarName(),
             } as Zaak;
           });

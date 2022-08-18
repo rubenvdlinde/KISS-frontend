@@ -51,14 +51,12 @@
             </li>
           </menu>
 
-          <div class="informatie-container">
-            <klant-details
-              v-if="contactmomentStore.klant"
-              :klant="contactmomentStore.klant"
-            />
-            <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
-            <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
-          </div>
+          <klant-details
+            v-if="contactmomentStore.klant"
+            :klant="contactmomentStore.klant"
+          />
+          <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
+          <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
         </article>
       </template>
 
@@ -181,6 +179,11 @@ aside {
   }
 }
 
+.klant-panel {
+  display: grid;
+  gap: var(--spacing-large);
+}
+
 :deep([role="tablist"]),
 .zaak-tabs :deep([role="tabpanel"]) {
   padding-inline: var(--spacing-extralarge);
@@ -193,7 +196,7 @@ aside {
 .main-tabs {
   --tab-bg: white;
 
-  ul li article {
+  ul li > article {
     margin-inline: var(--spacing-extralarge);
   }
 }
@@ -250,14 +253,6 @@ aside {
     &[aria-selected="true"] {
       color: var(--color-tertiary);
     }
-  }
-}
-
-.informatie-container {
-  margin-block-start: var(--spacing-large);
-
-  & > *:not(:last-child) {
-    margin-block-end: var(--spacing-large);
   }
 }
 </style>
