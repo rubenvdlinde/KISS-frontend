@@ -21,8 +21,10 @@
                 .join(" ")
             }}
           </td>
-          <td>{{ klant.telefoonnummers.join(", ") }}</td>
-          <td>{{ klant.emails.join(", ") }}</td>
+          <td>
+            {{ klant.telefoonnummers.map((x) => x.telefoonnummer).join(", ") }}
+          </td>
+          <td>{{ klant.emails.map((x) => x.email).join(", ") }}</td>
         </tr>
       </tbody>
     </table>
