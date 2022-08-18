@@ -4,20 +4,26 @@
       <small v-if="showType && bericht.types.length">
         {{ bericht.types.join(", ") }}
       </small>
+
       <utrecht-heading model-value :level="level">{{
         bericht.title
       }}</utrecht-heading>
+
       <time :datetime="bericht.date.toISOString()">{{
         localeString(bericht.date)
       }}</time>
-      <small
-        v-for="(skill, i) in bericht.skills"
-        :class="`category-${skill.split(' ').join('-')}`"
-        :key="i"
-      >
-        {{ skill }}
-      </small>
+
+      <div class="skills-container">
+        <small
+          v-for="(skill, i) in bericht.skills"
+          :class="`category-${skill.split(' ').join('-')}`"
+          :key="i"
+        >
+          {{ skill }}
+        </small>
+      </div>
     </header>
+
     <utrecht-document model-value class="correct-header">
       <div v-html="sanitized" />
     </utrecht-document>
@@ -84,8 +90,14 @@ article {
     display: block;
   }
 
-  small {
-    font-size: 0.875rem;
+  .skills-container {
+    & > small {
+      font-size: 0.875rem;
+    }
+
+    & > *:not(:last-child) {
+      margin-inline-end: var(--spacing-small);
+    }
   }
 
   :deep(ul) {
