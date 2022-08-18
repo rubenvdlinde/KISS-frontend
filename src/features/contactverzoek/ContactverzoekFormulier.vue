@@ -99,7 +99,7 @@
     </label>
 
     <utrecht-button model-value type="submit" v-if="!submitted">
-      Contactverzoek opslaan
+      Contactverzoek versturen
     </utrecht-button>
   </form>
 </template>
