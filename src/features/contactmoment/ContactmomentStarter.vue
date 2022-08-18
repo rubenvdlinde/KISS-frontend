@@ -31,16 +31,21 @@ export default {
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
+import { useAttrs } from "vue";
+
+const attrs = useAttrs();
 
 const router = useRouter();
 const contactmoment = useContactmomentStore();
 
 const onStartContactMoment = () => {
+  if ("disabled" in attrs) return;
   contactmoment.start();
   router.push({ name: "contactmoment" });
 };
 
 const onStopContactMoment = () => {
+  if ("disabled" in attrs) return;
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
 </script>
