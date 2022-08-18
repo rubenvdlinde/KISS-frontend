@@ -122,6 +122,7 @@ const toggleDetails = (e: Event) => {
 <style lang="scss" scoped>
 article {
   display: grid;
+  margin-inline: var(--spacing-default);
 }
 
 .pagination {
@@ -187,7 +188,7 @@ details:hover {
 
 details,
 .header-row {
-  padding: var(--spacing-default);
+  padding-block: var(--spacing-default);
 }
 
 details[open],
