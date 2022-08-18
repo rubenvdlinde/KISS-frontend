@@ -9,10 +9,7 @@ import {
 import type { Ref } from "vue";
 import type { Klant, NieuweKlant } from "@/stores/contactmoment";
 
-const isEmail = (val: string) =>
-  val.match(
-    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
-  );
+const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 
 type KlantSearchParameters = {
   search: Ref<string>;
@@ -34,9 +31,9 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
-      url.searchParams.set("emailadres", search);
+      url.searchParams.set("emails.email[]", search);
     } else {
-      url.searchParams.set("telefoonnummer", search);
+      url.searchParams.set("telefoonnummers.telefoonnummer[]", search);
     }
     return url.toString();
   }
@@ -64,31 +61,18 @@ export function createKlant(klant: NieuweKlant) {
 }
 
 function mapKlant(obj: any): Klant {
-  const emails = new Set<string>();
-  const telefoonnummers = new Set<string>();
+  const emails: string[] = (obj?.embedded?.emails ?? [])
+    .map((x: any) => x?.email)
+    .filter(Boolean);
 
-  if (obj?.emailadres && typeof obj?.emailadres === "string") {
-    emails.add(obj.emailadres);
-  }
-  if (Array.isArray(obj.emails)) {
-    obj.emails.forEach((e: unknown) => {
-      if (e && typeof e === "string") emails.add(e);
-    });
-  }
-
-  if (obj?.telefoonnummer && typeof obj?.telefoonnummer === "string") {
-    telefoonnummers.add(obj.telefoonnummer);
-  }
-  if (Array.isArray(obj.telefoonnummers)) {
-    obj.telefoonnummers.forEach((e: unknown) => {
-      if (e && typeof e === "string") telefoonnummers.add(e);
-    });
-  }
+  const telefoonnummers: string[] = (obj?.embedded?.telefoonnummers ?? [])
+    .map((x: any) => x?.telefoonnummer)
+    .filter(Boolean);
 
   return {
     ...obj,
-    emails: [...emails],
-    telefoonnummers: [...telefoonnummers],
+    emails,
+    telefoonnummers,
   };
 }
 
