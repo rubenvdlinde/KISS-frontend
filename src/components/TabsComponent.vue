@@ -20,7 +20,9 @@
         :is="tag"
         @click.prevent="enable"
       >
-        {{ label }}
+        <slot name="tab" :tabName="label">
+          {{ label }}
+        </slot>
       </component>
     </nav>
     <ul>
@@ -59,23 +61,25 @@ const emit = defineEmits(["update:modelValue"]);
 const currentCounter = getCounter();
 const slotKeys = Object.keys(slots);
 const entries = computed(() =>
-  slotKeys.map((name) => {
-    const id = currentCounter + "_" + name;
-    const isActive = props.modelValue === name;
+  slotKeys
+    .filter((name) => name.toLowerCase() !== "tab")
+    .map((name) => {
+      const id = currentCounter + "_" + name;
+      const isActive = props.modelValue === name;
 
-    return {
-      isActive,
-      name,
-      label: name,
-      href: isActive ? undefined : "#" + encodeURIComponent(name),
-      tag: isActive ? "span" : "a",
-      tabId: id + "_tab",
-      panelId: id + "_panel",
-      enable() {
-        emit("update:modelValue", name);
-      },
-    };
-  })
+      return {
+        isActive,
+        name,
+        label: name,
+        href: isActive ? undefined : "#" + encodeURIComponent(name),
+        tag: isActive ? "span" : "a",
+        tabId: id + "_tab",
+        panelId: id + "_panel",
+        enable() {
+          emit("update:modelValue", name);
+        },
+      };
+    })
 );
 watch(
   () => props.modelValue,
@@ -114,5 +118,16 @@ watch(
 [role="tabpanel"],
 [role="tab"][aria-selected="true"] {
   background-color: var(--tab-bg, var(--color-secondary));
+}
+
+[role="tabpanel"] {
+  flex: 1;
+}
+
+section,
+ul {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 </style>

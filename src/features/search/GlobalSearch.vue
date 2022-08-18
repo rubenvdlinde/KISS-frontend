@@ -18,6 +18,7 @@
           v-model="searchInput"
           placeholder="Zoeken"
           @search.prevent="applySearch"
+          id="global-search-input"
         />Zoekterm</label
       >
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
@@ -38,7 +39,7 @@
                 <a
                   v-if="!url"
                   href="#"
-                  @click="currentId = id"
+                  @click="selectSearchResult(id, source, jsonObject, title)"
                   class="icon-after chevron-down"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
@@ -52,7 +53,7 @@
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
-                <a v-if="source === 'Smoelenboek'">
+                <a v-if="source === smoelenboek">
                   <span></span
                   ><span
                     >{{ jsonObject?.function }}
@@ -104,10 +105,10 @@
                     <section>
                       <h2>Algemene contactgegevens</h2>
                       <dl>
-                        <dd>E-mailadres:</dd>
-                        <dt>{{ jsonObject?.user }}</dt>
-                        <dd>Telefoonnummer:</dd>
-                        <dt>{{ jsonObject?.contact?.telefoonnummer1 }}</dt>
+                        <dt>E-mailadres:</dt>
+                        <dd>{{ jsonObject?.user }}</dd>
+                        <dt>Telefoonnummer:</dt>
+                        <dd>{{ jsonObject?.contact?.telefoonnummer1 }}</dd>
                       </dl>
                     </section>
                     <section>
@@ -168,17 +169,19 @@
                       width="128"
                     />
                     <dl>
-                      <dd>Functie:</dd>
-                      <dt>{{ jsonObject?.function }}</dt>
+                      <dt>Functie:</dt>
+                      <dd>{{ jsonObject?.function }}</dd>
 
-                      <dd>Afdeling:</dd>
-                      <dt>{{ jsonObject?.department }}</dt>
+                      <dt>Afdeling:</dt>
+                      <dd>{{ jsonObject?.department }}</dd>
 
-                      <dd>Wat kun je en wat doe je:</dd>
-                      <dt>{{ jsonObject?.skills }}</dt>
+                      <dt>Wat kun je en wat doe je:</dt>
+                      <dd>{{ jsonObject?.skills }}</dd>
 
-                      <dd>Vervanger:</dd>
-                      <dt>{{ jsonObject?.replacement }}</dt>
+                      <template v-if="jsonObject?.replacement?.name">
+                        <dt>Vervanger:</dt>
+                        <dd>{{ jsonObject.replacement.name }}</dd>
+                      </template>
                     </dl>
                   </section>
                 </template>
@@ -217,6 +220,19 @@ import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 
+const emit = defineEmits<{
+  (
+    e: "result-selected",
+    params: {
+      id: string;
+      title: string;
+      jsonObject: any;
+      source: string;
+    }
+  ): void;
+}>();
+
+const smoelenboek = "Smoelenboek";
 const searchInput = ref("");
 const currentSearch = ref("");
 const currentId = ref("");
@@ -262,6 +278,21 @@ watch(hasResults, (x) => {
     isExpanded.value = true;
   }
 });
+
+const selectSearchResult = (
+  id: string,
+  source: string,
+  jsonObject: any,
+  title: string
+) => {
+  currentId.value = id;
+  emit("result-selected", {
+    id,
+    title,
+    source,
+    jsonObject,
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -432,7 +463,7 @@ dl {
   row-gap: var(--spacing-small);
 }
 
-dd {
+dt {
   font-weight: bold;
 }
 

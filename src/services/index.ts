@@ -73,7 +73,7 @@ export const ServiceResult = {
     });
   },
 
-  fromPromise<T = unknown>(promise: Promise<T>) {
+  fromPromise<T = unknown>(promise: Promise<T>): ServiceData<T> & Promise<T> {
     const result = ServiceResult.loading<T>();
 
     promise
@@ -95,7 +95,7 @@ export const ServiceResult = {
         });
       });
 
-    return result;
+    return Object.assign(result, promise);
   },
 
   /**

@@ -1,5 +1,5 @@
 import { fetchLoggedIn } from "@/services";
-import type { ContactmomentObject, Zaak } from "./types";
+import type { Zaak } from "@/stores/contactmoment";
 
 export function useZaaksysteemService() {
   if (!window.gatewayBaseUri) {
@@ -98,28 +98,8 @@ export function useZaaksysteemService() {
   //     "object": "http://kissdevelopment-dimpact.commonground.nu/api/zaken/4cad808a-6011-4d07-b0c6-cd5c98a3dfae",
   //     "objectType": "zaak"
   // }
-
-  const objectcontactmomentenUrl =
-    window.gatewayBaseUri + "/api/objectcontactmomenten";
-
-  const saveZaak = (data: ContactmomentObject) => {
-    return fetchLoggedIn(objectcontactmomentenUrl, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
-    });
-  };
-
   return {
     findByZaak,
     findByBsn,
-    saveZaak,
   };
 }

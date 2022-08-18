@@ -14,3 +14,22 @@ export function cleanHtml(str: string, headingLevel: HeadingLevel = 1) {
   const safeString = DOMPurify.sanitize(str);
   return increaseHeadings(safeString, headingLevel);
 }
+
+export function focusNextFormItem(
+  element: Element & { form?: HTMLFormElement | null }
+) {
+  if (!element.form) return;
+  const elements = Array.from(
+    element.form.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), details:not([disabled]), summary:not(:disabled)'
+    )
+  );
+  const i = elements.indexOf(element);
+  if (i === -1 || i >= elements.length) return;
+  const next = elements[i + 1];
+  if (next instanceof HTMLElement) {
+    setTimeout(() => {
+      next.focus();
+    });
+  }
+}

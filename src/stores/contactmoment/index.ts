@@ -1,6 +1,5 @@
-import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
-import type { Klant } from "./types";
+import type { Klant, Zaak, NieuweKlant } from "./types";
 export * from "./types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };
@@ -10,6 +9,8 @@ interface ContactmomentState {
   zaken: ContactmomentZaak[];
   klanten: { klant: Klant; shouldStore: boolean }[];
   notitie: string;
+  contactverzoek: { url: string; medewerker: string } | undefined;
+  nieuweKlant: NieuweKlant | undefined;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -19,6 +20,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
       zaken: <ContactmomentZaak[]>[],
       klanten: [],
       notitie: "",
+      contactverzoek: undefined,
+      nieuweKlant: undefined,
     } as ContactmomentState;
   },
   getters: {
@@ -30,9 +33,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       this.contactmomentLoopt = true;
     },
     stop() {
-      this.contactmomentLoopt = false;
-      this.zaken = [];
-      this.notitie = "";
+      this.$reset();
     },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
@@ -54,6 +55,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
       return zaak ? zaak.shouldStore : false;
     },
     setKlant(klant: Klant) {
+      this.nieuweKlant = undefined;
+
       const match = this.klanten.find((x) => x.klant.id === klant.id);
       if (match?.shouldStore) return false;
 

@@ -56,7 +56,7 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 import { useZaaksysteemService } from "./service";
-import type { Zaak } from "./types";
+import type { Zaak } from "@/stores/contactmoment";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";

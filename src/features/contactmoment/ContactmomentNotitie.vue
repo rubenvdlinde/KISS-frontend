@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { useContactmomentStore } from "@/stores/contactmoment";
-
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 const contactmomentStore = useContactmomentStore();
 
 const notitieChanged = (element: any) => {
@@ -27,4 +27,8 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+textarea {
+  flex: 1;
+}
+</style>
