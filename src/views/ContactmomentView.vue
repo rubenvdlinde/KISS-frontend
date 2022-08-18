@@ -50,11 +50,15 @@
               </button>
             </li>
           </menu>
-          <klant-details
-            v-if="contactmomentStore.klant"
-            :klant="contactmomentStore.klant"
-          />
-          <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
+
+          <div class="informatie-container">
+            <klant-details
+              v-if="contactmomentStore.klant"
+              :klant="contactmomentStore.klant"
+            />
+            <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
+            <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
+          </div>
         </article>
       </template>
 
@@ -69,7 +73,7 @@
               <persoon-zoeker @zakenZoeken="onZakenZoeken" />
             </template>
             <template #[Tabs.zakenZoeker]>
-              <zaak-zoeker :populatedBsn="curentBsn" />
+              <zaak-zoeker :populatedBsn="currentBsn" />
             </template>
           </tabs-component>
         </article>
@@ -93,6 +97,7 @@ import {
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
+import ZakenOverzichtKlantbeeld from "../features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -107,12 +112,12 @@ enum Tabs {
   personenZoeker = "Via persoon",
 }
 const activeTab = ref(Tabs.personenZoeker);
-const curentBsn = ref<number>();
+const currentBsn = ref<number>();
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab
 const onZakenZoeken = (bsn: number) => {
-  curentBsn.value = bsn;
+  currentBsn.value = bsn;
   activeTab.value = Tabs.zakenZoeker;
 };
 
@@ -126,6 +131,7 @@ const klantGevonden = (klant: Klant) => {
 };
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
+const klantBsn = computed(() => contactmomentStore.klant?.bsn || "");
 
 // sidebar
 enum NotitieTabs {
@@ -252,6 +258,14 @@ aside {
     &[aria-selected="true"] {
       color: var(--color-tertiary);
     }
+  }
+}
+
+.informatie-container {
+  margin-block-start: var(--spacing-large);
+
+  & > *:not(:last-child) {
+    margin-block-end: var(--spacing-large);
   }
 }
 </style>
