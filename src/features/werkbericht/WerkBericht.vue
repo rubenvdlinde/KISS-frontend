@@ -1,28 +1,34 @@
 <template>
-  <article>
-    <header>
-      <small v-if="showType && bericht.types.length">
-        {{ bericht.types.join(", ") }}
-      </small>
+  <article :class="read && 'read'">
+    <small v-if="showType && bericht.types.length">
+      {{ bericht.types.join(", ") }}
+    </small>
 
+    <div class="heading-container">
       <utrecht-heading model-value :level="level">{{
         bericht.title
       }}</utrecht-heading>
 
-      <time :datetime="bericht.date.toISOString()">{{
-        localeString(bericht.date)
-      }}</time>
+      <button
+        @click="toggleRead"
+        :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
+        class="toggle-read icon-after book"
+      />
+    </div>
 
-      <div class="skills-container">
-        <small
-          v-for="(skill, i) in bericht.skills"
-          :class="`category-${skill.split(' ').join('-')}`"
-          :key="i"
-        >
-          {{ skill }}
-        </small>
-      </div>
-    </header>
+    <time :datetime="bericht.date.toISOString()">{{
+      localeString(bericht.date)
+    }}</time>
+
+    <div class="skills-container">
+      <small
+        v-for="(skill, i) in bericht.skills"
+        :class="`category-${skill.split(' ').join('-')}`"
+        :key="i"
+      >
+        {{ skill }}
+      </small>
+    </div>
 
     <utrecht-document model-value class="correct-header">
       <div v-html="sanitized" />
@@ -31,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType } from "vue";
+import { computed, ref, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import {
   UtrechtHeading,
@@ -57,6 +63,12 @@ const props = defineProps({
   },
 });
 
+const read = ref<boolean>(false);
+
+const toggleRead = (): void => {
+  read.value = !read.value;
+};
+
 const localeString = (d: Date) =>
   d.toLocaleString("nl-NL", {
     day: "2-digit",
@@ -79,15 +91,21 @@ article {
   display: grid;
   gap: 0.75rem;
 
-  header {
-    display: grid;
-    justify-items: flex-start;
-    gap: 0.5rem;
-  }
-
   time {
     color: var(--color-primary);
     display: block;
+  }
+
+  .heading-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .toggle-read {
+      all: unset;
+      cursor: pointer;
+    }
   }
 
   .skills-container {
@@ -116,6 +134,16 @@ article {
 
     &:not(:last-child) {
       margin-bottom: 1em;
+    }
+  }
+
+  &.read {
+    & > .heading-container {
+      opacity: 0.5;
+    }
+
+    & > *:not(.heading-container) {
+      display: none;
     }
   }
 }
