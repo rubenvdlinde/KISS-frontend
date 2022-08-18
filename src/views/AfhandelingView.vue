@@ -97,10 +97,10 @@ const saving = ref(false);
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
-const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
+const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
   const promises = contactmomentStore?.zaken.map((zaak) =>
     koppelObject({
-      contactmoment: contactMomentUrl,
+      contactmoment: contactmomentId,
       object: zaak.url,
       objectType: "zaak",
     })
@@ -121,11 +121,11 @@ const koppelKlanten = (contactmomentId: string) => {
 };
 
 const koppelContactverzoek = (
-  contactmomentUrl: string,
+  contacmomentId: string,
   contactverzoekUrl: string
 ) =>
   koppelObject({
-    contactmoment: contactmomentUrl,
+    contactmoment: contacmomentId,
     object: contactverzoekUrl,
     objectType: "contactmomentobject",
   });
@@ -141,7 +141,7 @@ const saveContact = (contactmoment: Contactmoment) => {
     .save(contactmoment)
     .then((savedContactmoment) => {
       const nextPromises: Promise<unknown>[] = [
-        zakenToevoegenAanContactmoment(savedContactmoment.url),
+        zakenToevoegenAanContactmoment(savedContactmoment.id),
         koppelKlanten(savedContactmoment.id),
       ];
       if (contactmomentStore.contactverzoek) {
