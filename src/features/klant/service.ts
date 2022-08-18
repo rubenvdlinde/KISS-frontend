@@ -61,9 +61,8 @@ export function createKlant(klant: NieuweKlant) {
 }
 
 function mapKlant(obj: any): Klant {
-  const emails: string[] = obj?.embedded?.emails ?? [];
-
-  const telefoonnummers: string[] = obj?.embedded?.telefoonnummers ?? [];
+  const emails = obj?.embedded?.emails ?? [];
+  const telefoonnummers = obj?.embedded?.telefoonnummers ?? [];
 
   return {
     ...obj,
