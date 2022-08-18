@@ -303,6 +303,11 @@ h2 {
   mask-image: url("@/assets/icons/note.svg");
 }
 
+.icon-before.book::before,
+.icon-after.book::after {
+  mask-image: url("@/assets/icons/book.svg");
+}
+
 //forms
 form {
   span.required::after {
