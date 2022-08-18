@@ -1,28 +1,24 @@
 <template>
-  <form @submit.prevent ref="form">
+  <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
+  <p v-if="submitted">
+    Contactverzoek verstuurd naar
+    {{ contactmomentStore.contactverzoek?.medewerker }}
+  </p>
+  <SimpleSpinner v-else-if="loading" />
+  <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
+  <form @submit.prevent="submit" ref="form" v-else>
     <fieldset class="utrecht-form-fieldset">
-      <p v-if="!medewerkers || medewerkers.length == 0">
-        Zoek de medewerker voor wie het contactverzoek bestemd is via het
-        algemene zoekveld
-      </p>
-      <legend v-else class="utrecht-form-label">
-        <span class="required">Contactverzoek versturen naar</span>
-      </legend>
-
-      <label
-        v-for="{ id, emailadres, naam } in medewerkers"
-        :key="id"
-        class="radio"
+      <medewerker-search
+        class="utrecht-textbox utrecht-textbox--html-input"
+        v-model="attendee"
+        required
       >
-        <input
-          type="radio"
-          name="medewerker"
-          :value="emailadres"
-          v-model="contactverzoek.todo.attendees"
-          required
-        />
-        {{ naam }}
-      </label>
+        <template #label
+          ><span class="required utrecht-form-label"
+            >Contactverzoek versturen naar</span
+          ></template
+        >
+      </medewerker-search>
     </fieldset>
     <fieldset class="utrecht-form-fieldset">
       <label class="utrecht-form-label">
@@ -62,17 +58,29 @@
         <input
           type="email"
           name="klant-email"
-          v-model="nieuweKlant.emailadres"
+          v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
         />
       </label>
 
       <label class="utrecht-form-label">
-        Telefoonnummer van de klant
+        Telefoonnummer 1 van de klant
         <input
           type="tel"
-          v-model="nieuweKlant.telefoonnummer"
+          v-model="telefoonnummer1"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
+          title="Vul een valide Nederlands telefoonnummer in"
+          :disabled="klantReadonly"
+        />
+      </label>
+
+      <label class="utrecht-form-label">
+        Telefoonnummer 2 van de klant
+        <input
+          type="tel"
+          v-model="telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
           pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
           title="Vul een valide Nederlands telefoonnummer in"
@@ -81,14 +89,18 @@
       </label>
     </fieldset>
 
-    <label class="utrecht-form-label notitie">
+    <label class="utrecht-form-label notitieveld">
       <span class="required">Notitie bij het contactverzoek</span>
       <textarea
-        v-model="contactmomentStore.notitie"
+        v-model="contactverzoek.todo.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
       />
     </label>
+
+    <utrecht-button model-value type="submit" v-if="!submitted">
+      Contactverzoek versturen
+    </utrecht-button>
   </form>
 </template>
 
@@ -96,22 +108,28 @@
 import { ref, reactive, watch, computed } from "vue";
 import {
   useContactmomentStore,
-  type Contactverzoek,
   type NieuweKlant,
 } from "@/stores/contactmoment";
-import { toast } from "@/stores/toast";
+import { saveContactverzoek, type Contactverzoek } from "./service";
+import {
+  UtrechtButton,
+  UtrechtHeading,
+} from "@utrecht/web-component-library-vue";
+import { createKlant } from "../klant/service";
+import { koppelKlant } from "../contactmoment";
+import MedewerkerSearch from "../search/MedewerkerSearch.vue";
+import SimpleSpinner from "../../components/SimpleSpinner.vue";
 
-type MedewerkerOptie = {
-  id: string;
-  emailadres: string;
-  naam: string;
-};
+const attendee = ref("");
+const loading = ref(false);
+const error = ref(false);
 
 const contactverzoek = reactive<Contactverzoek>({
   bronorganisatie: window.organisatieIds[0],
   todo: {
     description: "",
-    attendees: "",
+    attendees: [],
+    name: "contactverzoek",
   },
 });
 
@@ -119,46 +137,36 @@ const nieuweKlant = reactive<NieuweKlant>({
   voornaam: "",
   voorvoegselAchternaam: "",
   achternaam: "",
-  telefoonnummer: "",
-  emailadres: "",
+  telefoonnummers: [],
+  emails: [],
 });
+
+const telefoonnummer1 = ref("");
+const telefoonnummer2 = ref("");
+const emailadres = ref("");
 
 //available medewerkers
 
 const contactmomentStore = useContactmomentStore();
-const medewerkers = ref<MedewerkerOptie[]>([]);
-const klantReadonly = computed(() => !!contactmomentStore.klant);
+const submitted = computed(() => !!contactmomentStore.contactverzoek);
+const klantReadonly = computed(
+  () => submitted.value || !!contactmomentStore.klant
+);
 const form = ref<HTMLFormElement>();
 
 const emailIsRequired = computed(
-  () => !klantReadonly.value && !nieuweKlant.telefoonnummer
+  () => !klantReadonly.value && !telefoonnummer1.value && !telefoonnummer2.value
 );
 
 const emailRequiredMessage = computed(() =>
-  emailIsRequired.value && !nieuweKlant.emailadres
+  emailIsRequired.value && !emailadres.value
     ? "Vul een minimaal een e-mailadres of een telefoonnummer van de klant in"
     : ""
 );
 
-watch(
-  contactmomentStore.medewerkers,
-  (newVal) => {
-    const mapped = newVal.map(
-      ({ achternaam, voornaam, voorvoegselAchternaam, emailadres, id }) => {
-        return {
-          id,
-          emailadres,
-          naam: [voornaam, voorvoegselAchternaam, achternaam]
-            .filter(Boolean)
-            .join(" "),
-        };
-      }
-    );
-    medewerkers.value = mapped;
-    contactverzoek.todo.attendees = mapped[mapped.length - 1]?.emailadres;
-  },
-  { immediate: true }
-);
+watch(attendee, (a) => {
+  contactverzoek.todo.attendees = a ? [a] : [];
+});
 
 watch(
   () => contactmomentStore.klant,
@@ -166,25 +174,29 @@ watch(
     nieuweKlant.voornaam = klant?.voornaam || "";
     nieuweKlant.voorvoegselAchternaam = klant?.voorvoegselAchternaam;
     nieuweKlant.achternaam = klant?.achternaam || "";
-    nieuweKlant.emailadres = klant?.emailadres || "";
-    nieuweKlant.telefoonnummer = klant?.telefoonnummer || "";
+    emailadres.value = klant?.emails?.[0]?.email || "";
+    telefoonnummer1.value = klant?.telefoonnummers?.[0]?.telefoonnummer || "";
+    telefoonnummer2.value = klant?.telefoonnummers?.[1]?.telefoonnummer || "";
+  },
+  { immediate: true }
+);
+
+watch(
+  () => contactmomentStore.notitie,
+  (n, o) => {
+    if (
+      n &&
+      (!contactverzoek.todo.description ||
+        contactverzoek.todo.description === o)
+    ) {
+      contactverzoek.todo.description = n;
+    }
   },
   { immediate: true }
 );
 
 function validate() {
   if (!form.value) return false;
-  if (!medewerkers.value.length) {
-    toast({
-      type: "error",
-      text: "Zoek eerst een collega in de zoekbalk, of wissel naar een reguliere notitie.",
-    });
-    const globalSearch = document.getElementById("global-search-input");
-    if (globalSearch && globalSearch instanceof HTMLInputElement) {
-      globalSearch.focus();
-    }
-    return false;
-  }
 
   const emailInput = form.value.elements.namedItem("klant-email");
 
@@ -192,27 +204,48 @@ function validate() {
     emailInput.setCustomValidity(emailRequiredMessage.value);
   }
 
-  if (!form.value.reportValidity()) {
-    toast({
-      type: "error",
-      text: "Vul eerst het contactverzoek correct en volledig in, of wissel naar een reguliere notie.",
-    });
-    return false;
-  }
-
-  return true;
+  return form.value.reportValidity();
 }
 
-function submit() {
-  if (!validate()) return false;
-  contactmomentStore.contactverzoek = contactverzoek;
-  if (!contactmomentStore.klant) {
-    contactmomentStore.nieuweKlant = nieuweKlant;
-  }
-  return true;
-}
+async function submit() {
+  try {
+    if (submitted.value || !validate()) return;
 
-defineExpose({ submit });
+    loading.value = true;
+
+    if (!contactmomentStore.klant) {
+      nieuweKlant.telefoonnummers = [
+        telefoonnummer1.value,
+        telefoonnummer2.value,
+      ]
+        .filter(Boolean)
+        .map((telefoonnummer) => ({ telefoonnummer }));
+
+      nieuweKlant.emails = emailadres.value
+        ? [{ email: emailadres.value }]
+        : [];
+
+      const klant = await createKlant(nieuweKlant);
+      contactmomentStore.setKlant(klant);
+    }
+    const klantId = contactmomentStore.klant?.id;
+    if (!klantId) {
+      throw new Error("kan klant niet koppelen, id ontbreekt");
+    }
+
+    const result = await saveContactverzoek(contactverzoek);
+    await koppelKlant({ klantId, contactmomentId: result.id });
+
+    contactmomentStore.contactverzoek = {
+      url: result.url,
+      medewerker: contactverzoek.todo.attendees[0],
+    };
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -233,16 +266,21 @@ menu {
 form {
   flex: 1;
   display: flex;
+  gap: var(--spacing-default);
   flex-direction: column;
 }
 
-form,
 fieldset {
-  gap: var(--spacing-default);
-}
-
-fieldset {
+  --gap: var(--spacing-default);
+  gap: var(--gap);
   display: grid;
+
+  &::after {
+    content: "";
+    margin-inline: calc(-1 * var(--gap));
+    height: 0.5rem;
+    background-color: var(--color-tertiary);
+  }
 }
 
 label {
@@ -263,14 +301,25 @@ legend {
   margin-block-end: var(--spacing-small);
 }
 
-.notitie,
+.notitieveld,
 textarea {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.notitie textarea.utrecht-textarea {
+.notitieveld textarea.utrecht-textarea {
   padding: var(--spacing-small);
+  margin-block-start: 0;
+  min-height: 20rem;
+}
+
+utrecht-heading {
+  margin-block-end: var(--spacing-default);
+}
+
+utrecht-button {
+  --utrecht-button-min-inline-size: 100%;
+  --utrecht-button-min-block-size: 3rem;
 }
 </style>

@@ -19,7 +19,7 @@
           ></contactmoment-notitie>
         </template>
         <template #[NotitieTabs.Terugbel]>
-          <contactverzoek-formulier ref="terugbelform" />
+          <contactverzoek-formulier />
         </template>
       </tabs-component>
     </aside>
@@ -80,11 +80,18 @@
       </template>
     </tabs-component>
   </main>
-  <contactmoment-starter :before-stop="terugbelformIsValid" />
+  <contactmoment-starter
+    :disabled="disableContactmomentStarter"
+    :title="
+      disableContactmomentStarter
+        ? 'Verstuur eerst het contactverzoek of wissel naar een reguliere notitie'
+        : undefined
+    "
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
@@ -140,24 +147,10 @@ enum NotitieTabs {
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const terugbelform = ref<{ submit: () => boolean }>();
-const terugbelformIsValid = () => {
-  if (currentNotitieTab.value === NotitieTabs.Regulier) return true;
-  return (
-    typeof terugbelform.value?.submit === "function" &&
-    terugbelform.value.submit()
-  );
-};
-
-watch(
-  currentNotitieTab,
-  (t) => {
-    if (t === NotitieTabs.Regulier) {
-      contactmomentStore.contactverzoek = undefined;
-    }
-  },
-  { immediate: true }
-);
+const disableContactmomentStarter = computed(() => {
+  if (currentNotitieTab.value === NotitieTabs.Regulier) return false;
+  return !contactmomentStore.contactverzoek;
+});
 </script>
 
 <style scoped lang="scss">
@@ -171,9 +164,8 @@ main {
 aside {
   background-color: var(--color-tertiary);
   padding-inline: 2px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
 
   :deep(textarea.utrecht-textarea) {
     padding: 0px;

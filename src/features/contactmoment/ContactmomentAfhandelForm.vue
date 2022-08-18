@@ -55,6 +55,11 @@
       </select>
     </fieldset>
 
+    <p v-if="contactmomentStore.contactverzoek">
+      Contactverzoek verstuurd naar
+      {{ contactmomentStore.contactverzoek.medewerker }}
+    </p>
+
     <application-message
       class="formValidationMessage"
       v-if="validationMessage != ''"
@@ -199,7 +204,7 @@ whenever(
 fieldset {
   display: grid;
   align-items: center;
-  grid-gap: 2rem;
+  grid-gap: var(--spacing-large);
   grid-template-columns: 1fr 2fr;
 }
 
@@ -208,13 +213,13 @@ label {
 }
 
 menu {
-  margin-top: 2rem;
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-default);
   justify-content: flex-end;
 }
 
-.formValidationMessage {
-  margin-top: 2rem;
+form {
+  display: grid;
+  gap: var(--spacing-large);
 }
 </style>

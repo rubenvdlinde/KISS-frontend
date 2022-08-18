@@ -90,8 +90,6 @@ import {
   koppelObject,
 } from "@/features/contactmoment";
 import { ZakenOverzicht } from "@/features/zaaksysteem";
-import { saveContactverzoek } from "@/features/contactverzoek";
-import { createKlant } from "@/features/klant/service";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -99,10 +97,10 @@ const saving = ref(false);
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
-const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
+const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
   const promises = contactmomentStore?.zaken.map((zaak) =>
     koppelObject({
-      contactmoment: contactMomentUrl,
+      contactmoment: contactmomentId,
       object: zaak.url,
       objectType: "zaak",
     })
@@ -111,15 +109,6 @@ const zakenToevoegenAanContactmoment = (contactMomentUrl: string) => {
 };
 
 const koppelKlanten = (contactmomentId: string) => {
-  if (contactmomentStore.nieuweKlant) {
-    return createKlant(contactmomentStore.nieuweKlant).then((klant) => {
-      contactmomentStore.setKlant(klant);
-      return koppelKlant({
-        contactmomentId,
-        klantId: klant.id,
-      });
-    });
-  }
   const promises = contactmomentStore.klanten
     .filter((x) => x.shouldStore)
     .map((x) =>
@@ -132,11 +121,11 @@ const koppelKlanten = (contactmomentId: string) => {
 };
 
 const koppelContactverzoek = (
-  contactmomentUrl: string,
+  contacmomentId: string,
   contactverzoekUrl: string
 ) =>
   koppelObject({
-    contactmoment: contactmomentUrl,
+    contactmoment: contacmomentId,
     object: contactverzoekUrl,
     objectType: "contactmomentobject",
   });
@@ -148,28 +137,20 @@ const saveContact = (contactmoment: Contactmoment) => {
   //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
   enrichContactmomentWithNotitie(contactmoment);
 
-  const promises = [contactmomentService.save(contactmoment)];
-
-  if (contactmomentStore.contactverzoek) {
-    promises.push(
-      saveContactverzoek(
-        contactmomentStore.contactverzoek,
-        contactmomentStore.notitie
-      )
-    );
-  }
-
-  return Promise.all(promises)
-    .then(([savedContactmoment, savedContactverzoek]) => {
+  return contactmomentService
+    .save(contactmoment)
+    .then((savedContactmoment) => {
       const nextPromises: Promise<unknown>[] = [
-        zakenToevoegenAanContactmoment(savedContactmoment.url),
+        zakenToevoegenAanContactmoment(savedContactmoment.id),
         koppelKlanten(savedContactmoment.id),
       ];
-      if (savedContactverzoek) {
+      if (contactmomentStore.contactverzoek) {
         nextPromises.push(
-          koppelContactverzoek(savedContactmoment.id, savedContactverzoek.url)
+          koppelContactverzoek(
+            savedContactmoment.id,
+            contactmomentStore.contactverzoek.url
+          )
         );
-        nextPromises.push(koppelKlanten(savedContactverzoek.id));
       }
       return Promise.all(nextPromises);
     })

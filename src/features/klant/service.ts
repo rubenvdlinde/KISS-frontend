@@ -9,10 +9,7 @@ import {
 import type { Ref } from "vue";
 import type { Klant, NieuweKlant } from "@/stores/contactmoment";
 
-const isEmail = (val: string) =>
-  val.match(
-    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
-  );
+const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 
 type KlantSearchParameters = {
   search: Ref<string>;
@@ -34,9 +31,9 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
-      url.searchParams.set("emailadres", search);
+      url.searchParams.set("emails.email[]", search);
     } else {
-      url.searchParams.set("telefoonnummer", search);
+      url.searchParams.set("telefoonnummers.telefoonnummer[]", search);
     }
     return url.toString();
   }
@@ -64,9 +61,16 @@ export function createKlant(klant: NieuweKlant) {
 }
 
 function mapKlant(obj: any): Klant {
-  const klant = { ...obj, bsn: obj?.embedded.subjectIdentificatie?.inpBsn };
+  const emails = obj?.embedded?.emails ?? [];
+  const telefoonnummers = obj?.embedded?.telefoonnummers ?? [];
+  const bsn = obj?.embedded.subjectIdentificatie?.inpBsn;
 
-  return klant;
+  return {
+    ...obj,
+    emails,
+    telefoonnummers,
+    bsn,
+  };
 }
 
 function searchKlanten(url: string): Promise<Paginated<Klant>> {

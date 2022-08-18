@@ -4,8 +4,8 @@ export interface Klant {
   voornaam: string;
   voorvoegselAchternaam?: string;
   achternaam: string;
-  telefoonnummer: string;
-  emailadres: string;
+  telefoonnummers: { telefoonnummer: string }[];
+  emails: { email: string }[];
   bsn?: number;
 }
 
@@ -14,8 +14,8 @@ export type NieuweKlant = Pick<
   | "voornaam"
   | "voorvoegselAchternaam"
   | "achternaam"
-  | "telefoonnummer"
-  | "emailadres"
+  | "telefoonnummers"
+  | "emails"
 >;
 
 export interface Medewerker {
@@ -26,24 +26,6 @@ export interface Medewerker {
   emailadres: string;
   telefoonnummer1?: string;
   telefoonnummer2?: string;
-}
-
-//er is voorlopig voor gekozen om een contactverzoek op te slaan
-//als een contactmoment met een geneste todo
-//de meeste velden worden niet gebruikt, voor transparantie hier wel uitgecommentarieerd getoond.
-//nb nog niet alle velden zitten in de api todo voor conduction
-// export interface MedewerkerIdentificatie {
-//   identificatie: string;
-//   achternaam: string;
-//   voorletters: string;
-//   voorvoegselAchternaam: string;
-// }
-export interface Contactverzoek {
-  bronorganisatie: string; //verplicht in de api
-  todo: {
-    description: string;
-    attendees: string;
-  };
 }
 
 export interface Zaak {

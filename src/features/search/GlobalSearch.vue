@@ -105,10 +105,10 @@
                     <section>
                       <h2>Algemene contactgegevens</h2>
                       <dl>
-                        <dd>E-mailadres:</dd>
-                        <dt>{{ jsonObject?.user }}</dt>
-                        <dd>Telefoonnummer:</dd>
-                        <dt>{{ jsonObject?.contact?.telefoonnummer1 }}</dt>
+                        <dt>E-mailadres:</dt>
+                        <dd>{{ jsonObject?.user }}</dd>
+                        <dt>Telefoonnummer:</dt>
+                        <dd>{{ jsonObject?.contact?.telefoonnummer1 }}</dd>
                       </dl>
                     </section>
                     <section>
@@ -169,17 +169,19 @@
                       width="128"
                     />
                     <dl>
-                      <dd>Functie:</dd>
-                      <dt>{{ jsonObject?.function }}</dt>
+                      <dt>Functie:</dt>
+                      <dd>{{ jsonObject?.function }}</dd>
 
-                      <dd>Afdeling:</dd>
-                      <dt>{{ jsonObject?.department }}</dt>
+                      <dt>Afdeling:</dt>
+                      <dd>{{ jsonObject?.department }}</dd>
 
-                      <dd>Wat kun je en wat doe je:</dd>
-                      <dt>{{ jsonObject?.skills }}</dt>
+                      <dt>Wat kun je en wat doe je:</dt>
+                      <dd>{{ jsonObject?.skills }}</dd>
 
-                      <dd>Vervanger:</dd>
-                      <dt>{{ jsonObject?.replacement }}</dt>
+                      <template v-if="jsonObject?.replacement?.name">
+                        <dt>Vervanger:</dt>
+                        <dd>{{ jsonObject.replacement.name }}</dd>
+                      </template>
                     </dl>
                   </section>
                 </template>
@@ -461,7 +463,7 @@ dl {
   row-gap: var(--spacing-small);
 }
 
-dd {
+dt {
   font-weight: bold;
 }
 

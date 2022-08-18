@@ -1,11 +1,5 @@
 import { defineStore } from "pinia";
-import type {
-  Klant,
-  Medewerker,
-  Contactverzoek,
-  Zaak,
-  NieuweKlant,
-} from "./types";
+import type { Klant, Zaak, NieuweKlant } from "./types";
 export * from "./types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };
@@ -15,8 +9,7 @@ interface ContactmomentState {
   zaken: ContactmomentZaak[];
   klanten: { klant: Klant; shouldStore: boolean }[];
   notitie: string;
-  medewerkers: Medewerker[]; // hier zullen geselecteerde medewerkers uit de zoekresultaten bewaard moeten worde, zodat ze bij het contactmoment gebruikt kunnen worden (bv bij een terugbel notite)
-  contactverzoek: Contactverzoek | undefined;
+  contactverzoek: { url: string; medewerker: string } | undefined;
   nieuweKlant: NieuweKlant | undefined;
 }
 
@@ -27,7 +20,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
       zaken: <ContactmomentZaak[]>[],
       klanten: [],
       notitie: "",
-      medewerkers: [],
       contactverzoek: undefined,
       nieuweKlant: undefined,
     } as ContactmomentState;
@@ -86,11 +78,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     setNotitie(notitie: string) {
       this.notitie = notitie;
-    },
-
-    addMedewerker(medewerker: Medewerker) {
-      if (this.medewerkers.some((x) => x.id === medewerker.id)) return;
-      this.medewerkers.push(medewerker);
     },
   },
 });
