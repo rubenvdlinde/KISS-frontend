@@ -6,6 +6,7 @@ export interface Klant {
   achternaam: string;
   telefoonnummers: { telefoonnummer: string }[];
   emails: { email: string }[];
+  bsn?: number;
 }
 
 export type NieuweKlant = Pick<
@@ -35,6 +36,8 @@ export interface Zaak {
   zaaktype: string;
   registratiedatum: string;
   status: string;
+  fataleDatum: string;
+  behandelaar: string;
 }
 
 export interface MedewerkerIdentificatie {

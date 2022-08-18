@@ -1,5 +1,8 @@
-import { fetchLoggedIn } from "@/services";
+import { DateTime } from "luxon";
+import { fetchLoggedIn, ServiceResult } from "@/services";
 import type { Zaak } from "@/stores/contactmoment";
+import type { Ref } from "vue";
+import { formatToWrittenDate } from "@/services/formatToWrittenDate";
 
 export function useZaaksysteemService() {
   if (!window.gatewayBaseUri) {
@@ -50,47 +53,76 @@ export function useZaaksysteemService() {
       });
   };
 
-  const findByBsn = (bsn: number) => {
-    const url = `${zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn}&extend[]=all`;
+  const findByBsn = (bsn: Ref<number | undefined>) => {
+    const getFindByBsnURL = () => {
+      if (!bsn.value) return "";
 
-    return fetchLoggedIn(url)
-      .then((r) => {
-        if (!r.ok) {
-          throw new Error();
-        }
-        return r.json();
-      })
+      return `${zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn.value}&extend[]=all`;
+    };
 
-      .then((json) => {
-        if (!Array.isArray(json.results)) {
-          throw new Error(
-            "Invalide json, verwacht een lijst: " + JSON.stringify(json.results)
-          );
-        }
-
-        return json.results.map(
-          (x: {
-            id: string;
-            identificatie: string;
-            startdatum: string;
-            url: string;
-            embedded: {
-              zaaktype: { omschrijving: string };
-              status: { statustoelichting: string };
-            };
-          }) => {
-            return {
-              identificatie: x.identificatie,
-              id: x.id,
-              startdatum: x.startdatum,
-              url: x.url,
-              zaaktype: x.embedded.zaaktype.omschrijving,
-              registratiedatum: x.startdatum,
-              status: x.embedded.status.statustoelichting,
-            } as Zaak;
+    const getZaakByBsn = (url: string): Promise<Zaak[]> => {
+      return fetchLoggedIn(url)
+        .then((r) => {
+          if (!r.ok) {
+            throw new Error();
           }
-        );
-      });
+          return r.json();
+        })
+
+        .then((json) => {
+          if (!Array.isArray(json.results)) {
+            throw new Error(
+              "Invalide json, verwacht een lijst: " +
+                JSON.stringify(json.results)
+            );
+          }
+
+          return json.results.map((zaak: any) => {
+            const fataleDatum: string = DateTime.fromSQL(zaak.startdatum)
+              .plus({
+                days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
+              })
+              .toSQL();
+
+            const getBehandelaarName = (): string => {
+              const behandelaar = zaak.embedded.rollen.find(
+                (rol: any) => rol.betrokkeneType === "medewerker"
+              );
+
+              const identificatie =
+                behandelaar?.embedded?.betrokkeneIdentificatie;
+
+              if (!identificatie) return "Onbekend";
+
+              const voornaam = identificatie.voornamen ?? "";
+              const tussenvoegsel =
+                identificatie.voorvoegselGeslachtsnaam ?? "";
+              const achternaam = identificatie.geslachtsnaam ?? "";
+
+              return `${voornaam} ${tussenvoegsel} ${achternaam}`;
+            };
+
+            return {
+              identificatie: zaak.identificatie,
+              id: zaak.id,
+              startdatum: formatToWrittenDate(zaak.startdatum),
+              url: zaak.url,
+              zaaktype: zaak.embedded.zaaktype.onderwerp,
+              registratiedatum: zaak.startdatum,
+              status: zaak.embedded.status.statustoelichting,
+              fataleDatum: formatToWrittenDate(fataleDatum),
+              behandelaar: getBehandelaarName(),
+            } as Zaak;
+          });
+        });
+    };
+
+    const withoutFetcher = () => getZaakByBsn(getFindByBsnURL());
+
+    const withFetcher = () =>
+      ServiceResult.fromFetcher(getFindByBsnURL, getZaakByBsn);
+
+    return { withoutFetcher, withFetcher };
   };
 
   //   {

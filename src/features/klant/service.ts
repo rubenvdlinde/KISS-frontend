@@ -63,11 +63,13 @@ export function createKlant(klant: NieuweKlant) {
 function mapKlant(obj: any): Klant {
   const emails = obj?.embedded?.emails ?? [];
   const telefoonnummers = obj?.embedded?.telefoonnummers ?? [];
+  const bsn = obj?.embedded?.subjectIdentificatie?.inpBsn;
 
   return {
     ...obj,
     emails,
     telefoonnummers,
+    bsn,
   };
 }
 

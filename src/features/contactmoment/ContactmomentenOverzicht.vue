@@ -194,8 +194,4 @@ details[open],
 details:hover {
   background-color: var(--color-secondary);
 }
-
-utrecht-heading {
-  margin-inline-start: var(--spacing-default);
-}
 </style>
