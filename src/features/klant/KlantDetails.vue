@@ -50,7 +50,6 @@ defineProps({
 article {
   background-color: var(--color-secondary);
   padding: var(--spacing-default);
-  margin-block: var(--spacing-large);
 }
 
 table {
