@@ -100,7 +100,8 @@ const zoekOpBsn = () => {
   zaken.value = [];
 
   service
-    .findByBsn(bsn.value)
+    .findByBsn(bsn)
+    .withoutFetcher()
     .then((data) => {
       zaken.value = data;
       isDirty.value = true;
