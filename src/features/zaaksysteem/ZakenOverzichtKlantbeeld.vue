@@ -56,7 +56,9 @@ const zaken = zaakService.findByBsn(klantBsn).withFetcher();
 
 <style lang="scss" scoped>
 .container {
-  margin-inline: var(--spacing-default);
+  margin-inline-start: var(--spacing-default);
+  margin-inline-end: var(--spacing-default);
+
   > *:not(:last-child) {
     margin-block-end: var(--spacing-default);
   }
