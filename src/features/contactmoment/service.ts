@@ -109,7 +109,9 @@ const fetchObject = ({
   object: string;
   objectType: string;
 }) =>
-  fetchLoggedIn(window.gatewayBaseUri + object)
+  fetchLoggedIn(
+    object.startsWith("/") ? window.gatewayBaseUri + object : object
+  )
     .then(throwIfNotOk)
     .then((or) => or.json())
     .then((oj) => ({
