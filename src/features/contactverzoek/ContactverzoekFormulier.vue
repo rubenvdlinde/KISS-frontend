@@ -174,15 +174,15 @@ watch(
     nieuweKlant.voornaam = klant?.voornaam || "";
     nieuweKlant.voorvoegselAchternaam = klant?.voorvoegselAchternaam;
     nieuweKlant.achternaam = klant?.achternaam || "";
-    emailadres.value = klant?.emails?.[0] || "";
-    telefoonnummer1.value = klant?.telefoonnummers?.[0] || "";
-    telefoonnummer2.value = klant?.telefoonnummers?.[1] || "";
+    emailadres.value = klant?.emails?.[0]?.email || "";
+    telefoonnummer1.value = klant?.telefoonnummers?.[0]?.telefoonnummer || "";
+    telefoonnummer2.value = klant?.telefoonnummers?.[1]?.telefoonnummer || "";
   },
   { immediate: true }
 );
 
 watch(
-  () => contactmomentStore.notitieveld,
+  () => contactmomentStore.notitie,
   (n, o) => {
     if (
       n &&
@@ -217,9 +217,13 @@ async function submit() {
       nieuweKlant.telefoonnummers = [
         telefoonnummer1.value,
         telefoonnummer2.value,
-      ].filter(Boolean);
+      ]
+        .filter(Boolean)
+        .map((telefoonnummer) => ({ telefoonnummer }));
 
-      nieuweKlant.emails = emailadres.value ? [emailadres.value] : [];
+      nieuweKlant.emails = emailadres.value
+        ? [{ email: emailadres.value }]
+        : [];
 
       const klant = await createKlant(nieuweKlant);
       contactmomentStore.setKlant(klant);

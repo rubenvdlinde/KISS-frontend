@@ -4,8 +4,8 @@ export interface Klant {
   voornaam: string;
   voorvoegselAchternaam?: string;
   achternaam: string;
-  telefoonnummers: string[];
-  emails: string[];
+  telefoonnummers: { telefoonnummer: string }[];
+  emails: { email: string }[];
 }
 
 export type NieuweKlant = Pick<
