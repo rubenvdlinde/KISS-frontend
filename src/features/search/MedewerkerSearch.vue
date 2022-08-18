@@ -214,9 +214,11 @@ watch(matchingResult, (val) => {
   emit("update:modelValue", val);
 });
 
-watch([inputRef, shouldSetValidity], ([r, s]) => {
+watch([inputRef, shouldSetValidity, searchText], ([r, s, v]) => {
   if (!(r instanceof HTMLInputElement)) return;
-  r.setCustomValidity(s ? "Kies een optie uit de lijst" : "");
+  r.setCustomValidity(
+    s ? (!v ? "Zoek een medewerker" : "Kies een optie uit de lijst") : ""
+  );
 });
 </script>
 
