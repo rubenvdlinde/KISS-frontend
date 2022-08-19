@@ -5,9 +5,9 @@
     </small>
 
     <div class="heading-container">
-      <utrecht-heading model-value :level="level">{{
-        bericht.title
-      }}</utrecht-heading>
+      <utrecht-heading model-value :level="level">
+        <span class="title">{{ bericht.title }}</span>
+      </utrecht-heading>
 
       <button
         @click="toggleRead"
@@ -105,6 +105,11 @@ article {
     .toggle-read {
       all: unset;
       cursor: pointer;
+      color: var(--color-headings);
+
+      &:hover {
+        color: var(--color-tertiary);
+      }
     }
   }
 
@@ -138,8 +143,12 @@ article {
   }
 
   &.read {
-    & > .heading-container {
-      opacity: 0.5;
+    .title {
+      font-weight: normal;
+    }
+
+    .toggle-read {
+      color: var(--color-tertiary);
     }
 
     & > *:not(.heading-container) {
