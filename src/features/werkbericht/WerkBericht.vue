@@ -94,7 +94,7 @@ article {
     gap: 0.25rem;
     list-style-type: disc;
     padding-left: var(--text-margin);
-    line-height: 1.5rem;
+    line-height: var(--line-height-default);
   }
 
   :deep(p) {

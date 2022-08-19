@@ -107,7 +107,7 @@ export function useZaaksysteemService() {
               id: zaak.id,
               startdatum: formatToWrittenDate(zaak.startdatum),
               url: zaak.url,
-              zaaktype: zaak.embedded.zaaktype.onderwerp,
+              zaaktype: zaak.embedded.zaaktype.omschrijving,
               registratiedatum: zaak.startdatum,
               status: zaak.embedded.status.statustoelichting,
               fataleDatum: formatToWrittenDate(fataleDatum),
