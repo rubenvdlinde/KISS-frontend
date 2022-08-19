@@ -32,7 +32,7 @@
       ></textarea>
 
       <label for="contactgegevens" class="utrecht-form-label"
-        >Het emailadres of telefoonnummer waarop de auteur jou kan
+        >Het e-mailadres of telefoonnummer waarop de auteur jou kan
         bereiken</label
       >
       <input

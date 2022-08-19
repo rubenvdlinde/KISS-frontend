@@ -11,7 +11,7 @@
             <th>Klantnummer</th>
             <th>Naam</th>
             <th>Telefoonnummer(s)</th>
-            <th>Emailadres(sen)</th>
+            <th>E-mailadres(sen)</th>
           </tr>
         </thead>
         <tbody>
