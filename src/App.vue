@@ -71,6 +71,8 @@ const contactmomentStore = useContactmomentStore();
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
+  --line-height-default: 1.5;
+
   // other
   --radius-default: 0.5rem;
   --radius-medium: 1rem;
@@ -83,6 +85,7 @@ html,
 body,
 #app {
   height: 100%;
+  line-height: var(--line-height-default);
 }
 
 body {
