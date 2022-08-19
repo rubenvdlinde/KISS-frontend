@@ -1,6 +1,24 @@
 <template>
   <article>
-    <utrecht-heading model-value :level="level">Klantgegevens</utrecht-heading>
+    <div class="heading-container">
+      <utrecht-heading model-value :level="level">
+        <span class="heading"
+          ><span>Klantgegevens</span>
+          <span
+            @click="toggleEditing"
+            :class="!editing && 'icon-after pen'"
+            class="toggleEdit"
+          ></span
+        ></span>
+      </utrecht-heading>
+
+      <div v-if="editing" class="buttons-container">
+        <button @click="toggleEditing" class="annuleren">Annuleren</button>
+
+        <utrecht-button modelValue>Opslaan</utrecht-button>
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -28,7 +46,27 @@
                 .join(", ")
             }}
           </td>
-          <td>{{ klant.emails.map(({ email }) => email).join(", ") }}</td>
+          <td v-if="editing">
+            <span
+              class="input-container"
+              v-for="(email, idx) in klant.emails"
+              :key="idx"
+              ><input
+                type="email"
+                v-model="email.email"
+                class="utrecht-textbox utrecht-textbox--html-input"
+              />
+              <span
+                @click="removeEmail"
+                class="icon-before xmark remove-item"
+              />
+            </span>
+
+            <span @click="addEmail" class="add-item icon-after plus" />
+          </td>
+          <td v-if="!editing">
+            {{ klant.emails.map(({ email }) => email).join(", ") }}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -36,11 +74,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, type PropType } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { defineProps, ref, type PropType } from "vue";
+import {
+  UtrechtHeading,
+  UtrechtButton,
+} from "@utrecht/web-component-library-vue";
 import type { Klant } from "@/stores/contactmoment";
 
-defineProps({
+const props = defineProps({
   klant: {
     type: Object as PropType<Klant>,
     required: true,
@@ -50,6 +91,24 @@ defineProps({
     default: 2,
   },
 });
+
+const emails = ref(props.klant.emails);
+
+const editing = ref<boolean>(false);
+
+const toggleEditing = (): void => {
+  editing.value = !editing.value;
+};
+
+const addEmail = (): void => {
+  if (emails.value[emails.value.length - 1].email === "") return;
+
+  emails.value.push({ email: "" });
+};
+
+const removeEmail = (event: Event): void => {
+  // console.log(event.target.value);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -72,7 +131,77 @@ caption {
 }
 th,
 td {
+  width: 25%;
   text-align: left;
   padding-block: var(--spacing-default);
+}
+
+.heading-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .heading {
+    display: flex;
+    align-items: center;
+
+    & > *:not(:last-child) {
+      margin-inline-end: var(--spacing-small);
+    }
+
+    .toggleEdit {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .buttons-container {
+    display: flex;
+    align-items: center;
+
+    & > .annuleren {
+      all: unset;
+      text-decoration: underline;
+      margin-inline-end: var(--spacing-default);
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+
+  & > *:not(:last-child) {
+    margin-inline-end: var(--spacing-small);
+  }
+
+  & > .remove-item:hover {
+    cursor: pointer;
+  }
+}
+
+.add-item {
+  display: flex;
+  color: white;
+  width: fit-content;
+  background-color: var(--color-primary);
+  border-radius: var(--spacing-default);
+  padding-inline-start: var(--spacing-default);
+  padding-inline-end: var(--spacing-default);
+  padding-block-start: var(--spacing-small);
+  padding-block-end: var(--spacing-small);
+
+  &::after {
+    height: 0.75rem;
+    width: 0.75rem;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>
