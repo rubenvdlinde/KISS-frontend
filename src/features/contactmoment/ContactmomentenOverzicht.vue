@@ -24,7 +24,7 @@
           <details @click="toggleDetails">
             <summary>
               <span aria-labelledby="datum-header" class="first-column">{{
-                localeDate(contactmoment.registratiedatum)
+                formatDateOnly(contactmoment.registratiedatum)
               }}</span>
               <span aria-labelledby="medewerker-header">{{
                 contactmoment.medewerker
@@ -38,7 +38,7 @@
             </summary>
             <dl>
               <dt>Starttijd</dt>
-              <dd>{{ localeTime(contactmoment.registratiedatum) }}</dd>
+              <dd>{{ formatTimeOnly(contactmoment.registratiedatum) }}</dd>
               <template
                 v-for="zaak in contactmoment.zaken"
                 :key="zaak.zaaknummer"
@@ -77,6 +77,7 @@ import { computed, ref, type PropType } from "vue";
 import { useKlantContactmomenten } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "../../nl-design-system/components/Pagination.vue";
+import { formatDateOnly, formatTimeOnly } from "@/helpers/date";
 
 const props = defineProps({
   klantId: {
@@ -96,19 +97,6 @@ const contactmomenten = useKlantContactmomenten(
     page: page.value,
   }))
 );
-
-const localeDate = (d?: Date) =>
-  d?.toLocaleString("nl-NL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
-const localeTime = (d?: Date) =>
-  d?.toLocaleString("nl-NL", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 
 // toggle <details> open status on click anywhere within <details>, not only on <summary>
 const toggleDetails = (e: Event) => {

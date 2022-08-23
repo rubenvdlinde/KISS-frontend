@@ -25,7 +25,6 @@
             id="bsn"
             v-model="bsn"
             class="utrecht-textbox utrecht-textbox--html-input"
-            v-on:keydown.enter.prevent="zoekOpBsn"
             placeholder="205827123"
           />
         </fieldset>
@@ -64,12 +63,12 @@ import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
 
 const props = defineProps({
-  populatedBsn: { type: Number, default: null },
+  populatedBsn: { type: String, default: null },
 });
 
 const service = useZaaksysteemService();
 const zaaknummer = ref();
-const bsn = ref(props.populatedBsn);
+const bsn = ref("");
 const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
@@ -83,11 +82,12 @@ const zoekOpZaak = () => {
   service
     .findByZaak(zaaknummer.value)
     .then((data) => {
-      zaken.value = data;
+      zaken.value = data.page;
       isDirty.value = true;
     })
-    .catch(() => {
+    .catch((e) => {
       error.value = true;
+      console.error(e);
     })
     .finally(() => {
       busy.value = false;
@@ -103,11 +103,12 @@ const zoekOpBsn = () => {
     .findByBsn(bsn)
     .withoutFetcher()
     .then((data) => {
-      zaken.value = data;
+      zaken.value = data.page;
       isDirty.value = true;
     })
-    .catch(() => {
+    .catch((e) => {
       error.value = true;
+      console.error(e);
     })
     .finally(() => {
       busy.value = false;
@@ -117,8 +118,9 @@ const zoekOpBsn = () => {
 //als er een bsn meegegeven wordt dan initieren we direct een zoekopdracht daarop
 watch(
   () => props.populatedBsn,
-  (first, second) => {
-    if (first && first != second) {
+  (first) => {
+    if (first) {
+      bsn.value = first;
       zoekOpBsn();
     }
   },

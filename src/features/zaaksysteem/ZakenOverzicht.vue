@@ -12,7 +12,7 @@
         <td>{{ zaak.identificatie }}</td>
         <td>{{ zaak.zaaktype }}</td>
         <td>{{ zaak.status }}</td>
-        <td>{{ zaak.registratiedatum }}</td>
+        <td>{{ formatDateOnly(zaak.registratiedatum) }}</td>
         <td>
           <zaak-contactmoment-koppelaar
             :zaak="zaak"
@@ -24,6 +24,7 @@
 </template>
 
 <script lang="ts" setup>
+import { formatDateOnly } from "@/helpers/date";
 import type { Zaak } from "@/stores/contactmoment";
 import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
