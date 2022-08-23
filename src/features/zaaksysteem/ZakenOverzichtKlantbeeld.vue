@@ -8,7 +8,7 @@
 
     <p v-else-if="zaken.error">Er ging iets mis. Probeer het later nog eens.</p>
 
-    <table v-else-if="zaken.data.length">
+    <table v-else-if="zaken.data.page.length">
       <thead>
         <th>Zaaknummer</th>
         <th>Zaaktype</th>
@@ -19,13 +19,13 @@
       </thead>
 
       <tbody>
-        <tr v-for="zaak in zaken.data" :key="zaak.id">
+        <tr v-for="zaak in zaken.data.page" :key="zaak.id">
           <td>{{ zaak.identificatie }}</td>
           <td>{{ zaak.zaaktype }}</td>
           <td>{{ zaak.status }}</td>
           <td>{{ zaak.behandelaar }}</td>
-          <td>{{ zaak.startdatum }}</td>
-          <td>{{ zaak.fataleDatum }}</td>
+          <td>{{ formatDateOnly(zaak.startdatum) }}</td>
+          <td>{{ formatDateOnly(zaak.fataleDatum) }}</td>
         </tr>
       </tbody>
     </table>
@@ -39,10 +39,11 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { computed } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { useZaaksysteemService } from "./service";
+import { formatDateOnly } from "@/helpers/date";
 
 const props = defineProps({
   klantBsn: {
-    type: Number,
+    type: String,
     required: true,
   },
 });

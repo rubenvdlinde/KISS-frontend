@@ -117,11 +117,11 @@ enum Tabs {
   personenZoeker = "Via persoon",
 }
 const activeTab = ref(Tabs.personenZoeker);
-const currentBsn = ref<number>();
+const currentBsn = ref<string>();
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab
-const onZakenZoeken = (bsn: number) => {
+const onZakenZoeken = (bsn: string) => {
   currentBsn.value = bsn;
   activeTab.value = Tabs.zakenZoeker;
 };
