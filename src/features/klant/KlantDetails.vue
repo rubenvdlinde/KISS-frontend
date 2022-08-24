@@ -1,10 +1,10 @@
 <template>
   <article>
     <form @submit.prevent="submit">
-      <div class="heading-container">
+      <header class="heading-container">
         <utrecht-heading model-value :level="level">
           <span class="heading">
-            <span>Klantgegevens</span>
+            Klantgegevens
             <button
               v-if="!editing"
               @click="toggleEditing"
@@ -15,7 +15,10 @@
             <simple-spinner class="spinner" v-if="submitter.loading" />
             <application-message
               v-else-if="submitter.error"
+              class="error-message"
               message="Er ging iets mis. Probeer het later nog eens"
+              :auto-close="true"
+              message-type="error"
             />
           </span>
         </utrecht-heading>
@@ -30,7 +33,7 @@
             <utrecht-button modelValue type="submit">Opslaan</utrecht-button>
           </li>
         </menu>
-      </div>
+      </header>
       <table>
         <thead>
           <tr>
@@ -52,29 +55,27 @@
               }}
             </td>
             <td v-if="showForm">
-              <span
-                class="input-container"
-                v-for="(tel, idx) in telefoonnummers"
-                :key="idx"
-              >
-                <input
-                  type="text"
-                  v-model="tel.telefoonnummer"
-                  class="utrecht-textbox utrecht-textbox--html-input"
-                />
+              <span class="in-cell-edit">
+                <template v-for="(tel, idx) in telefoonnummers" :key="idx">
+                  <input
+                    type="text"
+                    v-model="tel.telefoonnummer"
+                    class="utrecht-textbox utrecht-textbox--html-input"
+                  />
+                  <button
+                    @click="removePhoneNumber(idx)"
+                    type="button"
+                    title="Telefoonnummer verwijderen"
+                    class="icon-before xmark remove-item"
+                  />
+                </template>
                 <button
-                  @click="removePhoneNumber(idx)"
+                  title="Telefoonnummer toevoegen"
                   type="button"
-                  title="Telefoonnummer verwijderen"
-                  class="icon-before xmark remove-item"
+                  @click="addPhoneNumber"
+                  class="add-item icon-after plus"
                 />
               </span>
-              <button
-                title="Telefoonnummer toevoegen"
-                type="button"
-                @click="addPhoneNumber"
-                class="add-item icon-after plus"
-              />
             </td>
             <td v-else>
               {{
@@ -84,29 +85,27 @@
               }}
             </td>
             <td v-if="showForm">
-              <span
-                class="input-container"
-                v-for="(email, idx) in emails"
-                :key="idx"
-              >
-                <input
-                  type="email"
-                  v-model="email.email"
-                  class="utrecht-textbox utrecht-textbox--html-input"
-                />
+              <span class="in-cell-edit">
+                <template v-for="(email, idx) in emails" :key="idx">
+                  <input
+                    type="email"
+                    v-model="email.email"
+                    class="utrecht-textbox utrecht-textbox--html-input"
+                  />
+                  <button
+                    @click="removeEmail(idx)"
+                    type="button"
+                    title="Email verwijderen"
+                    class="icon-before xmark remove-item"
+                  />
+                </template>
                 <button
-                  @click="removeEmail(idx)"
+                  title="Email toevoegen"
                   type="button"
-                  title="Email verwijderen"
-                  class="icon-before xmark remove-item"
+                  @click="addEmail"
+                  class="add-item icon-after plus"
                 />
               </span>
-              <button
-                title="Email toevoegen"
-                type="button"
-                @click="addEmail"
-                class="add-item icon-after plus"
-              />
             </td>
             <td v-else>
               {{ emails.map(({ email }) => email).join(", ") }}
@@ -211,21 +210,14 @@ article {
 
 table {
   width: 100%;
+  margin-top: var(--spacing-default);
 }
 
-caption {
-  padding-left: var(--spacing-default);
-  padding-block: var(--spacing-small);
-  margin-block: var(--spacing-small);
-  text-align: left;
-  font-size: var(--utrecht-typography-scale-lg);
-  border-bottom: 1px solid var(--color-tertiary);
-}
 th,
 td {
   width: 25%;
   text-align: left;
-  padding-block: var(--spacing-default);
+  padding-inline: var(--spacing-small);
 }
 
 .heading-container {
@@ -236,40 +228,17 @@ td {
     display: flex;
     align-items: center;
     gap: var(--spacing-default);
-
-    .toggleEdit {
-      &:hover {
-        cursor: pointer;
-      }
-    }
   }
 
   .buttons-container {
     display: flex;
     align-items: center;
+    gap: var(--spacing-default);
 
     .annuleren {
       all: unset;
       text-decoration: underline;
-      margin-inline-end: var(--spacing-default);
-
-      &:hover {
-        cursor: pointer;
-      }
     }
-  }
-}
-
-.input-container {
-  display: flex;
-  align-items: center;
-
-  & > *:not(:last-child) {
-    margin-inline-end: var(--spacing-small);
-  }
-
-  & > .remove-item:hover {
-    cursor: pointer;
   }
 }
 
@@ -283,14 +252,11 @@ td {
   padding-inline-end: var(--spacing-default);
   padding-block-start: var(--spacing-small);
   padding-block-end: var(--spacing-small);
+  margin-inline-start: auto;
 
   &::after {
-    height: 0.75rem;
-    width: 0.75rem;
-  }
-
-  &:hover {
-    cursor: pointer;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
   }
 }
 
@@ -301,5 +267,15 @@ td {
 
 .spinner {
   font-size: 16px;
+}
+
+.error-message {
+  font-size: 50%;
+}
+
+.in-cell-edit {
+  gap: var(--spacing-small);
+  display: grid;
+  grid-template-columns: 1fr min-content;
 }
 </style>
