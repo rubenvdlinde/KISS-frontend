@@ -71,7 +71,11 @@
           v-model="telefoonnummer1"
           class="utrecht-textbox utrecht-textbox--html-input"
           pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
-          title="Vul een valide Nederlands telefoonnummer in"
+          :title="
+            klantReadonly
+              ? undefined
+              : 'Vul een valide Nederlands telefoonnummer in'
+          "
           :disabled="klantReadonly"
         />
       </label>
@@ -83,7 +87,11 @@
           v-model="telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
           pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
-          title="Vul een valide Nederlands telefoonnummer in"
+          :title="
+            klantReadonly
+              ? undefined
+              : 'Vul een valide Nederlands telefoonnummer in'
+          "
           :disabled="klantReadonly"
         />
       </label>

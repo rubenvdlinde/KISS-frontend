@@ -65,8 +65,8 @@ export function useBrpService() {
             };
           }) => {
             //als er geen bsn bekend is hebben we er niets aan
-            const bsnNumber = parseInt(x.burgerservicenummer);
-            if (isNaN(bsnNumber)) {
+            const bsnNumber = x.burgerservicenummer;
+            if (!bsnNumber) {
               return;
             }
 
