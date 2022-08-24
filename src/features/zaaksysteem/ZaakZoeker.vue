@@ -118,9 +118,9 @@ const zoekOpBsn = () => {
 //als er een bsn meegegeven wordt dan initieren we direct een zoekopdracht daarop
 watch(
   () => props.populatedBsn,
-  (first) => {
-    if (first) {
-      bsn.value = first;
+  (populatedBsnValue) => {
+    if (populatedBsnValue) {
+      bsn.value = populatedBsnValue;
       zoekOpBsn();
     }
   },
