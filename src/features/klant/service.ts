@@ -85,7 +85,7 @@ export function updateContactgegevens({
   id,
   telefoonnummers,
   emails,
-}: UpdateContactgegevensParams) {
+}: UpdateContactgegevensParams): Promise<UpdateContactgegevensParams> {
   const url = rootUrl + "/" + id;
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
@@ -106,7 +106,12 @@ export function updateContactgegevens({
         body: JSON.stringify(klant),
       })
     )
-    .then(throwIfNotOk);
+    .then(throwIfNotOk)
+    .then((x) => x.json())
+    .then((u) => ({
+      id,
+      ...u.embedded,
+    }));
 }
 
 export function useUpdateContactGegevens() {

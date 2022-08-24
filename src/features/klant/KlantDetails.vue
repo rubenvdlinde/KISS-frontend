@@ -200,12 +200,9 @@ const submit = () =>
       telefoonnummers: telefoonnummers.value,
       emails: emails.value,
     })
-    .then(() => {
+    .then((response) => {
       editing.value = false;
-      Object.assign(props.klant, {
-        telefoonnummers: clone(telefoonnummers.value),
-        emails: clone(emails.value),
-      });
+      Object.assign(props.klant, response);
       populate(props.klant);
     });
 
