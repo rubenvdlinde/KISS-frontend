@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
@@ -122,8 +122,11 @@ const currentBsn = ref<string>();
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab
 const onZakenZoeken = (bsn: string) => {
-  currentBsn.value = bsn;
-  activeTab.value = Tabs.zakenZoeker;
+  currentBsn.value = "";
+  nextTick(() => {
+    currentBsn.value = bsn;
+    activeTab.value = Tabs.zakenZoeker;
+  });
 };
 
 //klant functies
