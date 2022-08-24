@@ -57,9 +57,9 @@
             <td v-if="showForm">
               <span class="in-cell-edit">
                 <template v-for="(tel, idx) in telefoonnummers" :key="idx">
-                  <input
-                    type="text"
+                  <custom-phone-input
                     v-model="tel.telefoonnummer"
+                    required
                     class="utrecht-textbox utrecht-textbox--html-input"
                   />
                   <button
@@ -91,6 +91,7 @@
                     type="email"
                     v-model="email.email"
                     class="utrecht-textbox utrecht-textbox--html-input"
+                    required
                   />
                   <button
                     @click="removeEmail(idx)"
@@ -128,6 +129,7 @@ import { useUpdateContactGegevens } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { computed } from "@vue/reactivity";
 import ApplicationMessage from "../../components/ApplicationMessage.vue";
+import CustomPhoneInput from "../../components/CustomPhoneInput.vue";
 
 const props = defineProps({
   klant: {
