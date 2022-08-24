@@ -72,6 +72,16 @@ export const ServiceResult = {
       loading: false,
     });
   },
+  init<T>(): ServiceData<T> | { init: true; state: "init" } {
+    return reactive({
+      state: "init",
+      data: null,
+      error: false,
+      success: false,
+      loading: false,
+      init: true,
+    });
+  },
 
   fromPromise<T = unknown>(promise: Promise<T>): ServiceData<T> & Promise<T> {
     const result = ServiceResult.loading<T>();
@@ -96,6 +106,57 @@ export const ServiceResult = {
       });
 
     return Object.assign(result, promise);
+  },
+
+  fromSubmitter<TIn, TOut>(
+    submitter: (params: TIn) => Promise<TOut>
+  ): (
+    | ServiceData<TOut>
+    | {
+        init: true;
+        state: "init";
+        loading: false;
+        success: false;
+        error: false;
+      }
+  ) & {
+    submit: (params: TIn) => Promise<TOut>;
+  } {
+    const result = ServiceResult.init<TOut>();
+    return Object.assign(result, {
+      submit(params: TIn): Promise<TOut> {
+        Object.assign(result, {
+          state: "loading",
+          data: null,
+          error: false,
+          success: false,
+          loading: true,
+          init: false,
+        });
+        return submitter(params)
+          .then((r) => {
+            Object.assign(result, {
+              state: "success",
+              data: r,
+              loading: false,
+              error: false,
+              success: true,
+              init: false,
+            });
+            return r;
+          })
+          .catch((e) => {
+            Object.assign(result, {
+              state: "error",
+              error: e instanceof Error ? e : new Error(e),
+              loading: false,
+              success: false,
+              init: false,
+            });
+            throw e;
+          });
+      },
+    });
   },
 
   /**

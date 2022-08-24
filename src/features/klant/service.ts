@@ -8,6 +8,7 @@ import {
 
 import type { Ref } from "vue";
 import type { Klant, NieuweKlant } from "@/stores/contactmoment";
+import type { UpdateContactgegevensParams } from "./types";
 
 const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 
@@ -84,7 +85,7 @@ export function updateContactgegevens({
   id,
   telefoonnummers,
   emails,
-}: Pick<Klant, "id" | "telefoonnummers" | "emails">) {
+}: UpdateContactgegevensParams) {
   const url = rootUrl + "/" + id;
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
@@ -106,4 +107,8 @@ export function updateContactgegevens({
       })
     )
     .then(throwIfNotOk);
+}
+
+export function useUpdateContactGegevens() {
+  return ServiceResult.fromSubmitter(updateContactgegevens);
 }

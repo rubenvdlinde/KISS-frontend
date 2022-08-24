@@ -1,34 +1,36 @@
 <template>
   <article>
-    <div class="heading-container">
-      <utrecht-heading model-value :level="level">
-        <span class="heading"
-          ><span>Klantgegevens</span>
-          <button
-            v-if="!editing"
-            @click="toggleEditing"
-            title="Bewerken"
-            :class="'icon-after pen'"
-            class="toggleEdit"
-          ></button
-        ></span>
-      </utrecht-heading>
-
-      <menu v-if="editing" class="buttons-container">
-        <li>
-          <button @click="reset" type="reset" class="annuleren">
-            Annuleren
-          </button>
-        </li>
-        <li>
-          <utrecht-button modelValue type="submit" @click="submit"
-            >Opslaan</utrecht-button
-          >
-        </li>
-      </menu>
-    </div>
-
     <form @submit.prevent="submit">
+      <div class="heading-container">
+        <utrecht-heading model-value :level="level">
+          <span class="heading">
+            <span>Klantgegevens</span>
+            <button
+              v-if="!editing"
+              @click="toggleEditing"
+              title="Bewerken"
+              :class="'icon-after pen'"
+              class="toggleEdit"
+            />
+            <simple-spinner class="spinner" v-if="submitter.loading" />
+            <application-message
+              v-else-if="submitter.error"
+              message="Er ging iets mis. Probeer het later nog eens"
+            />
+          </span>
+        </utrecht-heading>
+
+        <menu v-if="showForm" class="buttons-container">
+          <li>
+            <button @click="reset" type="reset" class="annuleren">
+              Annuleren
+            </button>
+          </li>
+          <li>
+            <utrecht-button modelValue type="submit">Opslaan</utrecht-button>
+          </li>
+        </menu>
+      </div>
       <table>
         <thead>
           <tr>
@@ -49,7 +51,7 @@
                   .join(" ")
               }}
             </td>
-            <td v-if="editing">
+            <td v-if="showForm">
               <span
                 class="input-container"
                 v-for="(tel, idx) in telefoonnummers"
@@ -81,7 +83,7 @@
                   .join(", ")
               }}
             </td>
-            <td v-if="editing">
+            <td v-if="showForm">
               <span
                 class="input-container"
                 v-for="(email, idx) in emails"
@@ -117,13 +119,16 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, type PropType } from "vue";
+import { ref, type PropType } from "vue";
 import {
   UtrechtHeading,
   UtrechtButton,
 } from "@utrecht/web-component-library-vue";
 import type { Klant } from "@/stores/contactmoment";
-import { updateContactgegevens } from "./service";
+import { useUpdateContactGegevens } from "./service";
+import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import { computed } from "@vue/reactivity";
+import ApplicationMessage from "../../components/ApplicationMessage.vue";
 
 const props = defineProps({
   klant: {
@@ -181,14 +186,21 @@ const removePhoneNumber = (i: number): void => {
   telefoonnummers.value.splice(i, 1);
 };
 
-const submit = () =>
-  updateContactgegevens({
+const submitter = useUpdateContactGegevens();
+
+const submit = () => {
+  const model = {
     id: props.klant.id,
     telefoonnummers: telefoonnummers.value,
     emails: emails.value,
-  }).then(() => {
+  };
+  return submitter.submit(model).then(() => {
     editing.value = false;
+    Object.assign(props.klant, model);
   });
+};
+
+const showForm = computed(() => !submitter.loading && editing.value);
 </script>
 
 <style lang="scss" scoped>
@@ -223,10 +235,7 @@ td {
   .heading {
     display: flex;
     align-items: center;
-
-    & > *:not(:last-child) {
-      margin-inline-end: var(--spacing-small);
-    }
+    gap: var(--spacing-default);
 
     .toggleEdit {
       &:hover {
@@ -288,5 +297,9 @@ td {
 .icon-after,
 .icon-before {
   border: none;
+}
+
+.spinner {
+  font-size: 16px;
 }
 </style>
