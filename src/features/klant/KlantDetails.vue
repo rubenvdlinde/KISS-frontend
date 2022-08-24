@@ -4,72 +4,115 @@
       <utrecht-heading model-value :level="level">
         <span class="heading"
           ><span>Klantgegevens</span>
-          <span
+          <button
+            v-if="!editing"
             @click="toggleEditing"
-            :class="!editing && 'icon-after pen'"
+            title="Bewerken"
+            :class="'icon-after pen'"
             class="toggleEdit"
-          ></span
+          ></button
         ></span>
       </utrecht-heading>
 
-      <div v-if="editing" class="buttons-container">
-        <button @click="toggleEditing" class="annuleren">Annuleren</button>
-
-        <utrecht-button modelValue>Opslaan</utrecht-button>
-      </div>
+      <menu v-if="editing" class="buttons-container">
+        <li>
+          <button @click="reset" type="reset" class="annuleren">
+            Annuleren
+          </button>
+        </li>
+        <li>
+          <utrecht-button modelValue type="submit" @click="submit"
+            >Opslaan</utrecht-button
+          >
+        </li>
+      </menu>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Klantnummer</th>
-          <th>Naam</th>
-          <th>Telefoonnummer(s)</th>
-          <th>E-mailadres(sen)</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{ klant.klantnummer }}</td>
-          <td>
-            {{
-              [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
-                .filter((x) => x)
-                .join(" ")
-            }}
-          </td>
-          <td>
-            {{
-              klant.telefoonnummers
-                .map(({ telefoonnummer }) => telefoonnummer)
-                .join(", ")
-            }}
-          </td>
-          <td v-if="editing">
-            <span
-              class="input-container"
-              v-for="(email, idx) in klant.emails"
-              :key="idx"
-              ><input
-                type="email"
-                v-model="email.email"
-                class="utrecht-textbox utrecht-textbox--html-input"
-              />
+    <form @submit.prevent="submit">
+      <table>
+        <thead>
+          <tr>
+            <th>Klantnummer</th>
+            <th>Naam</th>
+            <th>Telefoonnummer(s)</th>
+            <th>E-mailadres(sen)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ klant.klantnummer }}</td>
+            <td>
+              {{
+                [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
+                  .filter((x) => x)
+                  .join(" ")
+              }}
+            </td>
+            <td v-if="editing">
               <span
-                @click="removeEmail"
-                class="icon-before xmark remove-item"
+                class="input-container"
+                v-for="(tel, idx) in telefoonnummers"
+                :key="idx"
+              >
+                <input
+                  type="text"
+                  v-model="tel.telefoonnummer"
+                  class="utrecht-textbox utrecht-textbox--html-input"
+                />
+                <button
+                  @click="removePhoneNumber(idx)"
+                  type="button"
+                  title="Telefoonnummer verwijderen"
+                  class="icon-before xmark remove-item"
+                />
+              </span>
+              <button
+                title="Telefoonnummer toevoegen"
+                type="button"
+                @click="addPhoneNumber"
+                class="add-item icon-after plus"
               />
-            </span>
-
-            <span @click="addEmail" class="add-item icon-after plus" />
-          </td>
-          <td v-if="!editing">
-            {{ klant.emails.map(({ email }) => email).join(", ") }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+            <td v-else>
+              {{
+                telefoonnummers
+                  .map(({ telefoonnummer }) => telefoonnummer)
+                  .join(", ")
+              }}
+            </td>
+            <td v-if="editing">
+              <span
+                class="input-container"
+                v-for="(email, idx) in emails"
+                :key="idx"
+              >
+                <input
+                  type="email"
+                  v-model="email.email"
+                  class="utrecht-textbox utrecht-textbox--html-input"
+                />
+                <button
+                  @click="removeEmail(idx)"
+                  type="button"
+                  title="Email verwijderen"
+                  class="icon-before xmark remove-item"
+                />
+              </span>
+              <button
+                title="Email toevoegen"
+                type="button"
+                @click="addEmail"
+                class="add-item icon-after plus"
+              />
+            </td>
+            <td v-else>
+              {{ emails.map(({ email }) => email).join(", ") }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
   </article>
 </template>
 
@@ -80,6 +123,7 @@ import {
   UtrechtButton,
 } from "@utrecht/web-component-library-vue";
 import type { Klant } from "@/stores/contactmoment";
+import { updateContactgegevens } from "./service";
 
 const props = defineProps({
   klant: {
@@ -92,12 +136,25 @@ const props = defineProps({
   },
 });
 
-const emails = ref(props.klant.emails);
+// we clone the emails and phone numbers, so we don't directly edit the Klant object on the contactmoment store.
+// this means we can easily reset unsaved changes
+function clone<T>(val: T[]): T[] {
+  return val.map((x) => Object.assign({}, x));
+}
+
+const emails = ref(clone(props.klant.emails));
+const telefoonnummers = ref(clone(props.klant.telefoonnummers));
 
 const editing = ref<boolean>(false);
 
 const toggleEditing = (): void => {
   editing.value = !editing.value;
+};
+
+const reset = () => {
+  emails.value = clone(props.klant.emails);
+  telefoonnummers.value = clone(props.klant.telefoonnummers);
+  editing.value = false;
 };
 
 const addEmail = (): void => {
@@ -106,9 +163,32 @@ const addEmail = (): void => {
   emails.value.push({ email: "" });
 };
 
-const removeEmail = (event: Event): void => {
-  // console.log(event.target.value);
+const removeEmail = (i: number): void => {
+  emails.value.splice(i, 1);
 };
+
+const addPhoneNumber = (): void => {
+  if (
+    telefoonnummers.value[telefoonnummers.value.length - 1]?.telefoonnummer ===
+    ""
+  )
+    return;
+
+  telefoonnummers.value.push({ telefoonnummer: "" });
+};
+
+const removePhoneNumber = (i: number): void => {
+  telefoonnummers.value.splice(i, 1);
+};
+
+const submit = () =>
+  updateContactgegevens({
+    id: props.klant.id,
+    telefoonnummers: telefoonnummers.value,
+    emails: emails.value,
+  }).then(() => {
+    editing.value = false;
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -159,7 +239,7 @@ td {
     display: flex;
     align-items: center;
 
-    & > .annuleren {
+    .annuleren {
       all: unset;
       text-decoration: underline;
       margin-inline-end: var(--spacing-default);
@@ -189,7 +269,7 @@ td {
   color: white;
   width: fit-content;
   background-color: var(--color-primary);
-  border-radius: var(--spacing-default);
+  border-radius: var(--radius-medium);
   padding-inline-start: var(--spacing-default);
   padding-inline-end: var(--spacing-default);
   padding-block-start: var(--spacing-small);
@@ -203,5 +283,10 @@ td {
   &:hover {
     cursor: pointer;
   }
+}
+
+.icon-after,
+.icon-before {
+  border: none;
 }
 </style>

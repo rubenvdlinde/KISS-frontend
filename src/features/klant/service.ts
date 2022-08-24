@@ -79,3 +79,31 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
     .then((r) => r.json())
     .then((j) => parsePagination(j, mapKlant));
 }
+
+export function updateContactgegevens({
+  id,
+  telefoonnummers,
+  emails,
+}: Pick<Klant, "id" | "telefoonnummers" | "emails">) {
+  const url = rootUrl + "/" + id;
+  return fetchLoggedIn(url)
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then((klant) => {
+      delete klant.url;
+      return Object.assign(klant, {
+        telefoonnummers,
+        emails,
+      });
+    })
+    .then((klant) =>
+      fetchLoggedIn(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(klant),
+      })
+    )
+    .then(throwIfNotOk);
+}
