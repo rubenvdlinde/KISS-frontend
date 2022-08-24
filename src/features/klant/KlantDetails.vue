@@ -118,7 +118,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, type PropType } from "vue";
+import { ref, watch, type PropType } from "vue";
 import {
   UtrechtHeading,
   UtrechtButton,
@@ -149,6 +149,13 @@ function clone<T>(val: T[]): T[] {
 const emails = ref(clone(props.klant.emails));
 const telefoonnummers = ref(clone(props.klant.telefoonnummers));
 
+function populate(k: Klant) {
+  emails.value = clone(k.emails);
+  telefoonnummers.value = clone(k.telefoonnummers);
+}
+
+watch(() => props.klant, populate);
+
 const editing = ref<boolean>(false);
 
 const toggleEditing = (): void => {
@@ -156,8 +163,7 @@ const toggleEditing = (): void => {
 };
 
 const reset = () => {
-  emails.value = clone(props.klant.emails);
-  telefoonnummers.value = clone(props.klant.telefoonnummers);
+  populate(props.klant);
   editing.value = false;
 };
 
@@ -187,17 +193,21 @@ const removePhoneNumber = (i: number): void => {
 
 const submitter = useUpdateContactGegevens();
 
-const submit = () => {
-  const model = {
-    id: props.klant.id,
-    telefoonnummers: telefoonnummers.value,
-    emails: emails.value,
-  };
-  return submitter.submit(model).then(() => {
-    editing.value = false;
-    Object.assign(props.klant, model);
-  });
-};
+const submit = () =>
+  submitter
+    .submit({
+      id: props.klant.id,
+      telefoonnummers: telefoonnummers.value,
+      emails: emails.value,
+    })
+    .then(() => {
+      editing.value = false;
+      Object.assign(props.klant, {
+        telefoonnummers: clone(telefoonnummers.value),
+        emails: clone(emails.value),
+      });
+      populate(props.klant);
+    });
 
 const showForm = computed(() => !submitter.loading && editing.value);
 </script>
