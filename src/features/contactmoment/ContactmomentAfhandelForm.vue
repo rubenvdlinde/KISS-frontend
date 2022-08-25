@@ -44,6 +44,7 @@
         v-model="contactmoment.resultaat"
         class="utrecht-select utrecht-select--html-select"
         v-focus
+        :disabled="isTerugbelNotitie"
       >
         <option
           v-for="gespreksresultaat in gespresResultatenServiceResult.data"
@@ -53,6 +54,11 @@
         </option>
       </select>
     </fieldset>
+
+    <p v-if="contactmomentStore.contactverzoek">
+      Contactverzoek verstuurd naar
+      {{ contactmomentStore.contactverzoek.medewerker }}
+    </p>
 
     <application-message
       class="formValidationMessage"
@@ -102,18 +108,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
-import { useContactmomentStore } from "@/stores/contactmoment";
-import { useContactmomentService } from "@/features/contactmoment";
-import type { Contactmoment } from "./types";
+import {
+  useContactmomentStore,
+  type Contactmoment,
+} from "@/stores/contactmoment";
+import { useContactmomentService } from "./service";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
-import { useConfirmDialog } from "@vueuse/core";
+import { useConfirmDialog, whenever } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
+import { getFormattedUtcDate } from "@/services";
 
 const router = useRouter();
 const user = useUserStore();
@@ -123,14 +132,14 @@ const service = useContactmomentService();
 const cancelDialogRevealed = ref(false);
 const cancelDialog = useConfirmDialog(cancelDialogRevealed);
 const contactmoment: Contactmoment = reactive({
-  vorigContactmoment: null,
+  vorigContactmoment: undefined,
   voorkeurskanaal: "",
   voorkeurstaal: "",
   tekst: "",
   onderwerpLinks: [],
   initiatiefnemer: "klant", //enum "gemeente" of "klant"
   medewerker: "",
-  medewerkerIdentificatie: null,
+  medewerkerIdentificatie: undefined,
   resultaat: "",
   kanaal: "",
   bronorganisatie:
@@ -172,20 +181,15 @@ const annuleren = () => {
   router.push({ name: "home" });
 };
 
-//date format helper: 2005-12-30UTC01:02:03
-const getFormattedUtcDate = () => {
-  const formatDateTimeElement = (x: number) => ("0" + x).slice(-2);
+const isTerugbelNotitie = computed(() => !!contactmomentStore.contactverzoek);
 
-  var now = new Date();
-
-  return `${now.getFullYear()}-${formatDateTimeElement(
-    now.getMonth() + 1
-  )}-${formatDateTimeElement(now.getDate())}UTC${formatDateTimeElement(
-    now.getUTCHours()
-  )}:${formatDateTimeElement(now.getUTCMinutes())}:${formatDateTimeElement(
-    now.getSeconds()
-  )}`;
-};
+whenever(
+  isTerugbelNotitie,
+  () => {
+    contactmoment.resultaat = "Terugbelnotitie gemaakt";
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
@@ -200,7 +204,7 @@ const getFormattedUtcDate = () => {
 fieldset {
   display: grid;
   align-items: center;
-  grid-gap: 2rem;
+  grid-gap: var(--spacing-large);
   grid-template-columns: 1fr 2fr;
 }
 
@@ -209,13 +213,13 @@ label {
 }
 
 menu {
-  margin-top: 2rem;
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-default);
   justify-content: flex-end;
 }
 
-.formValidationMessage {
-  margin-top: 2rem;
+form {
+  display: grid;
+  gap: var(--spacing-large);
 }
 </style>

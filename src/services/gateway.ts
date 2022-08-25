@@ -29,3 +29,18 @@ export async function parsePagination<T>(
     totalRecords: total,
   };
 }
+
+//date format helper: 2005-12-30UTC01:02:03
+export const getFormattedUtcDate = () => {
+  const formatDateTimeElement = (x: number) => ("0" + x).slice(-2);
+
+  const now = new Date();
+
+  return `${now.getFullYear()}-${formatDateTimeElement(
+    now.getMonth() + 1
+  )}-${formatDateTimeElement(now.getDate())}UTC${formatDateTimeElement(
+    now.getUTCHours()
+  )}:${formatDateTimeElement(now.getUTCMinutes())}:${formatDateTimeElement(
+    now.getSeconds()
+  )}`;
+};

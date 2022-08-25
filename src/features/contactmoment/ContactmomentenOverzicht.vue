@@ -24,7 +24,7 @@
           <details @click="toggleDetails">
             <summary>
               <span aria-labelledby="datum-header" class="first-column">{{
-                localeDate(contactmoment.registratiedatum)
+                formatDateOnly(contactmoment.registratiedatum)
               }}</span>
               <span aria-labelledby="medewerker-header">{{
                 contactmoment.medewerker
@@ -37,22 +37,31 @@
               }}</span>
             </summary>
             <dl>
-              <dd>Starttijd</dd>
-              <dt>{{ localeTime(contactmoment.registratiedatum) }}</dt>
+              <dt>Starttijd</dt>
+              <dd>{{ formatTimeOnly(contactmoment.registratiedatum) }}</dd>
               <template
                 v-for="zaak in contactmoment.zaken"
                 :key="zaak.zaaknummer"
               >
-                <dd>Zaaknummer</dd>
-                <dt>{{ zaak.zaaknummer }}</dt>
-                <dd>Zaaktype</dd>
-                <dt>{{ zaak.zaaktype }}</dt>
-                <dd>Status</dd>
-                <dt>{{ zaak.status }}</dt>
+                <dt>Zaaknummer</dt>
+                <dd>{{ zaak.zaaknummer }}</dd>
+                <dt>Zaaktype</dt>
+                <dd>{{ zaak.zaaktype }}</dd>
+                <dt>Status</dt>
+                <dd>{{ zaak.status }}</dd>
               </template>
-              <dd>Tekst</dd>
-              <dt class="tekst">{{ contactmoment.tekst }}</dt>
+              <dt>Tekst</dt>
+              <dd class="tekst">{{ contactmoment.tekst }}</dd>
             </dl>
+            <p
+              v-for="(
+                { medewerkers, completed }, i
+              ) in contactmoment.contactverzoeken"
+              :key="i"
+            >
+              Contactverzoek verstuurd aan {{ medewerkers.join(", ") }}. Dit
+              verzoek {{ completed ? "is afgerond" : "staat open" }}.
+            </p>
           </details>
         </li>
       </ul>
@@ -68,6 +77,7 @@ import { computed, ref, type PropType } from "vue";
 import { useKlantContactmomenten } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "../../nl-design-system/components/Pagination.vue";
+import { formatDateOnly, formatTimeOnly } from "@/helpers/date";
 
 const props = defineProps({
   klantId: {
@@ -88,19 +98,6 @@ const contactmomenten = useKlantContactmomenten(
   }))
 );
 
-const localeDate = (d?: Date) =>
-  d?.toLocaleString("nl-NL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
-const localeTime = (d?: Date) =>
-  d?.toLocaleString("nl-NL", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
 // toggle <details> open status on click anywhere within <details>, not only on <summary>
 const toggleDetails = (e: Event) => {
   e.preventDefault();
@@ -113,6 +110,8 @@ const toggleDetails = (e: Event) => {
 <style lang="scss" scoped>
 article {
   display: grid;
+  margin-inline-start: var(--spacing-default);
+  margin-inline-end: var(--spacing-default);
 }
 
 .pagination {
@@ -138,7 +137,7 @@ li:not(:first-child):not(:last-child) {
 }
 
 .header-row,
-dd {
+dt {
   font-weight: bold;
 }
 
@@ -159,7 +158,7 @@ dl {
 
 .tekst {
   max-width: 90ch;
-  line-height: 1.5rem;
+  white-space: pre-wrap;
 }
 
 .headers {
@@ -177,15 +176,12 @@ details:hover {
 
 details,
 .header-row {
-  padding: var(--spacing-default);
+  padding-block-start: var(--spacing-default);
+  padding-block-end: var(--spacing-default);
 }
 
 details[open],
 details:hover {
   background-color: var(--color-secondary);
-}
-
-utrecht-heading {
-  margin-inline-start: var(--spacing-default);
 }
 </style>

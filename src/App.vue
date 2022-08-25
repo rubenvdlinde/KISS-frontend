@@ -2,7 +2,9 @@
   <login-overlay>
     <template #default="{ onLogout }">
       <the-toast-section />
-      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+      <header
+        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
+      >
         <global-search>
           <template #articleFooter="{ id, title }">
             <search-feedback :id="id" :name="title"></search-feedback>
@@ -23,13 +25,13 @@
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { GlobalSearch } from "./features/search";
+import { GlobalSearch } from "@/features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { logoutUrl, LoginOverlay } from "./features/login";
-import TheToastSection from "./components/TheToastSection.vue";
+import { SearchFeedback } from "@/features/feedback";
+import { logoutUrl, LoginOverlay } from "@/features/login";
+import TheToastSection from "@/components/TheToastSection.vue";
 
-const contactmoment = useContactmomentStore();
+const contactmomentStore = useContactmomentStore();
 </script>
 
 <style lang="scss">
@@ -69,6 +71,8 @@ const contactmoment = useContactmomentStore();
   --header-height: 6rem;
   --text-margin: 1.5rem;
 
+  --line-height-default: 1.5;
+
   // other
   --radius-default: 0.5rem;
   --radius-medium: 1rem;
@@ -81,6 +85,7 @@ html,
 body,
 #app {
   height: 100%;
+  line-height: var(--line-height-default);
 }
 
 body {
@@ -90,7 +95,7 @@ body {
 #app {
   position: relative;
   display: grid;
-  grid-auto-rows: auto;
+  grid-template-rows: auto 1fr;
 }
 
 #app > header {
@@ -234,16 +239,18 @@ h2 {
     color: var(--color-error);
   }
 
+  > :nth-last-child(2) {
+    flex: 1;
+    > input {
+      width: 100%;
+    }
+  }
+
   input[type="search"] {
     padding-inline-start: 1rem;
     &::placeholder {
       color: black;
     }
-  }
-
-  input,
-  select {
-    width: 100%;
   }
 }
 
@@ -289,13 +296,22 @@ h2 {
   mask-image: url("@/assets/icons/check.svg");
 }
 
+.icon-before.phone-flip::before,
+.icon-after.phone-flip::after {
+  mask-image: url("@/assets/icons/phone-flip.svg");
+}
+
+.icon-before.note::before,
+.icon-after.note::after {
+  mask-image: url("@/assets/icons/note.svg");
+}
+
 //forms
 form {
-  label {
-    span.required {
-      color: var(--color-error);
-      padding-left: var(--spacing-small);
-    }
+  span.required::after {
+    content: "*";
+    color: var(--color-error);
+    padding-left: 1ch;
   }
 }
 
@@ -355,6 +371,9 @@ menu {
   --utrecht-form-input-padding-block-start: var(--spacing-small);
 
   --utrecht-form-input-placeholder-color: #999;
+
+  --utrecht-form-input-disabled-border-color: #999;
+  --utrecht-form-input-disabled-color: #999;
 }
 
 utrecht-button,

@@ -2,11 +2,26 @@
   <main>
     <aside>
       <menu></menu>
-      <section>
-        <contactmoment-notitie
-          class="notitie utrecht-textarea"
-        ></contactmoment-notitie>
-      </section>
+      <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
+        <template #tab="{ tabName }">
+          <span
+            :title="tabName"
+            :class="[
+              'icon-after',
+              tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
+            ]"
+            >{{ tabName }}</span
+          >
+        </template>
+        <template #[NotitieTabs.Regulier]>
+          <contactmoment-notitie
+            class="notitie utrecht-textarea"
+          ></contactmoment-notitie>
+        </template>
+        <template #[NotitieTabs.Terugbel]>
+          <contactverzoek-formulier />
+        </template>
+      </tabs-component>
     </aside>
 
     <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
@@ -35,10 +50,12 @@
               </button>
             </li>
           </menu>
+
           <klant-details
             v-if="contactmomentStore.klant"
             :klant="contactmomentStore.klant"
           />
+          <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
           <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
         </article>
       </template>
@@ -54,29 +71,38 @@
               <persoon-zoeker @zakenZoeken="onZakenZoeken" />
             </template>
             <template #[Tabs.zakenZoeker]>
-              <zaak-zoeker :populatedBsn="curentBsn" />
+              <zaak-zoeker :populatedBsn="currentBsn" />
             </template>
           </tabs-component>
         </article>
       </template>
     </tabs-component>
   </main>
-  <contactmoment-starter />
+  <contactmoment-starter
+    :disabled="disableContactmomentStarter"
+    :title="
+      disableContactmomentStarter
+        ? 'Verstuur eerst het contactverzoek of wissel naar een reguliere notitie'
+        : undefined
+    "
+  />
 </template>
 
 <script setup lang="ts">
-import PersoonZoeker from "@/features/brp/PersoonZoeker.vue";
+import { ref, computed, nextTick } from "vue";
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import TabsComponent from "@/components/TabsComponent.vue";
+import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
+import { PersoonZoeker } from "@/features/brp";
 import {
   ContactmomentStarter,
   ContactmomentenOverzicht,
   ContactmomentNotitie,
 } from "@/features/contactmoment";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { ref, computed } from "vue";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
-import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
-import TabsComponent from "@/components/TabsComponent.vue";
 import { ZaakZoeker } from "@/features/zaaksysteem";
+import { ContactverzoekFormulier } from "@/features/contactverzoek";
+import ZakenOverzichtKlantbeeld from "../features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -91,13 +117,16 @@ enum Tabs {
   personenZoeker = "Via persoon",
 }
 const activeTab = ref(Tabs.personenZoeker);
-const curentBsn = ref<number>();
+const currentBsn = ref<string>();
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab
-const onZakenZoeken = (bsn: number) => {
-  curentBsn.value = bsn;
-  activeTab.value = Tabs.zakenZoeker;
+const onZakenZoeken = (bsn: string) => {
+  currentBsn.value = "";
+  nextTick(() => {
+    currentBsn.value = bsn;
+    activeTab.value = Tabs.zakenZoeker;
+  });
 };
 
 //klant functies
@@ -110,6 +139,19 @@ const klantGevonden = (klant: Klant) => {
 };
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
+const klantBsn = computed(() => contactmomentStore.klant?.bsn || "");
+
+// sidebar
+enum NotitieTabs {
+  Regulier = "Reguliere notitie",
+  Terugbel = "Contactverzoek",
+}
+const currentNotitieTab = ref(NotitieTabs.Regulier);
+
+const disableContactmomentStarter = computed(() => {
+  if (currentNotitieTab.value === NotitieTabs.Regulier) return false;
+  return !contactmomentStore.contactverzoek;
+});
 </script>
 
 <style scoped lang="scss">
@@ -118,28 +160,31 @@ main {
   padding-block: 0;
   display: grid;
   grid-template-columns: 1fr 4fr;
-  height: 100vh;
 }
 
 aside {
-  section {
-    border-right: 1px solid var(--color-tertiary);
-    height: 100%;
-    padding: var(--spacing-large);
+  background-color: var(--color-tertiary);
+  padding-inline: 2px;
+  display: grid;
+  grid-template-rows: auto 1fr;
 
-    :deep(textarea.utrecht-textarea) {
-      padding: 0px;
-    }
+  :deep(textarea.utrecht-textarea) {
+    padding: 0px;
   }
 
   menu {
-    height: 3rem;
     background-color: var(--color-tertiary);
+  }
+
+  menu,
+  :deep([role="tablist"]) {
+    height: 3rem;
   }
 }
 
-aside section .zaak-title {
-  margin-inline: var(--container-padding);
+.klant-panel {
+  display: grid;
+  gap: var(--spacing-large);
 }
 
 :deep([role="tablist"]),
@@ -154,7 +199,7 @@ aside section .zaak-title {
 .main-tabs {
   --tab-bg: white;
 
-  ul li article {
+  ul li > article {
     margin-inline: var(--spacing-extralarge);
   }
 }
@@ -172,7 +217,45 @@ aside section .zaak-title {
   margin-top: var(--spacing-large);
   outline: none;
   border: none;
-  height: 100%;
   width: 100%;
+}
+
+.icon-after {
+  font-size: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.notitie-tabs {
+  --tab-bg: white;
+
+  :deep([role="tablist"]) {
+    padding: 0;
+    justify-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  :deep([role="tabpanel"]) {
+    padding: var(--spacing-default);
+    display: flex;
+    flex-direction: column;
+  }
+
+  :deep([role="tab"]) {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+
+    &[aria-selected="true"] {
+      color: var(--color-tertiary);
+    }
+  }
 }
 </style>

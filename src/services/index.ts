@@ -41,6 +41,7 @@ interface FetcherConfig<T = unknown> {
    * if the url alone is not enough to identify a unique request, you can supply a function that does this in stead.
    */
   getUniqueId?: () => string;
+  poll?: true;
 }
 
 export const ServiceResult = {
@@ -72,7 +73,7 @@ export const ServiceResult = {
     });
   },
 
-  fromPromise<T = unknown>(promise: Promise<T>) {
+  fromPromise<T = unknown>(promise: Promise<T>): ServiceData<T> & Promise<T> {
     const result = ServiceResult.loading<T>();
 
     promise
@@ -94,7 +95,7 @@ export const ServiceResult = {
         });
       });
 
-    return result;
+    return Object.assign(result, promise);
   },
 
   /**
@@ -120,7 +121,9 @@ export const ServiceResult = {
       getRequestUniqueId,
       fetcherWithoutParameters,
       {
-        refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
+        refreshInterval: config?.poll
+          ? import.meta.env.VITE_API_REFRESH_INTERVAL_MS
+          : undefined,
       }
     );
 

@@ -10,8 +10,8 @@
           <tr>
             <th>Klantnummer</th>
             <th>Naam</th>
-            <th>Telefoonnummer</th>
-            <th>Emailadres</th>
+            <th>Telefoonnummer(s)</th>
+            <th>E-mailadres(sen)</th>
           </tr>
         </thead>
         <tbody>
@@ -30,8 +30,14 @@
                 ].join(" ")
               }}
             </td>
-            <td>{{ klant.telefoonnummer }}</td>
-            <td>{{ klant.emailadres }}</td>
+            <td>
+              {{
+                klant.telefoonnummers
+                  .map(({ telefoonnummer }) => telefoonnummer)
+                  .join(", ")
+              }}
+            </td>
+            <td>{{ klant.emails.map(({ email }) => email).join(", ") }}</td>
           </tr>
         </tbody>
       </table>

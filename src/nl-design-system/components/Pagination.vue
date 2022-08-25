@@ -213,7 +213,6 @@ watch(
   display: flex;
   height: var(--denhaag-pagination-size);
   justify-content: center;
-  line-height: 1.5;
   position: relative;
   text-align: center;
   text-decoration: none;

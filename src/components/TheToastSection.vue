@@ -35,7 +35,6 @@ output {
   border-radius: var(--radius-default);
   font-size: 1rem;
   color: white;
-  line-height: 1.5rem;
 }
 
 .confirm {

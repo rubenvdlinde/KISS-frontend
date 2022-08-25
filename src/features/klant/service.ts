@@ -7,17 +7,16 @@ import {
 } from "@/services";
 
 import type { Ref } from "vue";
-import type { Klant } from "@/stores/contactmoment";
+import type { Klant, NieuweKlant } from "@/stores/contactmoment";
 
-const isEmail = (val: string) =>
-  val.match(
-    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
-  );
+const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 
 type KlantSearchParameters = {
   search: Ref<string>;
   page: Ref<number | undefined>;
 };
+
+const rootUrl = `${window.gatewayBaseUri}/api/klanten`;
 
 export function useKlanten(params: KlantSearchParameters) {
   function getUrl() {
@@ -28,14 +27,15 @@ export function useKlanten(params: KlantSearchParameters) {
     const wildcardSearch = `%${search}%`;
     const page = params.page?.value || 1;
 
-    const url = new URL(`${window.gatewayBaseUri}/api/klanten`);
+    const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
-      url.searchParams.set("emailadres", wildcardSearch);
+      url.searchParams.set("emails.email", wildcardSearch);
     } else {
-      url.searchParams.set("telefoonnummer", wildcardSearch);
+      //url.searchParams.set("telefoonnummer", wildcardSearch); ??
+      url.searchParams.set("telefoonnummers.telefoonnummer", wildcardSearch);
     }
     return url.toString();
   }
@@ -43,8 +43,36 @@ export function useKlanten(params: KlantSearchParameters) {
   return ServiceResult.fromFetcher(getUrl, searchKlanten);
 }
 
+export function createKlant(klant: NieuweKlant) {
+  return fetchLoggedIn(rootUrl, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      ...klant,
+      bronorganisatie: window.organisatieIds[0],
+      websiteUrl: location.host,
+      // TODO: WAT MOET HIER IN KOMEN?
+      klantnummer: "123",
+    }),
+  })
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then(mapKlant);
+}
+
 function mapKlant(obj: any): Klant {
-  return obj;
+  const emails = obj?.embedded?.emails ?? [];
+  const telefoonnummers = obj?.embedded?.telefoonnummers ?? [];
+  const bsn = obj?.embedded?.subjectIdentificatie?.inpBsn;
+
+  return {
+    ...obj,
+    emails,
+    telefoonnummers,
+    bsn,
+  };
 }
 
 function searchKlanten(url: string): Promise<Paginated<Klant>> {

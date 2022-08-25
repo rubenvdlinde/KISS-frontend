@@ -6,8 +6,8 @@
         <tr>
           <th>Klantnummer</th>
           <th>Naam</th>
-          <th>Telefoonnummer</th>
-          <th>Emailadres</th>
+          <th>Telefoonnummer(s)</th>
+          <th>E-mailadres(sen)</th>
           <th></th>
         </tr>
       </thead>
@@ -21,8 +21,14 @@
                 .join(" ")
             }}
           </td>
-          <td>{{ klant.telefoonnummer }}</td>
-          <td>{{ klant.emailadres }}</td>
+          <td>
+            {{
+              klant.telefoonnummers
+                .map(({ telefoonnummer }) => telefoonnummer)
+                .join(", ")
+            }}
+          </td>
+          <td>{{ klant.emails.map(({ email }) => email).join(", ") }}</td>
         </tr>
       </tbody>
     </table>
@@ -50,7 +56,6 @@ defineProps({
 article {
   background-color: var(--color-secondary);
   padding: var(--spacing-default);
-  margin-block: var(--spacing-large);
 }
 
 table {

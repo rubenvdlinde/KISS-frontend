@@ -1,11 +1,17 @@
-import { parsePagination, throwIfNotOk, ServiceResult } from "@/services";
+import {
+  parsePagination,
+  throwIfNotOk,
+  ServiceResult,
+  type Paginated,
+} from "@/services";
 import { fetchLoggedIn } from "@/services";
+import type { Contactmoment } from "@/stores/contactmoment";
 import type { Ref } from "vue";
 import type {
   ContactmomentViewModel,
-  Contactmoment,
   Gespreksresultaat,
   ContactmomentZaak,
+  ContactmomentObject,
 } from "./types";
 
 export function useContactmomentService() {
@@ -18,21 +24,17 @@ export function useContactmomentService() {
   const gespreksResultatenBaseUri =
     window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
 
-  const save = (data: Contactmoment) => {
-    return fetchLoggedIn(contactmomentenUrl, {
+  const save = (data: Contactmoment): Promise<{ id: string; url: string }> =>
+    fetchLoggedIn(contactmomentenUrl, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
-      return r.json();
-    });
-  };
+    })
+      .then(throwIfNotOk)
+      .then((r) => r.json());
 
   const getGespreksResultaten = () => {
     const fetchBerichten = fetchLoggedIn(gespreksResultatenBaseUri)
@@ -81,44 +83,91 @@ export function useKlantContactmomenten(
   return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
 }
 
+const objectcontactmomentenUrl =
+  window.gatewayBaseUri + "/api/objectcontactmomenten";
+
+export const koppelObject = (data: ContactmomentObject) =>
+  fetchLoggedIn(objectcontactmomentenUrl, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then(throwIfNotOk);
+
 const mapZaak = (json: any): ContactmomentZaak => ({
   status: json?.embedded?.status?.statustoelichting,
   zaaktype: json?.embedded?.zaaktype?.onderwerp,
   zaaknummer: json?.identificatie,
 });
 
-const fetchZaak = (o: { object: string }) =>
-  fetchLoggedIn(window.gatewayBaseUri + o.object)
+const fetchObject = ({
+  object,
+  objectType,
+}: {
+  object: string;
+  objectType: string;
+}) =>
+  fetchLoggedIn(
+    object.startsWith("/") ? window.gatewayBaseUri + object : object
+  )
+    .then(throwIfNotOk)
     .then((or) => or.json())
-    .then(mapZaak);
+    .then((oj) => ({
+      ...oj,
+      objectType,
+    }));
 
-const fetchZaken = (c: any) => {
+const fetchObjecten = (c: any) => {
   const objectcontactmomenten = c?.embedded?.objectcontactmomenten;
   return Array.isArray(objectcontactmomenten)
-    ? Promise.all(
-        objectcontactmomenten
-          .filter((x: any) => x.objectType === "zaak")
-          .map(fetchZaak)
-      )
+    ? Promise.all(objectcontactmomenten.map(fetchObject))
     : Promise.resolve([]);
 };
 
-const mapContactmoment = (r: any): Promise<ContactmomentViewModel> => {
+function mapContactverzoek(obj: any) {
+  const todo = obj?.embedded?.todo;
+  const medewerkers = todo?.attendees ?? obj?.todo?.attendees ?? [];
+  const completed = todo?.completed || "";
+  return {
+    medewerkers,
+    completed: completed ? new Date(completed) : undefined,
+  };
+}
+
+const mapContactmoment = async (r: any): Promise<ContactmomentViewModel> => {
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
   contactmoment.startdatum = new Date(contactmoment.startdatum);
   contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
 
-  return fetchZaken(contactmoment).then((zaken) => ({
+  const objecten = await fetchObjecten(contactmoment);
+  const zaken = objecten.filter((x) => x.objectType === "zaak").map(mapZaak);
+  const contactverzoeken = objecten
+    .filter((x) => x.objectType === "contactmomentobject")
+    .flatMap(mapContactverzoek);
+
+  return {
     ...contactmoment,
     zaken,
-  }));
+    contactverzoeken,
+  };
 };
 
-const fetchKlantContactmomenten = (url: string) =>
+const fetchKlantContactmomenten = (
+  url: string
+): Promise<Paginated<ContactmomentViewModel>> =>
   fetchLoggedIn(url)
     .then(throwIfNotOk)
     .then((r) => r.json())
-    .then((j) => parsePagination(j, mapContactmoment));
+    .then((j) => parsePagination(j, mapContactmoment))
+    .then((p) => {
+      const page = p.page.filter((x) => !(x as any)?.embedded?.todo);
+      return {
+        ...p,
+        page,
+      };
+    });
 
 export function koppelKlant({
   klantId,
