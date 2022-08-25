@@ -1,4 +1,5 @@
 import { fetchLoggedIn, getFormattedUtcDate, throwIfNotOk } from "@/services";
+import type { NieuweKlant } from "@/stores/contactmoment";
 //er is voorlopig voor gekozen om een contactverzoek op te slaan
 //als een contactmoment met een geneste todo
 //de meeste velden worden niet gebruikt, voor transparantie hier wel uitgecommentarieerd getoond.
@@ -35,4 +36,23 @@ export function saveContactverzoek(data: Contactverzoek) {
   })
     .then(throwIfNotOk)
     .then((r) => r.json() as Promise<{ id: string; url: string }>);
+}
+
+export function createKlant(klant: NieuweKlant) {
+  const url = `${window.gatewayBaseUri}/api/klanten`;
+  return fetchLoggedIn(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      ...klant,
+      bronorganisatie: window.organisatieIds[0],
+      //websiteUrl: location.host,
+      // TODO: WAT MOET HIER IN KOMEN?
+      klantnummer: "123",
+    }),
+  })
+    .then(throwIfNotOk)
+    .then((r) => r.json() as Promise<{ id: string }>);
 }
