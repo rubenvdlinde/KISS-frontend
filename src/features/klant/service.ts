@@ -25,6 +25,7 @@ export function useKlanten(params: KlantSearchParameters) {
 
     if (!search) return "";
 
+    const wildcardSearch = `%${search}%`;
     const page = params.page?.value || 1;
 
     const url = new URL(`${window.gatewayBaseUri}/api/klanten`);
@@ -32,9 +33,9 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
-      url.searchParams.set("emailadres", search);
+      url.searchParams.set("emailadres", wildcardSearch);
     } else {
-      url.searchParams.set("telefoonnummer", search);
+      url.searchParams.set("telefoonnummer", wildcardSearch);
     }
     return url.toString();
   }
