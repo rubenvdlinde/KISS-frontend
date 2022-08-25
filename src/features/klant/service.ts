@@ -29,6 +29,7 @@ export function useKlanten(params: KlantSearchParameters) {
 
     const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
+    url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
