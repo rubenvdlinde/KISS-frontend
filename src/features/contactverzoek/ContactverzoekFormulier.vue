@@ -118,12 +118,15 @@ import {
   useContactmomentStore,
   type NieuweKlant,
 } from "@/stores/contactmoment";
-import { saveContactverzoek, type Contactverzoek } from "./service";
+import {
+  saveContactverzoek,
+  createKlant,
+  type Contactverzoek,
+} from "./service";
 import {
   UtrechtButton,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { createKlant } from "../klant/service";
 import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
@@ -221,6 +224,8 @@ async function submit() {
 
     loading.value = true;
 
+    var klantId = "";
+
     if (!contactmomentStore.klant) {
       nieuweKlant.telefoonnummers = [
         telefoonnummer1.value,
@@ -233,10 +238,12 @@ async function submit() {
         ? [{ email: emailadres.value }]
         : [];
 
-      const klant = await createKlant(nieuweKlant);
-      contactmomentStore.setKlant(klant);
+      const newKlantResult = await createKlant(nieuweKlant);
+      klantId = newKlantResult.id;
+    } else {
+      klantId = contactmomentStore.klant?.id;
     }
-    const klantId = contactmomentStore.klant?.id;
+
     if (!klantId) {
       throw new Error("kan klant niet koppelen, id ontbreekt");
     }

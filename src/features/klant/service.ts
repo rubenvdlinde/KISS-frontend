@@ -7,7 +7,7 @@ import {
 } from "@/services";
 
 import type { Ref } from "vue";
-import type { Klant, NieuweKlant } from "@/stores/contactmoment";
+import type { Klant } from "@/stores/contactmoment";
 
 const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 
@@ -39,25 +39,6 @@ export function useKlanten(params: KlantSearchParameters) {
   }
 
   return ServiceResult.fromFetcher(getUrl, searchKlanten);
-}
-
-export function createKlant(klant: NieuweKlant) {
-  return fetchLoggedIn(rootUrl, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      ...klant,
-      bronorganisatie: window.organisatieIds[0],
-      //websiteUrl: location.host,
-      // TODO: WAT MOET HIER IN KOMEN?
-      klantnummer: "123",
-    }),
-  })
-    .then(throwIfNotOk)
-    .then((r) => r.json())
-    .then(mapKlant);
 }
 
 function mapKlant(obj: any): Klant {
