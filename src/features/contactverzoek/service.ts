@@ -48,7 +48,6 @@ export function createKlant(klant: NieuweKlant) {
     body: JSON.stringify({
       ...klant,
       bronorganisatie: window.organisatieIds[0],
-      //websiteUrl: location.host,
       // TODO: WAT MOET HIER IN KOMEN?
       klantnummer: "123",
     }),
