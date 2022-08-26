@@ -19,7 +19,7 @@
           ></contactmoment-notitie>
         </template>
         <template #[NotitieTabs.Terugbel]>
-          <contactverzoek-formulier />
+          <contactverzoek-formulier @isDirty="handleContactverzoekIsDirty" />
         </template>
       </tabs-component>
     </aside>
@@ -79,11 +79,10 @@
     </tabs-component>
   </main>
   <contactmoment-starter
-    :disabled="disableContactmomentStarter"
-    :title="
-      disableContactmomentStarter
-        ? 'Verstuur eerst het contactverzoek of wissel naar een reguliere notitie'
-        : undefined
+    :beforeStopWarning="
+      contactverzoekIsDirty
+        ? 'Let op, u heeft een contactvezoek niet afgerond. Als u het contactmoment afsluit wordt het contactverzoek niet verstuurt.'
+        : ''
     "
   />
 </template>
@@ -152,6 +151,12 @@ const disableContactmomentStarter = computed(() => {
   if (currentNotitieTab.value === NotitieTabs.Regulier) return false;
   return !contactmomentStore.contactverzoek;
 });
+
+const contactverzoekIsDirty = ref(false);
+
+const handleContactverzoekIsDirty = (isDirty: boolean) => {
+  contactverzoekIsDirty.value = isDirty;
+};
 </script>
 
 <style scoped lang="scss">

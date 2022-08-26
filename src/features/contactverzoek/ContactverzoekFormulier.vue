@@ -1,3 +1,18 @@
+<!--
+nb. de gekozen oplossing met het vullen van de klant gegevens obv de 
+geselecteerde klant in de klantstore levert in bepaalde edge cases problemen op
+zo kan een dezelfde klant niet meer geselecteerd worden nadat deze is 
+verwijderd uit het formulier. (de verwijder optie is nodig omdat je
+anders niet meer vrij klantgegevens kan invullen als er toevallig al 
+een klant geselecteerd was in het contact moment. het is mogelijk dat je 
+bv een klant electeert om er vervolgens achter te komen dat dit toch niet
+de juiste persoon is)
+
+het zou beter zijn als alle tijdens het contactmoment gevonden klanten hier
+uit een lijst geselecteerd zouden kunnen worden, met een 'anders namelijk' optie 
+erbij voor het vrij invullen. 
+
+-->
 <template>
   <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
   <p v-if="submitted">
@@ -29,6 +44,7 @@
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
+          @input="IsDirtyCheck"
         />
       </label>
 
@@ -39,6 +55,7 @@
           v-model="nieuweKlant.voorvoegselAchternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
+          @input="IsDirtyCheck"
         />
       </label>
 
@@ -50,6 +67,7 @@
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
+          @input="IsDirtyCheck"
         />
       </label>
 
@@ -61,6 +79,7 @@
           v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
+          @input="IsDirtyCheck"
         />
       </label>
 
@@ -77,6 +96,7 @@
               : 'Vul een valide Nederlands telefoonnummer in'
           "
           :disabled="klantReadonly"
+          @input="IsDirtyCheck"
         />
       </label>
 
@@ -93,8 +113,21 @@
               : 'Vul een valide Nederlands telefoonnummer in'
           "
           :disabled="klantReadonly"
+          @input="IsDirtyCheck"
         />
       </label>
+
+      <menu
+        ><li v-if="klantReadonly">
+          <p>verwijder deze klantgegevens uit het contverzoek</p>
+          <button
+            @click.prevent="wisGeselecteerdeKlant"
+            class="utrecht-button utrecht-button--secondary-action"
+          >
+            verwijder
+          </button>
+        </li></menu
+      >
     </fieldset>
 
     <label class="utrecht-form-label notitieveld">
@@ -103,8 +136,15 @@
         v-model="contactverzoek.todo.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
+        @input="IsDirtyCheck"
       />
     </label>
+    {{ emailRequiredMessage }}
+    <application-message
+      v-if="emailRequiredMessage"
+      :message="emailRequiredMessage"
+      messageType="error"
+    ></application-message>
 
     <utrecht-button model-value type="submit" v-if="!submitted">
       Contactverzoek versturen
@@ -130,10 +170,12 @@ import {
 import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
 const attendee = ref("");
 const loading = ref(false);
 const error = ref(false);
+const useKlantFromStore = ref(false);
 
 const contactverzoek = reactive<Contactverzoek>({
   bronorganisatie: window.organisatieIds[0],
@@ -161,12 +203,16 @@ const emailadres = ref("");
 const contactmomentStore = useContactmomentStore();
 const submitted = computed(() => !!contactmomentStore.contactverzoek);
 const klantReadonly = computed(
-  () => submitted.value || !!contactmomentStore.klant
+  () => submitted.value || useKlantFromStore.value
 );
 const form = ref<HTMLFormElement>();
 
 const emailIsRequired = computed(
-  () => !klantReadonly.value && !telefoonnummer1.value && !telefoonnummer2.value
+  () =>
+    !klantReadonly.value &&
+    !telefoonnummer1.value &&
+    !telefoonnummer2.value &&
+    !emailadres.value
 );
 
 const emailRequiredMessage = computed(() =>
@@ -188,6 +234,7 @@ watch(
     emailadres.value = klant?.emails?.[0]?.email || "";
     telefoonnummer1.value = klant?.telefoonnummers?.[0]?.telefoonnummer || "";
     telefoonnummer2.value = klant?.telefoonnummers?.[1]?.telefoonnummer || "";
+    useKlantFromStore.value = klant != null;
   },
   { immediate: true }
 );
@@ -209,18 +256,20 @@ watch(
 function validate() {
   if (!form.value) return false;
 
-  const emailInput = form.value.elements.namedItem("klant-email");
+  // const emailInput = form.value.elements.namedItem("klant-email");
 
-  if (emailInput instanceof HTMLInputElement) {
-    emailInput.setCustomValidity(emailRequiredMessage.value);
-  }
+  //dit werkt niet goed
+  //validatie melding blijft in sommige gevallen hangen
+  // if (emailInput instanceof HTMLInputElement) {
+  //   emailInput.setCustomValidity(emailRequiredMessage.value);
+  // }
 
   return form.value.reportValidity();
 }
 
 async function submit() {
   try {
-    if (submitted.value || !validate()) return;
+    if (submitted.value || !validate() || emailRequiredMessage.value) return;
 
     loading.value = true;
 
@@ -259,17 +308,37 @@ async function submit() {
     error.value = true;
   } finally {
     loading.value = false;
+    emit("isDirty", false);
   }
 }
+
+const wisGeselecteerdeKlant = () => {
+  nieuweKlant.voornaam = "";
+  nieuweKlant.voorvoegselAchternaam = "";
+  nieuweKlant.achternaam = "";
+  nieuweKlant.telefoonnummers = [];
+  nieuweKlant.emails = [];
+  emailadres.value = "";
+  telefoonnummer1.value = "";
+  telefoonnummer2.value = "";
+
+  useKlantFromStore.value = false;
+};
+
+const emit = defineEmits(["isDirty"]);
+const IsDirtyCheck = (self: any) => {
+  if (self.target.value != "") {
+    emit("isDirty", true);
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@utrecht/component-library-css";
 
 menu {
-  margin-top: 2rem;
   display: flex;
-  gap: 1rem;
+
   justify-content: flex-end;
 }
 

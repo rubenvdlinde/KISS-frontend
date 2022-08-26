@@ -19,6 +19,31 @@
   >
     Start contactmoment
   </utrecht-button>
+
+  <modal-template v-if="beforeStopDialogRevealed">
+    <template #message>
+      <paragraph>
+        {{ beforeStopWarning }}
+      </paragraph>
+    </template>
+
+    <template #menu>
+      <button
+        modelValue
+        @click="beforeStopDialog.cancel"
+        class="utrecht-button utrecht-button--secondary-action"
+      >
+        Hier blijven
+      </button>
+      <button
+        modelValue
+        @click="beforeStopDialog.confirm"
+        class="utrecht-button utrecht-button--action"
+      >
+        Doorgaan
+      </button>
+    </template>
+  </modal-template>
 </template>
 
 <script lang="ts">
@@ -31,7 +56,18 @@ export default {
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
-import { useAttrs } from "vue";
+import { useAttrs, defineProps, ref } from "vue";
+import { useConfirmDialog } from "@vueuse/core";
+import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import ModalTemplate from "@/components/ModalTemplate.vue";
+
+const props = defineProps<{
+  beforeStopWarning: string;
+}>();
+
+const beforeStopDialogRevealed = ref(false);
+const beforeStopDialog = useConfirmDialog(beforeStopDialogRevealed);
+beforeStopDialog.onConfirm(() => stopContactMoment());
 
 const attrs = useAttrs();
 
@@ -45,6 +81,14 @@ const onStartContactMoment = () => {
 };
 
 const onStopContactMoment = () => {
+  if (props.beforeStopWarning) {
+    beforeStopDialog.reveal();
+  } else {
+    stopContactMoment();
+  }
+};
+
+const stopContactMoment = () => {
   if (attrs.disabled) return;
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
@@ -61,5 +105,11 @@ utrecht-button {
 
 utrecht-button.contactmomentLoopt {
   --utrecht-button-background-color: var(--color-accent);
+}
+
+menu {
+  display: flex;
+  gap: var(--spacing-default);
+  justify-content: flex-end;
 }
 </style>
