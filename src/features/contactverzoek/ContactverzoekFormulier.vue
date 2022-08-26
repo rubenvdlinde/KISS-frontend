@@ -121,8 +121,10 @@ erbij voor het vrij invullen.
         ><li v-if="klantReadonly">
           <p>verwijder deze klantgegevens uit het contverzoek</p>
           <button
+            type="button"
             @click.prevent="wisGeselecteerdeKlant"
             class="utrecht-button utrecht-button--secondary-action"
+            tabindex="-1"
           >
             verwijder
           </button>
@@ -235,6 +237,10 @@ watch(
     telefoonnummer1.value = klant?.telefoonnummers?.[0]?.telefoonnummer || "";
     telefoonnummer2.value = klant?.telefoonnummers?.[1]?.telefoonnummer || "";
     useKlantFromStore.value = klant != null;
+
+    if (klant) {
+      emit("isDirty", true);
+    }
   },
   { immediate: true }
 );
@@ -248,6 +254,7 @@ watch(
         contactverzoek.todo.description === o)
     ) {
       contactverzoek.todo.description = n;
+      emit("isDirty", true);
     }
   },
   { immediate: true }
