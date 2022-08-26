@@ -81,7 +81,7 @@
   <contactmoment-starter
     :beforeStopWarning="
       contactverzoekIsDirty
-        ? 'Let op, u heeft een contactvezoek niet afgerond. Als u het contactmoment afsluit wordt het contactverzoek niet verstuurt.'
+        ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
         : ''
     "
   />
