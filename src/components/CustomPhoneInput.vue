@@ -78,7 +78,8 @@ div {
   }
 
   label {
-    background-color: rgba($color: #ddd, $alpha: 0.75);
+    background-color: var(--color-error);
+    color: white;
     padding: var(--spacing-default);
     border-radius: var(--radius-default);
     display: flex;
