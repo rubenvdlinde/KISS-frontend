@@ -124,7 +124,7 @@ erbij voor het vrij invullen.
         class="utrecht-button utrecht-button--secondary-action"
         tabindex="-1"
       >
-        verwijder deze klantgegevens uit het contverzoek
+        Verwijder deze klantgegevens uit het contactverzoek
       </button>
     </fieldset>
 
