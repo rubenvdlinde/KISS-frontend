@@ -113,6 +113,17 @@ article {
     &.is-active {
       display: block;
     }
+
+    :deep(ul) {
+      list-style: disc;
+      margin-inline-start: var(--spacing-default);
+      margin-block: var(--spacing-small);
+
+      ul {
+        list-style: circle;
+        margin-block: 0;
+      }
+    }
   }
 }
 
