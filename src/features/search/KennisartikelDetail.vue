@@ -11,7 +11,7 @@
           :class="{ 'is-active': isActive }"
         >
           <span v-if="isActive">{{ label }}</span>
-          <a v-else :href="`#${id}`" @click.prevent="currentSection = i">{{
+          <a v-else :href="`#${id}`" @click.prevent="currentSectionIndex = i">{{
             label
           }}</a>
         </li>
@@ -50,7 +50,9 @@ const knownSections = {
   wtdBijGeenReactie: "Geen reactie",
   contact: "Contact",
   deskMemo: "KCC",
-};
+} as const;
+
+const uniqueId = nanoid();
 
 const props = defineProps<{
   jsonObject: any;
@@ -58,7 +60,7 @@ const props = defineProps<{
   level: 2 | 3 | 4;
 }>();
 
-const currentSection = ref(0);
+const currentSectionIndex = ref(0);
 
 const translation = computed(() =>
   props.jsonObject.vertalingen.find((x: any) => x.taal === language)
@@ -68,13 +70,13 @@ const sections = computed(() => {
   const translationObj = translation.value;
   const level = props.level;
   return Object.entries(knownSections)
-    .map(([key, label]) => {
+    .map(([key, label], i) => {
       const text = translationObj[key];
       if (!text) return undefined;
       const unEscaped = unEscapeHtml(text);
       const cleaned = cleanHtml(unEscaped, level);
       return {
-        id: nanoid(),
+        id: uniqueId + i,
         label,
         html: cleaned,
       };
@@ -85,14 +87,14 @@ const sections = computed(() => {
 const mappedSections = computed(() =>
   sections.value.map((section, i) => ({
     ...section,
-    isActive: i === currentSection.value,
+    isActive: i === currentSectionIndex.value,
   }))
 );
 
 watch(
   () => props.jsonObject,
   () => {
-    currentSection.value = 0;
+    currentSectionIndex.value = 0;
   }
 );
 </script>
