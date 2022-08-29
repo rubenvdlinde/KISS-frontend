@@ -6,15 +6,16 @@
       :value="modelValue"
       ref="inputEl"
       @input="updateModelValue"
-      @blur="isDirty = true"
+      @blur="setDirty"
     />
     <span
       v-if="isDirty && modelValue.length"
       :class="['confirmed icon-after', message ? 'xmark' : 'check']"
       :title="message ? message : confirmed ? 'Bevestigd' : 'Valide'"
     />
-    <label v-if="message && isDirty"
-      >{{ message }}<input type="checkbox" v-model="confirmed"
+    <label v-if="message" v-show="isDirty"
+      >{{ message
+      }}<input required type="checkbox" v-model="confirmed" @invalid="setDirty"
     /></label>
   </div>
 </template>
@@ -24,7 +25,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, nextTick } from "vue";
 
 const emit = defineEmits(["update:modelValue"]);
 
@@ -58,14 +59,9 @@ watch(
   }
 );
 
-watch(
-  [message, inputEl],
-  ([m, e]) => {
-    if (!e) return;
-    e.setCustomValidity(m);
-  },
-  { immediate: true }
-);
+function setDirty() {
+  isDirty.value = true;
+}
 </script>
 
 <style scoped lang="scss">
