@@ -56,7 +56,7 @@
             </td>
             <td v-if="showForm">
               <span class="in-cell-edit">
-                <template v-for="(tel, idx) in telefoonnummers" :key="idx">
+                <template v-for="(tel, idx) in telefoonnummers" :key="tel">
                   <custom-phone-input
                     v-model="tel.telefoonnummer"
                     :aria-label="`Telefoonnummer ${idx + 1}`"
@@ -88,7 +88,7 @@
             </td>
             <td v-if="showForm">
               <span class="in-cell-edit">
-                <template v-for="(email, idx) in emails" :key="idx">
+                <template v-for="(email, idx) in emails" :key="email">
                   <input
                     type="email"
                     v-model="email.email"
