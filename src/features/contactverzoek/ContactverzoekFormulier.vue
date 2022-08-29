@@ -44,7 +44,7 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
@@ -55,7 +55,7 @@ erbij voor het vrij invullen.
           v-model="nieuweKlant.voorvoegselAchternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
@@ -67,7 +67,7 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
@@ -79,57 +79,53 @@ erbij voor het vrij invullen.
           v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
       <label class="utrecht-form-label">
         Telefoonnummer 1 van de klant
         <input
+          v-if="klantReadonly"
           type="tel"
           v-model="telefoonnummer1"
           class="utrecht-textbox utrecht-textbox--html-input"
-          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
-          :title="
-            klantReadonly
-              ? undefined
-              : 'Vul een valide Nederlands telefoonnummer in'
-          "
-          :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          :disabled="true"
+        />
+        <CustomPhoneInput
+          v-else
+          v-model="telefoonnummer1"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          @input="isDirtyCheck"
         />
       </label>
 
       <label class="utrecht-form-label">
         Telefoonnummer 2 van de klant
         <input
+          v-if="klantReadonly"
           type="tel"
           v-model="telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
-          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
-          :title="
-            klantReadonly
-              ? undefined
-              : 'Vul een valide Nederlands telefoonnummer in'
-          "
-          :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          :disabled="true"
+        />
+        <CustomPhoneInput
+          v-else
+          v-model="telefoonnummer2"
+          class="utrecht-textbox utrecht-textbox--html-input"
+          @input="isDirtyCheck"
         />
       </label>
 
-      <menu
-        ><li v-if="klantReadonly">
-          <p>verwijder deze klantgegevens uit het contverzoek</p>
-          <button
-            type="button"
-            @click.prevent="wisGeselecteerdeKlant"
-            class="utrecht-button utrecht-button--secondary-action"
-            tabindex="-1"
-          >
-            verwijder
-          </button>
-        </li></menu
+      <button
+        v-if="klantReadonly"
+        type="button"
+        @click.prevent="wisGeselecteerdeKlant"
+        class="utrecht-button utrecht-button--secondary-action"
+        tabindex="-1"
       >
+        verwijder deze klantgegevens uit het contverzoek
+      </button>
     </fieldset>
 
     <label class="utrecht-form-label notitieveld">
@@ -138,7 +134,7 @@ erbij voor het vrij invullen.
         v-model="contactverzoek.todo.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
-        @input="IsDirtyCheck"
+        @input="isDirtyCheck"
       />
     </label>
     {{ emailRequiredMessage }}
@@ -173,6 +169,7 @@ import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import CustomPhoneInput from "../../components/CustomPhoneInput.vue";
 
 const attendee = ref("");
 const loading = ref(false);
@@ -333,7 +330,7 @@ const wisGeselecteerdeKlant = () => {
 };
 
 const emit = defineEmits(["isDirty"]);
-const IsDirtyCheck = (self: any) => {
+const isDirtyCheck = (self: any) => {
   if (self.target.value != "") {
     emit("isDirty", true);
   }
