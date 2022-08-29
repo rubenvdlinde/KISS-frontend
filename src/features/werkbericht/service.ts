@@ -75,6 +75,8 @@ function parseWerkbericht(
   const latestDate = maxDate([createdDate, modifiedDate]);
 
   return {
+    id: jsonObject.id,
+    read: !!jsonObject["@dateRead"],
     title: jsonObject.title.rendered,
     content: jsonObject.content.rendered,
     date: latestDate,
@@ -185,14 +187,14 @@ export function useWerkberichten(
 
     const berichten = json.results;
 
-    console.log({ berichten });
-
     if (!Array.isArray(berichten))
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
     return parsePagination(
       json,
       (bericht: any): Werkbericht => ({
+        id: bericht.id,
+        read: !!bericht["@dateRead"],
         title: bericht["@embedded"].title.rendered,
         date: maxDate([
           parseDateStrWithTimezone(bericht["@dateCreated"]),
@@ -206,4 +208,41 @@ export function useWerkberichten(
   }
 
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
+}
+
+export async function readBericht(id: string): Promise<boolean> {
+  const url = window.gatewayBaseUri + `/api/kiss_openpub_pub/${id}?fields[]`;
+
+  const res = await fetchLoggedIn(url);
+
+  if (!res.ok)
+    throw new Error(`Expected to read bericht: ${res.status.toString()}`);
+
+  return res.ok;
+}
+
+export async function unreadBericht(id: string): Promise<boolean> {
+  const url = window.gatewayBaseUri + `/api/kiss_openpub_pub/${id}`;
+
+  const berichtRes = await fetchLoggedIn(url, {
+    headers: { Accept: "application/json+ld" },
+  });
+
+  const bericht = await berichtRes.json();
+
+  const payload = { ...bericht, "@dateRead": false };
+
+  const res = await fetchLoggedIn(url, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json+ld",
+      "Content-Type": "application/json+ld",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok)
+    throw new Error(`Expected to unread bericht: ${res.status.toString()}`);
+
+  return res.ok;
 }

@@ -44,6 +44,7 @@ import {
   UtrechtDocument,
 } from "@utrecht/web-component-library-vue";
 import { cleanHtml } from "@/helpers/html";
+import { readBericht, unreadBericht } from "./service";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -63,10 +64,20 @@ const props = defineProps({
   },
 });
 
-const read = ref<boolean>(false);
+const read = ref<boolean>(props.bericht.read);
 
-const toggleRead = (): void => {
-  read.value = !read.value;
+const toggleRead = async (): Promise<void> => {
+  if (!read.value) {
+    await readBericht(props.bericht.id).then(() => {
+      read.value = true;
+    });
+  }
+
+  if (read.value) {
+    await unreadBericht(props.bericht.id).then(() => {
+      read.value = false;
+    });
+  }
 };
 
 const localeString = (d: Date) =>
