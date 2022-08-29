@@ -59,6 +59,7 @@
                 <template v-for="(tel, idx) in telefoonnummers" :key="idx">
                   <custom-phone-input
                     v-model="tel.telefoonnummer"
+                    :aria-label="`Telefoonnummer ${idx + 1}`"
                     required
                     class="utrecht-textbox utrecht-textbox--html-input"
                   />
@@ -70,6 +71,7 @@
                   />
                 </template>
                 <button
+                  v-show="canAddPhone"
                   title="Telefoonnummer toevoegen"
                   type="button"
                   @click="addPhoneNumber"
@@ -90,6 +92,7 @@
                   <input
                     type="email"
                     v-model="email.email"
+                    :aria-label="`E-mailadres ${idx + 1}`"
                     class="utrecht-textbox utrecht-textbox--html-input"
                     required
                   />
@@ -104,6 +107,7 @@
                   title="Email toevoegen"
                   type="button"
                   @click="addEmail"
+                  v-show="canAddEmail"
                   class="add-item icon-after plus"
                 />
               </span>
@@ -119,7 +123,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, type PropType } from "vue";
+import { nextTick, ref, watch, type PropType } from "vue";
 import {
   UtrechtHeading,
   UtrechtButton,
@@ -156,6 +160,21 @@ function populate(k: Klant) {
   telefoonnummers.value = clone(k.telefoonnummers);
 }
 
+function focusLastInput(e: Event) {
+  nextTick(() => {
+    if (
+      e.target instanceof HTMLElement &&
+      e.target.parentElement instanceof HTMLElement
+    ) {
+      const inputs = e.target.parentElement.getElementsByTagName("input");
+      const last = inputs[inputs.length - 1];
+      if (last instanceof HTMLElement) {
+        last.focus();
+      }
+    }
+  });
+}
+
 watch(() => props.klant, populate);
 
 const editing = ref<boolean>(false);
@@ -169,29 +188,35 @@ const reset = () => {
   editing.value = false;
 };
 
-const addEmail = (): void => {
-  if (emails.value[emails.value.length - 1].email === "") return;
-
+const addEmail = (e: Event): void => {
   emails.value.push({ email: "" });
+  focusLastInput(e);
 };
 
 const removeEmail = (i: number): void => {
   emails.value.splice(i, 1);
 };
 
-const addPhoneNumber = (): void => {
-  if (
-    telefoonnummers.value[telefoonnummers.value.length - 1]?.telefoonnummer ===
-    ""
-  )
-    return;
+const canAddEmail = computed(() => {
+  const emailArr = emails.value;
+  return !emailArr.length || emailArr[emailArr.length - 1]?.email !== "";
+});
 
+const addPhoneNumber = (e: Event): void => {
   telefoonnummers.value.push({ telefoonnummer: "" });
+  focusLastInput(e);
 };
 
 const removePhoneNumber = (i: number): void => {
   telefoonnummers.value.splice(i, 1);
 };
+
+const canAddPhone = computed(() => {
+  const phoneArr = telefoonnummers.value;
+  return (
+    !phoneArr.length || phoneArr[phoneArr.length - 1]?.telefoonnummer !== ""
+  );
+});
 
 const submitter = useUpdateContactGegevens();
 

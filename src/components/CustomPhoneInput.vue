@@ -6,8 +6,14 @@
       :value="modelValue"
       ref="inputEl"
       @input="updateModelValue"
+      @blur="isDirty = true"
     />
-    <label v-if="message"
+    <span
+      v-if="isDirty"
+      :class="['confirmed icon-after', message ? 'xmark' : 'check']"
+      :title="message ? message : confirmed ? 'Bevestigd' : 'Valide'"
+    />
+    <label v-if="message && isDirty"
       >{{ message }}<input type="checkbox" v-model="confirmed"
     /></label>
   </div>
@@ -36,6 +42,7 @@ function updateModelValue(e: Event) {
 
 const props = defineProps<{ modelValue: string }>();
 const confirmed = ref(false);
+const isDirty = ref(false);
 const inputEl = ref<HTMLInputElement>();
 const message = computed(() =>
   !confirmed.value && !isValidPhoneNumber(props.modelValue)
@@ -63,9 +70,43 @@ watch(
 <style scoped lang="scss">
 div {
   display: grid;
-  > * {
+  > input,
+  > span {
     grid-column: 1 / 1;
     grid-row: 1 / 1;
+  }
+
+  label {
+    background-color: rgba($color: #ddd, $alpha: 0.75);
+    padding: var(--spacing-default);
+    border-radius: var(--radius-default);
+    display: flex;
+    line-height: var(--line-height-default);
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  input[type="checkbox"] {
+    transform: scale(150%);
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.confirmed {
+  font-size: 0;
+  margin-inline-start: auto;
+  margin-inline-end: var(--spacing-default);
+  margin-block-end: auto;
+  margin-block-start: auto;
+  color: var(--color-accent);
+
+  &.xmark {
+    color: var(--color-error);
   }
 }
 </style>
