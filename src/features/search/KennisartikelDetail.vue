@@ -74,7 +74,7 @@ const sections = computed(() => {
       const text = translationObj[key];
       if (!text) return undefined;
       const unEscaped = unEscapeHtml(text);
-      const cleaned = cleanHtml(unEscaped, level);
+      const cleaned = cleanHtml(unEscaped, (level + 1) as any);
       return {
         id: uniqueId + i,
         label,
@@ -114,6 +114,11 @@ article {
 
     &.is-active {
       display: block;
+    }
+
+    div :deep(h3),
+    div :deep(h4) {
+      margin-block-start: var(--spacing-default);
     }
 
     :deep(ul) {
