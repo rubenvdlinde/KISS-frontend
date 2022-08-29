@@ -55,7 +55,7 @@
               }}
             </td>
             <td v-if="showForm">
-              <span class="in-cell-edit">
+              <fieldset class="in-cell-edit">
                 <template v-for="(tel, idx) in telefoonnummers" :key="tel">
                   <custom-phone-input
                     v-model="tel.telefoonnummer"
@@ -77,7 +77,7 @@
                   @click="addPhoneNumber"
                   class="add-item icon-after plus"
                 />
-              </span>
+              </fieldset>
             </td>
             <td v-else>
               {{
@@ -87,7 +87,7 @@
               }}
             </td>
             <td v-if="showForm">
-              <span class="in-cell-edit">
+              <fieldset class="in-cell-edit">
                 <template v-for="(email, idx) in emails" :key="email">
                   <input
                     type="email"
@@ -110,7 +110,7 @@
                   v-show="canAddEmail"
                   class="add-item icon-after plus"
                 />
-              </span>
+              </fieldset>
             </td>
             <td v-else>
               {{ emails.map(({ email }) => email).join(", ") }}
