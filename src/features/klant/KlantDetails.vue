@@ -175,7 +175,10 @@ function focusLastInput(e: Event) {
   });
 }
 
-watch(() => props.klant, populate);
+watch(
+  () => props.klant,
+  () => reset()
+);
 
 const editing = ref<boolean>(false);
 
