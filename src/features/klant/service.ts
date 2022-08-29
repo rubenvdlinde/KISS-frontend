@@ -25,16 +25,18 @@ export function useKlanten(params: KlantSearchParameters) {
 
     if (!search) return "";
 
+    const wildcardSearch = `%${search}%`;
     const page = params.page?.value || 1;
 
     const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
+    url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
     if (isEmail(search)) {
-      url.searchParams.set("emails.email[]", search);
+      url.searchParams.set("emails.email", wildcardSearch);
     } else {
-      url.searchParams.set("telefoonnummers.telefoonnummer[]", search);
+      url.searchParams.set("telefoonnummers.telefoonnummer", wildcardSearch);
     }
     return url.toString();
   }

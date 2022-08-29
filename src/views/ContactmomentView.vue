@@ -19,7 +19,7 @@
           ></contactmoment-notitie>
         </template>
         <template #[NotitieTabs.Terugbel]>
-          <contactverzoek-formulier />
+          <contactverzoek-formulier @isDirty="handleContactverzoekIsDirty" />
         </template>
       </tabs-component>
     </aside>
@@ -79,17 +79,16 @@
     </tabs-component>
   </main>
   <contactmoment-starter
-    :disabled="disableContactmomentStarter"
-    :title="
-      disableContactmomentStarter
-        ? 'Verstuur eerst het contactverzoek of wissel naar een reguliere notitie'
-        : undefined
+    :beforeStopWarning="
+      contactverzoekTabIsDitry && contactverzoekIsDirty
+        ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
+        : ''
     "
   />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
@@ -148,9 +147,18 @@ enum NotitieTabs {
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const disableContactmomentStarter = computed(() => {
-  if (currentNotitieTab.value === NotitieTabs.Regulier) return false;
-  return !contactmomentStore.contactverzoek;
+const contactverzoekIsDirty = ref(false);
+
+const handleContactverzoekIsDirty = (isDirty: boolean) => {
+  contactverzoekIsDirty.value = isDirty;
+};
+
+const contactverzoekTabIsDitry = ref(false);
+
+watch(currentNotitieTab, (t: any) => {
+  if (t === NotitieTabs.Terugbel) {
+    contactverzoekTabIsDitry.value = true;
+  }
 });
 </script>
 

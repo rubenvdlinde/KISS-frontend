@@ -74,9 +74,11 @@ export function useKlantContactmomenten(
     const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
     url.searchParams.set("klant.id", id);
     url.searchParams.set("page", page.toString());
+    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
     url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
     url.searchParams.append("extend[]", "contactmoment.medewerker");
     url.searchParams.append("fields[]", "contactmoment");
+
     return url.toString();
   };
 
