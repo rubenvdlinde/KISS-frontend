@@ -85,7 +85,19 @@
               <a class="back-to-results" href="#" @click="currentId = ''"
                 >Alle zoekresultaten</a
               >
-              <article>
+              <medewerker-detail
+                :json-object="jsonObject"
+                v-if="source === 'Smoelenboek'"
+                :title="title"
+                :level="2"
+              />
+              <kennisartikel-detail
+                v-else-if="source === 'Kennisartikel'"
+                :json-object="jsonObject"
+                :title="title"
+                :level="2"
+              />
+              <article v-else>
                 <header>
                   <utrecht-heading model-value :level="2"
                     ><a
@@ -100,92 +112,8 @@
                   </utrecht-heading>
                   <small :class="`category-${source}`">{{ source }}</small>
                 </header>
-                <template v-if="jsonObject">
-                  <div>
-                    <section>
-                      <h2>Algemene contactgegevens</h2>
-                      <dl>
-                        <dt>E-mailadres:</dt>
-                        <dd>{{ jsonObject?.user }}</dd>
-                        <dt>Telefoonnummer:</dt>
-                        <dd>{{ jsonObject?.contact?.telefoonnummer1 }}</dd>
-                      </dl>
-                    </section>
-                    <section>
-                      <h2>Agenda</h2>
-                      <table class="availability">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th
-                              v-for="(_, day) in jsonObject?.calendar
-                                ?.availabilities"
-                              :key="day"
-                            >
-                              {{ day }}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">ochtend</th>
-                            <td
-                              v-for="(value, day) in jsonObject?.calendar
-                                ?.availabilities"
-                              :key="day"
-                              :class="[value.ochtend ? 'groen' : 'rood']"
-                            >
-                              {{
-                                value.ochtend
-                                  ? "beschikbaar"
-                                  : "niet beschikbaar"
-                              }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">middag</th>
-                            <td
-                              v-for="(value, day) in jsonObject?.calendar
-                                ?.availabilities"
-                              :key="day"
-                              :class="[value.middag ? 'groen' : 'rood']"
-                            >
-                              {{
-                                value.middag
-                                  ? "beschikbaar"
-                                  : "niet beschikbaar"
-                              }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </section>
-                  </div>
-                  <section>
-                    <h2>Detailgegevens</h2>
-                    <img
-                      v-if="jsonObject.optionalProfilePicture"
-                      :src="jsonObject.optionalProfilePicture"
-                      width="128"
-                    />
-                    <dl>
-                      <dt>Functie:</dt>
-                      <dd>{{ jsonObject?.function }}</dd>
 
-                      <dt>Afdeling:</dt>
-                      <dd>{{ jsonObject?.department }}</dd>
-
-                      <dt>Wat kun je en wat doe je:</dt>
-                      <dd>{{ jsonObject?.skills }}</dd>
-
-                      <template v-if="jsonObject?.replacement?.name">
-                        <dt>Vervanger:</dt>
-                        <dd>{{ jsonObject.replacement.name }}</dd>
-                      </template>
-                    </dl>
-                  </section>
-                </template>
-                <p v-else-if="content">{{ content }}</p>
+                <p v-if="content">{{ content }}</p>
               </article>
               <slot name="articleFooter" :id="url" :title="title"></slot>
             </li>
@@ -219,6 +147,8 @@ import { useGlobalSearch, useSources } from "./service";
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
+import MedewerkerDetail from "./MedewerkerDetail.vue";
+import KennisartikelDetail from "./KennisartikelDetail.vue";
 
 const emit = defineEmits<{
   (
@@ -409,70 +339,5 @@ nav ul {
 
 .back-to-results::before {
   content: "< ";
-}
-
-article {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: 50% 1fr;
-  column-gap: var(--spacing-large);
-
-  header {
-    grid-column: span 2;
-    display: grid;
-    justify-items: start;
-    gap: 0.5rem;
-  }
-
-  :deep(p) {
-    &:not(:first-child) {
-      margin-top: 1em;
-    }
-
-    &:not(:last-child) {
-      margin-bottom: 1em;
-    }
-  }
-
-  img {
-    margin-bottom: var(--spacing-default);
-  }
-}
-
-.pagination {
-  margin-inline: auto;
-}
-
-table {
-  border-collapse: separate;
-  border-spacing: var(--spacing-small);
-}
-table td {
-  font-size: 0;
-}
-.groen {
-  background-color: green;
-}
-.rood {
-  background-color: red;
-}
-
-dl {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  row-gap: var(--spacing-small);
-}
-
-dt {
-  font-weight: bold;
-}
-
-dd,
-dt {
-  line-height: normal;
-}
-
-h2 {
-  margin-bottom: 1em;
 }
 </style>

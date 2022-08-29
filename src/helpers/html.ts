@@ -15,6 +15,37 @@ export function cleanHtml(str: string, headingLevel: HeadingLevel = 1) {
   return increaseHeadings(safeString, headingLevel);
 }
 
+const escapedChars = {
+  "&quot;": '"',
+  "&#34;": '"',
+
+  "&apos;": "'",
+  "&#39;": "'",
+
+  "&amp;": "&",
+  "&#38;": "&",
+
+  "&gt;": ">",
+  "&#62;": ">",
+
+  "&lt;": "<",
+  "&#60;": "<",
+} as const;
+
+const escapedSet = new Map<string, string>(Object.entries(escapedChars));
+
+function toRegex(chars: Record<string, string>) {
+  const keys = Object.keys(chars).join("|");
+  const regex = new RegExp("(?=(" + keys + "))\\1", "g");
+  return regex;
+}
+
+const escapeRegex = toRegex(escapedChars);
+
+export function unEscapeHtml(str: string): string {
+  return str.replace(escapeRegex, (m) => escapedSet.get(m) || m);
+}
+
 export function focusNextFormItem(
   element: Element & { form?: HTMLFormElement | null }
 ) {
