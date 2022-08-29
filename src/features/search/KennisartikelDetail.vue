@@ -92,7 +92,7 @@ const mappedSections = computed(() =>
 );
 
 watch(
-  () => props.jsonObject,
+  () => props.jsonObject.uuid,
   () => {
     currentSectionIndex.value = 0;
   }
@@ -132,7 +132,7 @@ article {
 nav ul {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--spacing-extrasmall);
 
   li {
     border: 1px solid var(--color-tertiary);
