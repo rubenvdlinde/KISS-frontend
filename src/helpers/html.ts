@@ -1,4 +1,12 @@
 import DOMPurify from "dompurify";
+
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  if (node instanceof HTMLAnchorElement) {
+    node.target = "_blank";
+    node.relList.add("noopener", "noreferrer");
+  }
+});
+
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 const headerRegex = /(<\/?h)([1-6])(>)/g;
 const increaseHeadings = (s: string, level: HeadingLevel) =>
@@ -11,7 +19,7 @@ const increaseHeadings = (s: string, level: HeadingLevel) =>
   });
 
 export function cleanHtml(str: string, headingLevel: HeadingLevel = 1) {
-  const safeString = DOMPurify.sanitize(str);
+  const safeString = DOMPurify.sanitize(str, { FORBID_ATTR: ["style"] });
   return increaseHeadings(safeString, headingLevel);
 }
 
