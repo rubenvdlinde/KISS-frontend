@@ -101,15 +101,15 @@ watch(
 
 <style scoped lang="scss">
 article {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   grid-template-columns: min-content 1fr;
   gap: var(--spacing-large);
   .heading {
-    grid-column: span 2;
+    width: 100%;
   }
   > section {
-    grid-column: 2;
-    grid-row: 2;
+    flex: 1;
     display: none;
 
     &.is-active {
