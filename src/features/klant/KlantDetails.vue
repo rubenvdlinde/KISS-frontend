@@ -1,6 +1,6 @@
 <template>
   <article>
-    <form @submit.prevent="submit">
+    <non-blocking-form @submit.prevent="submit">
       <header class="heading-container">
         <utrecht-heading model-value :level="level">
           <span class="heading">
@@ -57,12 +57,17 @@
             <td v-if="showForm">
               <fieldset class="in-cell-edit">
                 <template v-for="(tel, idx) in telefoonnummers" :key="tel">
-                  <custom-phone-input
-                    v-model="tel.telefoonnummer"
-                    :aria-label="`Telefoonnummer ${idx + 1}`"
-                    required
-                    class="utrecht-textbox utrecht-textbox--html-input"
-                  />
+                  <div>
+                    <non-blocking-input
+                      v-model="tel.telefoonnummer"
+                      type="tel"
+                      :name="`Telefoonnummer ${idx + 1}`"
+                      :aria-label="`Telefoonnummer ${idx + 1}`"
+                      required
+                      class="utrecht-textbox utrecht-textbox--html-input"
+                      :validate="customPhoneValidator"
+                    />
+                  </div>
                   <button
                     @click="removePhoneNumber(idx)"
                     type="button"
@@ -118,7 +123,7 @@
           </tr>
         </tbody>
       </table>
-    </form>
+    </non-blocking-form>
   </article>
 </template>
 
@@ -133,7 +138,9 @@ import { useUpdateContactGegevens } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { computed } from "@vue/reactivity";
 import ApplicationMessage from "../../components/ApplicationMessage.vue";
-import CustomPhoneInput from "../../components/CustomPhoneInput.vue";
+import NonBlockingForm from "../../components/forms/NonBlockingForm.vue";
+import NonBlockingInput from "../../components/forms/NonBlockingInput.vue";
+import { customPhoneValidator } from "@/helpers/validation";
 
 const props = defineProps({
   klant: {

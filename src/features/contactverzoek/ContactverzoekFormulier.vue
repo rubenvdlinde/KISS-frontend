@@ -21,7 +21,7 @@ erbij voor het vrij invullen.
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
-  <form @submit.prevent="submit" ref="form" v-else>
+  <non-blocking-form @submit.prevent="submit" ref="form" v-else>
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
         class="utrecht-textbox utrecht-textbox--html-input"
@@ -88,13 +88,16 @@ erbij voor het vrij invullen.
         <input
           v-if="klantReadonly"
           type="tel"
-          v-model="telefoonnummer1"
+          :value="telefoonnummer1"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="true"
         />
-        <CustomPhoneInput
+        <non-blocking-input
           v-else
+          type="tel"
           v-model="telefoonnummer1"
+          name="telefoonnummer1"
+          :validate="customPhoneValidator"
           class="utrecht-textbox utrecht-textbox--html-input"
           @input="isDirtyCheck"
         />
@@ -105,13 +108,16 @@ erbij voor het vrij invullen.
         <input
           v-if="klantReadonly"
           type="tel"
-          v-model="telefoonnummer2"
+          :value="telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="true"
         />
-        <CustomPhoneInput
+        <non-blocking-input
           v-else
+          type="tel"
           v-model="telefoonnummer2"
+          name="telefoonnummer2"
+          :validate="customPhoneValidator"
           class="utrecht-textbox utrecht-textbox--html-input"
           @input="isDirtyCheck"
         />
@@ -147,7 +153,7 @@ erbij voor het vrij invullen.
     <utrecht-button model-value type="submit" v-if="!submitted">
       Contactverzoek versturen
     </utrecht-button>
-  </form>
+  </non-blocking-form>
 </template>
 
 <script lang="ts" setup>
@@ -169,7 +175,9 @@ import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import CustomPhoneInput from "../../components/CustomPhoneInput.vue";
+import NonBlockingForm from "../../components/forms/NonBlockingForm.vue";
+import NonBlockingInput from "../../components/forms/NonBlockingInput.vue";
+import { customPhoneValidator } from "@/helpers/validation";
 
 const attendee = ref("");
 const loading = ref(false);
@@ -257,23 +265,9 @@ watch(
   { immediate: true }
 );
 
-function validate() {
-  if (!form.value) return false;
-
-  // const emailInput = form.value.elements.namedItem("klant-email");
-
-  //dit werkt niet goed
-  //validatie melding blijft in sommige gevallen hangen
-  // if (emailInput instanceof HTMLInputElement) {
-  //   emailInput.setCustomValidity(emailRequiredMessage.value);
-  // }
-
-  return form.value.reportValidity();
-}
-
 async function submit() {
   try {
-    if (submitted.value || !validate() || emailRequiredMessage.value) return;
+    if (submitted.value || emailRequiredMessage.value) return;
 
     loading.value = true;
 
@@ -330,8 +324,8 @@ const wisGeselecteerdeKlant = () => {
 };
 
 const emit = defineEmits(["isDirty"]);
-const isDirtyCheck = (self: any) => {
-  if (self.target.value != "") {
+const isDirtyCheck = (e: any) => {
+  if (e.target.value !== "") {
     emit("isDirty", true);
   }
 };
