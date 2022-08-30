@@ -153,7 +153,7 @@ nav ul {
 
   .is-active {
     background-color: var(--color-tertiary);
-    color: white;
+    color: var(--color-white);
     text-decoration: underline;
   }
 }

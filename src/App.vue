@@ -52,6 +52,7 @@ const contactmomentStore = useContactmomentStore();
   --color-error: #d44;
   --color-category-default: hsl(184, 54%, 70%);
   --color-category-website: hsl(285, 56%, 83%);
+  --color-white: #fff;
 
   // spacing
   --container-width: 80rem;
@@ -113,7 +114,7 @@ body {
 
   .log-out {
     grid-area: logout;
-    color: white;
+    color: var(--color-white);
     padding: var(--spacing-small);
     margin-left: auto;
   }
@@ -159,7 +160,7 @@ button:hover {
 
 .tabs-component-contactmoment {
   > ul li.is-active {
-    background-color: white;
+    background-color: var(--color-white);
   }
 
   > ul li {
@@ -219,7 +220,7 @@ h2 {
 
   button {
     --utrecht-icon-size: 1rem;
-    background: white;
+    background: var(--color-white);
     font-size: 0;
     padding-right: var(--spacing-default);
   }

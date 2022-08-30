@@ -251,7 +251,7 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-default);
-  color: white;
+  color: var(--color-white);
   margin-inline: auto;
 }
 
