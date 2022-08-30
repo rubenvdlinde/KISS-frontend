@@ -29,7 +29,7 @@
   </article>
 </template>
 <script setup lang="ts">
-import { cleanHtml, unescapeHtml } from "@/helpers/html";
+import { cleanHtml, unescapeHtml, increaseHeadings } from "@/helpers/html";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
@@ -59,8 +59,12 @@ const props = defineProps<{
 
 function processHtml(html: string) {
   const unescapedHtml = unescapeHtml(html);
-  const cleanedHtml = cleanHtml(unescapedHtml, (props.headingLevel + 1) as any);
-  return cleanedHtml;
+  const cleanedHtml = cleanHtml(unescapedHtml);
+  const htmlWithIncreasedHeadings = increaseHeadings(
+    cleanedHtml,
+    (props.headingLevel + 1) as any
+  );
+  return htmlWithIncreasedHeadings;
 }
 
 const currentSectionIndex = ref(0);
@@ -71,7 +75,7 @@ const dutchTranslation = computed<Record<string, string>>(
     {}
 );
 
-const sections = computed(() => {
+const processedSections = computed(() => {
   const allSections = Object.entries(knownSections).map(([key, label]) => ({
     label,
     text: dutchTranslation.value[key],
@@ -89,8 +93,9 @@ const sections = computed(() => {
   return sectionsWithProcessedHtml;
 });
 
+// seperate this computed variable for caching purposes: making a section active doesn't trigger the reprocessing of html
 const mappedSections = computed(() =>
-  sections.value.map((section, index) => ({
+  processedSections.value.map((section, index) => ({
     ...section,
     id: componentId + index,
     isActive: index === currentSectionIndex.value,
