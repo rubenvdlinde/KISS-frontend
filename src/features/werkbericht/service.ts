@@ -55,6 +55,8 @@ function parseWerkbericht(
     );
   }
 
+  console.log({ jsonObject });
+
   const berichtTypeIds = jsonObject?.["openpub-type"];
   const typeNames = Array.isArray(berichtTypeIds)
     ? berichtTypeIds.map(
@@ -151,15 +153,21 @@ export function useWerkberichten(
     const { typeId, search, page, skillIds } = parameters.value;
 
     const params: [string, string][] = [["orderby", "modified"]];
+
+    params.push(["extend[]", "x-commongateway-metadata.dateRead"]);
+
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
+
     if (search) {
       params.push(["search", search]);
     }
+
     if (page) {
       params.push(["page", page.toString()]);
     }
+
     if (skillIds?.length) {
       params.push(["openpub_skill", skillIds.join(",")]);
     }
@@ -226,7 +234,7 @@ export async function unreadBericht(id: string): Promise<boolean> {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...bericht, dateRead: true }),
+    body: JSON.stringify({ ...bericht, "@dateRead": true }),
   });
 
   if (!res.ok)
