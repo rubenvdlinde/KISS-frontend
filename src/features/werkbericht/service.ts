@@ -1,7 +1,6 @@
 import type { Werkbericht } from "./types";
 import {
   createLookupList,
-  parsePagination,
   parseValidInt,
   ServiceResult,
   type LookupList,
@@ -145,16 +144,14 @@ export function useWerkberichten(
     if (typesResult.state !== "success" || skillsResult.state !== "success")
       return "";
 
-    const url = window.gatewayBaseUri + "/api/kiss_openpub_pub";
+    const url = window.gatewayBaseUri + "/api/openpub/kiss_openpub_pub";
     if (!parameters?.value) return url;
 
     const { typeId, search, page, skillIds } = parameters.value;
 
-    const params: [string, string][] = [["_dateRead", "true"]];
-    // params.push(["orderby", "modified"]);
+    const params: [string, string][] = [["orderby", "modified"]];
     if (typeId) {
-      // params.push(["type", typeId.toString()]);
-      // params.push(["openpub-type", typeId.toString()]);
+      params.push(["openpub-type", typeId.toString()]);
     }
     if (search) {
       params.push(["search", search]);
@@ -178,33 +175,33 @@ export function useWerkberichten(
         "this should never happen, we already check this in the url function"
       );
 
-    const r = await fetchLoggedIn(url, {
-      headers: { Accept: "application/json+ld" },
-    });
+    const r = await fetchLoggedIn(url);
     if (!r.ok) throw new Error(r.status.toString());
 
     const json = await r.json();
 
-    const berichten = json.results;
+    if (!Array.isArray(json))
+      throw new Error("expected a list, input: " + JSON.stringify(json));
 
-    if (!Array.isArray(berichten))
-      throw new Error("expected a list, input: " + JSON.stringify(berichten));
+    const pageNumber = parameters?.value.page || 1;
+    const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
+    const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
 
-    return parsePagination(
-      json,
-      (bericht: any): Werkbericht => ({
-        id: bericht.id,
-        read: !!bericht["@dateRead"],
-        title: bericht["@embedded"].title.rendered,
-        date: maxDate([
-          parseDateStrWithTimezone(bericht["@dateCreated"]),
-          parseDateStrWithTimezone(bericht["@dateModified"]),
-        ]),
-        content: bericht["@embedded"].content.rendered,
-        types: [""],
-        skills: [""],
-      })
+    const page = json.map((x) =>
+      parseWerkbericht(
+        x,
+        typesResult.data.fromKeyToValue,
+        skillsResult.data.fromKeyToValue
+      )
     );
+
+    return {
+      page,
+      pageNumber,
+      totalPages,
+      totalRecords,
+      pageSize: 15,
+    };
   }
 
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
