@@ -103,8 +103,8 @@ watch(
 article {
   display: flex;
   flex-wrap: wrap;
-  grid-template-columns: min-content 1fr;
   gap: var(--spacing-large);
+
   .heading {
     width: 100%;
   }
