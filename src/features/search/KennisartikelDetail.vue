@@ -93,7 +93,7 @@ const processedSections = computed(() => {
   return sectionsWithProcessedHtml;
 });
 
-// seperate this computed variable for caching purposes: making a section active doesn't trigger the reprocessing of html
+// seperate this computed variable for caching purposes: making a section active doesn't trigger the reprocessing of the source html
 const mappedSections = computed(() =>
   processedSections.value.map((section, index) => ({
     ...section,
