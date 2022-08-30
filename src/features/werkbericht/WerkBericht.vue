@@ -31,7 +31,7 @@ import {
   UtrechtHeading,
   UtrechtDocument,
 } from "@utrecht/web-component-library-vue";
-import { cleanHtml } from "@/helpers/html";
+import { cleanHtml, increaseHeadings } from "@/helpers/html";
 import { formatDateAndTime } from "@/helpers/date";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -52,7 +52,13 @@ const props = defineProps({
   },
 });
 
-const sanitized = computed(() => cleanHtml(props.bericht.content, props.level));
+function processHtml(html: string) {
+  const cleanedHtml = cleanHtml(html);
+  const increasedHeadings = increaseHeadings(cleanedHtml, props.level);
+  return increasedHeadings;
+}
+
+const sanitized = computed(() => processHtml(props.bericht.content));
 </script>
 
 <style lang="scss" scoped>
