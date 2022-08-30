@@ -57,34 +57,42 @@ const props = defineProps<{
   headingLevel: 2 | 3 | 4;
 }>();
 
+function processHtml(html: string) {
+  const unescapedHtml = unescapeHtml(html);
+  const cleanedHtml = cleanHtml(unescapedHtml, (props.headingLevel + 1) as any);
+  return cleanedHtml;
+}
+
 const currentSectionIndex = ref(0);
 
-const dutchTranslation = computed(() =>
-  props.kennisartikelRaw.vertalingen.find(({ taal }: any) => taal === "nl")
+const dutchTranslation = computed<Record<string, string>>(
+  () =>
+    props.kennisartikelRaw.vertalingen.find(({ taal }: any) => taal === "nl") ||
+    {}
 );
 
 const sections = computed(() => {
-  return Object.entries(knownSections)
-    .map(([key, label], i) => {
-      const text = dutchTranslation.value[key];
-      if (!text) return undefined;
-      const unescapedHtml = unescapeHtml(text);
-      const cleanedHtml = cleanHtml(
-        unescapedHtml,
-        (props.headingLevel + 1) as any
-      );
-      return {
-        id: componentId + i,
-        label,
-        html: cleanedHtml,
-      };
+  const allSections = Object.entries(knownSections).map(([key, label]) => ({
+    label,
+    text: dutchTranslation.value[key],
+  }));
+
+  const sectionsWithActualText = allSections.filter(({ text }) => !!text);
+
+  const sectionsWithProcessedHtml = sectionsWithActualText.map(
+    ({ label, text }) => ({
+      label,
+      html: processHtml(text),
     })
-    .filter(Boolean) as { id: string; label: string; html: string }[];
+  );
+
+  return sectionsWithProcessedHtml;
 });
 
 const mappedSections = computed(() =>
   sections.value.map((section, index) => ({
     ...section,
+    id: componentId + index,
     isActive: index === currentSectionIndex.value,
     setActive() {
       currentSectionIndex.value = index;
