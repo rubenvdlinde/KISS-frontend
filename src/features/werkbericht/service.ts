@@ -11,7 +11,7 @@ import type { Ref } from "vue";
 import { fetchLoggedIn } from "@/services";
 
 const WP_MAX_ALLOWED_PAGE_SIZE = "100";
-const BERICHTEN_BASE_URI = `${window.gatewayBaseUri}/api/openpub/kiss_openpub_pub`;
+const BERICHTEN_BASE_URI = `${window.gatewayBaseUri}/api/kiss_openpub_pub`;
 
 export type UseWerkberichtenParams = {
   typeId?: number;
@@ -54,8 +54,6 @@ function parseWerkbericht(
         JSON.stringify(jsonObject)
     );
   }
-
-  console.log({ jsonObject });
 
   const berichtTypeIds = jsonObject?.["openpub-type"];
   const typeNames = Array.isArray(berichtTypeIds)
@@ -152,13 +150,13 @@ export function useWerkberichten(
 
     const { typeId, search, page, skillIds } = parameters.value;
 
-    const params: [string, string][] = [["orderby", "modified"]];
+    const params: [string, string][] = [["", ""]];
 
     params.push(["extend[]", "x-commongateway-metadata.dateRead"]);
 
-    if (typeId) {
-      params.push(["openpub-type", typeId.toString()]);
-    }
+    // if (typeId) {
+    //   params.push(["openpub-type", typeId.toString()]);
+    // }
 
     if (search) {
       params.push(["search", search]);
@@ -189,16 +187,18 @@ export function useWerkberichten(
 
     const json = await r.json();
 
-    if (!Array.isArray(json))
-      throw new Error("expected a list, input: " + JSON.stringify(json));
+    const berichten = json.results;
+
+    if (!Array.isArray(berichten))
+      throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
     const pageNumber = parameters?.value.page || 1;
     const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
     const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
 
-    const page = json.map((x) =>
+    const page = berichten.map((bericht) =>
       parseWerkbericht(
-        x,
+        bericht,
         typesResult.data.fromKeyToValue,
         skillsResult.data.fromKeyToValue
       )
