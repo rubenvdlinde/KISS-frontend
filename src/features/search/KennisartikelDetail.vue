@@ -1,19 +1,17 @@
 <template>
   <article>
-    <utrecht-heading model-value :level="level" class="heading">
+    <utrecht-heading model-value :level="headingLevel" class="heading">
       {{ title }}
     </utrecht-heading>
     <nav>
       <ul>
         <li
-          v-for="({ isActive, label, id }, i) in mappedSections"
+          v-for="{ isActive, label, id, setActive } in mappedSections"
           :key="id + 'nav'"
           :class="{ 'is-active': isActive }"
         >
           <span v-if="isActive">{{ label }}</span>
-          <a v-else :href="`#${id}`" @click.prevent="currentSectionIndex = i">{{
-            label
-          }}</a>
+          <a v-else :href="`#${id}`" @click.prevent="setActive">{{ label }}</a>
         </li>
       </ul>
     </nav>
@@ -23,7 +21,7 @@
       :class="{ 'is-active': isActive }"
       :id="id"
     >
-      <utrecht-heading model-value :level="level + 1">{{
+      <utrecht-heading model-value :level="headingLevel + 1">{{
         label
       }}</utrecht-heading>
       <div v-html="html"></div>
@@ -31,12 +29,11 @@
   </article>
 </template>
 <script setup lang="ts">
-import { cleanHtml, unEscapeHtml } from "@/helpers/html";
+import { cleanHtml, unescapeHtml } from "@/helpers/html";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
 
-const language = "nl";
 const knownSections = {
   specifiekeTekst: "Inleiding",
   procedureBeschrijving: "Aanvraag",
@@ -52,47 +49,51 @@ const knownSections = {
   deskMemo: "KCC",
 } as const;
 
-const uniqueId = nanoid();
+const componentId = nanoid();
 
 const props = defineProps<{
-  jsonObject: any;
+  kennisartikelRaw: any;
   title: string;
-  level: 2 | 3 | 4;
+  headingLevel: 2 | 3 | 4;
 }>();
 
 const currentSectionIndex = ref(0);
 
-const translation = computed(() =>
-  props.jsonObject.vertalingen.find((x: any) => x.taal === language)
+const dutchTranslation = computed(() =>
+  props.kennisartikelRaw.vertalingen.find(({ taal }: any) => taal === "nl")
 );
 
 const sections = computed(() => {
-  const translationObj = translation.value;
-  const level = props.level;
   return Object.entries(knownSections)
     .map(([key, label], i) => {
-      const text = translationObj[key];
+      const text = dutchTranslation.value[key];
       if (!text) return undefined;
-      const unEscaped = unEscapeHtml(text);
-      const cleaned = cleanHtml(unEscaped, (level + 1) as any);
+      const unescapedHtml = unescapeHtml(text);
+      const cleanedHtml = cleanHtml(
+        unescapedHtml,
+        (props.headingLevel + 1) as any
+      );
       return {
-        id: uniqueId + i,
+        id: componentId + i,
         label,
-        html: cleaned,
+        html: cleanedHtml,
       };
     })
     .filter(Boolean) as { id: string; label: string; html: string }[];
 });
 
 const mappedSections = computed(() =>
-  sections.value.map((section, i) => ({
+  sections.value.map((section, index) => ({
     ...section,
-    isActive: i === currentSectionIndex.value,
+    isActive: index === currentSectionIndex.value,
+    setActive() {
+      currentSectionIndex.value = index;
+    },
   }))
 );
 
 watch(
-  () => props.jsonObject.uuid,
+  () => props.kennisartikelRaw.uuid,
   () => {
     currentSectionIndex.value = 0;
   }

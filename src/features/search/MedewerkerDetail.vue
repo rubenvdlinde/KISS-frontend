@@ -1,11 +1,11 @@
 <template>
   <article>
-    <utrecht-heading model-value :level="level">
+    <utrecht-heading model-value :level="headingLevel">
       {{ title }}
     </utrecht-heading>
     <div>
       <section>
-        <utrecht-heading model-value :level="level + 1"
+        <utrecht-heading model-value :level="headingLevel + 1"
           >Algemene contactgegevens</utrecht-heading
         >
         <dl>
@@ -16,7 +16,9 @@
         </dl>
       </section>
       <section>
-        <utrecht-heading model-value :level="level + 1">Agenda</utrecht-heading>
+        <utrecht-heading model-value :level="headingLevel + 1"
+          >Agenda</utrecht-heading
+        >
         <table class="availability">
           <thead>
             <tr>
@@ -55,7 +57,7 @@
       </section>
     </div>
     <section>
-      <utrecht-heading :level="level + 1" model-value
+      <utrecht-heading :level="headingLevel + 1" model-value
         >Detailgegevens</utrecht-heading
       >
       <img
@@ -82,7 +84,7 @@
 <script lang="ts" setup>
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 
-defineProps<{ jsonObject: any; level: 2 | 3 | 4; title: string }>();
+defineProps<{ jsonObject: any; headingLevel: 2 | 3 | 4; title: string }>();
 </script>
 
 <style lang="scss" scoped>

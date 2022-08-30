@@ -89,13 +89,13 @@
                 :json-object="jsonObject"
                 v-if="source === 'Smoelenboek'"
                 :title="title"
-                :level="2"
+                :heading-level="2"
               />
               <kennisartikel-detail
                 v-else-if="source === 'Kennisartikel'"
-                :json-object="jsonObject"
+                :kennisartikel-raw="jsonObject"
                 :title="title"
-                :level="2"
+                :heading-level="2"
               />
               <article v-else>
                 <header>

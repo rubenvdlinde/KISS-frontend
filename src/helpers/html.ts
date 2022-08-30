@@ -50,7 +50,7 @@ function toRegex(chars: Record<string, string>) {
 
 const escapeRegex = toRegex(escapedChars);
 
-export function unEscapeHtml(str: string): string {
+export function unescapeHtml(str: string): string {
   return str.replace(escapeRegex, (m) => escapedSet.get(m) || m);
 }
 
