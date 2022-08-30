@@ -69,11 +69,11 @@ function processHtml(html: string) {
 
 const currentSectionIndex = ref(0);
 
-const dutchTranslation = computed<Record<string, string>>(
-  () =>
-    props.kennisartikelRaw.vertalingen.find(({ taal }: any) => taal === "nl") ||
-    {}
-);
+const dutchTranslation = computed<Record<string, string>>(() => {
+  const { vertalingen } = props.kennisartikelRaw || {};
+  if (!Array.isArray(vertalingen)) return {};
+  return vertalingen.find(({ taal }) => taal === "nl") || {};
+});
 
 const processedSections = computed(() => {
   const allSections = Object.entries(knownSections).map(([key, label]) => ({
