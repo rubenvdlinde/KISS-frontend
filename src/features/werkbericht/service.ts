@@ -11,6 +11,7 @@ import type { Ref } from "vue";
 import { fetchLoggedIn } from "@/services";
 
 const WP_MAX_ALLOWED_PAGE_SIZE = "100";
+const BERICHTEN_BASE_URI = `${window.gatewayBaseUri}/api/openpub/kiss_openpub_pub`;
 
 export type UseWerkberichtenParams = {
   typeId?: number;
@@ -20,10 +21,11 @@ export type UseWerkberichtenParams = {
   pagesize?: number;
 };
 
-const timezoneRegex = /T[0-9|:]*[+|-|Z]+/;
-
 function parseDateStrWithTimezone(dateStr: string) {
+  const timezoneRegex = /T[0-9|:]*[+|-|Z]+/;
+
   if (timezoneRegex.test(dateStr)) return new Date(dateStr);
+
   // if no timezone info is present we assume UTC
   return new Date(dateStr + "Z");
 }
@@ -75,7 +77,7 @@ function parseWerkbericht(
 
   return {
     id: jsonObject.id,
-    read: !!jsonObject["@dateRead"],
+    read: !!jsonObject["dateRead"],
     title: jsonObject.title.rendered,
     content: jsonObject.content.rendered,
     date: latestDate,
@@ -144,8 +146,7 @@ export function useWerkberichten(
     if (typesResult.state !== "success" || skillsResult.state !== "success")
       return "";
 
-    const url = window.gatewayBaseUri + "/api/openpub/kiss_openpub_pub";
-    if (!parameters?.value) return url;
+    if (!parameters?.value) return BERICHTEN_BASE_URI;
 
     const { typeId, search, page, skillIds } = parameters.value;
 
@@ -162,7 +163,7 @@ export function useWerkberichten(
     if (skillIds?.length) {
       params.push(["openpub_skill", skillIds.join(",")]);
     }
-    return `${url}?${new URLSearchParams(params)}`;
+    return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
   }
 
   async function fetchBerichten(url: string): Promise<Paginated<Werkbericht>> {
@@ -208,9 +209,7 @@ export function useWerkberichten(
 }
 
 export async function readBericht(id: string): Promise<boolean> {
-  const url = window.gatewayBaseUri + `/api/kiss_openpub_pub/${id}?fields[]`;
-
-  const res = await fetchLoggedIn(url);
+  const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}?fields[]`);
 
   if (!res.ok)
     throw new Error(`Expected to read bericht: ${res.status.toString()}`);
@@ -219,27 +218,27 @@ export async function readBericht(id: string): Promise<boolean> {
 }
 
 export async function unreadBericht(id: string): Promise<boolean> {
-  const url = window.gatewayBaseUri + `/api/kiss_openpub_pub/${id}`;
+  const bericht = await getBericht(id);
 
-  const berichtRes = await fetchLoggedIn(url, {
-    headers: { Accept: "application/json+ld" },
-  });
-
-  const bericht = await berichtRes.json();
-
-  const payload = { ...bericht, "@dateRead": false };
-
-  const res = await fetchLoggedIn(url, {
+  const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}`, {
     method: "PUT",
     headers: {
-      Accept: "application/json+ld",
-      "Content-Type": "application/json+ld",
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ ...bericht, dateRead: true }),
   });
 
   if (!res.ok)
     throw new Error(`Expected to unread bericht: ${res.status.toString()}`);
 
   return res.ok;
+}
+
+async function getBericht(id: string): Promise<any> {
+  const url = window.gatewayBaseUri + `/api/openpub/kiss_openpub_pub/${id}`;
+
+  const res = await await fetchLoggedIn(url);
+
+  return await res.json();
 }
