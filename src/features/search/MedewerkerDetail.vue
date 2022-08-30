@@ -111,10 +111,6 @@ article {
   }
 }
 
-.pagination {
-  margin-inline: auto;
-}
-
 table {
   border-collapse: separate;
   border-spacing: var(--spacing-small);

@@ -340,4 +340,8 @@ nav ul {
 .back-to-results::before {
   content: "< ";
 }
+
+.pagination {
+  margin-inline: auto;
+}
 </style>
