@@ -69,7 +69,7 @@ function processHtml(html: string) {
 
 const currentSectionIndex = ref(0);
 
-const dutchTranslation = computed<Record<string, string>>(() => {
+const kennisartikel = computed<Record<string, string>>(() => {
   const { vertalingen } = props.kennisartikelRaw || {};
   if (!Array.isArray(vertalingen)) return {};
   return vertalingen.find(({ taal }) => taal === "nl") || {};
@@ -78,7 +78,7 @@ const dutchTranslation = computed<Record<string, string>>(() => {
 const processedSections = computed(() => {
   const allSections = Object.entries(knownSections).map(([key, label]) => ({
     label,
-    text: dutchTranslation.value[key],
+    text: kennisartikel.value[key],
   }));
 
   const sectionsWithActualText = allSections.filter(({ text }) => !!text);
