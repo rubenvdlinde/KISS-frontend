@@ -1,18 +1,58 @@
 import DOMPurify from "dompurify";
+
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  if (node instanceof HTMLAnchorElement && !node.href.startsWith("#")) {
+    node.target = "_blank";
+    node.relList.add("noopener", "noreferrer");
+  }
+});
+
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 const headerRegex = /(<\/?h)([1-6])(>)/g;
-const increaseHeadings = (s: string, level: HeadingLevel) =>
-  s.replace(headerRegex, (_, open, l, close) => {
+
+export function increaseHeadings(html: string, level: HeadingLevel): string {
+  return html.replace(headerRegex, (_, open, l, close) => {
     const newLevel = Number.parseInt(l, 10) + level - 1;
     const classes = open.includes("/")
       ? ""
       : ` class="utrecht-heading-${newLevel}"`;
     return `${open}${newLevel}${classes}${close}`;
   });
+}
 
-export function cleanHtml(str: string, headingLevel: HeadingLevel = 1) {
-  const safeString = DOMPurify.sanitize(str);
-  return increaseHeadings(safeString, headingLevel);
+export function cleanHtml(str: string) {
+  return DOMPurify.sanitize(str, { FORBID_ATTR: ["style"] });
+}
+
+const escapedChars = {
+  "&quot;": '"',
+  "&#34;": '"',
+
+  "&apos;": "'",
+  "&#39;": "'",
+
+  "&amp;": "&",
+  "&#38;": "&",
+
+  "&gt;": ">",
+  "&#62;": ">",
+
+  "&lt;": "<",
+  "&#60;": "<",
+} as const;
+
+const escapedSet = new Map<string, string>(Object.entries(escapedChars));
+
+function toRegex(chars: Record<string, string>) {
+  const keys = Object.keys(chars).join("|");
+  const regex = new RegExp("(?=(" + keys + "))\\1", "g");
+  return regex;
+}
+
+const escapeRegex = toRegex(escapedChars);
+
+export function unescapeHtml(str: string): string {
+  return str.replace(escapeRegex, (m) => escapedSet.get(m) || m);
 }
 
 export function focusNextFormItem(

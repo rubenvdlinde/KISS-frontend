@@ -205,7 +205,7 @@ aside {
 }
 
 .main-tabs {
-  --tab-bg: white;
+  --tab-bg: var(--color-white);
 
   ul li > article {
     margin-inline: var(--spacing-extralarge);
@@ -237,7 +237,7 @@ aside {
 }
 
 .notitie-tabs {
-  --tab-bg: white;
+  --tab-bg: var(--color-white);
 
   :deep([role="tablist"]) {
     padding: 0;
@@ -259,7 +259,7 @@ aside {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--color-white);
 
     &[aria-selected="true"] {
       color: var(--color-tertiary);
