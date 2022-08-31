@@ -189,7 +189,7 @@ function focusLastInput(e: Event) {
 }
 
 watch(
-  () => props.klant,
+  () => props.klant?.id,
   () => reset()
 );
 
