@@ -28,6 +28,9 @@ import { useConfirmDialog } from "@vueuse/core";
 import { provideValidationMessages } from "./useValidationMessages";
 import ModalTemplate from "../ModalTemplate.vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import type { FormHTMLAttributes } from "vue";
+
+defineProps<FormHTMLAttributes>();
 
 const { isRevealed, reveal, confirm, cancel } = useConfirmDialog();
 
