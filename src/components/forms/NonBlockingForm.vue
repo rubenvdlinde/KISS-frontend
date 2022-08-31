@@ -36,7 +36,7 @@ const { isRevealed, reveal, confirm, cancel } = useConfirmDialog();
 
 const allMessages = provideValidationMessages();
 
-const emit = defineEmits(["submit"]);
+const emit = defineEmits<{ (e: "submit", payload: Event): void }>();
 
 function submit(e: Event) {
   if (allMessages.value.length) {
