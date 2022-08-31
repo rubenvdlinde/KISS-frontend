@@ -58,15 +58,22 @@
               <fieldset class="in-cell-edit">
                 <template v-for="(tel, idx) in telefoonnummers" :key="tel">
                   <div>
-                    <non-blocking-input
-                      v-model="tel.telefoonnummer"
-                      type="tel"
-                      :name="`Telefoonnummer ${idx + 1}`"
-                      :aria-label="`Telefoonnummer ${idx + 1}`"
-                      required
-                      class="utrecht-textbox utrecht-textbox--html-input"
+                    <non-blocking-errors
+                      :value="tel.telefoonnummer"
                       :validate="customPhoneValidator"
-                    />
+                    >
+                      <template #default="{ inputProps }">
+                        <input
+                          v-bind="inputProps"
+                          v-model="tel.telefoonnummer"
+                          type="tel"
+                          :name="`Telefoonnummer ${idx + 1}`"
+                          :aria-label="`Telefoonnummer ${idx + 1}`"
+                          required
+                          class="utrecht-textbox utrecht-textbox--html-input"
+                        />
+                      </template>
+                    </non-blocking-errors>
                   </div>
                   <button
                     @click="removePhoneNumber(idx)"
@@ -136,10 +143,9 @@ import {
 import type { Klant } from "@/stores/contactmoment";
 import { useUpdateContactGegevens } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
-import { computed } from "@vue/reactivity";
-import ApplicationMessage from "../../components/ApplicationMessage.vue";
-import NonBlockingForm from "../../components/forms/NonBlockingForm.vue";
-import NonBlockingInput from "../../components/forms/NonBlockingInput.vue";
+import { computed } from "vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import { NonBlockingErrors, NonBlockingForm } from "@/components/forms";
 import { customPhoneValidator } from "@/helpers/validation";
 
 const props = defineProps({

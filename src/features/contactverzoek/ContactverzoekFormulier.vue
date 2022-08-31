@@ -92,15 +92,21 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="true"
         />
-        <non-blocking-input
-          v-else
-          type="tel"
-          v-model="telefoonnummer1"
-          name="telefoonnummer1"
+        <non-blocking-errors
           :validate="customPhoneValidator"
-          class="utrecht-textbox utrecht-textbox--html-input"
-          @input="isDirtyCheck"
-        />
+          :value="telefoonnummer1"
+          v-else
+        >
+          <template #default="{ inputProps }">
+            <input
+              v-bind="inputProps"
+              type="tel"
+              v-model="telefoonnummer1"
+              class="utrecht-textbox utrecht-textbox--html-input"
+              @input="isDirtyCheck"
+            />
+          </template>
+        </non-blocking-errors>
       </label>
 
       <label class="utrecht-form-label">
@@ -112,15 +118,21 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="true"
         />
-        <non-blocking-input
-          v-else
-          type="tel"
-          v-model="telefoonnummer2"
-          name="telefoonnummer2"
+        <non-blocking-errors
+          :value="telefoonnummer2"
           :validate="customPhoneValidator"
-          class="utrecht-textbox utrecht-textbox--html-input"
-          @input="isDirtyCheck"
-        />
+          v-else
+        >
+          <template #default="{ inputProps }">
+            <input
+              v-bind="inputProps"
+              type="tel"
+              v-model="telefoonnummer2"
+              class="utrecht-textbox utrecht-textbox--html-input"
+              @input="isDirtyCheck"
+            />
+          </template>
+        </non-blocking-errors>
       </label>
 
       <button
@@ -173,10 +185,9 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import NonBlockingForm from "../../components/forms/NonBlockingForm.vue";
-import NonBlockingInput from "../../components/forms/NonBlockingInput.vue";
+import { NonBlockingForm, NonBlockingErrors } from "@/components/forms";
 import { customPhoneValidator } from "@/helpers/validation";
 
 const attendee = ref("");

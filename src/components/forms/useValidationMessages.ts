@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import {
   inject,
   onUnmounted,
@@ -7,47 +8,54 @@ import {
   reactive,
   computed,
   ref,
+  readonly,
 } from "vue";
 
-type ValidationMessages = Map<string, string[]>;
+type ValidationMessages = Map<string, readonly string[]>;
 
 const injectionKey = Symbol() as InjectionKey<ValidationMessages>;
 
 export function useValidationMessages(props: {
-  name: string;
-  modelValue: string;
-  validate?: (m: string) => string[];
-}): { value: ReadonlyArray<string> } {
+  value: string;
+  validate: (m: string) => string[];
+}) {
   const map = inject(injectionKey);
   if (!map) throw new Error("map not found");
-  const messages = ref<string[]>([]);
 
-  const dispose1 = watch(
-    [() => props.modelValue, () => props.validate],
-    ([value, validate]) => {
-      messages.value = validate?.(value) ?? [];
-    },
-    { immediate: true }
+  const id = nanoid();
+  const messages = computed<ReadonlyArray<string>>(() =>
+    props.validate(props.value)
   );
 
-  const dispose2 = watch(
-    [() => props.name, messages],
-    ([newName, newMessages], [oldName]) => {
-      map.set(newName, newMessages);
-      if (oldName && oldName !== newName) {
-        map.delete(oldName);
-      }
+  const isDirty = ref(false);
+
+  const inputProps = computed(() => ({
+    "aria-describedBy": id,
+    "aria-invalid": messages.value.length > 0,
+    onBlur() {
+      isDirty.value = true;
+    },
+  }));
+
+  const disposeWatcher = watch(
+    [messages],
+    ([newMessages]) => {
+      map.set(id, newMessages);
     },
     { immediate: true }
   );
 
   onUnmounted(() => {
-    dispose1();
-    dispose2();
-    map.delete(props.name);
+    disposeWatcher();
+    map.delete(id);
   });
 
-  return messages;
+  return {
+    id,
+    messages,
+    inputProps,
+    isDirty: readonly(isDirty),
+  };
 }
 
 export function provideValidationMessages() {
