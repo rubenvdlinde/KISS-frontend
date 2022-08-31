@@ -32,6 +32,16 @@ type Result<T> =
     };
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
+export type Submitter<TIn, TOut> = (
+  | (ServiceData<TOut> & { submitted: true })
+  | {
+      submitted: false;
+      state: "init";
+      loading: false;
+      success: false;
+      error: false;
+    }
+) & { submit: (params: TIn) => Promise<TOut> };
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
@@ -72,14 +82,14 @@ export const ServiceResult = {
       loading: false,
     });
   },
-  init<T>(): ServiceData<T> | { init: true; state: "init" } {
+  init<T>(): ServiceData<T> | { submitted: false; state: "init" } {
     return reactive({
       state: "init",
       data: null,
       error: false,
       success: false,
       loading: false,
-      init: true,
+      submitted: false,
     });
   },
 
@@ -108,20 +118,7 @@ export const ServiceResult = {
     return Object.assign(result, promise);
   },
 
-  fromSubmitter<TIn, TOut>(
-    submitter: (params: TIn) => Promise<TOut>
-  ): (
-    | ServiceData<TOut>
-    | {
-        init: true;
-        state: "init";
-        loading: false;
-        success: false;
-        error: false;
-      }
-  ) & {
-    submit: (params: TIn) => Promise<TOut>;
-  } {
+  fromSubmitter<TIn, TOut>(submitter: (params: TIn) => Promise<TOut>) {
     const result = ServiceResult.init<TOut>();
     return Object.assign(result, {
       submit(params: TIn): Promise<TOut> {
@@ -131,7 +128,7 @@ export const ServiceResult = {
           error: false,
           success: false,
           loading: true,
-          init: false,
+          submitted: true,
         });
         return submitter(params)
           .then((r) => {
@@ -141,7 +138,6 @@ export const ServiceResult = {
               loading: false,
               error: false,
               success: true,
-              init: false,
             });
             return r;
           })
@@ -151,12 +147,11 @@ export const ServiceResult = {
               error: e instanceof Error ? e : new Error(e),
               loading: false,
               success: false,
-              init: false,
             });
             throw e;
           });
       },
-    });
+    }) as Submitter<TIn, TOut>;
   },
 
   /**

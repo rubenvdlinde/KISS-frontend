@@ -168,9 +168,9 @@ function clone<T>(val: T[]): T[] {
 const emails = ref(clone(props.klant.emails));
 const telefoonnummers = ref(clone(props.klant.telefoonnummers));
 
-function populate(k: Klant) {
-  emails.value = clone(k.emails);
-  telefoonnummers.value = clone(k.telefoonnummers);
+function populate() {
+  emails.value = clone(props.klant.emails);
+  telefoonnummers.value = clone(props.klant.telefoonnummers);
 }
 
 function focusLastInput(e: Event) {
@@ -200,7 +200,7 @@ const toggleEditing = (): void => {
 };
 
 const reset = () => {
-  populate(props.klant);
+  populate();
   editing.value = false;
 };
 
@@ -246,7 +246,7 @@ const submit = () =>
     .then((response) => {
       editing.value = false;
       Object.assign(props.klant, response);
-      populate(props.klant);
+      populate();
     });
 
 const showForm = computed(() => !submitter.loading && editing.value);
