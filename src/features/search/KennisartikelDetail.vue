@@ -145,6 +145,19 @@ article {
         margin-block: 0;
       }
     }
+
+    :deep(td) {
+      border: 1px var(--color-tertiary) solid;
+      padding: var(--spacing-small);
+    }
+
+    :deep(table) {
+      margin-block: var(--spacing-small);
+    }
+
+    :deep(p + p) {
+      margin-block-start: var(--spacing-small);
+    }
   }
 }
 
