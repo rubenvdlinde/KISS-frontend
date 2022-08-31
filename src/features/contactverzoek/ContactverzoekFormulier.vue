@@ -21,7 +21,7 @@ erbij voor het vrij invullen.
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
-  <non-blocking-form @submit.prevent="submit" v-else>
+  <non-blocking-form @submit.prevent="submit" class="form" v-else>
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
         class="utrecht-textbox utrecht-textbox--html-input"
@@ -155,12 +155,12 @@ erbij voor het vrij invullen.
         @input="isDirtyCheck"
       />
     </label>
-    {{ emailRequiredMessage }}
+
     <application-message
       v-if="emailRequiredMessage"
       :message="emailRequiredMessage"
       messageType="error"
-    ></application-message>
+    />
 
     <utrecht-button model-value type="submit" v-if="!submitted">
       Contactverzoek versturen
@@ -223,8 +223,6 @@ const submitted = computed(() => !!contactmomentStore.contactverzoek);
 const klantReadonly = computed(
   () => submitted.value || useKlantFromStore.value
 );
-const form = ref<HTMLFormElement>();
-
 const emailIsRequired = computed(
   () =>
     !klantReadonly.value &&
@@ -356,7 +354,8 @@ menu {
   margin-top: var(--spacing-default);
 }
 
-form {
+//hack: non-blocking-form styling
+* + :deep(form) {
   flex: 1;
   display: flex;
   gap: var(--spacing-default);
