@@ -21,7 +21,7 @@ erbij voor het vrij invullen.
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
-  <non-blocking-form @submit.prevent="submit" ref="form" v-else>
+  <non-blocking-form @submit.prevent="submit" v-else>
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
         class="utrecht-textbox utrecht-textbox--html-input"
