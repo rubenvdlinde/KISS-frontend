@@ -8,12 +8,16 @@ import {
   reactive,
   computed,
   ref,
-  readonly,
+  type DeepReadonly,
 } from "vue";
 
 type ValidationMessages = Map<string, readonly string[]>;
 
 const injectionKey = Symbol() as InjectionKey<ValidationMessages>;
+
+function castReadonly<T>(val: T) {
+  return val as DeepReadonly<T>;
+}
 
 export function useValidationMessages(props: {
   value: string;
@@ -50,16 +54,19 @@ export function useValidationMessages(props: {
     map.delete(id);
   });
 
-  return {
+  return castReadonly({
     id,
     messages,
     inputProps,
-    isDirty: readonly(isDirty),
-  };
+    isDirty,
+  });
 }
 
 export function provideValidationMessages() {
   const map = reactive(new Map<string, string[]>());
   provide(injectionKey, map);
-  return computed<ReadonlyArray<string>>(() => [...map.values()].flat());
+  const allMessages = computed<ReadonlyArray<string>>(() =>
+    [...map.values()].flat()
+  );
+  return castReadonly(allMessages);
 }
