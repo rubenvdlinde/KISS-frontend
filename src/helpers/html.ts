@@ -20,7 +20,7 @@ export function increaseHeadings(html: string, level: HeadingLevel): string {
   });
 }
 
-export function filterHtmlToBericht(str: string) {
+export function sanitizeHtmlToBerichtFormat(str: string) {
   return DOMPurify.sanitize(str, {
     FORBID_ATTR: ["style"],
     FORBID_TAGS: ["img"],

@@ -30,7 +30,7 @@
 </template>
 <script setup lang="ts">
 import {
-  filterHtmlToBericht,
+  sanitizeHtmlToBerichtFormat,
   unescapeHtml,
   increaseHeadings,
 } from "@/helpers/html";
@@ -63,7 +63,7 @@ const props = defineProps<{
 
 function processHtml(html: string) {
   const unescapedHtml = unescapeHtml(html);
-  const cleanedHtml = filterHtmlToBericht(unescapedHtml);
+  const cleanedHtml = sanitizeHtmlToBerichtFormat(unescapedHtml);
   const htmlWithIncreasedHeadings = increaseHeadings(
     cleanedHtml,
     (props.headingLevel + 1) as any
