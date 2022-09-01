@@ -18,11 +18,12 @@
 
 <script lang="ts" setup>
 import { watch, computed, ref } from "vue";
-import { useCurrentUser } from "./service";
+import { logOut, useCurrentUser } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { handleLogin } from "@/services";
 import { loginUrl, redirectUrl, sessionStorageKey } from "./config";
 import { useUserStore, type User } from "@/stores/user";
+import { toast } from "@/stores/toast";
 
 let newTab: Window | null = null;
 
@@ -114,9 +115,19 @@ function onLogin() {
   }
 }
 
-function onLogout() {
-  channel.postMessage(messageTypes.refresh);
-  setTimeout(() => refresh(), 1000);
+function onLogout(e: Event) {
+  e.preventDefault();
+  return logOut()
+    .then(() => {
+      channel.postMessage(messageTypes.refresh);
+      location.reload();
+    })
+    .catch(() => {
+      toast({
+        type: "error",
+        text: "Er ging iets mis tijdens het uitloggen. Probeer het opnieuw.",
+      });
+    });
 }
 
 function onLinkClick(e: Event) {

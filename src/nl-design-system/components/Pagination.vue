@@ -1,5 +1,5 @@
 <template>
-  <nav class="denhaag-pagination">
+  <nav class="denhaag-pagination" v-if="pagination.totalPages > 1">
     <a
       :href="previous.href"
       :class="[
@@ -213,7 +213,6 @@ watch(
   display: flex;
   height: var(--denhaag-pagination-size);
   justify-content: center;
-  line-height: 1.5;
   position: relative;
   text-align: center;
   text-decoration: none;

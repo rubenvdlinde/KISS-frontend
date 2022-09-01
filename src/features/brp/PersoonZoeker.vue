@@ -187,7 +187,7 @@ const zoekOpAdres = () => {
 };
 
 //test bsn: 205827123
-const findzaken = (bsn: number) => {
+const findzaken = (bsn: string) => {
   emit("zakenZoeken", bsn);
 };
 </script>
@@ -199,8 +199,7 @@ const findzaken = (bsn: number) => {
   display: grid;
   grid-template-columns: 1fr 4fr;
 
-  padding: var(--spacing-large);
-  grid-gap: 2rem;
+  gap: var(--spacing-large);
 }
 
 label {
@@ -210,10 +209,6 @@ label {
 
 input {
   margin-top: var(--spacing-small);
-}
-
-form:last-child {
-  margin-top: var(--spacing-large);
 }
 
 menu {

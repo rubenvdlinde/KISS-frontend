@@ -1,38 +1,65 @@
 <template>
   <form
     method="get"
-    class="search-bar"
     enctype="application/x-www-form-urlencoded"
     @submit.prevent="applySearch"
+    ref="searchBarRef"
   >
-    <label
-      ><input
-        type="search"
-        v-model="searchInput"
-        placeholder="Zoeken"
-        @search.prevent="applySearch"
-      />Zoekterm</label
-    >
-    <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+    <fieldset class="bronnen" v-if="sources.success">
+      <label v-for="bron in sources.data" :key="bron.name + bron.type">
+        <input type="checkbox" v-model="selectedSources" :value="bron" />
+        {{ bron.name.replace(/(^\w+:|^)\/\//, "").replace("www.", "") }}
+      </label>
+    </fieldset>
+    <div class="search-bar">
+      <label
+        ><input
+          type="search"
+          v-model="searchInput"
+          placeholder="Zoeken"
+          @search.prevent="applySearch"
+          id="global-search-input"
+        />Zoekterm</label
+      >
+      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+    </div>
   </form>
   <template v-if="currentSearch">
-    <section ref="searchResultsRef" :class="['search-results', { isExpanded }]">
+    <section :class="['search-results', { isExpanded }]">
       <template v-if="searchResults.success">
         <p v-if="!hasResults" class="no-results">Geen resultaten gevonden</p>
         <template v-else>
           <nav v-show="!currentId">
             <ul>
               <li
-                v-for="{ id, title, source } in searchResults.data.page"
+                v-for="{ id, title, source, jsonObject, url } in searchResults
+                  .data.page"
                 :key="'nav_' + id"
               >
                 <a
+                  v-if="!url"
                   href="#"
-                  @click="currentId = id"
+                  @click="selectSearchResult(id, source, jsonObject, title)"
                   class="icon-after chevron-down"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
+                <a
+                  v-else
+                  :href="url.toString()"
+                  class="icon-after chevron-down"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  ><span :class="`category-${source}`">{{ source }}</span
+                  ><span>{{ title }}</span></a
+                >
+                <a v-if="source === smoelenboek">
+                  <span></span
+                  ><span
+                    >{{ jsonObject?.function }}
+                    {{ jsonObject?.department }}</span
+                  >
+                </a>
               </li>
             </ul>
           </nav>
@@ -44,15 +71,33 @@
           />
           <ul>
             <li
-              v-for="{ id, title, source, content, url } in searchResults.data
-                .page"
+              v-for="{
+                id,
+                title,
+                source,
+                content,
+                url,
+                jsonObject,
+              } in searchResults.data.page"
               :key="'searchResult_' + id"
               v-show="id === currentId"
             >
               <a class="back-to-results" href="#" @click="currentId = ''"
                 >Alle zoekresultaten</a
               >
-              <article>
+              <medewerker-detail
+                :json-object="jsonObject"
+                v-if="source === 'Smoelenboek'"
+                :title="title"
+                :heading-level="2"
+              />
+              <kennisartikel-detail
+                v-else-if="source === 'Kennisartikel'"
+                :kennisartikel-raw="jsonObject"
+                :title="title"
+                :heading-level="2"
+              />
+              <article v-else>
                 <header>
                   <utrecht-heading model-value :level="2"
                     ><a
@@ -67,9 +112,10 @@
                   </utrecht-heading>
                   <small :class="`category-${source}`">{{ source }}</small>
                 </header>
+
                 <p v-if="content">{{ content }}</p>
-                <slot name="articleFooter" :id="url" :title="title"></slot>
               </article>
+              <slot name="articleFooter" :id="url" :title="title"></slot>
             </li>
           </ul>
         </template>
@@ -96,24 +142,44 @@ import {
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
-import { useGlobalSearch } from "./service";
+import { useGlobalSearch, useSources } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import type { Source } from "./types";
+import MedewerkerDetail from "./MedewerkerDetail.vue";
+import KennisartikelDetail from "./KennisartikelDetail.vue";
 
+const emit = defineEmits<{
+  (
+    e: "result-selected",
+    params: {
+      id: string;
+      title: string;
+      jsonObject: any;
+      source: string;
+    }
+  ): void;
+}>();
+
+const smoelenboek = "Smoelenboek";
 const searchInput = ref("");
 const currentSearch = ref("");
 const currentId = ref("");
 const isExpanded = ref(true);
 const currentPage = ref(1);
-const searchResultsRef = ref<Element>();
+const searchBarRef = ref();
 
 const searchParameters = computed(() => ({
   search: currentSearch.value,
   page: currentPage.value,
+  filters: selectedSources.value,
 }));
 
+const selectedSources = ref<Source[]>([]);
+
 const searchResults = useGlobalSearch(searchParameters);
+const sources = useSources();
 
 function applySearch() {
   currentSearch.value = searchInput.value;
@@ -123,8 +189,8 @@ function applySearch() {
 
 function handlePaginationNavigation(page: number) {
   currentPage.value = page;
-  const el = searchResultsRef.value;
-  if (el) {
+  const el = searchBarRef.value;
+  if (el instanceof Element) {
     el.scrollIntoView();
   }
 }
@@ -142,26 +208,51 @@ watch(hasResults, (x) => {
     isExpanded.value = true;
   }
 });
+
+const selectSearchResult = (
+  id: string,
+  source: string,
+  jsonObject: any,
+  title: string
+) => {
+  currentId.value = id;
+  emit("result-selected", {
+    id,
+    title,
+    source,
+    jsonObject,
+  });
+};
 </script>
 
 <style lang="scss" scoped>
 form {
   grid-area: bar;
-  padding-block: var(--spacing-large);
-  max-width: 40rem;
+  padding-block-start: var(--spacing-small);
+  padding-block-end: var(--spacing-large);
+  display: grid;
+  gap: var(--spacing-small);
 }
 
-form > section {
-  width: 40rem;
+.search-bar {
+  max-width: 40rem;
+  width: 100%;
 }
 
 button {
   font-size: 0;
 }
 
-input,
-label {
-  width: 100%;
+input[type="checkbox"] {
+  accent-color: var(--color-secondary);
+}
+
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-default);
+  color: var(--color-white);
+  margin-inline: auto;
 }
 
 .search-results {
@@ -248,27 +339,6 @@ nav ul {
 
 .back-to-results::before {
   content: "< ";
-}
-
-article {
-  display: grid;
-  gap: 0.5rem;
-
-  header {
-    display: grid;
-    justify-items: start;
-    gap: 0.5rem;
-  }
-
-  :deep(p) {
-    &:not(:first-child) {
-      margin-top: 1em;
-    }
-
-    &:not(:last-child) {
-      margin-bottom: 1em;
-    }
-  }
 }
 
 .pagination {

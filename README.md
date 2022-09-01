@@ -51,6 +51,7 @@ npm run dev
 ```
 The front-end is run on https in this scenario, on port 3000 (if available).
 If you have issues logging in from an incognito window, [have a look at this url](https://stackoverflow.com/a/63587751)
+Logging out currently doesn't work on localhost, you can log out by manually deleting the cookie. There's a task on the backlog to fix this.
 
 ### Type-Check, Compile and Minify for Production
 

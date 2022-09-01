@@ -34,11 +34,15 @@ output {
   padding: var(--spacing-default);
   border-radius: var(--radius-default);
   font-size: 1rem;
-  color: white;
+  color: var(--color-white);
 }
 
 .confirm {
   background-color: var(--color-accent);
+}
+
+.error {
+  background-color: var(--color-error);
 }
 
 .toast-move, /* apply transition to moving elements */

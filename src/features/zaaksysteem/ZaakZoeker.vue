@@ -25,7 +25,6 @@
             id="bsn"
             v-model="bsn"
             class="utrecht-textbox utrecht-textbox--html-input"
-            v-on:keydown.enter.prevent="zoekOpBsn"
             placeholder="205827123"
           />
         </fieldset>
@@ -56,7 +55,7 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 import { useZaaksysteemService } from "./service";
-import type { Zaak } from "./types";
+import type { Zaak } from "@/stores/contactmoment";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -64,12 +63,12 @@ import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
 
 const props = defineProps({
-  populatedBsn: { type: Number, default: null },
+  populatedBsn: { type: String, default: null },
 });
 
 const service = useZaaksysteemService();
 const zaaknummer = ref();
-const bsn = ref(props.populatedBsn);
+const bsn = ref("");
 const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
@@ -83,11 +82,12 @@ const zoekOpZaak = () => {
   service
     .findByZaak(zaaknummer.value)
     .then((data) => {
-      zaken.value = data;
+      zaken.value = data.page;
       isDirty.value = true;
     })
-    .catch(() => {
+    .catch((e) => {
       error.value = true;
+      console.error(e);
     })
     .finally(() => {
       busy.value = false;
@@ -100,13 +100,15 @@ const zoekOpBsn = () => {
   zaken.value = [];
 
   service
-    .findByBsn(bsn.value)
+    .findByBsn(bsn)
+    .withoutFetcher()
     .then((data) => {
-      zaken.value = data;
+      zaken.value = data.page;
       isDirty.value = true;
     })
-    .catch(() => {
+    .catch((e) => {
       error.value = true;
+      console.error(e);
     })
     .finally(() => {
       busy.value = false;
@@ -116,8 +118,9 @@ const zoekOpBsn = () => {
 //als er een bsn meegegeven wordt dan initieren we direct een zoekopdracht daarop
 watch(
   () => props.populatedBsn,
-  (first, second) => {
-    if (first && first != second) {
+  (populatedBsnValue) => {
+    if (populatedBsnValue) {
+      bsn.value = populatedBsnValue;
       zoekOpBsn();
     }
   },
@@ -131,8 +134,6 @@ watch(
 .grid {
   display: grid;
   grid-template-columns: 1fr 4fr;
-
-  padding: var(--spacing-large);
   grid-gap: 2rem;
 }
 

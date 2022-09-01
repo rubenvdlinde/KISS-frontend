@@ -8,7 +8,7 @@
         bericht.title
       }}</utrecht-heading>
       <time :datetime="bericht.date.toISOString()">{{
-        localeString(bericht.date)
+        formatDateAndTime(bericht.date)
       }}</time>
       <small
         v-for="(skill, i) in bericht.skills"
@@ -31,7 +31,8 @@ import {
   UtrechtHeading,
   UtrechtDocument,
 } from "@utrecht/web-component-library-vue";
-import { cleanHtml } from "@/helpers/html";
+import { cleanHtml, increaseHeadings } from "@/helpers/html";
+import { formatDateAndTime } from "@/helpers/date";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -51,16 +52,13 @@ const props = defineProps({
   },
 });
 
-const localeString = (d: Date) =>
-  d.toLocaleString("nl-NL", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function processHtml(html: string) {
+  const cleanedHtml = cleanHtml(html);
+  const increasedHeadings = increaseHeadings(cleanedHtml, props.level);
+  return increasedHeadings;
+}
 
-const sanitized = computed(() => cleanHtml(props.bericht.content, props.level));
+const sanitized = computed(() => processHtml(props.bericht.content));
 </script>
 
 <style lang="scss" scoped>
@@ -94,7 +92,7 @@ article {
     gap: 0.25rem;
     list-style-type: disc;
     padding-left: var(--text-margin);
-    line-height: 1.5rem;
+    line-height: var(--line-height-default);
   }
 
   :deep(p) {

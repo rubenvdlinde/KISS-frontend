@@ -2,7 +2,9 @@
   <login-overlay>
     <template #default="{ onLogout }">
       <the-toast-section />
-      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
+      <header
+        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
+      >
         <global-search>
           <template #articleFooter="{ id, title }">
             <search-feedback :id="id" :name="title"></search-feedback>
@@ -12,7 +14,7 @@
           :href="logoutUrl"
           @click="onLogout"
           @keydown.enter="onLogout"
-          class="log-out utrecht-button"
+          class="log-out"
           >Uitloggen</a
         >
       </header>
@@ -23,18 +25,19 @@
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { GlobalSearch } from "./features/search";
+import { GlobalSearch } from "@/features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import SearchFeedback from "./features/feedback/SearchFeedback.vue";
-import { logoutUrl, LoginOverlay } from "./features/login";
-import TheToastSection from "./components/TheToastSection.vue";
+import { SearchFeedback } from "@/features/feedback";
+import { logoutUrl, LoginOverlay } from "@/features/login";
+import TheToastSection from "@/components/TheToastSection.vue";
 
-const contactmoment = useContactmomentStore();
+const contactmomentStore = useContactmomentStore();
 </script>
 
 <style lang="scss">
 @import "@/assets/reset.css";
 @import "@/assets/fonts/fonts.css";
+@import "@utrecht/component-library-css";
 
 /* Design Tokens */
 @import "@gemeente-denhaag/design-tokens-components/dist/index.css";
@@ -49,6 +52,7 @@ const contactmoment = useContactmomentStore();
   --color-error: #d44;
   --color-category-default: hsl(184, 54%, 70%);
   --color-category-website: hsl(285, 56%, 83%);
+  --color-white: #fff;
 
   // spacing
   --container-width: 80rem;
@@ -63,8 +67,13 @@ const contactmoment = useContactmomentStore();
   --spacing-default: 1rem;
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
+  --spacing-extralarge: 6rem;
+  --spacing-extrasmall: 0.25rem;
+
   --header-height: 6rem;
   --text-margin: 1.5rem;
+
+  --line-height-default: 1.5;
 
   // other
   --radius-default: 0.5rem;
@@ -74,12 +83,21 @@ const contactmoment = useContactmomentStore();
   --height-body: 100vh;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+  line-height: var(--line-height-default);
+}
+
 body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
 #app {
   position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
 }
 
 #app > header {
@@ -96,7 +114,7 @@ body {
 
   .log-out {
     grid-area: logout;
-    color: white;
+    color: var(--color-white);
     padding: var(--spacing-small);
     margin-left: auto;
   }
@@ -114,13 +132,17 @@ button:hover {
   cursor: pointer;
 }
 
-.tabs-component {
-  ul li.is-active {
+.main-tabs > nav {
+  background-color: var(--color-secondary);
+}
+
+.tabs-component-zaken {
+  > ul li.is-active {
     background-color: var(--color-secondary);
     border-radius: var(--radius-default) var(--radius-default) 0 0;
   }
 
-  ul li {
+  > ul li {
     display: inline-block;
     padding: var(--spacing-default);
 
@@ -136,29 +158,20 @@ button:hover {
   }
 }
 
-main {
-  gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
-  padding-block: var(--spacing-large);
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  position: relative;
-
-  > * {
-    flex-basis: 100%;
-  }
-}
-
-main > section {
-  &:not(:only-of-type) {
-    max-width: var(--section-width);
+.tabs-component-contactmoment {
+  > ul li.is-active {
+    background-color: var(--color-white);
   }
 
-  > utrecht-heading:first-child {
-    padding-left: var(--text-margin);
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-tertiary);
+  > ul li {
+    display: inline-block;
+    padding: var(--spacing-default);
+
+    a {
+      text-decoration: none;
+      font-size: var(--utrecht-typography-scale-lg);
+      color: var(--utrecht-document-color);
+    }
   }
 }
 
@@ -173,10 +186,6 @@ a[aria-current="page"] {
 
 h2 {
   margin-top: var(--spacing-large);
-}
-
-::placeholder {
-  color: red;
 }
 
 .search-bar {
@@ -211,7 +220,7 @@ h2 {
 
   button {
     --utrecht-icon-size: 1rem;
-    background: white;
+    background: var(--color-white);
     font-size: 0;
     padding-right: var(--spacing-default);
   }
@@ -232,16 +241,18 @@ h2 {
     color: var(--color-error);
   }
 
+  > :nth-last-child(2) {
+    flex: 1;
+    > input {
+      width: 100%;
+    }
+  }
+
   input[type="search"] {
     padding-inline-start: 1rem;
     &::placeholder {
       color: black;
     }
-  }
-
-  input,
-  select {
-    width: 100%;
   }
 }
 
@@ -287,16 +298,28 @@ h2 {
   mask-image: url("@/assets/icons/check.svg");
 }
 
+.icon-before.phone-flip::before,
+.icon-after.phone-flip::after {
+  mask-image: url("@/assets/icons/phone-flip.svg");
+}
+
+.icon-before.note::before,
+.icon-after.note::after {
+  mask-image: url("@/assets/icons/note.svg");
+}
+
 //forms
 form {
-  label {
-    span.required {
-      color: var(--color-error);
-      padding-left: var(--spacing-small);
-    }
+  span.required::after {
+    content: "*";
+    color: var(--color-error);
+    padding-left: 1ch;
   }
 }
 
+menu {
+  list-style: none;
+}
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -310,6 +333,8 @@ form {
   --utrecht-heading-font-weight: 600;
   --denhaag-pagination-color: var(--color-primary);
   --denhaag-pagination-link-current-color: var(--color-headings);
+  --utrecht-border-width-sm: 1px;
+  --utrecht-color-grey-90: var(--color-tertiary);
 
   /* h1 */
   --utrecht-heading-1-line-height: 4.25rem;
@@ -335,9 +360,10 @@ form {
 
   /* forms */
   --utrecht-form-fieldset-legend-font-size: 1.5rem;
-  --utrecht-form-fieldset-legend-font-weight: bold;
+  --utrecht-form-fieldset-legend-font-weight: 600;
   --utrecht-form-fieldset-legend-line-height: 2rem;
 
+  --utrecht-form-label-font-weight: 600;
   --utrecht-form-label-font-size: 1rem;
 
   --utrecht-form-input-border-color: var(--color-primary);
@@ -347,6 +373,9 @@ form {
   --utrecht-form-input-padding-block-start: var(--spacing-small);
 
   --utrecht-form-input-placeholder-color: #999;
+
+  --utrecht-form-input-disabled-border-color: #999;
+  --utrecht-form-input-disabled-color: #999;
 }
 
 utrecht-button,

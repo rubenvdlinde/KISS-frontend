@@ -2,6 +2,8 @@ import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
 import useSWRV from "swrv";
 
 export * from "./fetch-logged-in";
+export * from "./pagination";
+export * from "./gateway";
 
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
@@ -30,15 +32,6 @@ type Result<T> =
     };
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
-
-export interface Paginated<T> {
-  pageSize: number;
-  pageNumber: number;
-  totalPages: number;
-  totalRecords?: number;
-  page: T[];
-}
-
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
@@ -48,6 +41,7 @@ interface FetcherConfig<T = unknown> {
    * if the url alone is not enough to identify a unique request, you can supply a function that does this in stead.
    */
   getUniqueId?: () => string;
+  poll?: true;
 }
 
 export const ServiceResult = {
@@ -79,7 +73,7 @@ export const ServiceResult = {
     });
   },
 
-  fromPromise<T = unknown>(promise: Promise<T>) {
+  fromPromise<T = unknown>(promise: Promise<T>): ServiceData<T> & Promise<T> {
     const result = ServiceResult.loading<T>();
 
     promise
@@ -101,7 +95,7 @@ export const ServiceResult = {
         });
       });
 
-    return result;
+    return Object.assign(result, promise);
   },
 
   /**
@@ -127,7 +121,9 @@ export const ServiceResult = {
       getRequestUniqueId,
       fetcherWithoutParameters,
       {
-        refreshInterval: import.meta.env.VITE_API_REFRESH_INTERVAL_MS,
+        refreshInterval: config?.poll
+          ? import.meta.env.VITE_API_REFRESH_INTERVAL_MS
+          : undefined,
       }
     );
 
@@ -239,4 +235,9 @@ export function createLookupList<K, V>(entries: [K, V][]): LookupList<K, V> {
     },
     entries,
   };
+}
+
+export function throwIfNotOk(response: Response) {
+  if (!response.ok) throw new Error(response.statusText);
+  return response as Response & { ok: true };
 }
