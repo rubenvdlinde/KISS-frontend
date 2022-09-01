@@ -29,7 +29,7 @@
       />
     </template>
     <application-message
-      v-if="serviceResult?.error"
+      v-if="klanten.error"
       messageType="error"
       message="Er is een fout opgetreden"
     />
@@ -37,7 +37,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { ServiceData } from "@/services";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { ref, watch } from "vue";
 import { useKlanten } from "./service";
@@ -56,8 +55,6 @@ const klanten = useKlanten({ search: searchQuery, page });
 const navigate = (val: number) => {
   page.value = val;
 };
-
-const serviceResult = ref<ServiceData<Klant>>();
 
 const emit = defineEmits([KLANT_SELECTED]);
 const emitKlantSelected = (klant: Klant) => {
