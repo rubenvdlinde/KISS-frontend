@@ -60,4 +60,6 @@ export interface Contactmoment {
   medewerker: string;
   resultaat: string;
   medewerkerIdentificatie: MedewerkerIdentificatie | undefined;
+  startdatum: string;
+  einddatum: string;
 }
