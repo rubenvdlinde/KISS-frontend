@@ -145,7 +145,10 @@ import { useUpdateContactGegevens } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { computed } from "vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import { NonBlockingErrors, NonBlockingForm } from "@/components/forms";
+import {
+  NonBlockingErrors,
+  NonBlockingForm,
+} from "@/components/non-blocking-forms";
 import { customPhoneValidator } from "@/helpers/validation";
 
 const props = defineProps({

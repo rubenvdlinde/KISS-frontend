@@ -44,25 +44,6 @@ export function useKlanten(params: KlantSearchParameters) {
   return ServiceResult.fromFetcher(getUrl, searchKlanten);
 }
 
-export function createKlant(klant: NieuweKlant) {
-  return fetchLoggedIn(rootUrl, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      ...klant,
-      bronorganisatie: window.organisatieIds[0],
-      websiteUrl: location.host,
-      // TODO: WAT MOET HIER IN KOMEN?
-      klantnummer: "123",
-    }),
-  })
-    .then(throwIfNotOk)
-    .then((r) => r.json())
-    .then(mapKlant);
-}
-
 function mapKlant(obj: any): Klant {
   const emails = obj?.embedded?.emails ?? [];
   const telefoonnummers = obj?.embedded?.telefoonnummers ?? [];

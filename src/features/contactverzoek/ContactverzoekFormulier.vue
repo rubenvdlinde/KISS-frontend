@@ -187,7 +187,10 @@ import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import { NonBlockingForm, NonBlockingErrors } from "@/components/forms";
+import {
+  NonBlockingForm,
+  NonBlockingErrors,
+} from "@/components/non-blocking-forms";
 import { customPhoneValidator } from "@/helpers/validation";
 
 const attendee = ref("");
