@@ -62,7 +62,7 @@ import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
 
 const props = defineProps<{
-  beforeStopWarning: string;
+  beforeStopWarning?: string;
 }>();
 
 const beforeStopDialogRevealed = ref(false);
