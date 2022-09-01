@@ -5,7 +5,7 @@
       <input
         type="search"
         placeholder="Zoek op e-mailadres of telefoonnummer"
-        v-model="currentSearch"
+        v-model="store.currentSearch"
         @search="handleSearch"
         title="0612345789 test@conduction.nl"
       />
@@ -15,7 +15,7 @@
     </button>
   </form>
 
-  <section v-if="searchQuery" class="search-section">
+  <section v-if="store.searchQuery" class="search-section">
     <simple-spinner v-if="klanten.loading" />
     <template v-if="klanten.success">
       <klanten-overzicht
@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useKlanten } from "./service";
 import type { Klant } from "@/stores/contactmoment";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
@@ -47,13 +47,26 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
 import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
+import { getStore } from "@/stores/create-store";
 
-const currentSearch = ref("");
-const searchQuery = ref("");
-const page = ref(1);
-const klanten = useKlanten({ search: searchQuery, page });
+const store = getStore({
+  storeId: "klant-zoeker",
+  stateFactory() {
+    return {
+      currentSearch: "",
+      searchQuery: "",
+      page: 1,
+    };
+  },
+});
+
+const klanten = useKlanten({
+  search: computed(() => store.value.currentSearch),
+  page: computed(() => store.value.page),
+});
+
 const navigate = (val: number) => {
-  page.value = val;
+  store.value.page = val;
 };
 
 const emit = defineEmits([KLANT_SELECTED]);
@@ -74,8 +87,8 @@ watch(singleKlant, (n, o) => {
 });
 
 const handleSearch = () => {
-  searchQuery.value = currentSearch.value;
-  page.value = 1;
+  store.value.searchQuery = store.value.currentSearch;
+  store.value.page = 1;
 };
 </script>
 
