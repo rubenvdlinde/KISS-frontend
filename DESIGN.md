@@ -15,6 +15,14 @@
   - Base this on ISO standards
   - Contact the VNG to standardize our API
 
+## We follow VNG API standards
+- PDS -> https://vng-realisatie.github.io/gemma-zaken/standaard/index
+- https://www.gemmaonline.nl/index.php/Omnichannel_ProductDienstStatus_Bedrijfsarchitectuur
+- https://www.gemmaonline.nl/index.php/Omnichannel_ProductDienstStatus_Kaders_en_context
+- https://www.gemmaonline.nl/index.php/Omnichannel_ProductDienstStatus_Bijlagen
+- https://vng-realisatie.github.io/gemma-zaken/standaard/verzoeken/index
+
+
 ## We follow applicable design rules
 And order these from international to local, we always apply (in this order)
 

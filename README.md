@@ -29,12 +29,9 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 npm install
 ```
 
-To run the frontend and gateway with docker you need a cmd opened in the root of this project.
-Then you will need to pull its image:
-```sh
-docker-compose pull
-```
-After that you can run its the image with: 
+To run the frontend and gateway with docker (please make sure you have docker [desktop](https://www.docker.com/products/docker-desktop/) ) you need a cmd opened in the root of this project.
+
+After that you can run  the images with: 
 ```sh
 docker-compose up
 ```
