@@ -29,7 +29,11 @@
   </article>
 </template>
 <script setup lang="ts">
-import { cleanHtml, unescapeHtml, increaseHeadings } from "@/helpers/html";
+import {
+  filterHtmlToBericht,
+  unescapeHtml,
+  increaseHeadings,
+} from "@/helpers/html";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
@@ -59,7 +63,7 @@ const props = defineProps<{
 
 function processHtml(html: string) {
   const unescapedHtml = unescapeHtml(html);
-  const cleanedHtml = cleanHtml(unescapedHtml);
+  const cleanedHtml = filterHtmlToBericht(unescapedHtml);
   const htmlWithIncreasedHeadings = increaseHeadings(
     cleanedHtml,
     (props.headingLevel + 1) as any
