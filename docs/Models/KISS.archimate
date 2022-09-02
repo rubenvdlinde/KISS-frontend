@@ -242,6 +242,12 @@
           <sourceConnection xsi:type="archimate:Connection" id="id-27262d4d8b0d4ca5b056d6cf7f79e705" source="id-4bab5af6d8294a4b8a6e9fff7a6d1927" target="id-70573d6899814627aa8eac60a58d94f8" archimateRelationship="id-931f77b978304f8fa089aba65b961bc3"/>
         </child>
       </child>
+      <child xsi:type="archimate:Note" id="id-0eecd892c6564503bf2455c59a64b7d7" textAlignment="1">
+        <bounds x="363" y="960" width="185" height="80"/>
+        <content>Contactmoment is uigebreid met todo,  gerelateerde objecten, gespreks id&#xD;
+&#xD;
+Klant, </content>
+      </child>
     </element>
   </folder>
   <purpose>Inzicht in componenten en afhankenlijkheden KISS</purpose>
