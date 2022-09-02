@@ -13,6 +13,7 @@
         @click="toggleRead"
         :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
         class="toggle-read icon-after book"
+        :disabled="loadingTogglingRead"
       />
     </div>
 
@@ -65,19 +66,22 @@ const props = defineProps({
 });
 
 const read = ref<boolean>(props.bericht.read);
+const loadingTogglingRead = ref<boolean>(false);
 
 const toggleRead = async (): Promise<void> => {
-  if (!read.value) {
-    await readBericht(props.bericht.id).then(() => {
-      read.value = true;
-    });
-  }
+  loadingTogglingRead.value = true;
 
   if (read.value) {
-    await unreadBericht(props.bericht.id).then(() => {
-      read.value = false;
-    });
+    await unreadBericht(props.bericht.id);
   }
+
+  if (!read.value) {
+    await readBericht(props.bericht.id);
+  }
+
+  loadingTogglingRead.value = false;
+
+  read.value = !read.value;
 };
 
 const localeString = (d: Date) =>
@@ -115,11 +119,14 @@ article {
 
     .toggle-read {
       all: unset;
-      cursor: pointer;
       color: var(--color-headings);
 
       &:hover {
         color: var(--color-tertiary);
+        cursor: pointer;
+      }
+      &:hover:disabled {
+        cursor: wait;
       }
     }
   }

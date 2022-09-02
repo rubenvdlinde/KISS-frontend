@@ -45,8 +45,8 @@ function parseWerkbericht(
   getSkillNameById: (id: number) => string | undefined
 ): Werkbericht {
   if (
-    typeof jsonObject?.title?.rendered !== "string" ||
-    typeof jsonObject?.content?.rendered !== "string" ||
+    typeof jsonObject?.embedded?.title?.rendered !== "string" ||
+    typeof jsonObject?.embedded?.content?.rendered !== "string" ||
     typeof jsonObject?.date !== "string"
   ) {
     throw new Error(
@@ -77,9 +77,9 @@ function parseWerkbericht(
 
   return {
     id: jsonObject.id,
-    read: !!jsonObject["dateRead"],
-    title: jsonObject.title.rendered,
-    content: jsonObject.content.rendered,
+    read: !!jsonObject["x-commongateway-metadata"]?.dateRead,
+    title: jsonObject.embedded.title.rendered,
+    content: jsonObject.embedded.content.rendered,
     date: latestDate,
     types: typeNames,
     skills: skillNames,
@@ -150,13 +150,13 @@ export function useWerkberichten(
 
     const { typeId, search, page, skillIds } = parameters.value;
 
-    const params: [string, string][] = [["", ""]];
+    const params: [string, string][] = [
+      ["extend[]", "x-commongateway-metadata.dateRead"],
+    ];
 
-    params.push(["extend[]", "x-commongateway-metadata.dateRead"]);
-
-    // if (typeId) {
-    //   params.push(["openpub-type", typeId.toString()]);
-    // }
+    if (typeId) {
+      params.push(["openpub-type", typeId.toString()]);
+    }
 
     if (search) {
       params.push(["search", search]);
@@ -226,27 +226,17 @@ export async function readBericht(id: string): Promise<boolean> {
 }
 
 export async function unreadBericht(id: string): Promise<boolean> {
-  const bericht = await getBericht(id);
-
   const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}`, {
     method: "PUT",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...bericht, "@dateRead": true }),
+    body: JSON.stringify({ "@dateRead": false }),
   });
 
   if (!res.ok)
     throw new Error(`Expected to unread bericht: ${res.status.toString()}`);
 
   return res.ok;
-}
-
-async function getBericht(id: string): Promise<any> {
-  const url = window.gatewayBaseUri + `/api/openpub/kiss_openpub_pub/${id}`;
-
-  const res = await await fetchLoggedIn(url);
-
-  return await res.json();
 }
