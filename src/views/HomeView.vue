@@ -79,7 +79,7 @@
       </li>
     </menu>
     <werk-berichten
-      v-if="currentSearch || currentSkills.length"
+      v-if="currentSearch"
       :level="2"
       page-param-name="werkberichtsearchpage"
       :search="currentSearch"
@@ -94,6 +94,7 @@
         header="Nieuws"
         page-param-name="nieuwspage"
         :typeId="nieuwsId"
+        :skill-ids="currentSkills"
       />
       <werk-berichten
         :level="2"
@@ -101,6 +102,7 @@
         header="Werkinstructies"
         page-param-name="werkinstructiepage"
         :typeId="werkInstructieId"
+        :skill-ids="currentSkills"
       />
     </template>
 
