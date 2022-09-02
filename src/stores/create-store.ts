@@ -13,7 +13,8 @@ const storeMap = new Map<string, Store<unknown>>();
 export type CreateStoreParams<T> = {
   storeId: string;
   stateFactory: () => T;
-  onHydrate?: () => void | Promise<void>;
+  onExistingState?: (state: UnwrapRef<T>) => void | Promise<void>;
+  onNewState?: (state: UnwrapRef<T>) => void | Promise<void>;
 };
 
 export type Store<T> = Ref<UnwrapRef<T>>;
@@ -23,12 +24,17 @@ export type StoreImplementation = <T>(params: CreateStoreParams<T>) => Store<T>;
 function defaultStoreImplementation<T>({
   storeId,
   stateFactory,
+  onExistingState,
+  onNewState,
 }: CreateStoreParams<T>): Store<T> {
   let store = storeMap.get(storeId) as Store<T> | undefined;
 
   if (!store) {
     store = ref(stateFactory());
     storeMap.set(storeId, store);
+    onNewState?.(store.value);
+  } else {
+    onExistingState?.(store.value);
   }
 
   return store;
