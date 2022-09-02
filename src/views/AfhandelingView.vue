@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <div class="afhandeling">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
     <router-link
@@ -65,7 +65,7 @@
 
       <contactmoment-afhandel-form @save="saveContact" />
     </template>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -175,9 +175,11 @@ const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
 </script>
 
 <style scoped lang="scss">
-main {
+.afhandeling {
+  grid-column: 2 / 5;
+
   //center
-  padding-inline: var(--container-padding);
+  // padding-inline: var(--container-padding);
   padding-block: var(--spacing-large);
   max-width: var(--section-width-large);
   margin-bottom: var(--spacing-large);

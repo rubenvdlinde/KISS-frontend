@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <div class="home">
     <header>
       <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
       <a
@@ -103,8 +103,9 @@
         :typeId="werkInstructieId"
       />
     </template>
-  </main>
-  <contactmoment-starter />
+
+    <contactmoment-starter />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -175,7 +176,9 @@ function handleSearch(e: Event) {
 </script>
 
 <style scoped lang="scss">
-main {
+.home {
+  grid-column: 1 / span 5;
+
   gap: var(--spacing-default);
   padding-inline: var(--container-padding);
   padding-block: var(--spacing-large);
@@ -190,7 +193,7 @@ main {
   }
 }
 
-main > section {
+.home > section {
   &:not(:only-of-type) {
     max-width: var(--section-width);
   }

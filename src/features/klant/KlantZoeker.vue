@@ -40,14 +40,14 @@
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch } from "vue";
 import { useKlanten } from "./service";
-import type { Klant } from "@/stores/contactmoment";
+import type { Klant } from "@/stores/contactmoment"; //todo alleen eigen types gebruiken, geen afhankelijkheid op gloable stores
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import Pagination from "@/nl-design-system/components/Pagination.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
+import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?
 import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
-import { getStore } from "@/stores/create-store";
+import { getStore } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 
 const store = getStore({
   storeId: "klant-zoeker",

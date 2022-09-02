@@ -38,6 +38,7 @@ const router = createRouter({
       component: ContactmomentView,
       beforeEnter: guardContactMoment,
     },
+
     redirectRoute,
   ],
 });
