@@ -176,7 +176,7 @@ const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
 
 <style scoped lang="scss">
 .afhandeling {
-  grid-column: 2 / 5;
+  //grid-column: 2 / 5;
 
   //center
   // padding-inline: var(--container-padding);

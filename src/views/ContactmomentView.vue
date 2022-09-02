@@ -119,7 +119,7 @@ const klantBsn = computed(() => contactmomentStore.klant?.bsn || "");
 }
 
 .main-tabs {
-  grid-column: 2 / 5;
+  // grid-column: 2 / 5;
 
   --tab-bg: var(--color-white);
 

@@ -39,6 +39,18 @@ const router = createRouter({
       beforeEnter: guardContactMoment,
     },
 
+    {
+      path: "/contactmoment/klanten",
+      name: "klanten",
+      component: ContactmomentView,
+      beforeEnter: guardContactMoment,
+    },
+    {
+      path: "/contactmoment/zaken",
+      name: "zaken",
+      component: ContactmomentView,
+      beforeEnter: guardContactMoment,
+    },
     redirectRoute,
   ],
 });

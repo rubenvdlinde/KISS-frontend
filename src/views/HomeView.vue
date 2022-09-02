@@ -179,14 +179,12 @@ function handleSearch(e: Event) {
 
 <style scoped lang="scss">
 .home {
-  grid-column: 1 / span 5;
-
   gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
+  padding-inline: var(--spacing-large);
   padding-block: var(--spacing-large);
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  justify-content: space-around;
   align-content: flex-start;
   position: relative;
 

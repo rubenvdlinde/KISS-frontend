@@ -2,21 +2,38 @@
   <login-overlay>
     <template #default="{ onLogout }">
       <the-toast-section />
-      <header :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }">
-        <global-search>
-          <template #articleFooter="{ id, title }">
-            <search-feedback :id="id" :name="title"></search-feedback>
-          </template>
-        </global-search>
-        <a
-          :href="logoutUrl"
-          @click="onLogout"
-          @keydown.enter="onLogout"
-          class="log-out"
-          >Uitloggen</a
+      <div
+        class="app-layout"
+        :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
+      >
+        <header
+          :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
         >
-      </header>
-      <main>
+          <global-search>
+            <template #articleFooter="{ id, title }">
+              <search-feedback :id="id" :name="title"></search-feedback>
+            </template>
+          </global-search>
+          <a
+            :href="logoutUrl"
+            @click="onLogout"
+            @keydown.enter="onLogout"
+            class="log-out"
+            >Uitloggen</a
+          >
+        </header>
+        <nav v-if="contactmoment.contactmomentLoopt">
+          <li>
+            <router-link :to="{ name: 'home' }">Start</router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'zaken' }">Zaken</router-link>
+          </li>
+        </nav>
+
         <aside v-if="showNotities">
           <menu></menu>
           <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
@@ -42,9 +59,10 @@
             </template>
           </tabs-component>
         </aside>
-        <router-view />
-      </main>
-
+        <main>
+          <router-view />
+        </main>
+      </div>
       <contactmoment-starter
         v-if="showContactmomentStarter"
         :beforeStopWarning="
@@ -69,6 +87,7 @@ import { ContactmomentStarter } from "@/features/contactmoment";
 import { useRoute } from "vue-router";
 
 //Notities start
+//todo verplaatsen naar eigen component
 import { ref, watch, computed } from "vue";
 import { ContactmomentNotitie } from "@/features/contactmoment";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
@@ -161,7 +180,7 @@ const showContactmomentStarter = computed(() => {
 
 html,
 body,
-#app {
+.app-layout {
   height: 100%;
   line-height: var(--line-height-default);
 }
@@ -170,13 +189,40 @@ body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
-#app {
+.app-layout {
   position: relative;
+  height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "nav"
+    "main";
 }
 
-#app > header {
+.app-layout.contactmomentLoopt {
+  grid-template-columns: 1fr 4fr;
+  grid-template-areas:
+    "header  header"
+    "nav     nav"
+    "aside   main";
+}
+
+.app-layout > header {
+  grid-area: header;
+}
+.app-layout > nav {
+  grid-area: nav;
+}
+.app-layout > aside {
+  grid-area: aside;
+}
+.app-layout > main {
+  grid-area: main;
+}
+
+.app-layout > header {
   background-color: var(--color-primary);
   display: grid;
   grid-template-areas:
@@ -196,7 +242,29 @@ body {
   }
 }
 
-#app > header.contactmomentLoopt {
+.app-layout > nav {
+  border-top: 1px solid var(--color-tertiary);
+  width: 100%;
+  background-color: var(--color-primary);
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-default);
+  padding-block: var(--spacing-small);
+  list-style: none;
+  li {
+    margin-inline: var(--spacing-large);
+  }
+  a {
+    text-decoration: none;
+    color: var(--color-white);
+  }
+
+  a.router-link-active {
+    border-bottom: 2px solid var(--color-white);
+  }
+}
+
+.app-layout > header.contactmomentLoopt {
   border-top-color: var(--color-accent);
 }
 
@@ -507,13 +575,13 @@ utrecht-button.button-small {
   background-color: var(--color-category-website);
 }
 
-main {
-  padding-inline: 0;
-  padding-block: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  // grid-template-columns: 1fr 4fr;
-}
+// main {
+//   padding-inline: 0;
+//   padding-block: 0;
+//   display: grid;
+//   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+//   // grid-template-columns: 1fr 4fr;
+// }
 
 aside {
   grid-column: 1;
