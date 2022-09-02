@@ -13,7 +13,7 @@
         @click="toggleRead"
         :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
         class="toggle-read icon-after book"
-        :disabled="loadingTogglingRead"
+        :disabled="toggleReadIsLoading"
       />
     </div>
 
@@ -66,10 +66,10 @@ const props = defineProps({
 });
 
 const read = ref<boolean>(props.bericht.read);
-const loadingTogglingRead = ref<boolean>(false);
+const toggleReadIsLoading = ref<boolean>(false);
 
 const toggleRead = async (): Promise<void> => {
-  loadingTogglingRead.value = true;
+  toggleReadIsLoading.value = true;
 
   if (read.value) {
     await unreadBericht(props.bericht.id);
@@ -79,7 +79,7 @@ const toggleRead = async (): Promise<void> => {
     await readBericht(props.bericht.id);
   }
 
-  loadingTogglingRead.value = false;
+  toggleReadIsLoading.value = false;
 
   read.value = !read.value;
 };
