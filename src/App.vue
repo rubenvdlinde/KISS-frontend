@@ -27,9 +27,7 @@
             <router-link :to="{ name: 'home' }">Start</router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'klanten' }" :class="{ xxx: isActive }"
-              >Klanten
-            </router-link>
+            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
           </li>
           <li>
             <router-link :to="{ name: 'zaken' }">Zaken</router-link>

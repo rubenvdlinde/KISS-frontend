@@ -63,8 +63,8 @@ const router = createRouter({
     },
     {
       path: "/contactmoment/zaken/:id",
-      name: "zakenDetail",
-      component: KlantDetailView,
+      name: "zaakDetail",
+      component: ZaakDetailView,
       beforeEnter: guardContactMoment,
     },
     redirectRoute,

@@ -35,6 +35,18 @@ export const useContactmomentStore = defineStore("contactmoment", {
     stop() {
       this.$reset();
     },
+    addZaak(zaak: Zaak) {
+      const contactmomentZaak = zaak as ContactmomentZaak;
+      const index = this.zaken.findIndex((element) => element.id === zaak.id);
+      if (index === -1) {
+        //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
+        this.zaken.push(contactmomentZaak);
+        contactmomentZaak.shouldStore = true;
+      } else {
+        const existingZaak = this.zaken[index];
+        existingZaak.shouldStore = true;
+      }
+    },
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
       const index = this.zaken.findIndex((element) => element.id === zaak.id);

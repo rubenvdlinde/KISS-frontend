@@ -43,6 +43,7 @@
       <zaken-overzicht
         v-else-if="zaken.length > 0"
         :zaken="zaken"
+        @zaak-selected="zaakSelected"
       ></zaken-overzicht>
 
       <simple-spinner v-else-if="busy"></simple-spinner>
@@ -65,6 +66,12 @@ import ZakenOverzicht from "./ZakenOverzicht.vue";
 const props = defineProps({
   populatedBsn: { type: String, default: null },
 });
+
+const emit = defineEmits(["zaakSelected"]);
+
+const zaakSelected = (zaak: Zaak) => {
+  emit("zaakSelected", zaak);
+};
 
 const service = useZaaksysteemService();
 const zaaknummer = ref();

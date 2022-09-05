@@ -1,6 +1,6 @@
 <template>
   <label>
-    <input type="checkbox" @change="koppel" v-model="selected" />
+    <input type="checkbox" @click.stop="koppel" v-model="selected" />
     <span>Opslaan bij contactmoment</span>
   </label>
 </template>

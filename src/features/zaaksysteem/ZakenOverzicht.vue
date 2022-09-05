@@ -8,7 +8,11 @@
       <th></th>
     </thead>
     <tbody>
-      <tr v-for="zaak in zaken" :key="zaak.id">
+      <tr
+        v-for="zaak in zaken"
+        :key="zaak.id"
+        @click="handleZaakSelected(zaak)"
+      >
         <td>{{ zaak.identificatie }}</td>
         <td>{{ zaak.zaaktype }}</td>
         <td>{{ zaak.status }}</td>
@@ -25,9 +29,15 @@
 
 <script lang="ts" setup>
 import { formatDateOnly } from "@/helpers/date";
-import type { Zaak } from "@/stores/contactmoment";
 import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
+import type { Zaak } from "@/stores/contactmoment";
+
+const emit = defineEmits(["ZaakSelected"]);
+
+const handleZaakSelected = (zaak: Zaak) => {
+  emit("ZaakSelected", zaak);
+};
 
 defineProps({
   zaken: { type: Array as PropType<Zaak[]>, required: true },

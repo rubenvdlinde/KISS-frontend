@@ -8,22 +8,24 @@
         <persoon-zoeker @zakenZoeken="onZakenZoeken" />
       </template>
       <template #[Tabs.zakenZoeker]>
-        <zaak-zoeker :populatedBsn="currentBsn" />
+        <zaak-zoeker
+          :populatedBsn="currentBsn"
+          @zaak-selected="handleZaakSelected"
+        />
       </template>
     </tabs-component>
   </article>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from "vue";
+import { ref, nextTick } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import TabsComponent from "@/components/TabsComponent.vue";
-import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
 import { PersoonZoeker } from "@/features/brp";
-import { ContactmomentenOverzicht } from "@/features/contactmoment";
-import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { ZaakZoeker } from "@/features/zaaksysteem";
-import ZakenOverzichtKlantbeeld from "../features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
+import { useRouter } from "vue-router";
+import type { Zaak } from "@/stores/contactmoment";
 
 //zaak tabs
 enum Tabs {
@@ -32,6 +34,13 @@ enum Tabs {
 }
 const activeTab = ref(Tabs.personenZoeker);
 const currentBsn = ref<string>();
+
+const router = useRouter();
+
+const handleZaakSelected = (zaak: Zaak) => {
+  useContactmomentStore().addZaak(zaak);
+  router.push({ name: "zaakDetail", params: { id: zaak.id } });
+};
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab

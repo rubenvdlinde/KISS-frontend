@@ -5,9 +5,11 @@ import {
   ServiceResult,
   throwIfNotOk,
   type Paginated,
+  type ServiceData,
 } from "@/services";
 import type { Zaak } from "@/stores/contactmoment";
 import type { Ref } from "vue";
+import type { ZaakDetails } from "./types";
 
 function parseZaak(zaak: any): Zaak {
   const startdatum = new Date(zaak.startdatum);
@@ -82,8 +84,25 @@ export function useZaaksysteemService() {
     return { withoutFetcher, withFetcher };
   };
 
+  const getZaak = (id: string): ServiceData<ZaakDetails> => {
+    function get(url: string): Promise<ZaakDetails> {
+      return fetchLoggedIn(url)
+        .then(throwIfNotOk)
+        .then((x) => x.json())
+        .then((json) => {
+          return { id: json.id } as ZaakDetails;
+        });
+    }
+
+    return ServiceResult.fromFetcher(
+      `${zaaksysteemBaseUri}/${id}?extend[]=all`,
+      get
+    );
+  };
+
   return {
     findByZaak,
     findByBsn,
+    getZaak,
   };
 }

@@ -26,9 +26,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-
 import { useContactmomentStore } from "@/stores/contactmoment";
-
 import { ContactmomentenOverzicht } from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
