@@ -1,4 +1,6 @@
 <template>
+  <!-- OBSOLETE !!! -->
+
   <!-- todo: 'subviews' maken voor klanten en zaken, deze component wordt anders te groot. (aparte views is niet handig ivm navigatie)-->
   <!-- todo: 'trecht-heading errors irriteren. component verwijderen?-->
   <tabs-component v-model="activeTabContactmoment" class="main-tabs">

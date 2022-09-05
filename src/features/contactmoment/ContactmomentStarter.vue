@@ -77,7 +77,7 @@ const contactmoment = useContactmomentStore();
 const onStartContactMoment = () => {
   if (attrs.disabled) return;
   contactmoment.start();
-  router.push({ name: "contactmoment" });
+  router.push({ name: "klanten" });
 };
 
 const onStopContactMoment = () => {

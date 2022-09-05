@@ -27,7 +27,9 @@
             <router-link :to="{ name: 'home' }">Start</router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
+            <router-link :to="{ name: 'klanten' }" :class="{ xxx: isActive }"
+              >Klanten
+            </router-link>
           </li>
           <li>
             <router-link :to="{ name: 'zaken' }">Zaken</router-link>
@@ -220,6 +222,7 @@ body {
 }
 .app-layout > main {
   grid-area: main;
+  padding: var(--spacing-large);
 }
 
 .app-layout > header {
