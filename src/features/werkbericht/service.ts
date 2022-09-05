@@ -74,8 +74,6 @@ function parseWerkbericht(
   const dateModified = parseDateStrWithTimezone(jsonObject.modified);
   const dateLatest = maxDate([dateCreated, dateModified]);
 
-  console.log({ dateModified: jsonObject.modified, jsonObject });
-
   let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
   if (dateRead && new Date(jsonObject.modified) > new Date(dateRead)) {
     // TODO: unread message
