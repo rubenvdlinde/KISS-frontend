@@ -70,17 +70,25 @@ function parseWerkbericht(
       )
     : ["onbekend"];
 
-  const createdDate = parseDateStrWithTimezone(jsonObject.date);
-  const modifiedDate = parseDateStrWithTimezone(jsonObject.modified);
+  const dateCreated = parseDateStrWithTimezone(jsonObject.date);
+  const dateModified = parseDateStrWithTimezone(jsonObject.modified);
+  const dateLatest = maxDate([dateCreated, dateModified]);
 
-  const latestDate = maxDate([createdDate, modifiedDate]);
+  console.log({ dateModified: jsonObject.modified, jsonObject });
+
+  let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
+  if (dateRead && new Date(jsonObject.modified) > new Date(dateRead)) {
+    // TODO: unread message
+
+    dateRead = false;
+  }
 
   return {
     id: jsonObject.id,
-    read: !!jsonObject["x-commongateway-metadata"]?.dateRead,
+    read: !!dateRead,
     title: jsonObject.embedded.title.rendered,
     content: jsonObject.embedded.content.rendered,
-    date: latestDate,
+    date: dateLatest,
     types: typeNames,
     skills: skillNames,
   };
