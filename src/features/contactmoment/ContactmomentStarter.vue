@@ -63,7 +63,7 @@ import ModalTemplate from "@/components/ModalTemplate.vue";
 import { getFormattedUtcDate } from "@/services";
 
 const props = defineProps<{
-  beforeStopWarning: string;
+  beforeStopWarning?: string;
 }>();
 
 const beforeStopDialogRevealed = ref(false);

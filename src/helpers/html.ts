@@ -20,8 +20,11 @@ export function increaseHeadings(html: string, level: HeadingLevel): string {
   });
 }
 
-export function cleanHtml(str: string) {
-  return DOMPurify.sanitize(str, { FORBID_ATTR: ["style"] });
+export function sanitizeHtmlToBerichtFormat(str: string) {
+  return DOMPurify.sanitize(str, {
+    FORBID_ATTR: ["style"],
+    FORBID_TAGS: ["img"],
+  });
 }
 
 const escapedChars = {
