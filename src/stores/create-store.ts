@@ -47,6 +47,7 @@ export function provideStoreImplementation(
 }
 
 export function getStore<T>(params: CreateStoreParams<T>): Store<T> {
+  //causes a warning if not injected..todo: find out how to properly check if something has been provided
   const implementation = inject(injectionKey) ?? defaultStoreImplementation;
   return implementation(params) as Store<T>;
 }
