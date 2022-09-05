@@ -36,7 +36,6 @@
 
 <script setup lang="ts">
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { computed } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { useZaaksysteemService } from "./service";
 import { formatDateOnly } from "@/helpers/date";
@@ -48,11 +47,9 @@ const props = defineProps({
   },
 });
 
-const klantBsn = computed(() => props.klantBsn);
-
 const zaakService = useZaaksysteemService();
 
-const zaken = zaakService.findByBsn(klantBsn).withFetcher();
+const zaken = zaakService.findByBsn(props.klantBsn).withFetcher();
 </script>
 
 <style lang="scss" scoped>
