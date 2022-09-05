@@ -63,9 +63,9 @@ export function useZaaksysteemService() {
       .then((json) => parsePagination(json, parseZaak));
   };
 
-  const findByBsn = (bsn: Ref<string | undefined>) => {
+  const findByBsn = (bsn: string) => {
     const getFindByBsnURL = () => {
-      if (!bsn.value) return "";
+      if (!bsn) return "";
 
       return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn.value}&extend[]=all`;
     };
