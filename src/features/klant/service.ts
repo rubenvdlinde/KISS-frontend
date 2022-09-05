@@ -7,7 +7,8 @@ import {
 } from "@/services";
 
 import type { Ref } from "vue";
-import type { Klant } from "@/stores/contactmoment";
+import type { Klant, NieuweKlant } from "@/stores/contactmoment";
+import type { UpdateContactgegevensParams } from "./types";
 
 const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 
@@ -35,7 +36,6 @@ export function useKlanten(params: KlantSearchParameters) {
     if (isEmail(search)) {
       url.searchParams.set("emails.email", wildcardSearch);
     } else {
-      //url.searchParams.set("telefoonnummer", wildcardSearch); ??
       url.searchParams.set("telefoonnummers.telefoonnummer", wildcardSearch);
     }
     return url.toString();
@@ -62,4 +62,41 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
     .then(throwIfNotOk)
     .then((r) => r.json())
     .then((j) => parsePagination(j, mapKlant));
+}
+
+export function updateContactgegevens({
+  id,
+  telefoonnummers,
+  emails,
+}: UpdateContactgegevensParams): Promise<UpdateContactgegevensParams> {
+  const url = rootUrl + "/" + id;
+  return fetchLoggedIn(url)
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then((klant) => {
+      delete klant.url;
+      return Object.assign(klant, {
+        telefoonnummers,
+        emails,
+      });
+    })
+    .then((klant) =>
+      fetchLoggedIn(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(klant),
+      })
+    )
+    .then(throwIfNotOk)
+    .then((x) => x.json())
+    .then((u) => ({
+      id,
+      ...u.embedded,
+    }));
+}
+
+export function useUpdateContactGegevens() {
+  return ServiceResult.fromSubmitter(updateContactgegevens);
 }

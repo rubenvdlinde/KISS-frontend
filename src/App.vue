@@ -308,6 +308,21 @@ h2 {
   mask-image: url("@/assets/icons/note.svg");
 }
 
+.icon-before.pen::before,
+.icon-after.pen::after {
+  mask-image: url("@/assets/icons/pen.svg");
+}
+
+.icon-before.xmark::before,
+.icon-after.xmark::after {
+  mask-image: url("@/assets/icons/xmark.svg");
+}
+
+.icon-before.plus::before,
+.icon-after.plus::after {
+  mask-image: url("@/assets/icons/plus.svg");
+}
+
 //forms
 form {
   span.required::after {

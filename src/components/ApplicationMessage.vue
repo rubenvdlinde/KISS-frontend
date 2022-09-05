@@ -5,12 +5,12 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, toRefs, onMounted, ref } from "vue";
+import { defineProps, toRefs, onMounted, ref, type PropType } from "vue";
 
 const fade = ref(false);
 const props = defineProps({
   messageType: {
-    type: String,
+    type: String as PropType<"error" | "confirm">,
     validator: (value) => {
       return value == "error" || value == "confirm";
     },
