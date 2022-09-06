@@ -7,8 +7,7 @@ import {
 } from "@/services";
 
 import type { Ref } from "vue";
-import type { Klant, NieuweKlant } from "@/stores/contactmoment";
-import type { UpdateContactgegevensParams } from "./types";
+import type { UpdateContactgegevensParams, Klant } from "./types";
 
 const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
 

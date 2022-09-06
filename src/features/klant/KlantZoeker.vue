@@ -40,7 +40,7 @@
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch } from "vue";
 import { useKlanten } from "./service";
-import type { Klant } from "@/stores/contactmoment"; //todo alleen eigen types gebruiken, geen afhankelijkheid op gloable stores
+import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
