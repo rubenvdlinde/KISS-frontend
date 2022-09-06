@@ -28,7 +28,7 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
-      meta: { showNav: false, showNotitie: true, showSearch: true },
+      meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     {
       path: "/contactmoment/afhandeling",
