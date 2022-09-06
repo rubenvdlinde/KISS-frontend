@@ -1,5 +1,7 @@
+import type { Klant } from "@/features/klant/types";
+import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
-import type { Klant, Zaak, NieuweKlant } from "./types";
+import type { NieuweKlant } from "./types";
 export * from "./types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };

@@ -5,7 +5,8 @@
   </label>
 </template>
 <script lang="ts" setup>
-import { useContactmomentStore, type Zaak } from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
+import type { Zaak } from "./types";
 import { ref, onMounted, type PropType } from "vue";
 
 const props = defineProps({

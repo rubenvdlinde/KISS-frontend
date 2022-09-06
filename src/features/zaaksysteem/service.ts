@@ -7,8 +7,7 @@ import {
   type Paginated,
   type ServiceData,
 } from "@/services";
-import type { Zaak } from "@/stores/contactmoment";
-import type { Ref } from "vue";
+import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
 
 function parseZaak(zaak: any): Zaak {

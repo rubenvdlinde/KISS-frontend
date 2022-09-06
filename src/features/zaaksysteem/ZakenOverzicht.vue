@@ -31,7 +31,7 @@
 import { formatDateOnly } from "@/helpers/date";
 import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
-import type { Zaak } from "@/stores/contactmoment";
+import type { Zaak } from "./types";
 
 const emit = defineEmits(["ZaakSelected"]);
 
