@@ -100,16 +100,3 @@ export function updateContactgegevens({
 export function useUpdateContactGegevens() {
   return ServiceResult.fromSubmitter(updateContactgegevens);
 }
-
-export async function createKlant(klant: NieuweKlant) {
-  fetchLoggedIn(rootUrl, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(klant),
-  }).catch((err) => {
-    throw new Error(`Error creating new klant: ${err}`);
-  });
-}

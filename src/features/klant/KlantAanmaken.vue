@@ -92,6 +92,7 @@ import { customPhoneValidator } from "@/helpers/validation";
 import { ref, computed } from "vue";
 import { createKlant } from "../contactverzoek";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{
   handleCancel: () => void;
@@ -105,6 +106,8 @@ const formData = ref({
   email: "",
   telefoonnummer: "",
 });
+
+const contactmomentStore = useContactmomentStore();
 
 const savingKlant = ref(false);
 
@@ -120,7 +123,8 @@ const submit = async () => {
     achternaam: formData.value.achternaam,
     telefoonnummers: [{ telefoonnummer: formData.value.telefoonnummer }],
     emails: [{ email: formData.value.email }],
-  }).then(() => {
+  }).then((res) => {
+    contactmomentStore.setKlant(res);
     savingKlant.value = false;
     props.handleSaveCallback();
   });
