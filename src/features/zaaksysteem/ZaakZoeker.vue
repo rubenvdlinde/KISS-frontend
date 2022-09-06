@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useZaaksysteemService } from "./service";
 import type { Zaak } from "@/stores/contactmoment";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
@@ -89,7 +89,6 @@ const service = useZaaksysteemService();
 const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
-//const zaken = ref<Zaak[]>([]);
 
 const zoekOpZaak = () => {
   busy.value = true;
@@ -143,6 +142,18 @@ watch(
   },
   { immediate: true }
 );
+
+const singleZaak = computed(() =>
+  store.value.zaken && store.value.zaken.length === 1
+    ? store.value.zaken[0]
+    : undefined
+);
+
+watch(singleZaak, (n, o) => {
+  if (n && n.id !== o?.id) {
+    zaakSelected(n);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

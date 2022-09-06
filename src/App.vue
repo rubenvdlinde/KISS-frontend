@@ -252,7 +252,10 @@ body {
   }
 }
 
-.app-layout > header.contactmomentLoopt {
+.app-layout {
+  border-top: 4px solid var(--color-primary);
+}
+.app-layout.contactmomentLoopt {
   border-top-color: var(--color-accent);
 }
 
