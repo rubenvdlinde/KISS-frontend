@@ -2,12 +2,7 @@
   <div class="afhandeling">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
-    <router-link
-      v-if="contactmomentStore.contactmomentLoopt"
-      :to="{ name: 'contactmoment' }"
-    >
-      terug
-    </router-link>
+    <a @click="$router.back()" href="#"> terug </a>
 
     <simple-spinner v-if="saving" />
 
