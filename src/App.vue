@@ -9,7 +9,7 @@
         <header
           :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
         >
-          <global-search>
+          <global-search v-if="route.meta.showSearch">
             <template #articleFooter="{ id, title }">
               <search-feedback :id="id" :name="title"></search-feedback>
             </template>
@@ -22,7 +22,7 @@
             >Uitloggen</a
           >
         </header>
-        <nav v-if="contactmoment.contactmomentLoopt">
+        <nav v-if="contactmoment.contactmomentLoopt && route.meta.showNav">
           <li>
             <router-link :to="{ name: 'home' }">Start</router-link>
           </li>
@@ -33,8 +33,9 @@
             <router-link :to="{ name: 'zaken' }">Zaken</router-link>
           </li>
         </nav>
-
-        <aside v-if="showNotities">
+        <aside
+          v-if="contactmoment.contactmomentLoopt && route.meta.showNotitie"
+        >
           <menu></menu>
           <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
             <template #tab="{ tabName }">
@@ -64,7 +65,7 @@
         </main>
       </div>
       <contactmoment-starter
-        v-if="showContactmomentStarter"
+        v-if="route.meta.showSearch"
         :beforeStopWarning="
           contactverzoekTabIsDitry && contactverzoekIsDirty
             ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
@@ -83,12 +84,8 @@ import { SearchFeedback } from "@/features/feedback";
 import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
-
 import { useRoute } from "vue-router";
-
-//Notities start
-//todo verplaatsen naar eigen component
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import { ContactmomentNotitie } from "@/features/contactmoment";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
@@ -116,17 +113,7 @@ watch(currentNotitieTab, (t: string) => {
 
 const contactmoment = useContactmomentStore();
 
-const showNotities = computed(() => {
-  //todo: alleen afhankelijk maken van contactmomentLoopt. de afhandeling route verwijderen en vervangen door een modal
-  const route = useRoute();
-  return contactmoment.contactmomentLoopt && route.name != "afhandeling";
-});
-
-const showContactmomentStarter = computed(() => {
-  //todo: de afhandeling route verwijderen en vervangen door een modal. daarmee wordt dit overbodig
-  const route = useRoute();
-  return route.name != "afhandeling";
-});
+const route = useRoute();
 </script>
 
 <style lang="scss">
