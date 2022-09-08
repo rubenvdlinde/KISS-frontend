@@ -18,10 +18,3 @@ export interface Medewerker {
   telefoonnummer1?: string;
   telefoonnummer2?: string;
 }
-
-export interface MedewerkerIdentificatie {
-  identificatie: string;
-  achternaam: string;
-  voorletters: string;
-  voorvoegselAchternaam: string;
-}

@@ -11,6 +11,13 @@ export interface ContactmomentViewModel {
   contactverzoeken: { medewerkers: string[]; completed?: Date }[];
 }
 
+export interface MedewerkerIdentificatie {
+  identificatie: string;
+  achternaam: string;
+  voorletters: string;
+  voorvoegselAchternaam: string;
+}
+
 export interface Contactmoment {
   vorigContactmoment: string | undefined;
   bronorganisatie: string;
@@ -19,7 +26,7 @@ export interface Contactmoment {
   voorkeurskanaal: string;
   voorkeurstaal: string;
   tekst: string;
-  onderwerpLinks: Array<string>;
+  onderwerpLinks: string[];
   initiatiefnemer: string;
   medewerker: string;
   resultaat: string;
