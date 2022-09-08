@@ -45,21 +45,22 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-table {
-  margin-top: var(--spacing-default);
-}
-th:not(:first-child),
-td:not(:first-child) {
-  padding-left: var(--spacing-small);
-}
-
 th,
 td {
-  padding-top: var(--spacing-small);
-  padding-bottom: var(--spacing-small);
+  padding-inline-start: var(--spacing-default);
+  padding-block: var(--spacing-default);
+}
 
-  padding-right: var(--spacing-small);
-  vertical-align: middle;
-  text-align: left;
+tr:nth-child(2n) {
+  background-color: var(--color-secondary);
+}
+
+tbody tr {
+  border-bottom: 1px solid transparent;
+  &:hover {
+    background-color: var(--color-tertiary);
+    border-bottom-color: var(--color-primary);
+    cursor: pointer;
+  }
 }
 </style>

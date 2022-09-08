@@ -206,8 +206,13 @@ body {
   grid-area: aside;
 }
 .app-layout > main {
+  max-width: calc(100vw - (var(--container-padding) * 2));
   grid-area: main;
   padding: var(--spacing-large);
+}
+
+.app-layout:not(.contactmomentLoopt) > main {
+  margin: 0 auto;
 }
 
 .app-layout > header {

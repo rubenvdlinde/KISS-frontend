@@ -180,11 +180,9 @@ function handleSearch(e: Event) {
 <style scoped lang="scss">
 .home {
   gap: var(--spacing-default);
-  padding-inline: var(--spacing-large);
-  padding-block: var(--spacing-large);
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-around;
+  justify-content: space-between;
   align-content: flex-start;
   position: relative;
 
