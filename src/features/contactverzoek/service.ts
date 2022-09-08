@@ -44,5 +44,5 @@ export function createKlant(klant: NieuweKlant) {
     }),
   })
     .then(throwIfNotOk)
-    .then((r) => r.json() as Promise<{ id: string }>);
+    .then((r) => r.json());
 }

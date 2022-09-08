@@ -145,6 +145,8 @@ const contactmoment: Contactmoment = reactive({
       ? window.organisatieIds[0]
       : "",
   registratiedatum: "",
+  startdatum: "",
+  einddatum: "",
 });
 
 const gespresResultatenServiceResult = service.getGespreksResultaten();
@@ -169,6 +171,7 @@ const submit = () => {
 
   validationMessage.value = "";
   contactmoment.registratiedatum = getFormattedUtcDate();
+  contactmoment.einddatum = getFormattedUtcDate();
   user.setKanaal(contactmoment.kanaal);
   emit("save", contactmoment);
 };
