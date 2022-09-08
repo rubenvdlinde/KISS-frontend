@@ -75,8 +75,12 @@ function parseWerkbericht(
   const dateLatest = maxDate([dateCreated, dateModified]);
 
   let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
-  if (dateRead && new Date(jsonObject.modified) > new Date(dateRead)) {
-    // TODO: unread message
+
+  if (
+    dateRead &&
+    new Date(dateModified) > new Date(parseDateStrWithTimezone(dateRead))
+  ) {
+    unreadBericht(jsonObject.id);
 
     dateRead = false;
   }
@@ -201,6 +205,8 @@ export function useWerkberichten(
     const pageNumber = parameters?.value.page || 1;
     const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
     const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
+
+    console.log({ berichten });
 
     const page = berichten.map((bericht) =>
       parseWerkbericht(
