@@ -21,7 +21,7 @@ erbij voor het vrij invullen.
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
-  <form @submit.prevent="submit" ref="form" v-else>
+  <non-blocking-form @submit.prevent="submit" class="form" v-else>
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
         class="utrecht-textbox utrecht-textbox--html-input"
@@ -44,7 +44,7 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
@@ -55,7 +55,7 @@ erbij voor het vrij invullen.
           v-model="nieuweKlant.voorvoegselAchternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
@@ -67,7 +67,7 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
@@ -79,57 +79,71 @@ erbij voor het vrij invullen.
           v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          @input="isDirtyCheck"
         />
       </label>
 
       <label class="utrecht-form-label">
         Telefoonnummer 1 van de klant
         <input
+          v-if="klantReadonly"
           type="tel"
-          v-model="telefoonnummer1"
+          :value="telefoonnummer1"
           class="utrecht-textbox utrecht-textbox--html-input"
-          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
-          :title="
-            klantReadonly
-              ? undefined
-              : 'Vul een valide Nederlands telefoonnummer in'
-          "
-          :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          :disabled="true"
         />
+        <non-blocking-errors
+          :validate="customPhoneValidator"
+          :value="telefoonnummer1"
+          v-else
+        >
+          <template #default="{ inputProps }">
+            <input
+              v-bind="inputProps"
+              type="tel"
+              v-model="telefoonnummer1"
+              class="utrecht-textbox utrecht-textbox--html-input"
+              @input="isDirtyCheck"
+            />
+          </template>
+        </non-blocking-errors>
       </label>
 
       <label class="utrecht-form-label">
         Telefoonnummer 2 van de klant
         <input
+          v-if="klantReadonly"
           type="tel"
-          v-model="telefoonnummer2"
+          :value="telefoonnummer2"
           class="utrecht-textbox utrecht-textbox--html-input"
-          pattern="(^\+[0-9]{2}|^\+[0-9]{2}\(0\)|^\(\+[0-9]{2}\)\(0\)|^00[0-9]{2}|^0)([0-9]{9}$|[0-9\-\s]{10}$)"
-          :title="
-            klantReadonly
-              ? undefined
-              : 'Vul een valide Nederlands telefoonnummer in'
-          "
-          :disabled="klantReadonly"
-          @input="IsDirtyCheck"
+          :disabled="true"
         />
+        <non-blocking-errors
+          :value="telefoonnummer2"
+          :validate="customPhoneValidator"
+          v-else
+        >
+          <template #default="{ inputProps }">
+            <input
+              v-bind="inputProps"
+              type="tel"
+              v-model="telefoonnummer2"
+              class="utrecht-textbox utrecht-textbox--html-input"
+              @input="isDirtyCheck"
+            />
+          </template>
+        </non-blocking-errors>
       </label>
 
-      <menu
-        ><li v-if="klantReadonly">
-          <p>verwijder deze klantgegevens uit het contverzoek</p>
-          <button
-            type="button"
-            @click.prevent="wisGeselecteerdeKlant"
-            class="utrecht-button utrecht-button--secondary-action"
-            tabindex="-1"
-          >
-            verwijder
-          </button>
-        </li></menu
+      <button
+        v-if="klantReadonly"
+        type="button"
+        @click.prevent="wisGeselecteerdeKlant"
+        class="utrecht-button utrecht-button--secondary-action"
+        tabindex="-1"
       >
+        Verwijder deze klantgegevens uit het contactverzoek
+      </button>
     </fieldset>
 
     <label class="utrecht-form-label notitieveld">
@@ -138,20 +152,20 @@ erbij voor het vrij invullen.
         v-model="contactverzoek.todo.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
-        @input="IsDirtyCheck"
+        @input="isDirtyCheck"
       />
     </label>
-    {{ emailRequiredMessage }}
+
     <application-message
       v-if="emailRequiredMessage"
       :message="emailRequiredMessage"
       messageType="error"
-    ></application-message>
+    />
 
     <utrecht-button model-value type="submit" v-if="!submitted">
       Contactverzoek versturen
     </utrecht-button>
-  </form>
+  </non-blocking-form>
 </template>
 
 <script lang="ts" setup>
@@ -171,8 +185,13 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { koppelKlant } from "../contactmoment";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import {
+  NonBlockingForm,
+  NonBlockingErrors,
+} from "@/components/non-blocking-forms";
+import { customPhoneValidator } from "@/helpers/validation";
 
 const attendee = ref("");
 const loading = ref(false);
@@ -207,8 +226,6 @@ const submitted = computed(() => !!contactmomentStore.contactverzoek);
 const klantReadonly = computed(
   () => submitted.value || useKlantFromStore.value
 );
-const form = ref<HTMLFormElement>();
-
 const emailIsRequired = computed(
   () =>
     !klantReadonly.value &&
@@ -242,7 +259,7 @@ watch(
       emit("isDirty", true);
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 );
 
 watch(
@@ -260,23 +277,9 @@ watch(
   { immediate: true }
 );
 
-function validate() {
-  if (!form.value) return false;
-
-  // const emailInput = form.value.elements.namedItem("klant-email");
-
-  //dit werkt niet goed
-  //validatie melding blijft in sommige gevallen hangen
-  // if (emailInput instanceof HTMLInputElement) {
-  //   emailInput.setCustomValidity(emailRequiredMessage.value);
-  // }
-
-  return form.value.reportValidity();
-}
-
 async function submit() {
   try {
-    if (submitted.value || !validate() || emailRequiredMessage.value) return;
+    if (submitted.value || emailRequiredMessage.value) return;
 
     loading.value = true;
 
@@ -333,8 +336,8 @@ const wisGeselecteerdeKlant = () => {
 };
 
 const emit = defineEmits(["isDirty"]);
-const IsDirtyCheck = (self: any) => {
-  if (self.target.value != "") {
+const isDirtyCheck = (e: any) => {
+  if (e.target.value !== "") {
     emit("isDirty", true);
   }
 };
@@ -354,7 +357,8 @@ menu {
   margin-top: var(--spacing-default);
 }
 
-form {
+//hack: non-blocking-form styling
+* + :deep(form) {
   flex: 1;
   display: flex;
   gap: var(--spacing-default);
@@ -390,19 +394,6 @@ label.radio {
 
 legend {
   margin-block-end: var(--spacing-small);
-}
-
-.notitieveld,
-textarea {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.notitieveld textarea.utrecht-textarea {
-  padding: var(--spacing-small);
-  margin-block-start: 0;
-  min-height: 20rem;
 }
 
 utrecht-heading {

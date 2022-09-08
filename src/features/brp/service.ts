@@ -35,7 +35,7 @@ export function useBrpService() {
     postcode: string,
     huisnummer: string
   ) => {
-    const url = `${brpBaseUri}?verblijfplaats__postcode=${postcode}&verblijfplaats__huisnummer=${huisnummer}&extend[]=all`;
+    const url = `${brpBaseUri}?verblijfplaats.postcode=${postcode}&verblijfplaats.huisnummer=${huisnummer}&extend[]=all`;
 
     return fetchLoggedIn(url)
       .then((r) => {

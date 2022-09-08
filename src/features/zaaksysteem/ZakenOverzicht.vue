@@ -8,7 +8,11 @@
       <th></th>
     </thead>
     <tbody>
-      <tr v-for="zaak in zaken" :key="zaak.id">
+      <tr
+        v-for="zaak in zaken"
+        :key="zaak.id"
+        @click="handleZaakSelected(zaak)"
+      >
         <td>{{ zaak.identificatie }}</td>
         <td>{{ zaak.zaaktype }}</td>
         <td>{{ zaak.status }}</td>
@@ -25,9 +29,15 @@
 
 <script lang="ts" setup>
 import { formatDateOnly } from "@/helpers/date";
-import type { Zaak } from "@/stores/contactmoment";
 import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
+import type { Zaak } from "./types";
+
+const emit = defineEmits(["zaakSelected"]);
+
+const handleZaakSelected = (zaak: Zaak) => {
+  emit("zaakSelected", zaak);
+};
 
 defineProps({
   zaken: { type: Array as PropType<Zaak[]>, required: true },
@@ -35,21 +45,22 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-table {
-  margin-top: var(--spacing-default);
-}
-th:not(:first-child),
-td:not(:first-child) {
-  padding-left: var(--spacing-small);
-}
-
 th,
 td {
-  padding-top: var(--spacing-small);
-  padding-bottom: var(--spacing-small);
+  padding-inline-start: var(--spacing-default);
+  padding-block: var(--spacing-default);
+}
 
-  padding-right: var(--spacing-small);
-  vertical-align: middle;
-  text-align: left;
+tr:nth-child(2n) {
+  background-color: var(--color-secondary);
+}
+
+tbody tr {
+  border-bottom: 1px solid transparent;
+  &:hover {
+    background-color: var(--color-tertiary);
+    border-bottom-color: var(--color-primary);
+    cursor: pointer;
+  }
 }
 </style>

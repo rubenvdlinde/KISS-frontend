@@ -7,7 +7,7 @@
           <input
             type="text"
             id="zaaknummer"
-            v-model="zaaknummer"
+            v-model="store.zaakSearchParams.zaaknummer"
             class="utrecht-textbox utrecht-textbox--html-input"
             v-on:keydown.enter.prevent="zoekOpZaak"
           />
@@ -23,7 +23,7 @@
           <input
             type="text"
             id="bsn"
-            v-model="bsn"
+            v-model="store.zaakSearchParams.bsn"
             class="utrecht-textbox utrecht-textbox--html-input"
             placeholder="205827123"
           />
@@ -41,8 +41,9 @@
       ></application-message>
 
       <zaken-overzicht
-        v-else-if="zaken.length > 0"
-        :zaken="zaken"
+        v-else-if="store.zaken.length > 0"
+        :zaken="store.zaken"
+        @zaak-selected="zaakSelected"
       ></zaken-overzicht>
 
       <simple-spinner v-else-if="busy"></simple-spinner>
@@ -53,36 +54,51 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useZaaksysteemService } from "./service";
-import type { Zaak } from "@/stores/contactmoment";
+import type { Zaak } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
+import { getStore } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 
 const props = defineProps({
   populatedBsn: { type: String, default: null },
 });
 
+const store = getStore({
+  storeId: "zaak-zoeker",
+  stateFactory() {
+    return {
+      zaakSearchParams: { zaaknummer: "", bsn: "" },
+      zaken: [] as Zaak[],
+    };
+  },
+});
+
+const emit = defineEmits(["zaakSelected"]);
+
+const zaakSelected = (zaak: Zaak) => {
+  emit("zaakSelected", zaak);
+};
+
 const service = useZaaksysteemService();
-const zaaknummer = ref();
-const bsn = ref("");
+
 const error = ref(false);
 const busy = ref(false);
 const isDirty = ref(false);
-const zaken = ref<Zaak[]>([]);
 
 const zoekOpZaak = () => {
   busy.value = true;
   error.value = false;
-  zaken.value = [];
+  store.value.zaken = [];
 
   service
-    .findByZaak(zaaknummer.value)
+    .findByZaak(store.value.zaakSearchParams.zaaknummer)
     .then((data) => {
-      zaken.value = data.page;
+      store.value.zaken = data.page;
       isDirty.value = true;
     })
     .catch((e) => {
@@ -97,13 +113,13 @@ const zoekOpZaak = () => {
 const zoekOpBsn = () => {
   busy.value = true;
   error.value = false;
-  zaken.value = [];
+  store.value.zaken = [];
 
   service
-    .findByBsn(bsn)
+    .findByBsn(store.value.zaakSearchParams.bsn)
     .withoutFetcher()
     .then((data) => {
-      zaken.value = data.page;
+      store.value.zaken = data.page;
       isDirty.value = true;
     })
     .catch((e) => {
@@ -120,12 +136,24 @@ watch(
   () => props.populatedBsn,
   (populatedBsnValue) => {
     if (populatedBsnValue) {
-      bsn.value = populatedBsnValue;
+      store.value.zaakSearchParams.bsn = populatedBsnValue;
       zoekOpBsn();
     }
   },
   { immediate: true }
 );
+
+const singleZaak = computed(() =>
+  store.value.zaken && store.value.zaken.length === 1
+    ? store.value.zaken[0]
+    : undefined
+);
+
+watch(singleZaak, (n, o) => {
+  if (n && n.id !== o?.id) {
+    zaakSelected(n);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

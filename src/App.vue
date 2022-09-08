@@ -2,23 +2,76 @@
   <login-overlay>
     <template #default="{ onLogout }">
       <the-toast-section />
-      <header
-        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
+      <div
+        class="app-layout"
+        :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
       >
-        <global-search>
-          <template #articleFooter="{ id, title }">
-            <search-feedback :id="id" :name="title"></search-feedback>
-          </template>
-        </global-search>
-        <a
-          :href="logoutUrl"
-          @click="onLogout"
-          @keydown.enter="onLogout"
-          class="log-out"
-          >Uitloggen</a
+        <header
+          :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
         >
-      </header>
-      <router-view />
+          <global-search v-if="route.meta.showSearch">
+            <template #articleFooter="{ id, title }">
+              <search-feedback :id="id" :name="title"></search-feedback>
+            </template>
+          </global-search>
+          <a
+            :href="logoutUrl"
+            @click="onLogout"
+            @keydown.enter="onLogout"
+            class="log-out"
+            >Uitloggen</a
+          >
+        </header>
+        <nav v-if="contactmoment.contactmomentLoopt && route.meta.showNav">
+          <li>
+            <router-link :to="{ name: 'home' }">Start</router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'zaken' }">Zaken</router-link>
+          </li>
+        </nav>
+        <aside
+          v-if="contactmoment.contactmomentLoopt && route.meta.showNotitie"
+        >
+          <menu></menu>
+          <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
+            <template #tab="{ tabName }">
+              <span
+                :title="tabName"
+                :class="[
+                  'icon-after',
+                  tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
+                ]"
+                >{{ tabName }}</span
+              >
+            </template>
+            <template #[NotitieTabs.Regulier]>
+              <contactmoment-notitie
+                class="notitie utrecht-textarea"
+              ></contactmoment-notitie>
+            </template>
+            <template #[NotitieTabs.Terugbel]>
+              <contactverzoek-formulier
+                @isDirty="handleContactverzoekIsDirty"
+              />
+            </template>
+          </tabs-component>
+        </aside>
+        <main>
+          <router-view />
+        </main>
+      </div>
+      <contactmoment-starter
+        v-if="route.meta.showSearch"
+        :beforeStopWarning="
+          contactverzoekTabIsDitry && contactverzoekIsDirty
+            ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
+            : ''
+        "
+      />
     </template>
   </login-overlay>
 </template>
@@ -30,8 +83,37 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import { SearchFeedback } from "@/features/feedback";
 import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
+import { ContactmomentStarter } from "@/features/contactmoment";
+import { useRoute } from "vue-router";
+import { ref, watch } from "vue";
+import { ContactmomentNotitie } from "@/features/contactmoment";
+import { ContactverzoekFormulier } from "@/features/contactverzoek";
+import TabsComponent from "@/components/TabsComponent.vue";
 
-const contactmomentStore = useContactmomentStore();
+enum NotitieTabs {
+  Regulier = "Reguliere notitie",
+  Terugbel = "Contactverzoek",
+}
+const currentNotitieTab = ref(NotitieTabs.Regulier);
+
+const contactverzoekIsDirty = ref(false);
+
+const handleContactverzoekIsDirty = (isDirty: boolean) => {
+  contactverzoekIsDirty.value = isDirty;
+};
+
+const contactverzoekTabIsDitry = ref(false);
+
+watch(currentNotitieTab, (t: string) => {
+  if (t === NotitieTabs.Terugbel) {
+    contactverzoekTabIsDitry.value = true;
+  }
+});
+//Notities end
+
+const contactmoment = useContactmomentStore();
+
+const route = useRoute();
 </script>
 
 <style lang="scss">
@@ -85,7 +167,7 @@ const contactmomentStore = useContactmomentStore();
 
 html,
 body,
-#app {
+.app-layout {
   height: 100%;
   line-height: var(--line-height-default);
 }
@@ -94,13 +176,46 @@ body {
   font-family: var(--utrecht-paragraph-font-family);
 }
 
-#app {
+.app-layout {
   position: relative;
+  height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "nav"
+    "main";
 }
 
-#app > header {
+.app-layout.contactmomentLoopt {
+  grid-template-columns: 1fr 4fr;
+  grid-template-areas:
+    "header  header"
+    "nav     nav"
+    "aside   main";
+}
+
+.app-layout > header {
+  grid-area: header;
+}
+.app-layout > nav {
+  grid-area: nav;
+}
+.app-layout > aside {
+  grid-area: aside;
+}
+.app-layout > main {
+  max-width: calc(100vw - (var(--container-padding) * 2));
+  grid-area: main;
+  padding: var(--spacing-large);
+}
+
+.app-layout:not(.contactmomentLoopt) > main {
+  margin: 0 auto;
+}
+
+.app-layout > header {
   background-color: var(--color-primary);
   display: grid;
   grid-template-areas:
@@ -120,7 +235,32 @@ body {
   }
 }
 
-#app > header.contactmomentLoopt {
+.app-layout > nav {
+  border-top: 1px solid var(--color-tertiary);
+  width: 100%;
+  background-color: var(--color-primary);
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-default);
+  padding-block: var(--spacing-small);
+  list-style: none;
+  li {
+    margin-inline: var(--spacing-large);
+  }
+  a {
+    text-decoration: none;
+    color: var(--color-white);
+  }
+
+  a.router-link-active {
+    border-bottom: 2px solid var(--color-white);
+  }
+}
+
+.app-layout {
+  border-top: 4px solid var(--color-primary);
+}
+.app-layout.contactmomentLoopt {
   border-top-color: var(--color-accent);
 }
 
@@ -308,6 +448,26 @@ h2 {
   mask-image: url("@/assets/icons/note.svg");
 }
 
+.icon-before.book::before,
+.icon-after.book::after {
+  mask-image: url("@/assets/icons/book.svg");
+}
+
+.icon-before.pen::before,
+.icon-after.pen::after {
+  mask-image: url("@/assets/icons/pen.svg");
+}
+
+.icon-before.xmark::before,
+.icon-after.xmark::after {
+  mask-image: url("@/assets/icons/xmark.svg");
+}
+
+.icon-before.plus::before,
+.icon-after.plus::after {
+  mask-image: url("@/assets/icons/plus.svg");
+}
+
 //forms
 form {
   span.required::after {
@@ -414,5 +574,99 @@ utrecht-button.button-small {
 
 .category-Website {
   background-color: var(--color-category-website);
+}
+
+// main {
+//   padding-inline: 0;
+//   padding-block: 0;
+//   display: grid;
+//   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+//   // grid-template-columns: 1fr 4fr;
+// }
+
+aside {
+  grid-column: 1;
+
+  background-color: var(--color-tertiary);
+  padding-inline: 2px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  textarea.utrecht-textarea {
+    padding: 0px;
+  }
+
+  menu {
+    background-color: var(--color-tertiary);
+  }
+
+  menu,
+  [role="tablist"] {
+    height: 3rem;
+  }
+}
+
+//notities start
+
+.contactmomenten-header {
+  margin-inline-start: var(--spacing-default);
+}
+
+.notitie {
+  margin-top: var(--spacing-large);
+  outline: none;
+  border: none;
+  width: 100%;
+}
+
+.icon-after {
+  font-size: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.notitie-tabs {
+  --tab-bg: var(--color-white);
+
+  [role="tablist"] {
+    padding: 0;
+    justify-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  [role="tabpanel"] {
+    padding: var(--spacing-default);
+    display: flex;
+    flex-direction: column;
+  }
+
+  [role="tab"] {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+
+    &[aria-selected="true"] {
+      color: var(--color-tertiary);
+    }
+  }
+}
+
+.notitieveld {
+  display: flex;
+  flex-direction: column;
+  //flex: 1;
+}
+
+.notitieveld textarea.utrecht-textarea {
+  padding: var(--spacing-small);
+  margin-block-start: 0;
+  min-height: 20rem;
 }
 </style>

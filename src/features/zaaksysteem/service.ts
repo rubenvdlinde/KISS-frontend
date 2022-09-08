@@ -5,9 +5,10 @@ import {
   ServiceResult,
   throwIfNotOk,
   type Paginated,
+  type ServiceData,
 } from "@/services";
-import type { Zaak } from "@/stores/contactmoment";
-import type { Ref } from "vue";
+import type { Zaak } from "./types";
+import type { ZaakDetails } from "./types";
 
 function parseZaak(zaak: any): Zaak {
   const startdatum = new Date(zaak.startdatum);
@@ -61,11 +62,11 @@ export function useZaaksysteemService() {
       .then((json) => parsePagination(json, parseZaak));
   };
 
-  const findByBsn = (bsn: Ref<string | undefined>) => {
+  const findByBsn = (bsn: string) => {
     const getFindByBsnURL = () => {
-      if (!bsn.value) return "";
+      if (!bsn) return "";
 
-      return `${zaaksysteemBaseUri}?rollen__betrokkeneIdentificatie__inpBsn=${bsn.value}&extend[]=all`;
+      return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=all`;
     };
 
     const getZaakByBsn = (url: string): Promise<Paginated<Zaak>> =>
@@ -82,8 +83,25 @@ export function useZaaksysteemService() {
     return { withoutFetcher, withFetcher };
   };
 
+  const getZaak = (id: string): ServiceData<ZaakDetails> => {
+    function get(url: string): Promise<ZaakDetails> {
+      return fetchLoggedIn(url)
+        .then(throwIfNotOk)
+        .then((x) => x.json())
+        .then((json) => {
+          return { id: json.id } as ZaakDetails;
+        });
+    }
+
+    return ServiceResult.fromFetcher(
+      `${zaaksysteemBaseUri}/${id}?extend[]=all`,
+      get
+    );
+  };
+
   return {
     findByZaak,
     findByBsn,
+    getZaak,
   };
 }

@@ -1,13 +1,8 @@
 <template>
-  <main>
+  <div class="afhandeling">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
-    <router-link
-      v-if="contactmomentStore.contactmomentLoopt"
-      :to="{ name: 'contactmoment' }"
-    >
-      terug
-    </router-link>
+    <a @click="$router.back()" href="#"> terug </a>
 
     <simple-spinner v-if="saving" />
 
@@ -65,7 +60,7 @@
 
       <contactmoment-afhandel-form @save="saveContact" />
     </template>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -76,10 +71,7 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
-import {
-  useContactmomentStore,
-  type Contactmoment,
-} from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
 import { toast } from "@/stores/toast";
 
 import {
@@ -88,6 +80,7 @@ import {
   useContactmomentService,
   ContactmomentNotitie,
   koppelObject,
+  type Contactmoment,
 } from "@/features/contactmoment";
 import { ZakenOverzicht } from "@/features/zaaksysteem";
 
@@ -98,13 +91,15 @@ const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
 const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
-  const promises = contactmomentStore?.zaken.map((zaak) =>
-    koppelObject({
-      contactmoment: contactmomentId,
-      object: zaak.url,
-      objectType: "zaak",
-    })
-  );
+  const promises = contactmomentStore?.zaken
+    .filter((zaak) => zaak.shouldStore)
+    .map((zaak) =>
+      koppelObject({
+        contactmoment: contactmomentId,
+        object: zaak.url,
+        objectType: "zaak",
+      })
+    );
   return Promise.all(promises);
 };
 
@@ -136,6 +131,7 @@ const saveContact = (contactmoment: Contactmoment) => {
 
   //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
   enrichContactmomentWithNotitie(contactmoment);
+  enrichContactmomentWithStartdatum(contactmoment);
 
   return contactmomentService
     .save(contactmoment)
@@ -172,12 +168,15 @@ const saveContact = (contactmoment: Contactmoment) => {
 const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
   contactmoment.tekst = contactmomentStore.notitie;
 };
+
+const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
+  contactmoment.startdatum = contactmomentStore.startdatum;
+};
 </script>
 
 <style scoped lang="scss">
-main {
+.afhandeling {
   //center
-  padding-inline: var(--container-padding);
   padding-block: var(--spacing-large);
   max-width: var(--section-width-large);
   margin-bottom: var(--spacing-large);

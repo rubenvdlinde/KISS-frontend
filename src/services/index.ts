@@ -32,6 +32,16 @@ type Result<T> =
     };
 
 export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
+export type Submitter<TIn, TOut> = (
+  | (ServiceData<TOut> & { submitted: true })
+  | {
+      submitted: false;
+      state: "init";
+      loading: false;
+      success: false;
+      error: false;
+    }
+) & { submit: (params: TIn) => Promise<TOut> };
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
@@ -72,6 +82,16 @@ export const ServiceResult = {
       loading: false,
     });
   },
+  init<T>(): ServiceData<T> | { submitted: false; state: "init" } {
+    return reactive({
+      state: "init",
+      data: null,
+      error: false,
+      success: false,
+      loading: false,
+      submitted: false,
+    });
+  },
 
   fromPromise<T = unknown>(promise: Promise<T>): ServiceData<T> & Promise<T> {
     const result = ServiceResult.loading<T>();
@@ -96,6 +116,42 @@ export const ServiceResult = {
       });
 
     return Object.assign(result, promise);
+  },
+
+  fromSubmitter<TIn, TOut>(submitter: (params: TIn) => Promise<TOut>) {
+    const result = ServiceResult.init<TOut>();
+    return Object.assign(result, {
+      submit(params: TIn): Promise<TOut> {
+        Object.assign(result, {
+          state: "loading",
+          data: null,
+          error: false,
+          success: false,
+          loading: true,
+          submitted: true,
+        });
+        return submitter(params)
+          .then((r) => {
+            Object.assign(result, {
+              state: "success",
+              data: r,
+              loading: false,
+              error: false,
+              success: true,
+            });
+            return r;
+          })
+          .catch((e) => {
+            Object.assign(result, {
+              state: "error",
+              error: e instanceof Error ? e : new Error(e),
+              loading: false,
+              success: false,
+            });
+            throw e;
+          });
+      },
+    }) as Submitter<TIn, TOut>;
   },
 
   /**
