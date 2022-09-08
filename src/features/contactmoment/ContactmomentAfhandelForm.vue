@@ -173,7 +173,7 @@ const submit = () => {
 
   validationMessage.value = "";
   contactmoment.registratiedatum = getFormattedUtcDate();
-  contactmomentStore.einddatum = getFormattedUtcDate();
+  contactmoment.einddatum = getFormattedUtcDate();
   user.setKanaal(contactmoment.kanaal);
   emit("save", contactmoment);
 };

@@ -136,7 +136,7 @@ const saveContact = (contactmoment: Contactmoment) => {
 
   //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
   enrichContactmomentWithNotitie(contactmoment);
-  enrichContactmomentWithDuration(contactmoment);
+  enrichContactmomentWithStartdatum(contactmoment);
 
   return contactmomentService
     .save(contactmoment)
@@ -174,9 +174,8 @@ const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
   contactmoment.tekst = contactmomentStore.notitie;
 };
 
-const enrichContactmomentWithDuration = (contactmoment: Contactmoment) => {
+const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
   contactmoment.startdatum = contactmomentStore.startdatum;
-  contactmoment.einddatum = contactmomentStore.einddatum;
 };
 </script>
 
