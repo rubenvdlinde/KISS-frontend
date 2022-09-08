@@ -54,7 +54,7 @@
 
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-import { watch } from "vue";
+import { watch, ref } from "vue";
 import { useKlanten } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
@@ -96,8 +96,6 @@ const handleCancelKlantAanmaken = () => {
 const handleSaveKlantAanmakenCallback = () => {
   klantAanmaken.value = false;
 };
-
-const serviceResult = ref<ServiceData<Klant>>();
 
 const emit = defineEmits([KLANT_SELECTED]);
 const emitKlantSelected = (klant: Klant) => {
