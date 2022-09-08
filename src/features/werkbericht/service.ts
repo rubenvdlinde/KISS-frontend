@@ -206,8 +206,6 @@ export function useWerkberichten(
     const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
     const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
 
-    console.log({ berichten });
-
     const page = berichten.map((bericht) =>
       parseWerkbericht(
         bericht,

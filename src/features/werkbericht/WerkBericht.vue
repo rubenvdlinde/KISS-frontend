@@ -69,19 +69,22 @@ const read = ref<boolean>(props.bericht.read);
 const toggleReadIsLoading = ref<boolean>(false);
 
 const toggleRead = async (): Promise<void> => {
+  let toggleReadError = false;
   toggleReadIsLoading.value = true;
 
   if (read.value) {
-    await unreadBericht(props.bericht.id);
+    await unreadBericht(props.bericht.id).catch(() => (toggleReadError = true));
   }
 
   if (!read.value) {
-    await readBericht(props.bericht.id);
+    await readBericht(props.bericht.id).catch(() => (toggleReadError = true));
   }
 
   toggleReadIsLoading.value = false;
 
-  read.value = !read.value;
+  if (!toggleReadError) {
+    read.value = !read.value;
+  }
 };
 
 const localeString = (d: Date) =>
