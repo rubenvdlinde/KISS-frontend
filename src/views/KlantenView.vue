@@ -32,13 +32,14 @@
 import { ref, computed } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 
-import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 import { ContactmomentenOverzicht } from "@/features/contactmoment";
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 
 import ZakenOverzichtKlantbeeld from "../features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
 import { useRouter } from "vue-router";
+import type { Klant } from "@/features/klant/types";
 const router = useRouter();
 //klant functies
 const showKlantenSearch = ref(true);
