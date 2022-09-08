@@ -5,13 +5,13 @@ import {
   type Paginated,
 } from "@/services";
 import { fetchLoggedIn } from "@/services";
-import type { Contactmoment } from "@/stores/contactmoment";
 import type { Ref } from "vue";
 import type {
   ContactmomentViewModel,
   Gespreksresultaat,
   ContactmomentZaak,
   ContactmomentObject,
+  Contactmoment,
 } from "./types";
 
 export function useContactmomentService() {
