@@ -7,7 +7,7 @@
     }}</paragraph>
 
     <template v-else-if="berichten.state === 'success'">
-      <paragraph v-if="search || skillIds?.length"
+      <paragraph v-if="search"
         >{{ berichten.data.totalRecords }}
         {{ berichten.data.totalRecords === 1 ? "resultaat" : "resultaten" }}
         gevonden</paragraph
