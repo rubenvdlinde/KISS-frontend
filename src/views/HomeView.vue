@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <div class="home">
     <header>
       <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
       <a
@@ -105,8 +105,9 @@
         :skill-ids="currentSkills"
       />
     </template>
-  </main>
-  <contactmoment-starter />
+
+    <contactmoment-starter />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -177,10 +178,8 @@ function handleSearch(e: Event) {
 </script>
 
 <style scoped lang="scss">
-main {
+.home {
   gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
-  padding-block: var(--spacing-large);
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
@@ -192,7 +191,7 @@ main {
   }
 }
 
-main > section {
+.home > section {
   &:not(:only-of-type) {
     max-width: var(--section-width);
   }

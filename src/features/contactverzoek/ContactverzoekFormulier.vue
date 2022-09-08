@@ -396,19 +396,6 @@ legend {
   margin-block-end: var(--spacing-small);
 }
 
-.notitieveld,
-textarea {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.notitieveld textarea.utrecht-textarea {
-  padding: var(--spacing-small);
-  margin-block-start: 0;
-  min-height: 20rem;
-}
-
 utrecht-heading {
   margin-block-end: var(--spacing-default);
 }

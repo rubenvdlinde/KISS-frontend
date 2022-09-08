@@ -110,10 +110,7 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed } from "vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
-import {
-  useContactmomentStore,
-  type Contactmoment,
-} from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
 import { useContactmomentService } from "./service";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
@@ -123,6 +120,7 @@ import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
 import { getFormattedUtcDate } from "@/services";
+import type { Contactmoment } from "./types";
 
 const router = useRouter();
 const user = useUserStore();

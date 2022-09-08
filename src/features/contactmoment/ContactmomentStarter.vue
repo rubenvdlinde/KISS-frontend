@@ -79,7 +79,7 @@ const onStartContactMoment = () => {
   if (attrs.disabled) return;
   contactmoment.startdatum = getFormattedUtcDate();
   contactmoment.start();
-  router.push({ name: "contactmoment" });
+  router.push({ name: "klanten" });
 };
 
 const onStopContactMoment = () => {
