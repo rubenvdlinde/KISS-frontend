@@ -33,10 +33,10 @@ import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
 import type { Zaak } from "./types";
 
-const emit = defineEmits(["ZaakSelected"]);
+const emit = defineEmits(["zaakSelected"]);
 
 const handleZaakSelected = (zaak: Zaak) => {
-  emit("ZaakSelected", zaak);
+  emit("zaakSelected", zaak);
 };
 
 defineProps({
