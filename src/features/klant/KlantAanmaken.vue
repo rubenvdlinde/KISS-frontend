@@ -64,7 +64,11 @@
       </div>
     </div>
 
-    <div class="warning" v-if="formWarning">{{ formWarning }}</div>
+    <application-message
+      v-if="formWarning"
+      :message="formWarning"
+      messageType="error"
+    />
 
     <menu>
       <utrecht-button
@@ -91,6 +95,7 @@ import { ref, computed } from "vue";
 import { createKlant } from "../contactverzoek";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import ApplicationMessage from "../../components/ApplicationMessage.vue";
 
 const props = defineProps<{
   handleCancel: () => void;
@@ -109,19 +114,22 @@ const contactmomentStore = useContactmomentStore();
 
 const savingKlant = ref(false);
 
-const formWarning = ref("");
+const attemptSaveKlant = ref(false);
+const formWarning = computed(() => {
+  return !formData.value.email &&
+    !formData.value.telefoonnummer &&
+    attemptSaveKlant.value
+    ? "Je moet minimaal een e-mailadres óf telefoonnummer invoeren."
+    : "";
+});
 
 const telefoonnummerWarning = computed(() => {
   return customPhoneValidator(formData.value.telefoonnummer);
 });
 
 const submit = async () => {
-  if (!formData.value.email && !formData.value.telefoonnummer) {
-    formWarning.value =
-      "Je moet minimaal een e-mailadres óf telefoonnummer invoeren.";
-    return;
-  }
-  formWarning.value = "";
+  attemptSaveKlant.value = true;
+  if (formWarning.value) return;
 
   savingKlant.value = true;
   await createKlant({
