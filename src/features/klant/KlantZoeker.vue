@@ -1,21 +1,37 @@
 <template>
-  <form class="search-bar" @submit.prevent="handleSearch">
-    <label>
-      <span>Klanten zoeken</span>
-      <input
-        type="search"
-        placeholder="Zoek op e-mailadres of telefoonnummer"
-        v-model="store.currentSearch"
-        @search="handleSearch"
-        title="0612345789 test@conduction.nl"
-      />
-    </label>
-    <button title="Zoeken">
-      <span>Zoeken</span><utrecht-icon-loupe model-value />
-    </button>
-  </form>
+  <klant-aanmaken
+    v-if="klantAanmaken"
+    :handle-cancel="handleCancelKlantAanmaken"
+    :handle-save-callback="handleSaveKlantAanmakenCallback"
+  />
 
-  <section v-if="store.searchQuery" class="search-section">
+  <nav v-else>
+    <form class="search-bar" @submit.prevent="handleSearch">
+      <label>
+        <span>Klanten zoeken</span>
+        <input
+          type="search"
+          placeholder="Zoek op e-mailadres of telefoonnummer"
+          v-model="store.currentSearch"
+          @search="handleSearch"
+          title="0612345789 test@conduction.nl"
+        />
+      </label>
+      <button title="Zoeken">
+        <span>Zoeken</span><utrecht-icon-loupe model-value />
+      </button>
+    </form>
+
+    <button
+      @click="toggleKlantAanmaken"
+      type="button"
+      class="klant-aanmaken icon-before plus utrecht-button utrecht-button--secondary-action"
+    >
+      Klant aanmaken
+    </button>
+  </nav>
+
+  <section v-if="store.searchQuery && !klantAanmaken" class="search-section">
     <simple-spinner v-if="klanten.loading" />
     <template v-if="klanten.success">
       <klanten-overzicht
@@ -38,7 +54,7 @@
 
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-import { watch } from "vue";
+import { watch, ref } from "vue";
 import { useKlanten } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
@@ -47,6 +63,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via 
 import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?
 import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
+import KlantAanmaken from "./KlantAanmaken.vue";
 import { getStore } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 
 const store = getStore({
@@ -67,6 +84,17 @@ const klanten = useKlanten({
 
 const navigate = (val: number) => {
   store.value.page = val;
+};
+
+const klantAanmaken = ref(false);
+const toggleKlantAanmaken = (): void => {
+  klantAanmaken.value = !klantAanmaken.value;
+};
+const handleCancelKlantAanmaken = () => {
+  klantAanmaken.value = false;
+};
+const handleSaveKlantAanmakenCallback = () => {
+  klantAanmaken.value = false;
 };
 
 const emit = defineEmits([KLANT_SELECTED]);
@@ -93,6 +121,16 @@ const handleSearch = () => {
 </script>
 
 <style lang="scss" scoped>
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .klant-aanmaken {
+    display: flex;
+  }
+}
+
 input {
   width: var(--section-width);
 }
