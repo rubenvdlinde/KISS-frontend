@@ -178,14 +178,8 @@ function handleSearch(e: Event) {
 </script>
 
 <style scoped lang="scss">
-.contactmomentLoopt {
-  .home {
-    padding: 0;
-  }
-}
 .home {
   gap: var(--spacing-default);
-  padding-inline: var(--container-padding);
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
