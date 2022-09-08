@@ -71,10 +71,7 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
-import {
-  useContactmomentStore,
-  type Contactmoment,
-} from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
 import { toast } from "@/stores/toast";
 
 import {
@@ -83,6 +80,7 @@ import {
   useContactmomentService,
   ContactmomentNotitie,
   koppelObject,
+  type Contactmoment,
 } from "@/features/contactmoment";
 import { ZakenOverzicht } from "@/features/zaaksysteem";
 
@@ -93,13 +91,15 @@ const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
 const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
-  const promises = contactmomentStore?.zaken.map((zaak) =>
-    koppelObject({
-      contactmoment: contactmomentId,
-      object: zaak.url,
-      objectType: "zaak",
-    })
-  );
+  const promises = contactmomentStore?.zaken
+    .filter((zaak) => zaak.shouldStore)
+    .map((zaak) =>
+      koppelObject({
+        contactmoment: contactmomentId,
+        object: zaak.url,
+        objectType: "zaak",
+      })
+    );
   return Promise.all(promises);
 };
 

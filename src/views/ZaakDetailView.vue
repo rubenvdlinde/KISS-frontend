@@ -12,7 +12,7 @@
     </nav>
 
     <simple-spinner v-if="zaak.loading" />
-    <zaak-details :zaak="zaak.data" v-if="zaak" />
+    <zaak-details :zaak="zaak.data" v-if="zaak.success" />
     <application-message
       v-if="zaak.error"
       messageType="error"

@@ -25,7 +25,7 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import { PersoonZoeker } from "@/features/brp";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import { useRouter } from "vue-router";
-import type { Zaak } from "@/stores/contactmoment";
+import type { Zaak } from "@/features/zaaksysteem/types";
 
 //zaak tabs
 enum Tabs {
