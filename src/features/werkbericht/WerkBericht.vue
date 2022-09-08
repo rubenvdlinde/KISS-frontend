@@ -46,6 +46,7 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
+import { toast } from "@/stores/toast";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -84,6 +85,13 @@ const toggleRead = async (): Promise<void> => {
 
   if (!toggleReadError) {
     read.value = !read.value;
+  }
+
+  if (toggleReadError) {
+    toast({
+      text: "Oeps het lukt niet om dit bericht te markeren. Probeer het later opnieuw.",
+      type: "error",
+    });
   }
 };
 
