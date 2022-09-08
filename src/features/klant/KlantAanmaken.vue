@@ -11,7 +11,6 @@
         type="text"
         class="utrecht-textbox utrecht-textbox--html-input"
         v-model="formData.voornaam"
-        required
       />
     </div>
 
@@ -33,7 +32,6 @@
         id="achternaam"
         type="text"
         class="utrecht-textbox utrecht-textbox--html-input"
-        required
         v-model="formData.achternaam"
       />
     </div>
