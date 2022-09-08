@@ -42,7 +42,6 @@
         id="email"
         type="email"
         class="utrecht-textbox utrecht-textbox--html-input"
-        required
         v-model="formData.email"
       />
     </div>
@@ -57,14 +56,15 @@
           id="telefoonnummer"
           type="text"
           class="utrecht-textbox utrecht-textbox--html-input"
-          required
         />
       </div>
 
       <div class="warning-container" v-if="telefoonnummerWarning[0]">
-        <span class="warning">{{ telefoonnummerWarning[0] }}</span>
+        <div class="warning">{{ telefoonnummerWarning[0] }}</div>
       </div>
     </div>
+
+    <div class="warning" v-if="formWarning">{{ formWarning }}</div>
 
     <menu>
       <utrecht-button
@@ -109,11 +109,20 @@ const contactmomentStore = useContactmomentStore();
 
 const savingKlant = ref(false);
 
+const formWarning = ref("");
+
 const telefoonnummerWarning = computed(() => {
   return customPhoneValidator(formData.value.telefoonnummer);
 });
 
 const submit = async () => {
+  if (!formData.value.email && !formData.value.telefoonnummer) {
+    formWarning.value =
+      "Je moet minimaal een e-mailadres óf telefoonnummer invoeren.";
+    return;
+  }
+  formWarning.value = "";
+
   savingKlant.value = true;
   await createKlant({
     voornaam: formData.value.voornaam,
