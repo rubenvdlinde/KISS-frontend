@@ -34,8 +34,7 @@ output {
   padding: var(--spacing-default);
   border-radius: var(--radius-default);
   font-size: 1rem;
-  color: white;
-  line-height: 1.5rem;
+  color: var(--color-white);
 }
 
 .confirm {

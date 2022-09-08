@@ -44,8 +44,8 @@ import {
   UtrechtHeading,
   UtrechtDocument,
 } from "@utrecht/web-component-library-vue";
-import { cleanHtml } from "@/helpers/html";
 import { readBericht, unreadBericht } from "./service";
+import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -93,7 +93,13 @@ const localeString = (d: Date) =>
     minute: "2-digit",
   });
 
-const sanitized = computed(() => cleanHtml(props.bericht.content, props.level));
+function processHtml(html: string) {
+  const cleanedHtml = sanitizeHtmlToBerichtFormat(html);
+  const increasedHeadings = increaseHeadings(cleanedHtml, props.level);
+  return increasedHeadings;
+}
+
+const sanitized = computed(() => processHtml(props.bericht.content));
 </script>
 
 <style lang="scss" scoped>
@@ -147,7 +153,7 @@ article {
     gap: 0.25rem;
     list-style-type: disc;
     padding-left: var(--text-margin);
-    line-height: 1.5rem;
+    line-height: var(--line-height-default);
   }
 
   :deep(p) {

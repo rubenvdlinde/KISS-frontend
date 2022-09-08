@@ -134,10 +134,6 @@ function previousIndex() {
 function selectItem() {
   if (!listItems.value.length) return;
   searchText.value = listItems.value[activeIndex.value].value;
-  const element = inputRef.value;
-  if (element instanceof HTMLInputElement) {
-    focusNextFormItem(element);
-  }
 }
 
 const emit = defineEmits(["update:modelValue"]);

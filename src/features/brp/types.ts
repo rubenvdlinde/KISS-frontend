@@ -4,5 +4,5 @@ export interface Persoon {
   achternaam: string;
   leeftijd: number | null;
   id: string;
-  bsn: number;
+  bsn: string;
 }

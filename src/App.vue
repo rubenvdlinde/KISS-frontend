@@ -52,6 +52,7 @@ const contactmomentStore = useContactmomentStore();
   --color-error: #d44;
   --color-category-default: hsl(184, 54%, 70%);
   --color-category-website: hsl(285, 56%, 83%);
+  --color-white: #fff;
 
   // spacing
   --container-width: 80rem;
@@ -67,9 +68,12 @@ const contactmomentStore = useContactmomentStore();
   --spacing-small: 0.5rem;
   --spacing-large: 2rem;
   --spacing-extralarge: 6rem;
+  --spacing-extrasmall: 0.25rem;
 
   --header-height: 6rem;
   --text-margin: 1.5rem;
+
+  --line-height-default: 1.5;
 
   // other
   --radius-default: 0.5rem;
@@ -83,6 +87,7 @@ html,
 body,
 #app {
   height: 100%;
+  line-height: var(--line-height-default);
 }
 
 body {
@@ -109,7 +114,7 @@ body {
 
   .log-out {
     grid-area: logout;
-    color: white;
+    color: var(--color-white);
     padding: var(--spacing-small);
     margin-left: auto;
   }
@@ -155,7 +160,7 @@ button:hover {
 
 .tabs-component-contactmoment {
   > ul li.is-active {
-    background-color: white;
+    background-color: var(--color-white);
   }
 
   > ul li {
@@ -215,7 +220,7 @@ h2 {
 
   button {
     --utrecht-icon-size: 1rem;
-    background: white;
+    background: var(--color-white);
     font-size: 0;
     padding-right: var(--spacing-default);
   }
@@ -306,6 +311,21 @@ h2 {
 .icon-before.book::before,
 .icon-after.book::after {
   mask-image: url("@/assets/icons/book.svg");
+}
+
+.icon-before.pen::before,
+.icon-after.pen::after {
+  mask-image: url("@/assets/icons/pen.svg");
+}
+
+.icon-before.xmark::before,
+.icon-after.xmark::after {
+  mask-image: url("@/assets/icons/xmark.svg");
+}
+
+.icon-before.plus::before,
+.icon-after.plus::after {
+  mask-image: url("@/assets/icons/plus.svg");
 }
 
 //forms

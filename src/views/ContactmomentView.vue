@@ -19,7 +19,7 @@
           ></contactmoment-notitie>
         </template>
         <template #[NotitieTabs.Terugbel]>
-          <contactverzoek-formulier />
+          <contactverzoek-formulier @isDirty="handleContactverzoekIsDirty" />
         </template>
       </tabs-component>
     </aside>
@@ -50,10 +50,12 @@
               </button>
             </li>
           </menu>
+
           <klant-details
             v-if="contactmomentStore.klant"
             :klant="contactmomentStore.klant"
           />
+          <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
           <contactmomenten-overzicht v-if="klantId" :klant-id="klantId" />
         </article>
       </template>
@@ -69,7 +71,7 @@
               <persoon-zoeker @zakenZoeken="onZakenZoeken" />
             </template>
             <template #[Tabs.zakenZoeker]>
-              <zaak-zoeker :populatedBsn="curentBsn" />
+              <zaak-zoeker :populatedBsn="currentBsn" />
             </template>
           </tabs-component>
         </article>
@@ -77,17 +79,16 @@
     </tabs-component>
   </main>
   <contactmoment-starter
-    :disabled="disableContactmomentStarter"
-    :title="
-      disableContactmomentStarter
-        ? 'Verstuur eerst het contactverzoek of wissel naar een reguliere notitie'
-        : undefined
+    :beforeStopWarning="
+      contactverzoekTabIsDitry && contactverzoekIsDirty
+        ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
+        : ''
     "
   />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, nextTick, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { useContactmomentStore, type Klant } from "@/stores/contactmoment";
@@ -100,6 +101,7 @@ import {
 import { KlantZoeker, KlantDetails } from "@/features/klant";
 import { ZaakZoeker } from "@/features/zaaksysteem";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
+import ZakenOverzichtKlantbeeld from "../features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
 
 //layout view tabs
 enum TabsContactmoment {
@@ -114,13 +116,16 @@ enum Tabs {
   personenZoeker = "Via persoon",
 }
 const activeTab = ref(Tabs.personenZoeker);
-const curentBsn = ref<number>();
+const currentBsn = ref<string>();
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
 // we swichen daarvoor naar de zakentab
-const onZakenZoeken = (bsn: number) => {
-  curentBsn.value = bsn;
-  activeTab.value = Tabs.zakenZoeker;
+const onZakenZoeken = (bsn: string) => {
+  currentBsn.value = "";
+  nextTick(() => {
+    currentBsn.value = bsn;
+    activeTab.value = Tabs.zakenZoeker;
+  });
 };
 
 //klant functies
@@ -133,6 +138,7 @@ const klantGevonden = (klant: Klant) => {
 };
 
 const klantId = computed(() => contactmomentStore.klant?.id || "");
+const klantBsn = computed(() => contactmomentStore.klant?.bsn || "");
 
 // sidebar
 enum NotitieTabs {
@@ -141,9 +147,18 @@ enum NotitieTabs {
 }
 const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const disableContactmomentStarter = computed(() => {
-  if (currentNotitieTab.value === NotitieTabs.Regulier) return false;
-  return !contactmomentStore.contactverzoek;
+const contactverzoekIsDirty = ref(false);
+
+const handleContactverzoekIsDirty = (isDirty: boolean) => {
+  contactverzoekIsDirty.value = isDirty;
+};
+
+const contactverzoekTabIsDitry = ref(false);
+
+watch(currentNotitieTab, (t: any) => {
+  if (t === NotitieTabs.Terugbel) {
+    contactverzoekTabIsDitry.value = true;
+  }
 });
 </script>
 
@@ -175,6 +190,11 @@ aside {
   }
 }
 
+.klant-panel {
+  display: grid;
+  gap: var(--spacing-large);
+}
+
 :deep([role="tablist"]),
 .zaak-tabs :deep([role="tabpanel"]) {
   padding-inline: var(--spacing-extralarge);
@@ -185,9 +205,9 @@ aside {
 }
 
 .main-tabs {
-  --tab-bg: white;
+  --tab-bg: var(--color-white);
 
-  ul li article {
+  ul li > article {
     margin-inline: var(--spacing-extralarge);
   }
 }
@@ -217,7 +237,7 @@ aside {
 }
 
 .notitie-tabs {
-  --tab-bg: white;
+  --tab-bg: var(--color-white);
 
   :deep([role="tablist"]) {
     padding: 0;
@@ -239,7 +259,7 @@ aside {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--color-white);
 
     &[aria-selected="true"] {
       color: var(--color-tertiary);
