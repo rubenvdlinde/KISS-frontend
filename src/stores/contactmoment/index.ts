@@ -11,6 +11,7 @@ interface ContactmomentState {
   notitie: string;
   contactverzoek: { url: string; medewerker: string } | undefined;
   nieuweKlant: NieuweKlant | undefined;
+  startdatum: string;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -22,6 +23,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       notitie: "",
       contactverzoek: undefined,
       nieuweKlant: undefined,
+      startdatum: "",
     } as ContactmomentState;
   },
   getters: {
