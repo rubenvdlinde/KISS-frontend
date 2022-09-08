@@ -11,6 +11,7 @@ import type { Ref } from "vue";
 import { fetchLoggedIn } from "@/services";
 
 const WP_MAX_ALLOWED_PAGE_SIZE = "100";
+const BERICHTEN_BASE_URI = `${window.gatewayBaseUri}/api/kiss_openpub_pub`;
 
 export type UseWerkberichtenParams = {
   typeId?: number;
@@ -20,10 +21,11 @@ export type UseWerkberichtenParams = {
   pagesize?: number;
 };
 
-const timezoneRegex = /T[0-9|:]*[+|-|Z]+/;
-
 function parseDateStrWithTimezone(dateStr: string) {
+  const timezoneRegex = /T[0-9|:]*[+|-|Z]+/;
+
   if (timezoneRegex.test(dateStr)) return new Date(dateStr);
+
   // if no timezone info is present we assume UTC
   return new Date(dateStr + "Z");
 }
@@ -43,8 +45,8 @@ function parseWerkbericht(
   getSkillNameById: (id: number) => string | undefined
 ): Werkbericht {
   if (
-    typeof jsonObject?.title?.rendered !== "string" ||
-    typeof jsonObject?.content?.rendered !== "string" ||
+    typeof jsonObject?.embedded?.title?.rendered !== "string" ||
+    typeof jsonObject?.embedded?.content?.rendered !== "string" ||
     typeof jsonObject?.date !== "string"
   ) {
     throw new Error(
@@ -68,15 +70,27 @@ function parseWerkbericht(
       )
     : ["onbekend"];
 
-  const createdDate = parseDateStrWithTimezone(jsonObject.date);
-  const modifiedDate = parseDateStrWithTimezone(jsonObject.modified);
+  const dateCreated = parseDateStrWithTimezone(jsonObject.date);
+  const dateModified = parseDateStrWithTimezone(jsonObject.modified);
+  const dateLatest = maxDate([dateCreated, dateModified]);
 
-  const latestDate = maxDate([createdDate, modifiedDate]);
+  let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
+
+  if (
+    dateRead &&
+    new Date(dateModified) > new Date(parseDateStrWithTimezone(dateRead))
+  ) {
+    unreadBericht(jsonObject.id);
+
+    dateRead = false;
+  }
 
   return {
-    title: jsonObject.title.rendered,
-    content: jsonObject.content.rendered,
-    date: latestDate,
+    id: jsonObject.id,
+    read: !!dateRead,
+    title: jsonObject.embedded.title.rendered,
+    content: jsonObject.embedded.content.rendered,
+    date: dateLatest,
     types: typeNames,
     skills: skillNames,
   };
@@ -142,24 +156,30 @@ export function useWerkberichten(
     if (typesResult.state !== "success" || skillsResult.state !== "success")
       return "";
 
-    const url = window.gatewayBaseUri + "/api/openpub/kiss_openpub_pub";
-    if (!parameters?.value) return url;
+    if (!parameters?.value) return BERICHTEN_BASE_URI;
 
     const { typeId, search, page, skillIds } = parameters.value;
-    const params: [string, string][] = [["orderby", "modified"]];
+
+    const params: [string, string][] = [
+      ["extend[]", "x-commongateway-metadata.dateRead"],
+    ];
+
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
+
     if (search) {
       params.push(["search", search]);
     }
+
     if (page) {
       params.push(["page", page.toString()]);
     }
+
     if (skillIds?.length) {
       params.push(["openpub_skill", skillIds.join(",")]);
     }
-    return `${url}?${new URLSearchParams(params)}`;
+    return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
   }
 
   async function fetchBerichten(url: string): Promise<Paginated<Werkbericht>> {
@@ -177,16 +197,18 @@ export function useWerkberichten(
 
     const json = await r.json();
 
-    if (!Array.isArray(json))
-      throw new Error("expected a list, input: " + JSON.stringify(json));
+    const berichten = json.results;
+
+    if (!Array.isArray(berichten))
+      throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
     const pageNumber = parameters?.value.page || 1;
     const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
     const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
 
-    const page = json.map((x) =>
+    const page = berichten.map((bericht) =>
       parseWerkbericht(
-        x,
+        bericht,
         typesResult.data.fromKeyToValue,
         skillsResult.data.fromKeyToValue
       )
@@ -202,4 +224,29 @@ export function useWerkberichten(
   }
 
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
+}
+
+export async function readBericht(id: string): Promise<boolean> {
+  const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}?fields[]`);
+
+  if (!res.ok)
+    throw new Error(`Expected to read bericht: ${res.status.toString()}`);
+
+  return res.ok;
+}
+
+export async function unreadBericht(id: string): Promise<boolean> {
+  const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ "@dateRead": false }),
+  });
+
+  if (!res.ok)
+    throw new Error(`Expected to unread bericht: ${res.status.toString()}`);
+
+  return res.ok;
 }
