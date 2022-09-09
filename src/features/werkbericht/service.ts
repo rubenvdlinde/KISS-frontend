@@ -1,7 +1,7 @@
 import type { Werkbericht } from "./types";
 import {
   createLookupList,
-  parseValidInt,
+  parsePagination,
   ServiceResult,
   type LookupList,
   type Paginated,
@@ -164,6 +164,8 @@ export function useWerkberichten(
       ["extend[]", "x-commongateway-metadata.dateRead"],
     ];
 
+    params.push(["limit", "10"]);
+
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
@@ -202,25 +204,13 @@ export function useWerkberichten(
     if (!Array.isArray(berichten))
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
-    const pageNumber = parameters?.value.page || 1;
-    const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
-    const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
-
-    const page = berichten.map((bericht) =>
+    return parsePagination(json, (bericht: any) =>
       parseWerkbericht(
         bericht,
         typesResult.data.fromKeyToValue,
         skillsResult.data.fromKeyToValue
       )
     );
-
-    return {
-      page,
-      pageNumber,
-      totalPages,
-      totalRecords,
-      pageSize: 15,
-    };
   }
 
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
