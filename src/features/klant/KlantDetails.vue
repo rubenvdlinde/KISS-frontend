@@ -140,7 +140,7 @@ import {
   UtrechtHeading,
   UtrechtButton,
 } from "@utrecht/web-component-library-vue";
-import type { Klant } from "@/stores/contactmoment";
+import type { Klant } from "./types";
 import { useUpdateContactGegevens } from "./service";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { computed } from "vue";

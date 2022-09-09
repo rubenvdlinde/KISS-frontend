@@ -1,11 +1,12 @@
 <template>
   <label>
-    <input type="checkbox" @change="koppel" v-model="selected" />
+    <input type="checkbox" @click.stop="koppel" v-model="selected" />
     <span>Opslaan bij contactmoment</span>
   </label>
 </template>
 <script lang="ts" setup>
-import { useContactmomentStore, type Zaak } from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
+import type { Zaak } from "./types";
 import { ref, onMounted, type PropType } from "vue";
 
 const props = defineProps({

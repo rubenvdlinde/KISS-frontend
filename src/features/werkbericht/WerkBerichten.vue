@@ -34,6 +34,7 @@
     <simple-spinner v-else></simple-spinner>
   </section>
 </template>
+
 <script lang="ts" setup>
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch, type PropType } from "vue";
