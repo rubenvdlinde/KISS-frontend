@@ -45,8 +45,7 @@
                   'icon-after',
                   tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
                 ]"
-                >{{ tabName }}</span
-              >
+              ></span>
             </template>
             <template #[NotitieTabs.Regulier]>
               <contactmoment-notitie
@@ -571,14 +570,6 @@ utrecht-button.button-small {
   background-color: var(--color-category-website);
 }
 
-// main {
-//   padding-inline: 0;
-//   padding-block: 0;
-//   display: grid;
-//   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-//   // grid-template-columns: 1fr 4fr;
-// }
-
 aside {
   grid-column: 1;
 
@@ -615,7 +606,6 @@ aside {
 }
 
 .icon-after {
-  font-size: 0;
   display: flex;
   justify-content: center;
   width: 100%;
