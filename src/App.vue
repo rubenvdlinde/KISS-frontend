@@ -45,8 +45,7 @@
                   'icon-after',
                   tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
                 ]"
-                >{{ tabName }}</span
-              >
+              ></span>
             </template>
             <template #[NotitieTabs.Regulier]>
               <contactmoment-notitie
@@ -576,14 +575,6 @@ utrecht-button.button-small {
   background-color: var(--color-category-website);
 }
 
-// main {
-//   padding-inline: 0;
-//   padding-block: 0;
-//   display: grid;
-//   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-//   // grid-template-columns: 1fr 4fr;
-// }
-
 aside {
   grid-column: 1;
 
@@ -593,11 +584,10 @@ aside {
   grid-template-rows: auto 1fr;
 
   textarea.utrecht-textarea {
+    margin-block-start: var(--spacing-default);
     padding: 0px;
-  }
-
-  menu {
-    background-color: var(--color-tertiary);
+    border: none;
+    outline: none;
   }
 
   menu,
@@ -612,15 +602,7 @@ aside {
   margin-inline-start: var(--spacing-default);
 }
 
-.notitie {
-  margin-top: var(--spacing-large);
-  outline: none;
-  border: none;
-  width: 100%;
-}
-
 .icon-after {
-  font-size: 0;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -656,17 +638,5 @@ aside {
       color: var(--color-tertiary);
     }
   }
-}
-
-.notitieveld {
-  display: flex;
-  flex-direction: column;
-  //flex: 1;
-}
-
-.notitieveld textarea.utrecht-textarea {
-  padding: var(--spacing-small);
-  margin-block-start: 0;
-  min-height: 20rem;
 }
 </style>
