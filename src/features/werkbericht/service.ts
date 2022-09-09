@@ -164,7 +164,7 @@ export function useWerkberichten(
       ["extend[]", "x-commongateway-metadata.dateRead"],
     ];
 
-    params.push(["limit", "5"]);
+    params.push(["limit", "10"]);
 
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
