@@ -1,15 +1,27 @@
 <template>
-  <article>
-    <header>
-      <small v-if="showType && bericht.types.length">
-        {{ bericht.types.join(", ") }}
-      </small>
-      <utrecht-heading model-value :level="level">{{
-        bericht.title
-      }}</utrecht-heading>
-      <time :datetime="bericht.date.toISOString()">{{
-        formatDateAndTime(bericht.date)
-      }}</time>
+  <article :class="read && 'read'">
+    <small v-if="showType && bericht.types.length">
+      {{ bericht.types.join(", ") }}
+    </small>
+
+    <div class="heading-container">
+      <utrecht-heading model-value :level="level">
+        <span class="title">{{ bericht.title }}</span>
+      </utrecht-heading>
+
+      <button
+        @click="toggleRead"
+        :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
+        class="toggle-read icon-after book"
+        :disabled="toggleReadIsLoading"
+      />
+    </div>
+
+    <time :datetime="bericht.date.toISOString()">{{
+      localeString(bericht.date)
+    }}</time>
+
+    <div class="skills-container">
       <small
         v-for="(skill, i) in bericht.skills"
         :class="`category-${skill.split(' ').join('-')}`"
@@ -17,7 +29,8 @@
       >
         {{ skill }}
       </small>
-    </header>
+    </div>
+
     <utrecht-document model-value class="correct-header">
       <div v-html="sanitized" />
     </utrecht-document>
@@ -25,14 +38,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType } from "vue";
+import { computed, ref, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import {
   UtrechtHeading,
   UtrechtDocument,
 } from "@utrecht/web-component-library-vue";
+import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
-import { formatDateAndTime } from "@/helpers/date";
+import { toast } from "@/stores/toast";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -51,6 +65,44 @@ const props = defineProps({
     default: false,
   },
 });
+
+const read = ref<boolean>(props.bericht.read);
+const toggleReadIsLoading = ref<boolean>(false);
+
+const toggleRead = async (): Promise<void> => {
+  let toggleReadError = false;
+  toggleReadIsLoading.value = true;
+
+  if (read.value) {
+    await unreadBericht(props.bericht.id).catch(() => (toggleReadError = true));
+  }
+
+  if (!read.value) {
+    await readBericht(props.bericht.id).catch(() => (toggleReadError = true));
+  }
+
+  toggleReadIsLoading.value = false;
+
+  if (!toggleReadError) {
+    read.value = !read.value;
+  }
+
+  if (toggleReadError) {
+    toast({
+      text: "Oeps het lukt niet om dit bericht te markeren. Probeer het later opnieuw.",
+      type: "error",
+    });
+  }
+};
+
+const localeString = (d: Date) =>
+  d.toLocaleString("nl-NL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 function processHtml(html: string) {
   const cleanedHtml = sanitizeHtmlToBerichtFormat(html);
@@ -71,19 +123,39 @@ article {
   display: grid;
   gap: 0.75rem;
 
-  header {
-    display: grid;
-    justify-items: flex-start;
-    gap: 0.5rem;
-  }
-
   time {
     color: var(--color-primary);
     display: block;
   }
 
-  small {
-    font-size: 0.875rem;
+  .heading-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .toggle-read {
+      all: unset;
+      color: var(--color-headings);
+
+      &:hover {
+        color: var(--color-tertiary);
+        cursor: pointer;
+      }
+      &:hover:disabled {
+        cursor: wait;
+      }
+    }
+  }
+
+  .skills-container {
+    & > small {
+      font-size: 0.875rem;
+    }
+
+    & > *:not(:last-child) {
+      margin-inline-end: var(--spacing-small);
+    }
   }
 
   :deep(ul) {
@@ -102,6 +174,20 @@ article {
 
     &:not(:last-child) {
       margin-bottom: 1em;
+    }
+  }
+
+  &.read {
+    .title {
+      font-weight: normal;
+    }
+
+    .toggle-read {
+      color: var(--color-tertiary);
+    }
+
+    & > *:not(.heading-container) {
+      display: none;
     }
   }
 }
