@@ -590,10 +590,6 @@ aside {
     outline: none;
   }
 
-  menu {
-    background-color: var(--color-tertiary);
-  }
-
   menu,
   [role="tablist"] {
     height: 3rem;
