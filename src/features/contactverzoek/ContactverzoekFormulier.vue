@@ -404,4 +404,15 @@ utrecht-button {
   --utrecht-button-min-inline-size: 100%;
   --utrecht-button-min-block-size: 3rem;
 }
+
+.notitieveld {
+  display: flex;
+  flex-direction: column;
+}
+
+.notitieveld textarea.utrecht-textarea {
+  padding: var(--spacing-small);
+  margin-block-start: 0;
+  min-height: 20rem;
+}
 </style>

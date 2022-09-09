@@ -584,7 +584,10 @@ aside {
   grid-template-rows: auto 1fr;
 
   textarea.utrecht-textarea {
+    margin-block-start: var(--spacing-default);
     padding: 0px;
+    border: none;
+    outline: none;
   }
 
   menu {
@@ -601,13 +604,6 @@ aside {
 
 .contactmomenten-header {
   margin-inline-start: var(--spacing-default);
-}
-
-.notitie {
-  margin-top: var(--spacing-large);
-  outline: none;
-  border: none;
-  width: 100%;
 }
 
 .icon-after {
@@ -646,17 +642,5 @@ aside {
       color: var(--color-tertiary);
     }
   }
-}
-
-.notitieveld {
-  display: flex;
-  flex-direction: column;
-  //flex: 1;
-}
-
-.notitieveld textarea.utrecht-textarea {
-  padding: var(--spacing-small);
-  margin-block-start: 0;
-  min-height: 20rem;
 }
 </style>
