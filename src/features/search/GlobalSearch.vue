@@ -41,9 +41,17 @@
                   href="#"
                   @click="selectSearchResult(id, source, jsonObject, title)"
                   class="icon-after chevron-down"
-                  ><span :class="`category-${source}`">{{ source }}</span
-                  ><span>{{ title }}</span></a
                 >
+                  <span :class="`category-${source}`">{{ source }}</span>
+                  <span v-if="source === 'Smoelenboek'">
+                    {{
+                      [title, jsonObject?.function, jsonObject?.department]
+                        .filter(Boolean)
+                        .join(", ")
+                    }}
+                  </span>
+                  <span v-else>{{ title }}</span>
+                </a>
                 <a
                   v-else
                   :href="url.toString()"
@@ -53,13 +61,6 @@
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
                 >
-                <a v-if="source === smoelenboek">
-                  <span></span
-                  ><span
-                    >{{ jsonObject?.function }}
-                    {{ jsonObject?.department }}</span
-                  >
-                </a>
               </li>
             </ul>
           </nav>
@@ -69,7 +70,7 @@
             @navigate="handlePaginationNavigation"
             v-show="!currentId"
           />
-          <ul>
+          <ul v-show="!!currentId">
             <li
               v-for="{
                 id,
@@ -265,8 +266,9 @@ fieldset {
   display: grid;
   justify-items: stretch;
   padding-inline: var(--container-padding);
-  padding-block: var(--spacing-default);
+  padding-block-end: var(--spacing-default);
   background-color: var(--color-secondary);
+  gap: var(--spacing-default);
   //
   position: relative;
 
@@ -319,21 +321,20 @@ nav ul {
     text-decoration: none;
     display: grid;
     grid-template-columns: 20ch 1fr 2ch;
-    gap: 0.5rem;
+    gap: var(--spacing-default);
     justify-items: start;
-    padding-block: 0.5rem;
-    padding-inline-end: 1rem;
+    padding-inline-end: var(--spacing-default);
 
     &:after {
       transform: rotate(-90deg);
+      margin-inline-start: auto;
     }
   }
 
   li {
-    padding-block: 0.5rem;
-    &:not(:last-child) {
-      border-bottom: 1px solid var(--color-tertiary);
-    }
+    padding-block: var(--spacing-default);
+    border-block-end: 1px solid var(--color-tertiary);
+    display: flex;
   }
 }
 
