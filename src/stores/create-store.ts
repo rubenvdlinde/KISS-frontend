@@ -5,6 +5,7 @@ import {
   type InjectionKey,
   type Ref,
   type UnwrapRef,
+  getCurrentInstance,
 } from "vue";
 
 const injectionKey = Symbol() as InjectionKey<StoreImplementation>;
@@ -17,7 +18,7 @@ export type CreateStoreParams<T> = {
   onNewState?: (state: UnwrapRef<T>) => void | Promise<void>;
 };
 
-export type Store<T> = Ref<UnwrapRef<T>>;
+export type Store<T> = Ref<UnwrapRef<T>> & { reset: () => void };
 
 export type StoreImplementation = <T>(params: CreateStoreParams<T>) => Store<T>;
 
@@ -30,7 +31,13 @@ function defaultStoreImplementation<T>({
   let store = storeMap.get(storeId) as Store<T> | undefined;
 
   if (!store) {
-    store = ref(stateFactory());
+    store = Object.assign(ref(stateFactory()), {
+      reset() {
+        if (store) {
+          store.value = stateFactory() as UnwrapRef<T>;
+        }
+      },
+    });
     storeMap.set(storeId, store);
     onNewState?.(store.value);
   } else {
@@ -48,6 +55,19 @@ export function provideStoreImplementation(
 
 export function getStore<T>(params: CreateStoreParams<T>): Store<T> {
   //causes a warning if not injected..todo: find out how to properly check if something has been provided
-  const implementation = inject(injectionKey) ?? defaultStoreImplementation;
+  const implementation = inject(injectionKey, defaultStoreImplementation);
   return implementation(params) as Store<T>;
+}
+
+export function resetStore(storeId: string) {
+  const mapValue = storeMap.get(storeId);
+  if (mapValue) {
+    mapValue.reset();
+  }
+}
+
+export function resetAllStores() {
+  for (const store of storeMap.values()) {
+    store.reset();
+  }
 }
