@@ -71,7 +71,9 @@ function parseWerkbericht(
     : ["onbekend"];
 
   const dateCreated = parseDateStrWithTimezone(jsonObject.date);
-  const dateModified = parseDateStrWithTimezone(jsonObject.modified);
+  const dateModified = parseDateStrWithTimezone(
+    jsonObject["x-commongateway-metadata"].dateModified
+  );
   const dateLatest = maxDate([dateCreated, dateModified]);
 
   let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
@@ -165,6 +167,8 @@ export function useWerkberichten(
     ];
 
     params.push(["limit", "10"]);
+    params.push(["order[_dateModified]", "desc"]);
+    params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
 
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
