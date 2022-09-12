@@ -1,7 +1,7 @@
 import type { Werkbericht } from "./types";
 import {
   createLookupList,
-  parseValidInt,
+  parsePagination,
   ServiceResult,
   type LookupList,
   type Paginated,
@@ -71,7 +71,9 @@ function parseWerkbericht(
     : ["onbekend"];
 
   const dateCreated = parseDateStrWithTimezone(jsonObject.date);
-  const dateModified = parseDateStrWithTimezone(jsonObject.modified);
+  const dateModified = parseDateStrWithTimezone(
+    jsonObject["x-commongateway-metadata"].dateModified
+  );
   const dateLatest = maxDate([dateCreated, dateModified]);
 
   let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
@@ -164,6 +166,10 @@ export function useWerkberichten(
       ["extend[]", "x-commongateway-metadata.dateRead"],
     ];
 
+    params.push(["limit", "10"]);
+    params.push(["order[_dateModified]", "desc"]);
+    params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
+
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);
     }
@@ -177,7 +183,9 @@ export function useWerkberichten(
     }
 
     if (skillIds?.length) {
-      params.push(["openpub_skill", skillIds.join(",")]);
+      skillIds.forEach((skillId) => {
+        params.push(["openpub_skill[]", skillId.toString()]);
+      });
     }
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
   }
@@ -202,25 +210,13 @@ export function useWerkberichten(
     if (!Array.isArray(berichten))
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
-    const pageNumber = parameters?.value.page || 1;
-    const totalPages = parseValidInt(r.headers.get("x-wp-totalpages")) || 1;
-    const totalRecords = parseValidInt(r.headers.get("x-wp-total"));
-
-    const page = berichten.map((bericht) =>
+    return parsePagination(json, (bericht: any) =>
       parseWerkbericht(
         bericht,
         typesResult.data.fromKeyToValue,
         skillsResult.data.fromKeyToValue
       )
     );
-
-    return {
-      page,
-      pageNumber,
-      totalPages,
-      totalRecords,
-      pageSize: 15,
-    };
   }
 
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
