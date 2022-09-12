@@ -1,6 +1,7 @@
 import type { Klant } from "@/features/klant/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
+import { resetAllStores } from "../create-store";
 import type { NieuweKlant } from "./types";
 export * from "./types";
 
@@ -38,6 +39,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     stop() {
       this.$reset();
+      resetAllStores();
     },
     addZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
