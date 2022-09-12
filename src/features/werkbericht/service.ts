@@ -179,7 +179,9 @@ export function useWerkberichten(
     }
 
     if (skillIds?.length) {
-      params.push(["openpub_skill", skillIds.join(",")]);
+      skillIds.forEach((skillId) => {
+        params.push(["openpub_skill[]", skillId.toString()]);
+      });
     }
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
   }
