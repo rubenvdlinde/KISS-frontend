@@ -28,7 +28,7 @@
             :key="record.klant.id"
           >
             <label>
-              <span>{{
+              <span v-if="record.klant.voornaam || record.klant.achternaam">{{
                 [
                   record.klant.voornaam,
                   record.klant.voorvoegselAchternaam,
@@ -36,6 +36,14 @@
                 ]
                   .filter((x) => x)
                   .join(" ")
+              }}</span>
+              <span v-else>{{
+                [
+                  record.klant.emails[0].email,
+                  record.klant.telefoonnummers[0].telefoonnummer,
+                ]
+                  .filter((x) => x)
+                  .join(", ")
               }}</span>
               <input type="checkbox" v-model="record.shouldStore" />
             </label>
