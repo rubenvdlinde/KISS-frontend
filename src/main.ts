@@ -50,3 +50,27 @@ app.directive("focus", {
     el.stop();
   },
 });
+
+// standard html email validation is not sufficient
+const emailregex =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+function onInput(this: HTMLInputElement) {
+  const message = emailregex.test(this.value)
+    ? ""
+    : "Voer een valide e-mailadres in";
+
+  this.setCustomValidity(message);
+}
+
+app.directive("email", {
+  mounted(el) {
+    if (!(el instanceof HTMLInputElement)) return;
+    el.type = "email";
+    el.addEventListener("input", onInput);
+  },
+  unmounted(el) {
+    if (!(el instanceof HTMLInputElement)) return;
+    el.removeEventListener("input", onInput);
+  },
+});

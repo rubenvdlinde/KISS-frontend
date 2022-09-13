@@ -40,7 +40,7 @@
       <label for="email" class="utrecht-form-label">E-mailadres</label>
       <input
         id="email"
-        type="email"
+        v-email
         class="utrecht-textbox utrecht-textbox--html-input"
         v-model="formData.email"
       />

@@ -103,7 +103,7 @@
               <fieldset class="in-cell-edit" v-if="showForm">
                 <template v-for="(email, idx) in emails" :key="email">
                   <input
-                    type="email"
+                    v-email
                     v-model="email.email"
                     :aria-label="`E-mailadres ${idx + 1}`"
                     class="utrecht-textbox utrecht-textbox--html-input"
