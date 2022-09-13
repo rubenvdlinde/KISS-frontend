@@ -14,8 +14,7 @@
           v-if="!isEditingToelichting"
           @click="toggleEditingToelichting"
           title="Bewerken"
-          :class="'icon-after pen'"
-          class="toggleEdit"
+          class="icon-after pen"
       /></utrecht-heading>
 
       <form class="new-note" @submit.prevent="submit">
@@ -115,6 +114,10 @@ section > *:not(:last-child) {
 
   button {
     all: unset;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
 </style>
