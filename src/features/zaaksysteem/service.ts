@@ -89,7 +89,7 @@ export function useZaaksysteemService() {
         .then(throwIfNotOk)
         .then((x) => x.json())
         .then((json) => {
-          return { id: json.id } as ZaakDetails;
+          return json as ZaakDetails;
         });
     }
 

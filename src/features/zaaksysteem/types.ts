@@ -1,5 +1,6 @@
 export type ZaakDetails = {
   id: string;
+  identificatie: string;
   startdatum: Date;
 };
 
