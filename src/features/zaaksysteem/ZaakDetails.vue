@@ -2,29 +2,45 @@
   <section>
     <div class="header">
       <utrecht-heading :level="1" model-value
-        >Zaak {{ zaak.identificatie }}</utrecht-heading
-      >
+        >Zaak {{ zaak.identificatie }}
+      </utrecht-heading>
       <router-link :to="{ name: 'zaken' }">{{ "< Ga terug" }}</router-link>
     </div>
 
-    <div class="notes">
-      <div class="current-notes">
-        <utrecht-heading :level="3" model-value>Notities</utrecht-heading>
-      </div>
+    <div class="toelichting">
+      <utrecht-heading class="toelichting-heading" :level="3" model-value
+        >Toelichting
+        <button
+          v-if="!isEditingToelichting"
+          @click="toggleEditingToelichting"
+          title="Bewerken"
+          :class="'icon-after pen'"
+          class="toggleEdit"
+      /></utrecht-heading>
 
       <form class="new-note" @submit.prevent="submit">
         <textarea
           required
+          :disabled="!isEditingToelichting"
           type="text"
           class="utrecht-textarea utrecht-textarea--html-textarea"
           rows="10"
           placeholder="Schrijf een nieuwe notitie bij de zaak"
-          v-model="noteInputValue"
+          v-model="toelichtingInputValue"
         ></textarea>
 
-        <button class="utrecht-button utrecht-button--submit" type="submit">
-          Opslaan
-        </button>
+        <menu v-if="isEditingToelichting">
+          <utrecht-button
+            modelValue
+            @click="toggleEditingToelichting"
+            type="button"
+            appearance="secondary-action-button"
+            >Annuleren</utrecht-button
+          >
+          <button class="utrecht-button utrecht-button--submit" type="submit">
+            Opslaan
+          </button>
+        </menu>
       </form>
     </div>
   </section>
@@ -35,19 +51,33 @@ import { defineProps, ref } from "vue";
 import type { ZaakDetails } from "./types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { toast } from "@/stores/toast";
+import { updateToelichting } from "./service";
 
-defineProps<{
+const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
-const noteInputValue = ref<string>("");
+const isEditingToelichting = ref<boolean>(false);
+const toelichtingInputValue = ref<string>(props.zaak.toelichting);
+
+const toggleEditingToelichting = () => {
+  isEditingToelichting.value = !isEditingToelichting.value;
+};
 
 const submit = async () => {
-  toast({ text: "De notitie is opgeslagen." });
-  toast({
-    type: "error",
-    text: "Oeps het lukt niet om deze notitie op te slaan. Probeer het later opnieuw.",
-  });
+  updateToelichting(props.zaak, toelichtingInputValue.value)
+    .then(() => {
+      toast({ text: "De notitie is opgeslagen." });
+    })
+    .catch(() => {
+      toast({
+        type: "error",
+        text: "Oeps het lukt niet om deze notitie op te slaan. Probeer het later opnieuw.",
+      });
+    })
+    .finally(() => {
+      toggleEditingToelichting();
+    });
 };
 </script>
 
@@ -73,8 +103,18 @@ section > *:not(:last-child) {
     margin-block-end: var(--spacing-small);
   }
 
-  button {
+  menu {
+    display: flex;
+    gap: var(--spacing-small);
     float: right;
+  }
+}
+
+.toelichting-heading {
+  display: flex;
+
+  button {
+    all: unset;
   }
 }
 </style>

@@ -66,7 +66,7 @@ export function useZaaksysteemService() {
     const getFindByBsnURL = () => {
       if (!bsn) return "";
 
-      return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=all`;
+      return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=zaaktype`;
     };
 
     const getZaakByBsn = (url: string): Promise<Paginated<Zaak>> =>
@@ -88,8 +88,11 @@ export function useZaaksysteemService() {
       return fetchLoggedIn(url)
         .then(throwIfNotOk)
         .then((x) => x.json())
-        .then((json) => {
-          return json as ZaakDetails;
+        .then((zaak) => {
+          return {
+            ...zaak,
+            zaaktype: zaak.embedded.zaaktype.id,
+          } as ZaakDetails;
         });
     }
 
@@ -104,4 +107,30 @@ export function useZaaksysteemService() {
     findByBsn,
     getZaak,
   };
+}
+
+export async function updateToelichting(
+  zaak: ZaakDetails,
+  toelichting: string
+): Promise<boolean> {
+  const url = `${window.gatewayBaseUri}/api/zaken/${zaak.id}?fields[]=`;
+  const res = await fetchLoggedIn(url, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      bronorganisatie: zaak.bronorganisatie,
+      startdatum: zaak.startdatum,
+      verantwoordelijkeOrganisatie: zaak.verantwoordelijkeOrganisatie,
+      zaaktype: zaak.zaaktype,
+      toelichting: toelichting,
+    }),
+  });
+
+  if (!res.ok)
+    throw new Error(`Expected to update toelichting: ${res.status.toString()}`);
+
+  return res.ok;
 }
