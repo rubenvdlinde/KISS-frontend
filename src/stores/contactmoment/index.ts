@@ -1,6 +1,7 @@
 import type { Klant } from "@/features/klant/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
+import { resetAllState } from "../create-store";
 import type { NieuweKlant } from "./types";
 export * from "./types";
 
@@ -38,6 +39,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     stop() {
       this.$reset();
+      // Temporary. When we implement multiple running contactmomenten, each will have it's own state
+      resetAllState();
     },
     addZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;

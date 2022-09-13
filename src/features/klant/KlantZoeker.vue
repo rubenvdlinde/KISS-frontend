@@ -66,13 +66,13 @@ import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: o
 import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
 import KlantAanmaken from "./KlantAanmaken.vue";
-import { getStore } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
+import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const contactmomentStore = useContactmomentStore();
 
-const store = getStore({
-  storeId: "klant-zoeker",
+const store = ensureState({
+  stateId: "klant-zoeker",
   stateFactory() {
     return {
       currentSearch: "",
