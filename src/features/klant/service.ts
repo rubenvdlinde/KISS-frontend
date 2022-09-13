@@ -63,6 +63,13 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
     .then((j) => parsePagination(j, mapKlant));
 }
 
+export function fetchKlant(id: string) {
+  return fetchLoggedIn(`${rootUrl}/${id}`)
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then(mapKlant);
+}
+
 export function updateContactgegevens({
   id,
   telefoonnummers,
@@ -90,9 +97,10 @@ export function updateContactgegevens({
     )
     .then(throwIfNotOk)
     .then((x) => x.json())
-    .then((u) => ({
+    .then(({ embedded }) => ({
       id,
-      ...u.embedded,
+      telefoonnummers: embedded?.telefoonnummers ?? [],
+      emails: embedded?.emails ?? [],
     }));
 }
 

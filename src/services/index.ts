@@ -41,7 +41,7 @@ export type Submitter<TIn, TOut> = (
       success: false;
       error: false;
     }
-) & { submit: (params: TIn) => Promise<TOut> };
+) & { submit: (params: TIn) => Promise<TOut>; reset: () => void };
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
@@ -121,6 +121,16 @@ export const ServiceResult = {
   fromSubmitter<TIn, TOut>(submitter: (params: TIn) => Promise<TOut>) {
     const result = ServiceResult.init<TOut>();
     return Object.assign(result, {
+      reset() {
+        Object.assign(result, {
+          state: "init",
+          data: null,
+          error: false,
+          success: false,
+          loading: false,
+          submitted: false,
+        });
+      },
       submit(params: TIn): Promise<TOut> {
         Object.assign(result, {
           state: "loading",

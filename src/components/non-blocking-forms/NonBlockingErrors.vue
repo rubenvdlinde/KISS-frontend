@@ -1,6 +1,6 @@
 <template>
   <slot :inputProps="inputProps"></slot>
-  <ul v-if="isDirty && messages.length" class="error" :id="id">
+  <ul v-if="isDirty && messages.length && showMessages" class="error" :id="id">
     <li v-for="(message, i) in messages" :key="i">
       {{ message }}
     </li>
@@ -11,6 +11,7 @@
 import { useValidationMessages } from "./useValidationMessages";
 
 const props = defineProps<{
+  showMessages?: boolean;
   value: string;
   validate: (val: string) => string[];
 }>();

@@ -54,8 +54,8 @@
                   .join(" ")
               }}
             </td>
-            <td v-if="showForm">
-              <fieldset class="in-cell-edit">
+            <td>
+              <fieldset class="in-cell-edit" v-if="showForm">
                 <template v-for="(tel, idx) in telefoonnummers" :key="tel">
                   <div>
                     <non-blocking-errors
@@ -90,16 +90,17 @@
                   class="add-item icon-after plus"
                 />
               </fieldset>
+              <ul v-else>
+                <li
+                  v-for="({ telefoonnummer }, idx) in telefoonnummers"
+                  :key="idx"
+                >
+                  {{ telefoonnummer }}
+                </li>
+              </ul>
             </td>
-            <td v-else>
-              {{
-                telefoonnummers
-                  .map(({ telefoonnummer }) => telefoonnummer)
-                  .join(", ")
-              }}
-            </td>
-            <td v-if="showForm">
-              <fieldset class="in-cell-edit">
+            <td>
+              <fieldset class="in-cell-edit" v-if="showForm">
                 <template v-for="(email, idx) in emails" :key="email">
                   <input
                     type="email"
@@ -111,21 +112,23 @@
                   <button
                     @click="removeEmail(idx)"
                     type="button"
-                    title="Email verwijderen"
+                    title="E-mail verwijderen"
                     class="icon-before xmark remove-item"
                   />
                 </template>
                 <button
-                  title="Email toevoegen"
+                  title="E-mail toevoegen"
                   type="button"
                   @click="addEmail"
                   v-show="canAddEmail"
                   class="add-item icon-after plus"
                 />
               </fieldset>
-            </td>
-            <td v-else>
-              {{ emails.map(({ email }) => email).join(", ") }}
+              <ul v-else>
+                <li v-for="({ email }, idx) in emails" :key="idx">
+                  {{ email }}
+                </li>
+              </ul>
             </td>
           </tr>
         </tbody>
@@ -192,8 +195,9 @@ function focusLastInput(e: Event) {
 }
 
 watch(
-  () => props.klant?.id,
-  () => reset()
+  () => props.klant,
+  () => reset(),
+  { deep: true }
 );
 
 const editing = ref<boolean>(false);
@@ -203,6 +207,7 @@ const toggleEditing = (): void => {
 };
 
 const reset = () => {
+  submitter.reset();
   populate();
   editing.value = false;
 };
@@ -247,9 +252,7 @@ const submit = () =>
       emails: emails.value,
     })
     .then((response) => {
-      editing.value = false;
       Object.assign(props.klant, response);
-      populate();
     });
 
 const showForm = computed(() => !submitter.loading && editing.value);

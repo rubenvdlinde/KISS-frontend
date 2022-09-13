@@ -1,8 +1,7 @@
 <template>
   <klant-aanmaken
-    v-if="klantAanmaken"
+    v-if="showKlantAanmaken"
     :handle-cancel="handleCancelKlantAanmaken"
-    :handle-save-callback="handleSaveKlantAanmakenCallback"
   />
 
   <nav v-else>
@@ -31,7 +30,10 @@
     </button>
   </nav>
 
-  <section v-if="store.searchQuery && !klantAanmaken" class="search-section">
+  <section
+    v-if="store.searchQuery && !showKlantAanmaken"
+    class="search-section"
+  >
     <simple-spinner v-if="klanten.loading" />
     <template v-if="klanten.success">
       <klanten-overzicht
@@ -65,6 +67,9 @@ import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
 import KlantAanmaken from "./KlantAanmaken.vue";
 import { getStore } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
+import { useContactmomentStore } from "@/stores/contactmoment";
+
+const contactmomentStore = useContactmomentStore();
 
 const store = getStore({
   storeId: "klant-zoeker",
@@ -78,7 +83,7 @@ const store = getStore({
 });
 
 const klanten = useKlanten({
-  search: computed(() => store.value.currentSearch),
+  search: computed(() => store.value.searchQuery),
   page: computed(() => store.value.page),
 });
 
@@ -86,15 +91,12 @@ const navigate = (val: number) => {
   store.value.page = val;
 };
 
-const klantAanmaken = ref(false);
+const showKlantAanmaken = ref(false);
 const toggleKlantAanmaken = (): void => {
-  klantAanmaken.value = !klantAanmaken.value;
+  showKlantAanmaken.value = !showKlantAanmaken.value;
 };
 const handleCancelKlantAanmaken = () => {
-  klantAanmaken.value = false;
-};
-const handleSaveKlantAanmakenCallback = () => {
-  klantAanmaken.value = false;
+  showKlantAanmaken.value = false;
 };
 
 const emit = defineEmits([KLANT_SELECTED]);
@@ -113,6 +115,14 @@ watch(singleKlant, (n, o) => {
     emitKlantSelected(n);
   }
 });
+
+watch(
+  () => contactmomentStore.klant,
+  () => {
+    klanten.refresh();
+  },
+  { deep: true }
+);
 
 const handleSearch = () => {
   store.value.searchQuery = store.value.currentSearch;
