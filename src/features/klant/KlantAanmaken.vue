@@ -3,7 +3,7 @@
 
   <simple-spinner v-if="savingKlant" />
 
-  <form v-else @submit.prevent="submit">
+  <non-blocking-form v-else @submit.prevent="submit">
     <div class="input-group">
       <label for="voornaam" class="utrecht-form-label">Voornaam</label>
       <input
@@ -46,23 +46,24 @@
       />
     </div>
 
-    <div class="input-group-with-warning">
-      <div class="input-group">
-        <label for="telefoonnummer" class="utrecht-form-label"
-          >Telefoonnummer</label
-        >
-        <input
-          v-model="formData.telefoonnummer"
-          id="telefoonnummer"
-          type="text"
-          class="utrecht-textbox utrecht-textbox--html-input"
-        />
-      </div>
-
-      <div class="warning-container" v-if="telefoonnummerWarning[0]">
-        <div class="warning">{{ telefoonnummerWarning[0] }}</div>
-      </div>
-    </div>
+    <non-blocking-errors
+      :validate="customPhoneValidator"
+      :value="formData.telefoonnummer"
+    >
+      <template #default>
+        <div class="input-group">
+          <label for="telefoonnummer" class="utrecht-form-label"
+            >Telefoonnummer</label
+          >
+          <input
+            v-model="formData.telefoonnummer"
+            id="telefoonnummer"
+            type="tel"
+            class="utrecht-textbox utrecht-textbox--html-input"
+          />
+        </div>
+      </template>
+    </non-blocking-errors>
 
     <application-message
       v-if="formWarning"
@@ -82,7 +83,7 @@
         Opslaan
       </button>
     </menu>
-  </form>
+  </non-blocking-form>
 </template>
 
 <script setup lang="ts">
@@ -94,13 +95,13 @@ import { customPhoneValidator } from "@/helpers/validation";
 import { ref, computed } from "vue";
 import { createKlant } from "../contactverzoek";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
-import { useContactmomentStore } from "@/stores/contactmoment";
 import ApplicationMessage from "../../components/ApplicationMessage.vue";
 import { useRouter } from "vue-router";
+import NonBlockingForm from "../../components/non-blocking-forms/NonBlockingForm.vue";
+import NonBlockingErrors from "../../components/non-blocking-forms/NonBlockingErrors.vue";
 
 const props = defineProps<{
   handleCancel: () => void;
-  handleSaveCallback: () => void;
 }>();
 
 const formData = ref({
@@ -113,8 +114,6 @@ const formData = ref({
 
 const router = useRouter();
 
-const contactmomentStore = useContactmomentStore();
-
 const savingKlant = ref(false);
 
 const attemptSaveKlant = ref(false);
@@ -126,55 +125,46 @@ const formWarning = computed(() => {
     : "";
 });
 
-const telefoonnummerWarning = computed(() => {
-  return customPhoneValidator(formData.value.telefoonnummer);
-});
-
 const submit = async () => {
   attemptSaveKlant.value = true;
   if (formWarning.value) return;
 
   savingKlant.value = true;
-  await createKlant({
+  const { id } = await createKlant({
     voornaam: formData.value.voornaam,
     voorvoegselAchternaam: formData.value.tussenvoegsel,
     achternaam: formData.value.achternaam,
     telefoonnummers: [{ telefoonnummer: formData.value.telefoonnummer }],
     emails: [{ email: formData.value.email }],
-  }).then((res) => {
-    contactmomentStore.setKlant({
-      ...res,
-      telefoonnummers: res.embedded.telefoonnummers,
-      emails: res.embedded.emails,
-    });
-    savingKlant.value = false;
-    props.handleSaveCallback();
-    router.push({ name: "klantDetail", params: { id: res.id } });
   });
+
+  router.push("/klanten/" + id);
 };
 </script>
 
 <style scoped lang="scss">
-form {
-  max-width: 600px;
+* ~ :deep(form) {
+  max-width: 37.5rem;
 
   & > *:not(:last-child) {
     margin-block-end: var(--spacing-large);
   }
 }
+
 .input-group {
   display: flex;
   align-items: center;
 
   label {
-    width: 150px;
+    width: 9.375rem;
   }
 
   input {
     flex: 1;
-    max-width: 450px;
+    max-width: 28.125rem;
   }
 }
+
 .warning-container {
   display: flex;
   justify-content: flex-end;

@@ -1,10 +1,5 @@
 <template>
-  <slot :inputProps="inputProps"></slot>
-  <ul v-if="isDirty && messages.length" class="error" :id="id">
-    <li v-for="(message, i) in messages" :key="i">
-      {{ message }}
-    </li>
-  </ul>
+  <slot></slot>
 </template>
 
 <script lang="ts" setup>
@@ -15,7 +10,7 @@ const props = defineProps<{
   validate: (val: string) => string[];
 }>();
 
-const { messages, inputProps, isDirty, id } = useValidationMessages(props);
+useValidationMessages(props);
 </script>
 
 <style lang="scss">

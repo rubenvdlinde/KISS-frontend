@@ -6,7 +6,7 @@
     v-model="contactmomentStore.notitie"
     v-focus
     v-bind="$attrs"
-    placeholder="Voeg hier je notites toe"
+    placeholder="Voeg hier je notities toe"
   >
   </textarea>
 </template>

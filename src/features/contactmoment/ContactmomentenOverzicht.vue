@@ -65,7 +65,11 @@
           </details>
         </li>
       </ul>
-      <pagination class="pagination" :pagination="contactmomenten.data" />
+      <pagination
+        class="pagination"
+        :pagination="contactmomenten.data"
+        @navigate="onNavigate"
+      />
     </template>
     <p v-else>Geen contactmomenten gevonden.</p>
   </article>
@@ -97,6 +101,10 @@ const contactmomenten = useKlantContactmomenten(
     page: page.value,
   }))
 );
+
+const onNavigate = (p: number) => {
+  page.value = p;
+};
 
 // toggle <details> open status on click anywhere within <details>, not only on <summary>
 const toggleDetails = (e: Event) => {

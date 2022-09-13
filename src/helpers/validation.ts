@@ -8,5 +8,5 @@ function isValidPhoneNumber(val: string) {
 export function customPhoneValidator(value: string): string[] {
   return isValidPhoneNumber(value)
     ? []
-    : [`Het telefoonnummer '${value}' lijkt geen valide telefoonnummer.`];
+    : [`'${value}' lijkt geen valide telefoonnummer.`];
 }
