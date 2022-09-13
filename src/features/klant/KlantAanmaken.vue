@@ -96,7 +96,7 @@ import { createKlant } from "../contactverzoek";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import ApplicationMessage from "../../components/ApplicationMessage.vue";
-import router from "@/router";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   handleCancel: () => void;
@@ -110,6 +110,8 @@ const formData = ref({
   email: "",
   telefoonnummer: "",
 });
+
+const router = useRouter();
 
 const contactmomentStore = useContactmomentStore();
 
