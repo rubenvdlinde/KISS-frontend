@@ -26,7 +26,7 @@
       type="button"
       class="klant-aanmaken icon-before plus utrecht-button utrecht-button--secondary-action"
     >
-      Klant aanmaken
+      <span>Klant aanmaken</span>
     </button>
   </nav>
 
@@ -138,6 +138,10 @@ nav {
 
   .klant-aanmaken {
     display: flex;
+
+    span {
+      margin-inline-start: var(--spacing-extrasmall);
+    }
   }
 }
 
