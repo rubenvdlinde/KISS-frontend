@@ -1,6 +1,11 @@
 export type ZaakDetails = {
   id: string;
+  identificatie: string;
+  toelichting: string;
   startdatum: Date;
+  bronorganisatie: string;
+  verantwoordelijkeOrganisatie: string;
+  zaaktype: string;
 };
 
 export interface Zaak {
