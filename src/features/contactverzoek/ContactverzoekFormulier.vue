@@ -74,7 +74,7 @@ erbij voor het vrij invullen.
       <label class="utrecht-form-label">
         E-mailadres van de klant
         <input
-          v-email
+          type="email"
           name="klant-email"
           v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
@@ -97,9 +97,8 @@ erbij voor het vrij invullen.
           :value="telefoonnummer1"
           v-else
         >
-          <template #default="{ inputProps }">
+          <template #default>
             <input
-              v-bind="inputProps"
               type="tel"
               v-model="telefoonnummer1"
               class="utrecht-textbox utrecht-textbox--html-input"
@@ -123,9 +122,8 @@ erbij voor het vrij invullen.
           :validate="customPhoneValidator"
           v-else
         >
-          <template #default="{ inputProps }">
+          <template #default>
             <input
-              v-bind="inputProps"
               type="tel"
               v-model="telefoonnummer2"
               class="utrecht-textbox utrecht-textbox--html-input"

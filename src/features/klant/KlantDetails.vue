@@ -62,9 +62,8 @@
                       :value="tel.telefoonnummer"
                       :validate="customPhoneValidator"
                     >
-                      <template #default="{ inputProps }">
+                      <template #default>
                         <input
-                          v-bind="inputProps"
                           v-model="tel.telefoonnummer"
                           type="tel"
                           :name="`Telefoonnummer ${idx + 1}`"
@@ -103,7 +102,7 @@
               <fieldset class="in-cell-edit" v-if="showForm">
                 <template v-for="(email, idx) in emails" :key="email">
                   <input
-                    v-email
+                    type="email"
                     v-model="email.email"
                     :aria-label="`E-mailadres ${idx + 1}`"
                     class="utrecht-textbox utrecht-textbox--html-input"
