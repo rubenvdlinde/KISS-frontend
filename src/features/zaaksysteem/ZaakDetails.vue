@@ -21,7 +21,6 @@
         <textarea
           required
           :disabled="!isEditingToelichting"
-          type="text"
           class="utrecht-textarea utrecht-textarea--html-textarea"
           rows="10"
           placeholder="Schrijf een nieuwe notitie bij de zaak"
@@ -30,13 +29,18 @@
 
         <menu v-if="isEditingToelichting">
           <utrecht-button
+            :disabled="formIsLoading"
             modelValue
             @click="toggleEditingToelichting"
             type="button"
             appearance="secondary-action-button"
             >Annuleren</utrecht-button
           >
-          <button class="utrecht-button utrecht-button--submit" type="submit">
+          <button
+            :disabled="formIsLoading"
+            class="utrecht-button utrecht-button--submit"
+            type="submit"
+          >
             Opslaan
           </button>
         </menu>
@@ -56,6 +60,7 @@ const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
+const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
 const toelichtingInputValue = ref<string>(props.zaak.toelichting);
 
@@ -64,11 +69,15 @@ const toggleEditingToelichting = () => {
 };
 
 const submit = async () => {
+  formIsLoading.value = true;
+
   updateToelichting(props.zaak, toelichtingInputValue.value)
     .then(() => {
       toast({ text: "De notitie is opgeslagen." });
     })
     .catch(() => {
+      toelichtingInputValue.value = props.zaak.toelichting;
+
       toast({
         type: "error",
         text: "Oeps het lukt niet om deze notitie op te slaan. Probeer het later opnieuw.",
@@ -76,6 +85,7 @@ const submit = async () => {
     })
     .finally(() => {
       toggleEditingToelichting();
+      formIsLoading.value = false;
     });
 };
 </script>
