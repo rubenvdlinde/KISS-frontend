@@ -62,9 +62,8 @@
                       :value="tel.telefoonnummer"
                       :validate="customPhoneValidator"
                     >
-                      <template #default="{ inputProps }">
+                      <template #default>
                         <input
-                          v-bind="inputProps"
                           v-model="tel.telefoonnummer"
                           type="tel"
                           :name="`Telefoonnummer ${idx + 1}`"
