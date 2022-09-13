@@ -1,41 +1,60 @@
 import type { Klant } from "@/features/klant/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
+import { getFormattedUtcDate } from "@/services";
 import { defineStore } from "pinia";
 import { resetAllState } from "../create-store";
-import type { NieuweKlant } from "./types";
 export * from "./types";
 
 export type ContactmomentZaak = Zaak & { shouldStore: boolean };
 
-interface ContactmomentState {
-  contactmomentLoopt: boolean;
+interface Vraag {
   zaken: ContactmomentZaak[];
   klanten: { klant: Klant; shouldStore: boolean }[];
   notitie: string;
   contactverzoek: { url: string; medewerker: string } | undefined;
-  nieuweKlant: NieuweKlant | undefined;
   startdatum: string;
+}
+
+interface ContactmomentState {
+  contactmomentLoopt: boolean;
+  vragen: Vraag[];
+  huidigeVraag: Vraag | undefined;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
   state: () => {
     return {
       contactmomentLoopt: false,
-      zaken: <ContactmomentZaak[]>[],
-      klanten: [],
-      notitie: "",
-      contactverzoek: undefined,
-      nieuweKlant: undefined,
-      startdatum: "",
+      vragen: [],
+      huidigeVraag: undefined,
     } as ContactmomentState;
   },
   getters: {
-    klant: (state): Klant | undefined =>
-      state.klanten.filter((x) => x.shouldStore).map((x) => x.klant)[0],
+    klanten: (state) => state.huidigeVraag?.klanten ?? [],
+    klant(): Klant | undefined {
+      return this.klanten
+        ?.filter((x) => x.shouldStore)
+        ?.map((x) => x.klant)?.[0];
+    },
+    zaken: (state) => state.huidigeVraag?.zaken ?? [],
+    notitie: (state) => state.huidigeVraag?.notitie ?? "",
   },
   actions: {
     start() {
+      if (this.contactmomentLoopt) return;
+      this.startNieuweVraag();
       this.contactmomentLoopt = true;
+    },
+    startNieuweVraag() {
+      const nieuweVraag: Vraag = {
+        zaken: [],
+        klanten: this.huidigeVraag ? [...this.huidigeVraag.klanten] : [],
+        notitie: "",
+        contactverzoek: undefined,
+        startdatum: getFormattedUtcDate(),
+      };
+      this.vragen.push(nieuweVraag);
+      this.huidigeVraag = nieuweVraag;
     },
     stop() {
       this.$reset();
@@ -74,7 +93,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
       return zaak ? zaak.shouldStore : false;
     },
     setKlant(klant: Klant) {
-      this.nieuweKlant = undefined;
+      if (!this.huidigeVraag) return;
+      this.huidigeVraag.nieuweKlant = undefined;
 
       const match = this.klanten.find((x) => x.klant.id === klant.id);
       if (match?.shouldStore) return false;
@@ -96,7 +116,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
       return true;
     },
     setNotitie(notitie: string) {
-      this.notitie = notitie;
+      if (!this.huidigeVraag) return;
+      this.huidigeVraag.notitie = notitie;
     },
   },
 });
