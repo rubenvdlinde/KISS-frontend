@@ -74,7 +74,7 @@ erbij voor het vrij invullen.
       <label class="utrecht-form-label">
         E-mailadres van de klant
         <input
-          v-email
+          type="email"
           name="klant-email"
           v-model="emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
