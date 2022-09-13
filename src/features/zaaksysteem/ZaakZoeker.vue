@@ -62,14 +62,14 @@ import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
-import { getStore } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
+import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 
 const props = defineProps({
   populatedBsn: { type: String, default: null },
 });
 
-const store = getStore({
-  storeId: "zaak-zoeker",
+const store = ensureState({
+  stateId: "zaak-zoeker",
   stateFactory() {
     return {
       zaakSearchParams: { zaaknummer: "", bsn: "" },
