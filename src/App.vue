@@ -145,11 +145,11 @@ const route = useRoute();
   --section-width-small: 20rem;
   --section-width-large: 60rem;
 
-  --spacing-default: 1rem;
+  --spacing-extrasmall: 0.25rem;
   --spacing-small: 0.5rem;
+  --spacing-default: 1rem;
   --spacing-large: 2rem;
   --spacing-extralarge: 6rem;
-  --spacing-extrasmall: 0.25rem;
 
   --header-height: 6rem;
   --text-margin: 1.5rem;

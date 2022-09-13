@@ -96,6 +96,7 @@ import { createKlant } from "../contactverzoek";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import ApplicationMessage from "../../components/ApplicationMessage.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   handleCancel: () => void;
@@ -109,6 +110,8 @@ const formData = ref({
   email: "",
   telefoonnummer: "",
 });
+
+const router = useRouter();
 
 const contactmomentStore = useContactmomentStore();
 
@@ -139,9 +142,14 @@ const submit = async () => {
     telefoonnummers: [{ telefoonnummer: formData.value.telefoonnummer }],
     emails: [{ email: formData.value.email }],
   }).then((res) => {
-    contactmomentStore.setKlant(res);
+    contactmomentStore.setKlant({
+      ...res,
+      telefoonnummers: res.embedded.telefoonnummers,
+      emails: res.embedded.emails,
+    });
     savingKlant.value = false;
     props.handleSaveCallback();
+    router.push({ name: "klantDetail", params: { id: res.id } });
   });
 };
 </script>
