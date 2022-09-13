@@ -87,7 +87,7 @@ const props = defineProps({
     default: "page",
   },
 });
-const emit = defineEmits(["navigate"]);
+const emit = defineEmits<{ (e: "navigate", page: number): void }>();
 
 const createLink = (n: number) => {
   const distanceFromCurrent =
