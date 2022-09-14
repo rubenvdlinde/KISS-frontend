@@ -130,13 +130,22 @@ const submit = async () => {
   if (formWarning.value) return;
 
   savingKlant.value = true;
-  const { id } = await createKlant({
+  const nieuweKlant = {
     voornaam: formData.value.voornaam,
     voorvoegselAchternaam: formData.value.tussenvoegsel,
     achternaam: formData.value.achternaam,
-    telefoonnummers: [{ telefoonnummer: formData.value.telefoonnummer }],
-    emails: [{ email: formData.value.email }],
-  });
+    telefoonnummers: [] as { telefoonnummer: string }[],
+    emails: [] as { email: string }[],
+  };
+  if (formData.value.telefoonnummer) {
+    nieuweKlant.telefoonnummers.push({
+      telefoonnummer: formData.value.telefoonnummer,
+    });
+  }
+  if (formData.value.email) {
+    nieuweKlant.emails.push({ email: formData.value.email });
+  }
+  const { id } = await createKlant(nieuweKlant);
 
   router.push("/klanten/" + id);
 };
