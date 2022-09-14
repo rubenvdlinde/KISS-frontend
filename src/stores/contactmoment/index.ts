@@ -7,11 +7,13 @@ export * from "./types";
 
 export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
 
-interface Vraag {
+export interface Vraag {
   zaken: ContactmomentZaak[];
   notitie: string;
   contactverzoek: { url: string; medewerker: string } | undefined;
   startdatum: string;
+  kanaal: string;
+  resultaat: string;
   klanten: { klant: Klant; shouldStore: boolean }[];
 }
 
@@ -48,6 +50,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
         notitie: "",
         contactverzoek: undefined,
         startdatum: getFormattedUtcDate(),
+        kanaal: "",
+        resultaat: "",
         klanten: this.huidigeVraag?.klanten
           ? this.huidigeVraag.klanten.map((klantKoppeling) => ({
               ...klantKoppeling,

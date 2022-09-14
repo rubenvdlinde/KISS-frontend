@@ -26,7 +26,6 @@ const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
-app.mount("#app");
 
 defineCustomElements();
 // Register a global custom directive called `v-focus`
@@ -50,3 +49,5 @@ app.directive("focus", {
     el.stop();
   },
 });
+
+app.mount("#app");

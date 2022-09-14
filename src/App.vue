@@ -70,9 +70,16 @@
               ></span>
             </template>
             <template #[NotitieTabs.Regulier]>
-              <contactmoment-notitie
-                class="notitie utrecht-textarea"
-              ></contactmoment-notitie>
+              <utrecht-heading id="notitieblok" model-value :level="2"
+                >Notitieblok</utrecht-heading
+              >
+              <textarea
+                v-if="contactmoment.huidigeVraag"
+                aria-labelledby="notitieblok"
+                v-focus
+                class="utrecht-textarea"
+                v-model="contactmoment.huidigeVraag.notitie"
+              />
             </template>
             <template #[NotitieTabs.Terugbel]>
               <contactverzoek-formulier
@@ -107,9 +114,9 @@ import TheToastSection from "@/components/TheToastSection.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
 import { useRoute } from "vue-router";
 import { ref, watch } from "vue";
-import { ContactmomentNotitie } from "@/features/contactmoment";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
@@ -287,6 +294,10 @@ body {
 
 utrecht-icon-loupe {
   pointer-events: none;
+}
+
+.utrecht-select {
+  appearance: auto;
 }
 
 button:hover {
@@ -651,6 +662,7 @@ aside {
     padding: 0px;
     border: none;
     outline: none;
+    flex: 1;
   }
 
   [role="tablist"] {

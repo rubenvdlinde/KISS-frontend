@@ -21,10 +21,9 @@ export function useContactmomentService() {
 
   const contactmomentenUrl = window.gatewayBaseUri + "/api/contactmomenten";
 
-  const gespreksResultatenBaseUri =
-    window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
-
-  const save = (data: Contactmoment): Promise<{ id: string; url: string }> =>
+  const save = (
+    data: Contactmoment
+  ): Promise<{ id: string; url: string; gespreksId: string }> =>
     fetchLoggedIn(contactmomentenUrl, {
       method: "POST",
       headers: {
@@ -36,32 +35,34 @@ export function useContactmomentService() {
       .then(throwIfNotOk)
       .then((r) => r.json());
 
-  const getGespreksResultaten = () => {
-    const fetchBerichten = fetchLoggedIn(gespreksResultatenBaseUri)
-      .then((r) => {
-        if (!r.ok) {
-          throw new Error(
-            "Er is een fout opgetreden bij het laden van de gespreksresultaten"
-          );
-        }
-        return r.json();
-      })
-      .then((json) => {
-        const results = json?.results;
-        if (!Array.isArray(results))
-          throw new Error("unexpected json result: " + JSON.stringify(json));
-        return results as Array<Gespreksresultaat>;
-      });
-
-    return ServiceResult.fromPromise(fetchBerichten);
-  };
-
   return {
     save,
-    getGespreksResultaten,
     // saveZaak,
   };
 }
+
+const gespreksResultatenBaseUri =
+  window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
+
+export const useGespreksResultaten = () => {
+  const fetchBerichten = fetchLoggedIn(gespreksResultatenBaseUri)
+    .then((r) => {
+      if (!r.ok) {
+        throw new Error(
+          "Er is een fout opgetreden bij het laden van de gespreksresultaten"
+        );
+      }
+      return r.json();
+    })
+    .then((json) => {
+      const results = json?.results;
+      if (!Array.isArray(results))
+        throw new Error("unexpected json result: " + JSON.stringify(json));
+      return results as Array<Gespreksresultaat>;
+    });
+
+  return ServiceResult.fromPromise(fetchBerichten);
+};
 
 export function useKlantContactmomenten(
   params: Ref<{ id: string; page?: number }>

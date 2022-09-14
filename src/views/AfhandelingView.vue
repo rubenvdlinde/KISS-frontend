@@ -1,10 +1,30 @@
 <template>
-  <div class="afhandeling">
+  <modal-template v-if="cancelDialogRevealed">
+    <template #message>
+      <paragraph>
+        Weet u zeker dat u het contactmoment wilt annuleren? Alle gegevens
+        worden verwijderd.
+      </paragraph>
+    </template>
+
+    <template #menu>
+      <utrecht-button
+        modelValue
+        @click="cancelDialog.cancel"
+        appearance="secondary-action-button"
+        >Nee</utrecht-button
+      >
+      <utrecht-button modelValue @click="cancelDialog.confirm"
+        >Ja</utrecht-button
+      >
+    </template>
+  </modal-template>
+  <form class="afhandeling" @submit.prevent="submit">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
     <a @click="$router.back()" href="#"> terug </a>
 
-    <simple-spinner v-if="saving" />
+    <simple-spinner v-if="saving || gespreksresultaten.loading" />
 
     <application-message
       v-else-if="errorMessage != ''"
@@ -59,45 +79,135 @@
           <zaken-overzicht :zaken="vraag.zaken.map(({ zaak }) => zaak)" />
         </section>
         <section>
-          <contactmoment-notitie class="notitie utrecht-textarea" />
+          <utrecht-heading :level="3" model-value> Details </utrecht-heading>
+          <fieldset class="utrecht-form-fieldset">
+            <label :for="'kanaal' + idx" class="utrecht-form-label"
+              >Kanaal</label
+            >
+            <select
+              :id="'kanaal' + idx"
+              v-model="vraag.kanaal"
+              class="utrecht-select utrecht-select--html-select"
+              @change="setUserChannel"
+              required
+            >
+              <option>telefoon</option>
+              <option>e-mail</option>
+              <option>contactformulier</option>
+              <option>Twitter</option>
+              <option>Facebook</option>
+              <option>LinkedIn</option>
+              <option>live chat</option>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+            </select>
+
+            <label :for="'gespreksresultaat' + idx" class="utrecht-form-label">
+              Afhandeling
+            </label>
+            <select
+              :id="'gespreksresultaat' + idx"
+              v-model="vraag.resultaat"
+              class="utrecht-select utrecht-select--html-select"
+              v-focus
+              required
+              v-if="gespreksresultaten.success"
+              :disabled="!!vraag.contactverzoek"
+            >
+              <option
+                v-for="gespreksresultaat in gespreksresultaten.data"
+                :key="gespreksresultaat.id"
+              >
+                {{ gespreksresultaat.definitie }}
+              </option>
+            </select>
+
+            <label class="utrecht-form-label" :for="'notitie' + idx"
+              >Notitie</label
+            >
+            <textarea
+              class="utrecht-textarea"
+              :id="'notitie' + idx"
+              v-model="vraag.notitie"
+            ></textarea>
+          </fieldset>
+
+          <p v-if="contactmomentStore.huidigeVraag?.contactverzoek">
+            Contactverzoek verstuurd naar
+            {{ contactmomentStore.huidigeVraag.contactverzoek.medewerker }}
+          </p>
         </section>
       </article>
-
-      <contactmoment-afhandel-form @save="saveContact" />
+      <menu>
+        <li>
+          <utrecht-button
+            modelValue
+            type="button"
+            appearance="secondary-action-button"
+            @click="cancelDialog.reveal"
+          >
+            Annuleren
+          </utrecht-button>
+        </li>
+        <li>
+          <button class="utrecht-button utrecht-button--submit">Opslaan</button>
+        </li>
+      </menu>
     </template>
-  </div>
+  </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import {
+  UtrechtHeading,
+  UtrechtButton,
+} from "@utrecht/web-component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
-import { useContactmomentStore } from "@/stores/contactmoment";
+import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
 import { toast } from "@/stores/toast";
 
 import {
-  ContactmomentAfhandelForm,
   koppelKlant,
   useContactmomentService,
-  ContactmomentNotitie,
   koppelObject,
-  type Contactmoment,
+  useGespreksResultaten,
 } from "@/features/contactmoment";
+
 import { ZakenOverzicht } from "@/features/zaaksysteem";
+import { useUserStore } from "@/stores/user";
+import { useConfirmDialog } from "@vueuse/core";
+import ModalTemplate from "../components/ModalTemplate.vue";
+import { getFormattedUtcDate } from "@/services";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
 const saving = ref(false);
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
+const gespreksresultaten = useGespreksResultaten();
 
-const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
+onMounted(() => {
+  for (const vraag of contactmomentStore.vragen) {
+    if (vraag.contactverzoek) {
+      vraag.resultaat = "Terugbelnotitie gemaakt";
+    }
+    if (!vraag.kanaal) {
+      vraag.kanaal = userStore.preferences.kanaal;
+    }
+  }
+});
+
+const zakenToevoegenAanContactmoment = (
+  vraag: Vraag,
+  contactmomentId: string
+) => {
   const promises =
-    contactmomentStore.huidigeVraag?.zaken
+    vraag.zaken
       .filter(({ shouldStore }) => shouldStore)
       .map(({ zaak }) =>
         koppelObject({
@@ -132,19 +242,32 @@ const koppelContactverzoek = (
     objectType: "contactmomentobject",
   });
 
-const saveContact = (contactmoment: Contactmoment) => {
-  saving.value = true;
-  errorMessage.value = "";
-
+const saveVraag = (vraag: Vraag, gespreksId?: string) => {
   //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
-  enrichContactmomentWithNotitie(contactmoment);
-  enrichContactmomentWithStartdatum(contactmoment);
-
   return contactmomentService
-    .save(contactmoment)
+    .save({
+      gespreksId,
+      vorigContactmoment: undefined,
+      voorkeurskanaal: "",
+      voorkeurstaal: "",
+      tekst: vraag.notitie,
+      onderwerpLinks: [],
+      initiatiefnemer: "klant", //enum "gemeente" of "klant"
+      medewerker: "",
+      medewerkerIdentificatie: undefined,
+      resultaat: vraag.resultaat,
+      kanaal: vraag.kanaal,
+      bronorganisatie:
+        Array.isArray(window.organisatieIds) && window.organisatieIds[0]
+          ? window.organisatieIds[0]
+          : "",
+      registratiedatum: getFormattedUtcDate(),
+      startdatum: vraag.startdatum,
+      einddatum: getFormattedUtcDate(),
+    })
     .then((savedContactmoment) => {
       const nextPromises: Promise<unknown>[] = [
-        zakenToevoegenAanContactmoment(savedContactmoment.id),
+        zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
         koppelKlanten(savedContactmoment.id),
       ];
       if (contactmomentStore.huidigeVraag?.contactverzoek) {
@@ -155,43 +278,52 @@ const saveContact = (contactmoment: Contactmoment) => {
           )
         );
       }
-      return Promise.all(nextPromises);
-    })
-    .then(() => {
-      //klaar
-      contactmomentStore.stop();
-      toast({ text: "Het contactmoment is opgeslagen" });
-      router.push("/");
-    })
-    .catch(() => {
-      errorMessage.value =
-        "Er is een fout opgetreden bij opslaan van het contactmoment";
-    })
-    .finally(() => {
-      saving.value = false;
+      return Promise.all(nextPromises).then(() => savedContactmoment);
     });
 };
 
-const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
-  contactmoment.tekst = contactmomentStore.huidigeVraag?.notitie ?? "";
-};
+async function submit() {
+  try {
+    saving.value = true;
+    errorMessage.value = "";
+    const firstVraag = contactmomentStore.vragen[0];
+    const otherVragen = contactmomentStore.vragen.slice(1);
+    const { gespreksId } = await saveVraag(firstVraag);
+    await Promise.all(otherVragen.map((v) => saveVraag(v, gespreksId)));
 
-const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
-  contactmoment.startdatum = contactmomentStore.huidigeVraag?.startdatum ?? "";
-};
+    //klaar
+    contactmomentStore.stop();
+    toast({ text: "Het contactmoment is opgeslagen" });
+    router.push("/");
+  } catch (error) {
+    errorMessage.value =
+      "Er is een fout opgetreden bij opslaan van het contactmoment";
+  } finally {
+    saving.value = false;
+  }
+}
+
+const userStore = useUserStore();
+
+function setUserChannel(e: Event) {
+  if (!(e.target instanceof HTMLSelectElement)) return;
+  userStore.setKanaal(e.target.value);
+}
+
+const cancelDialogRevealed = ref(false);
+const cancelDialog = useConfirmDialog(cancelDialogRevealed);
+cancelDialog.onConfirm(() => {
+  contactmomentStore.stop();
+  router.push({ name: "home" });
+});
 </script>
 
 <style scoped lang="scss">
 .afhandeling {
-  //center
-  padding-block: var(--spacing-large);
   max-width: var(--section-width-large);
-  margin-bottom: var(--spacing-large);
-
   //content stacked
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-large);
 }
 
 :deep(.notitie) {
@@ -221,5 +353,32 @@ const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
       accent-color: var(--color-primary);
     }
   }
+}
+
+fieldset {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: var(--spacing-default);
+}
+
+article {
+  padding-block: var(--spacing-large);
+
+  section {
+    padding-block: var(--spacing-default);
+  }
+}
+
+section,
+article {
+  &:not(:last-of-type) {
+    border-block-end: 1px solid var(--color-primary);
+  }
+}
+
+menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-large);
 }
 </style>
