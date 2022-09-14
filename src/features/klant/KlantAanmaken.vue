@@ -130,13 +130,18 @@ const submit = async () => {
   if (formWarning.value) return;
 
   savingKlant.value = true;
-  const { id } = await createKlant({
+
+  const nieuweKlant = {
     voornaam: formData.value.voornaam,
     voorvoegselAchternaam: formData.value.tussenvoegsel,
     achternaam: formData.value.achternaam,
-    telefoonnummers: [{ telefoonnummer: formData.value.telefoonnummer }],
-    emails: [{ email: formData.value.email }],
-  });
+    telefoonnummers: formData.value.telefoonnummer
+      ? [{ telefoonnummer: formData.value.telefoonnummer }]
+      : [],
+    emails: formData.value.email ? [{ email: formData.value.email }] : [],
+  };
+
+  const { id } = await createKlant(nieuweKlant);
 
   router.push("/klanten/" + id);
 };
