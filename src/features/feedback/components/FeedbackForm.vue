@@ -68,7 +68,7 @@
   <modal-template v-if="cancelDialogRevealed">
     <template #message>
       <paragraph>
-        Weet u zeker dat u wilt annuleren? Alle gegevens worden verwijderd.
+        Weet je zeker dat je wil annuleren? Alle gegevens worden verwijderd.
       </paragraph>
     </template>
 

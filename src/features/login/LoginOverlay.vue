@@ -8,8 +8,8 @@
         target="_blank"
         @click="onLinkClick"
         @keydown.enter="onLinkClick"
-        >Uw sessie is verlopen. Klik in het scherm om opnieuw in te loggen. Als
-        u dit binnen {{ loginTimeoutInSeconds }} seconden doet, verliest u geen
+        >Je sessie is verlopen. Klik in het scherm om opnieuw in te loggen. Als
+        je dit binnen {{ loginTimeoutInSeconds }} seconden doet, verlies je geen
         werk.</a
       >
     </dialog>
@@ -106,7 +106,7 @@ function onLogin() {
   if (sessionStorage.getItem(sessionStorageKey)) {
     sessionStorage.removeItem(sessionStorageKey);
     document.body.innerHTML =
-      "<p>U bent ingelogd. U kunt dit tabblad sluiten.</p>";
+      "<p>Je bent ingelogd. Je kunt dit tabblad sluiten.</p>";
     return;
   }
 

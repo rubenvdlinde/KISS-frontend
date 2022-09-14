@@ -96,7 +96,7 @@
         v-if="route.meta.showSearch"
         :beforeStopWarning="
           contactverzoekTabIsDitry && contactverzoekIsDirty
-            ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
+            ? 'Let op, je hebt een contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd.'
             : ''
         "
       />
