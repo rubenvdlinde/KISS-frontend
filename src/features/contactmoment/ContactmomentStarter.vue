@@ -60,7 +60,6 @@ import { useAttrs, defineProps, ref } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
-import { getFormattedUtcDate } from "@/services";
 
 const props = defineProps<{
   beforeStopWarning?: string;
@@ -77,7 +76,6 @@ const contactmoment = useContactmomentStore();
 
 const onStartContactMoment = () => {
   if (attrs.disabled) return;
-  contactmoment.startdatum = getFormattedUtcDate();
   contactmoment.start();
   router.push({ name: "klanten" });
 };

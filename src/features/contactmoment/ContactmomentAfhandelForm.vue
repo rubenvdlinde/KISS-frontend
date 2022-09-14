@@ -55,9 +55,9 @@
       </select>
     </fieldset>
 
-    <p v-if="contactmomentStore.contactverzoek">
+    <p v-if="contactmomentStore.huidigeVraag?.contactverzoek">
       Contactverzoek verstuurd naar
-      {{ contactmomentStore.contactverzoek.medewerker }}
+      {{ contactmomentStore.huidigeVraag.contactverzoek.medewerker }}
     </p>
 
     <application-message
@@ -182,7 +182,9 @@ const annuleren = () => {
   router.push({ name: "home" });
 };
 
-const isTerugbelNotitie = computed(() => !!contactmomentStore.contactverzoek);
+const isTerugbelNotitie = computed(
+  () => !!contactmomentStore.huidigeVraag?.contactverzoek
+);
 
 whenever(
   isTerugbelNotitie,

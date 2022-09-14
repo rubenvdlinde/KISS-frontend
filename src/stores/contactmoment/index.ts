@@ -5,14 +5,14 @@ import { defineStore } from "pinia";
 import { resetAllState } from "../create-store";
 export * from "./types";
 
-export type ContactmomentZaak = Zaak & { shouldStore: boolean };
+export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
 
 interface Vraag {
   zaken: ContactmomentZaak[];
-  klanten: { klant: Klant; shouldStore: boolean }[];
   notitie: string;
   contactverzoek: { url: string; medewerker: string } | undefined;
   startdatum: string;
+  klanten: { klant: Klant; shouldStore: boolean }[];
 }
 
 interface ContactmomentState {
@@ -30,14 +30,11 @@ export const useContactmomentStore = defineStore("contactmoment", {
     } as ContactmomentState;
   },
   getters: {
-    klanten: (state) => state.huidigeVraag?.klanten ?? [],
-    klant(): Klant | undefined {
-      return this.klanten
+    klant(state): Klant | undefined {
+      return state.huidigeVraag?.klanten
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
-    zaken: (state) => state.huidigeVraag?.zaken ?? [],
-    notitie: (state) => state.huidigeVraag?.notitie ?? "",
   },
   actions: {
     start() {
@@ -48,10 +45,14 @@ export const useContactmomentStore = defineStore("contactmoment", {
     startNieuweVraag() {
       const nieuweVraag: Vraag = {
         zaken: [],
-        klanten: this.huidigeVraag ? [...this.huidigeVraag.klanten] : [],
         notitie: "",
         contactverzoek: undefined,
         startdatum: getFormattedUtcDate(),
+        klanten: this.huidigeVraag?.klanten
+          ? this.huidigeVraag.klanten.map((klantKoppeling) => ({
+              ...klantKoppeling,
+            }))
+          : [],
       };
       this.vragen.push(nieuweVraag);
       this.huidigeVraag = nieuweVraag;
@@ -62,58 +63,69 @@ export const useContactmomentStore = defineStore("contactmoment", {
       resetAllState();
     },
     addZaak(zaak: Zaak) {
-      const contactmomentZaak = zaak as ContactmomentZaak;
-      const index = this.zaken.findIndex((element) => element.id === zaak.id);
-      if (index === -1) {
-        //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
-        this.zaken.push(contactmomentZaak);
-        contactmomentZaak.shouldStore = true;
-      } else {
-        const existingZaak = this.zaken[index];
-        existingZaak.shouldStore = true;
+      if (!this.huidigeVraag) return;
+
+      const match = this.huidigeVraag.zaken.find(
+        (element) => element.zaak.id === zaak.id
+      );
+
+      if (match) {
+        match.zaak = zaak;
+        match.shouldStore = true;
+        return;
       }
+
+      //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
+      this.huidigeVraag.zaken.push({
+        zaak,
+        shouldStore: true,
+      });
     },
     toggleZaak(zaak: Zaak) {
-      const contactmomentZaak = zaak as ContactmomentZaak;
-      const index = this.zaken.findIndex((element) => element.id === zaak.id);
-      if (index === -1) {
-        //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
-        this.zaken.push(contactmomentZaak);
-        contactmomentZaak.shouldStore = true;
-        return true;
-      } else {
-        const existingZaak = this.zaken[index];
-        //toggle of hij wel niet opgeslagen moet worden bij het contactmoment
-        existingZaak.shouldStore = !existingZaak.shouldStore;
-        return existingZaak.shouldStore;
+      if (!this.huidigeVraag) return false;
+
+      const match = this.huidigeVraag.zaken.find(
+        (element) => element.zaak.id === zaak.id
+      );
+
+      if (match) {
+        match.zaak = zaak;
+        match.shouldStore = !match.shouldStore;
+        return;
       }
+
+      this.huidigeVraag.zaken.push({
+        zaak,
+        shouldStore: true,
+      });
     },
     isZaakLinkedToContactmoment(id: string) {
-      const zaak = this.zaken.find((element) => element.id === id);
-      return zaak ? zaak.shouldStore : false;
+      return (
+        this.huidigeVraag?.zaken?.some(
+          ({ zaak, shouldStore }) => shouldStore && zaak.id === id
+        ) ?? false
+      );
     },
     setKlant(klant: Klant) {
       if (!this.huidigeVraag) return;
-      this.huidigeVraag.nieuweKlant = undefined;
+      const match = this.huidigeVraag.klanten.find(
+        (x) => x.klant.id === klant.id
+      );
 
-      const match = this.klanten.find((x) => x.klant.id === klant.id);
-      if (match?.shouldStore) return false;
-
-      this.klanten.forEach((x) => {
+      this.huidigeVraag.klanten.forEach((x) => {
         x.shouldStore = false;
       });
 
       if (match) {
         match.klant = klant;
         match.shouldStore = true;
-      } else {
-        this.klanten.push({
-          shouldStore: true,
-          klant,
-        });
+        return;
       }
 
-      return true;
+      this.huidigeVraag.klanten.push({
+        shouldStore: true,
+        klant,
+      });
     },
     setNotitie(notitie: string) {
       if (!this.huidigeVraag) return;

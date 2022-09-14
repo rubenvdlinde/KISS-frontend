@@ -52,7 +52,10 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
 import type { ZaakDetails } from "./types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import {
+  UtrechtHeading,
+  UtrechtButton,
+} from "@utrecht/web-component-library-vue";
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./service";
 

@@ -17,7 +17,7 @@ erbij voor het vrij invullen.
   <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
   <p v-if="submitted">
     Contactverzoek verstuurd naar
-    {{ contactmomentStore.contactverzoek?.medewerker }}
+    {{ contactmomentStore.huidigeVraag?.contactverzoek?.medewerker }}
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
@@ -220,7 +220,9 @@ const emailadres = ref("");
 //available medewerkers
 
 const contactmomentStore = useContactmomentStore();
-const submitted = computed(() => !!contactmomentStore.contactverzoek);
+const submitted = computed(
+  () => !!contactmomentStore.huidigeVraag?.contactverzoek
+);
 const klantReadonly = computed(
   () => submitted.value || useKlantFromStore.value
 );
@@ -261,7 +263,7 @@ watch(
 );
 
 watch(
-  () => contactmomentStore.notitie,
+  () => contactmomentStore.huidigeVraag?.notitie,
   (n, o) => {
     if (
       n &&
@@ -277,7 +279,12 @@ watch(
 
 async function submit() {
   try {
-    if (submitted.value || emailRequiredMessage.value) return;
+    if (
+      submitted.value ||
+      emailRequiredMessage.value ||
+      !contactmomentStore.huidigeVraag
+    )
+      return;
 
     loading.value = true;
 
@@ -308,7 +315,7 @@ async function submit() {
     const result = await saveContactverzoek(contactverzoek);
     await koppelKlant({ klantId, contactmomentId: result.id });
 
-    contactmomentStore.contactverzoek = {
+    contactmomentStore.huidigeVraag.contactverzoek = {
       url: result.url,
       medewerker: contactverzoek.todo.attendees[0],
     };

@@ -13,58 +13,55 @@
     />
 
     <template v-else-if="contactmomentStore.contactmomentLoopt">
-      <section
-        v-if="contactmomentStore.klanten.length"
-        class="gerelateerde-klanten"
-      >
-        <utrecht-heading :level="2" model-value>{{
-          contactmomentStore.klanten.length > 1
-            ? "Gerelateerde klanten"
-            : "Gerelateerde klant"
-        }}</utrecht-heading>
-        <ul>
-          <li
-            v-for="record in contactmomentStore.klanten"
-            :key="record.klant.id"
-          >
-            <label>
-              <span v-if="record.klant.voornaam || record.klant.achternaam">{{
-                [
-                  record.klant.voornaam,
-                  record.klant.voorvoegselAchternaam,
-                  record.klant.achternaam,
-                ]
-                  .filter((x) => x)
-                  .join(" ")
-              }}</span>
-              <span v-else>{{
-                [
-                  record.klant.emails[0].email,
-                  record.klant.telefoonnummers[0].telefoonnummer,
-                ]
-                  .filter((x) => x)
-                  .join(", ")
-              }}</span>
-              <input type="checkbox" v-model="record.shouldStore" />
-            </label>
-          </li>
-        </ul>
-      </section>
-
-      <section v-if="contactmomentStore.zaken.length > 0">
+      <article v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
         <utrecht-heading :level="2" model-value>
-          {{
-            contactmomentStore.zaken.length > 1
-              ? "Gerelateerde zaken"
-              : "Gerelateerde zaak"
-          }}
+          Vraag {{ idx + 1 }}
         </utrecht-heading>
-        <zaken-overzicht :zaken="contactmomentStore.zaken" />
-      </section>
-
-      <section>
-        <contactmoment-notitie class="notitie utrecht-textarea" />
-      </section>
+        <section v-if="vraag.klanten.length" class="gerelateerde-klanten">
+          <utrecht-heading :level="3" model-value>{{
+            vraag.klanten.length > 1
+              ? "Gerelateerde klanten"
+              : "Gerelateerde klant"
+          }}</utrecht-heading>
+          <ul>
+            <li v-for="record in vraag.klanten" :key="record.klant.id">
+              <label>
+                <span v-if="record.klant.voornaam || record.klant.achternaam">{{
+                  [
+                    record.klant.voornaam,
+                    record.klant.voorvoegselAchternaam,
+                    record.klant.achternaam,
+                  ]
+                    .filter((x) => x)
+                    .join(" ")
+                }}</span>
+                <span v-else>{{
+                  [
+                    record.klant.emails[0].email,
+                    record.klant.telefoonnummers[0].telefoonnummer,
+                  ]
+                    .filter((x) => x)
+                    .join(", ")
+                }}</span>
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
+        </section>
+        <section v-if="vraag.zaken.length > 0">
+          <utrecht-heading :level="3" model-value>
+            {{
+              vraag.zaken.length > 1
+                ? "Gerelateerde zaken"
+                : "Gerelateerde zaak"
+            }}
+          </utrecht-heading>
+          <zaken-overzicht :zaken="vraag.zaken.map(({ zaak }) => zaak)" />
+        </section>
+        <section>
+          <contactmoment-notitie class="notitie utrecht-textarea" />
+        </section>
+      </article>
 
       <contactmoment-afhandel-form @save="saveContact" />
     </template>
@@ -99,27 +96,29 @@ const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
 const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
-  const promises = contactmomentStore?.zaken
-    .filter((zaak) => zaak.shouldStore)
-    .map((zaak) =>
-      koppelObject({
-        contactmoment: contactmomentId,
-        object: zaak.url,
-        objectType: "zaak",
-      })
-    );
+  const promises =
+    contactmomentStore.huidigeVraag?.zaken
+      .filter(({ shouldStore }) => shouldStore)
+      .map(({ zaak }) =>
+        koppelObject({
+          contactmoment: contactmomentId,
+          object: zaak.url,
+          objectType: "zaak",
+        })
+      ) ?? [];
   return Promise.all(promises);
 };
 
 const koppelKlanten = (contactmomentId: string) => {
-  const promises = contactmomentStore.klanten
-    .filter((x) => x.shouldStore)
-    .map((x) =>
-      koppelKlant({
-        contactmomentId,
-        klantId: x.klant.id,
-      })
-    );
+  const promises =
+    contactmomentStore.huidigeVraag?.klanten
+      .filter(({ shouldStore }) => shouldStore)
+      .map(({ klant }) =>
+        koppelKlant({
+          contactmomentId,
+          klantId: klant.id,
+        })
+      ) ?? [];
   return Promise.all(promises);
 };
 
@@ -148,11 +147,11 @@ const saveContact = (contactmoment: Contactmoment) => {
         zakenToevoegenAanContactmoment(savedContactmoment.id),
         koppelKlanten(savedContactmoment.id),
       ];
-      if (contactmomentStore.contactverzoek) {
+      if (contactmomentStore.huidigeVraag?.contactverzoek) {
         nextPromises.push(
           koppelContactverzoek(
             savedContactmoment.id,
-            contactmomentStore.contactverzoek.url
+            contactmomentStore.huidigeVraag.contactverzoek.url
           )
         );
       }
@@ -174,11 +173,11 @@ const saveContact = (contactmoment: Contactmoment) => {
 };
 
 const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
-  contactmoment.tekst = contactmomentStore.notitie;
+  contactmoment.tekst = contactmomentStore.huidigeVraag?.notitie ?? "";
 };
 
 const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
-  contactmoment.startdatum = contactmomentStore.startdatum;
+  contactmoment.startdatum = contactmomentStore.huidigeVraag?.startdatum ?? "";
 };
 </script>
 

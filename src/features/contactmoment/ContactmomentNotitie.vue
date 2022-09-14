@@ -2,8 +2,9 @@
   <utrecht-heading model-value :level="2">Notitieblok</utrecht-heading>
   <textarea
     ref="notitieRef"
+    v-if="contactmomentStore.huidigeVraag"
     @change="notitieChanged"
-    v-model="contactmomentStore.notitie"
+    v-model="contactmomentStore.huidigeVraag.notitie"
     v-focus
     v-bind="$attrs"
     placeholder="Voeg hier je notities toe"

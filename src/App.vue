@@ -36,7 +36,29 @@
         <aside
           v-if="contactmoment.contactmomentLoopt && route.meta.showNotitie"
         >
-          <menu></menu>
+          <menu class="vragen-menu">
+            <li v-for="(vraag, idx) in contactmoment.vragen" :key="idx">
+              <span v-if="vraag === contactmoment.huidigeVraag">
+                {{ idx + 1 }}
+              </span>
+              <button
+                v-else
+                type="button"
+                :title="`Ga naar vraag ${idx + 1}`"
+                @click="contactmoment.huidigeVraag = vraag"
+              >
+                {{ idx + 1 }}
+              </button>
+            </li>
+            <li>
+              <button
+                class="icon-after plus new-question"
+                type="button"
+                title="Nieuwe vraag"
+                @click="contactmoment.startNieuweVraag"
+              ></button>
+            </li>
+          </menu>
           <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
             <template #tab="{ tabName }">
               <span
@@ -479,6 +501,47 @@ form {
 menu {
   list-style: none;
 }
+
+.vragen-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+
+  button:hover {
+    cursor: pointer;
+  }
+
+  li {
+    display: flex;
+    align-items: stretch;
+    aspect-ratio: 1;
+
+    &:last-of-type {
+      grid-column: -2 / -1;
+    }
+  }
+
+  button,
+  span {
+    display: flex;
+    background: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  button {
+    color: var(--color-white);
+  }
+
+  span {
+    background: var(--color-white);
+    color: var(--color-primary);
+  }
+}
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -590,7 +653,6 @@ aside {
     outline: none;
   }
 
-  menu,
   [role="tablist"] {
     height: 3rem;
   }
@@ -635,7 +697,7 @@ aside {
     color: var(--color-white);
 
     &[aria-selected="true"] {
-      color: var(--color-tertiary);
+      color: var(--color-primary);
     }
   }
 }
