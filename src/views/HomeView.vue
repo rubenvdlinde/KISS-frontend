@@ -59,7 +59,7 @@
             name="skillIds"
             label="Filter op categorie"
             :options="skills.data.entries"
-            v-model="currentSkills"
+            v-model="userStore.preferences.skills"
           />
           <menu class="delete-skills-menu">
             <li
@@ -69,7 +69,10 @@
               <button
                 type="button"
                 :class="`remove-filter icon-after circle-xmark ${className}`"
-                @click="currentSkills = currentSkills.filter((x) => x !== id)"
+                @click="
+                  userStore.preferences.skills =
+                    userStore.preferences.skills.filter((x) => x !== id)
+                "
               >
                 <span>Verwijder filter op </span><span>{{ name }}</span>
               </button>
@@ -83,7 +86,7 @@
       :level="2"
       page-param-name="werkberichtsearchpage"
       :search="currentSearch"
-      :skill-ids="currentSkills"
+      :skill-ids="userStore.preferences.skills"
       :type-id="currentTypeId"
       header="Zoekresultaten"
     />
@@ -94,7 +97,7 @@
         header="Nieuws"
         page-param-name="nieuwspage"
         :typeId="nieuwsId"
-        :skill-ids="currentSkills"
+        :skill-ids="userStore.preferences.skills"
       />
       <werk-berichten
         :level="2"
@@ -102,7 +105,7 @@
         header="Werkinstructies"
         page-param-name="werkinstructiepage"
         :typeId="werkInstructieId"
-        :skill-ids="currentSkills"
+        :skill-ids="userStore.preferences.skills"
       />
     </template>
 
@@ -124,6 +127,7 @@ import {
 import { parseValidInt } from "@/services";
 import MultiSelect from "@/components/MultiSelect.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
+import { useUserStore } from "@/stores/user";
 
 const { pubBeheerUrl } = window;
 
@@ -132,7 +136,8 @@ const nieuws = "nieuws";
 
 const currentSearch = ref("");
 const currentTypeId = ref<number>();
-const currentSkills = ref<number[]>([]);
+
+const userStore = useUserStore();
 
 const berichtTypes = useBerichtTypes();
 const skills = useSkills();
@@ -145,7 +150,7 @@ const selectedSkills = computed(() => {
       name,
       className: `category-${name.split(" ").join("-")}`,
     }))
-    .filter((x) => currentSkills.value.includes(x.id));
+    .filter((x) => userStore.preferences.skills.includes(x.id));
 });
 
 const werkInstructieId = computed(
