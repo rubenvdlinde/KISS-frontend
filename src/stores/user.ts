@@ -28,6 +28,7 @@ export const useUserStore = defineStore("user", {
       } as User,
     };
 
+    // if there is state in localstorage from before this change, it will return a boolean for skills
     if (!Array.isArray(newState.preferences.value.skills)) {
       newState.preferences.value.skills = [];
     }
