@@ -39,9 +39,7 @@
         </utrecht-heading>
         <section v-if="vraag.klanten.length" class="gerelateerde-klanten">
           <utrecht-heading :level="3" model-value>{{
-            vraag.klanten.length > 1
-              ? "Gerelateerde klanten"
-              : "Gerelateerde klant"
+            vraag.klanten.length > 1 ? "Klanten" : "Klant"
           }}</utrecht-heading>
           <ul>
             <li v-for="record in vraag.klanten" :key="record.klant.id">
@@ -70,11 +68,7 @@
         </section>
         <section v-if="vraag.zaken.length > 0">
           <utrecht-heading :level="3" model-value>
-            {{
-              vraag.zaken.length > 1
-                ? "Gerelateerde zaken"
-                : "Gerelateerde zaak"
-            }}
+            {{ vraag.zaken.length > 1 ? "Zaken" : "Zaak" }}
           </utrecht-heading>
           <zaken-overzicht :zaken="vraag.zaken.map(({ zaak }) => zaak)" />
         </section>
