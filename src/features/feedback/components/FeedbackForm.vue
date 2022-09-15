@@ -3,6 +3,17 @@
 
   <form v-else @submit.prevent="submit">
     <fieldset class="utrecht-form-fieldset">
+      <label for="current-section" class="utrecht-form-label"
+        >Huidige sectie</label
+      >
+      <input
+        disabled
+        v-model="currentSectionLabel"
+        type="text"
+        id="current-section"
+        class="utrecht-textbox utrecht-textbox--html-input"
+      />
+
       <label for="content" class="utrecht-form-label"
         >Citeer de tekst waar het om gaat</label
       >
@@ -85,9 +96,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineProps } from "vue";
+import { ref, reactive, defineProps, computed } from "vue";
 import { useFeedbackService } from "../service";
-import type { Feedback } from "../types";
+import type { CurrentFeedbackSection, Feedback } from "../types";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -97,9 +108,12 @@ import type { ServiceData } from "@/services/index";
 import { useUserStore } from "@/stores/user";
 
 const props = defineProps<{
-  id: unknown | URL;
+  url: unknown | URL;
   name: string;
+  currentSection: CurrentFeedbackSection;
 }>();
+
+const currentSectionLabel = computed(() => props.currentSection.label);
 
 const userStore = useUserStore();
 
@@ -110,11 +124,12 @@ const cancelDialog = useConfirmDialog(cancelDialogRevealed);
 const emit = defineEmits(["cancelled", "saved"]);
 const feedback: Feedback = reactive({
   naam: props.name,
-  uri: props.id,
+  url: props.url,
   content: "",
   opmerking: "",
   aanleiding: "",
   contactgegevens: userStore.user.isLoggedIn ? userStore.user.email : "",
+  currentSection: props.currentSection,
 });
 
 cancelDialog.onConfirm(() => annuleren());
