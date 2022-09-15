@@ -36,29 +36,7 @@
         <aside
           v-if="contactmomentStore.contactmomentLoopt && route.meta.showNotitie"
         >
-          <menu class="vragen-menu">
-            <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
-              <span v-if="vraag === contactmomentStore.huidigeVraag">
-                {{ idx + 1 }}
-              </span>
-              <button
-                v-else
-                type="button"
-                :title="`Ga naar vraag ${idx + 1}`"
-                @click="contactmomentStore.huidigeVraag = vraag"
-              >
-                {{ idx + 1 }}
-              </button>
-            </li>
-            <li>
-              <button
-                class="icon-after plus new-question"
-                type="button"
-                title="Nieuwe vraag"
-                @click="contactmomentStore.startNieuweVraag"
-              ></button>
-            </li>
-          </menu>
+          <contactmoment-vragen-menu />
           <tabs-component
             v-model="state.currentNotitieTab"
             class="notitie-tabs"
@@ -85,7 +63,9 @@
               />
             </template>
             <template #[NotitieTabs.Terugbel]>
-              <contactverzoek-formulier />
+              <contactverzoek-formulier
+                v-if="state.currentNotitieTab === NotitieTabs.Terugbel"
+              />
             </template>
           </tabs-component>
         </aside>
@@ -111,11 +91,16 @@ import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ensureState } from "./stores/create-store";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import ContactmomentVragenMenu from "./features/contactmoment/ContactmomentVragenMenu.vue";
+import { watch } from "vue";
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
   Terugbel = "Contactverzoek",
 }
+
+const contactmomentStore = useContactmomentStore();
+const route = useRoute();
 
 const state = ensureState({
   stateId: "App",
@@ -126,8 +111,12 @@ const state = ensureState({
   },
 });
 
-const contactmomentStore = useContactmomentStore();
-const route = useRoute();
+watch(
+  () => contactmomentStore.huidigeVraag,
+  () => {
+    state.reset();
+  }
+);
 </script>
 
 <style lang="scss">

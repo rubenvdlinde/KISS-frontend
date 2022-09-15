@@ -15,9 +15,9 @@ erbij voor het vrij invullen.
 -->
 <template>
   <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
-  <p v-if="formData.isSubmitted">
+  <p v-if="contactVerzoekFromStore.isSubmitted">
     Contactverzoek verstuurd naar
-    {{ formData.attendee }}
+    {{ contactVerzoekFromStore.attendee }}
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
@@ -160,14 +160,18 @@ erbij voor het vrij invullen.
       messageType="error"
     />
 
-    <utrecht-button model-value type="submit" v-if="!formData.isSubmitted">
+    <utrecht-button
+      model-value
+      type="submit"
+      v-if="!contactVerzoekFromStore.isSubmitted"
+    >
       Contactverzoek versturen
     </utrecht-button>
   </non-blocking-form>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { saveContactverzoek, createKlant } from "./service";
 import {
@@ -183,15 +187,35 @@ import {
   NonBlockingErrors,
 } from "@/components/non-blocking-forms";
 import { customPhoneValidator } from "@/helpers/validation";
+import { ensureState } from "@/stores/create-store";
 
 const loading = ref(false);
 const error = ref(false);
 
-const formData = computed(() => contactmomentStore.huidigeVraag.contactverzoek);
+const contactmomentStore = useContactmomentStore();
+
+const formData = ensureState({
+  stateId: "contactverzoekForm",
+  stateFactory() {
+    return {
+      voornaam: "",
+      voorvoegselAchternaam: undefined as string | undefined,
+      achternaam: "",
+      telefoonnummer1: "",
+      telefoonnummer2: "",
+      emailadres: "",
+      attendee: "",
+      description: "",
+      useKlantFromStore: false,
+    };
+  },
+});
 
 //available medewerkers
 
-const contactmomentStore = useContactmomentStore();
+const contactVerzoekFromStore = computed(
+  () => contactmomentStore.huidigeVraag.contactverzoek
+);
 
 const klantReadonly = computed(() => formData.value.useKlantFromStore);
 const emailIsRequired = computed(
@@ -209,15 +233,8 @@ const emailRequiredMessage = computed(() =>
 );
 
 watch(
-  [() => contactmomentStore.klant, () => contactmomentStore.huidigeVraagIndex],
-  ([klant, vraag], [_, oudeVraag]) => {
-    if (
-      vraag !== -1 &&
-      oudeVraag !== undefined &&
-      oudeVraag !== -1 &&
-      vraag !== oudeVraag
-    )
-      return;
+  () => contactmomentStore.klant,
+  (klant) => {
     formData.value.voornaam = klant?.voornaam || "";
     formData.value.voorvoegselAchternaam = klant?.voorvoegselAchternaam;
     formData.value.achternaam = klant?.achternaam || "";
@@ -229,24 +246,47 @@ watch(
     formData.value.useKlantFromStore = klant != null;
 
     if (klant) {
-      formData.value.isDirty = true;
+      contactVerzoekFromStore.value.isDirty = true;
     }
   },
   { immediate: true, deep: true }
 );
 
+onMounted(() => {
+  if (contactmomentStore.huidigeVraag.notitie && !formData.value.description) {
+    formData.value.description = contactmomentStore.huidigeVraag.notitie;
+  }
+});
+
 watch(
-  () => contactmomentStore.huidigeVraag?.notitie,
+  () => contactmomentStore.huidigeVraag.notitie,
   (n, o) => {
     if (
       n &&
       (!formData.value.description || formData.value.description === o)
     ) {
       formData.value.description = n;
-      formData.value.isDirty = true;
+      contactVerzoekFromStore.value.isDirty = true;
     }
   },
   { immediate: true }
+);
+
+watch(
+  () => contactmomentStore.huidigeVraag,
+  () => {
+    formData.reset();
+    contactVerzoekFromStore.value.isDirty = false;
+  }
+);
+
+watch(
+  () => formData.value.attendee,
+  (a) => {
+    if (a) {
+      contactVerzoekFromStore.value.isDirty = true;
+    }
+  }
 );
 
 async function submit() {
@@ -263,7 +303,8 @@ async function submit() {
       useKlantFromStore,
     } = formData.value;
 
-    if (formData.value.isSubmitted || emailRequiredMessage.value) return;
+    if (contactVerzoekFromStore.value.isSubmitted || emailRequiredMessage.value)
+      return;
 
     loading.value = true;
 
@@ -305,10 +346,9 @@ async function submit() {
 
     await koppelKlant({ klantId, contactmomentId: id });
 
-    formData.value.isDirty = false;
-    formData.value.url = url;
-
-    formData.value.isSubmitted = true;
+    contactVerzoekFromStore.value.isDirty = false;
+    contactVerzoekFromStore.value.url = url;
+    contactVerzoekFromStore.value.isSubmitted = true;
   } catch (e) {
     error.value = true;
   } finally {
@@ -326,9 +366,9 @@ const wisGeselecteerdeKlant = () => {
   formData.value.useKlantFromStore = false;
 };
 
-const isDirtyCheck = (e: Event) => {
-  if (e.target instanceof HTMLInputElement && e.target.value) {
-    formData.value.isDirty = true;
+const isDirtyCheck = (e: any) => {
+  if (e.target.value) {
+    contactVerzoekFromStore.value.isDirty = true;
   }
 };
 </script>

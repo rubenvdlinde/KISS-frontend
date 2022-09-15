@@ -71,7 +71,10 @@
           <utrecht-heading :level="3" model-value>
             {{ vraag.zaken.length > 1 ? "Zaken" : "Zaak" }}
           </utrecht-heading>
-          <zaken-overzicht :zaken="vraag.zaken.map(({ zaak }) => zaak)" />
+          <zaken-overzicht
+            :zaken="vraag.zaken.map(({ zaak }) => zaak)"
+            :vraag="vraag"
+          />
         </section>
         <section>
           <utrecht-heading :level="3" model-value> Details </utrecht-heading>
@@ -127,9 +130,9 @@
             ></textarea>
           </fieldset>
 
-          <p v-if="contactmomentStore.huidigeVraag?.contactverzoek.isSubmitted">
+          <p v-if="vraag.contactverzoek.isSubmitted">
             Contactverzoek verstuurd naar
-            {{ contactmomentStore.huidigeVraag.contactverzoek.attendee }}
+            {{ vraag.contactverzoek.attendee }}
           </p>
         </section>
       </article>
@@ -215,9 +218,9 @@ const zakenToevoegenAanContactmoment = (
   return Promise.all(promises);
 };
 
-const koppelKlanten = (contactmomentId: string) => {
+const koppelKlanten = (vraag: Vraag, contactmomentId: string) => {
   const promises =
-    contactmomentStore.huidigeVraag?.klanten
+    vraag.klanten
       .filter(({ shouldStore }) => shouldStore)
       .map(({ klant }) =>
         koppelKlant({
@@ -264,14 +267,11 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     .then((savedContactmoment) => {
       const nextPromises: Promise<unknown>[] = [
         zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
-        koppelKlanten(savedContactmoment.id),
+        koppelKlanten(vraag, savedContactmoment.id),
       ];
-      if (contactmomentStore.huidigeVraag?.contactverzoek.url) {
+      if (vraag.contactverzoek.url) {
         nextPromises.push(
-          koppelContactverzoek(
-            savedContactmoment.id,
-            contactmomentStore.huidigeVraag.contactverzoek.url
-          )
+          koppelContactverzoek(savedContactmoment.id, vraag.contactverzoek.url)
         );
       }
       return Promise.all(nextPromises).then(() => savedContactmoment);

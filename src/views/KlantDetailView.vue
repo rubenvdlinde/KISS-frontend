@@ -61,9 +61,10 @@ watch(
       return;
     }
 
-    const fromStore = contactmomentStore.huidigeVraag?.klanten
-      .filter((x) => x.klant.id === klantId.value)
-      .map((x) => x.klant)[0];
+    const fromStore = contactmomentStore.vragen
+      .flatMap(({ klanten }) => klanten)
+      .map(({ klant }) => klant)
+      .find(({ id }) => id === klantId.value);
 
     if (fromStore) {
       klant.value = fromStore;

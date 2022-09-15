@@ -20,30 +20,10 @@
     Start contactmoment
   </utrecht-button>
 
-  <modal-template v-if="beforeStopDialogRevealed">
-    <template #message>
-      <paragraph>
-        {{ beforeStopWarning }}
-      </paragraph>
-    </template>
-
-    <template #menu>
-      <button
-        modelValue
-        @click="beforeStopDialog.cancel"
-        class="utrecht-button utrecht-button--secondary-action"
-      >
-        Hier blijven
-      </button>
-      <button
-        modelValue
-        @click="beforeStopDialog.confirm"
-        class="utrecht-button utrecht-button--action"
-      >
-        Doorgaan
-      </button>
-    </template>
-  </modal-template>
+  <simple-dialog
+    :dialog="beforeStopDialog"
+    message="Let op, je hebt het contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd."
+  />
 </template>
 
 <script lang="ts">
@@ -56,14 +36,11 @@ export default {
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
-import { useAttrs, ref, computed } from "vue";
+import { useAttrs } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
-import Paragraph from "@/nl-design-system/components/Paragraph.vue";
-import ModalTemplate from "@/components/ModalTemplate.vue";
+import SimpleDialog from "../../components/SimpleDialog.vue";
 
-const beforeStopDialogRevealed = ref(false);
-const beforeStopDialog = useConfirmDialog(beforeStopDialogRevealed);
-beforeStopDialog.onConfirm(() => stopContactMoment());
+const beforeStopDialog = useConfirmDialog();
 
 const attrs = useAttrs();
 
@@ -76,33 +53,13 @@ const onStartContactMoment = () => {
   router.push({ name: "klanten" });
 };
 
-const beforeStopWarning = computed(() => {
-  const dirtyContactverzoeken = contactmomentStore.vragen
-    .map(({ contactverzoek }, i) => ({
-      questionNumber: i + 1,
-      isDirty: contactverzoek.isDirty,
-    }))
-    .filter(({ isDirty }) => isDirty);
-
-  if (dirtyContactverzoeken.length < 1) return "";
-
-  const questionNumbers = dirtyContactverzoeken
-    .map(({ questionNumber }) => questionNumber)
-    .join(", ");
-
-  return `Let op, je hebt het contactverzoek bij vraag ${questionNumbers} niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd.`;
-});
-
-const onStopContactMoment = () => {
-  if (beforeStopWarning.value) {
-    beforeStopDialog.reveal();
-  } else {
-    stopContactMoment();
-  }
-};
-
-const stopContactMoment = () => {
+const onStopContactMoment = async () => {
   if (attrs.disabled) return;
+  if (contactmomentStore.huidigeVraag.contactverzoek.isDirty) {
+    const { isCanceled } = await beforeStopDialog.reveal();
+    if (isCanceled) return;
+    contactmomentStore.huidigeVraag.contactverzoek.isDirty = false;
+  }
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
 </script>

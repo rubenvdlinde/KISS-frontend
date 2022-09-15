@@ -5,20 +5,20 @@
   </label>
 </template>
 <script lang="ts" setup>
-import { useContactmomentStore } from "@/stores/contactmoment";
+import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
 import type { Zaak } from "./types";
 import { computed } from "vue";
 
-const props = defineProps<{ zaak: Zaak }>();
+const props = defineProps<{ zaak: Zaak; vraag: Vraag }>();
 
 const contactmoment = useContactmomentStore();
 
 const koppel = () => {
-  contactmoment.toggleZaak(props.zaak);
+  contactmoment.toggleZaak(props.zaak, props.vraag);
 };
 
 const selected = computed(() => {
-  return contactmoment.isZaakLinkedToContactmoment(props.zaak.id);
+  return contactmoment.isZaakLinkedToContactmoment(props.zaak.id, props.vraag);
 });
 </script>
 

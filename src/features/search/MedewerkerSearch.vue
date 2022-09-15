@@ -134,6 +134,7 @@ function previousIndex() {
 function selectItem() {
   if (!listItems.value.length) return;
   searchText.value = listItems.value[activeIndex.value].value;
+  focusNextFormItem(inputRef.value);
 }
 
 const emit = defineEmits(["update:modelValue"]);

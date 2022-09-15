@@ -20,6 +20,7 @@
         <td>
           <zaak-contactmoment-koppelaar
             :zaak="zaak"
+            :vraag="vraag"
           ></zaak-contactmoment-koppelaar>
         </td>
       </tr>
@@ -32,6 +33,7 @@ import { formatDateOnly } from "@/helpers/date";
 import type { PropType } from "vue";
 import ZaakContactmomentKoppelaar from "./zaakContactmomentKoppelaar.vue";
 import type { Zaak } from "./types";
+import type { Vraag } from "@/stores/contactmoment";
 
 const emit = defineEmits(["zaakSelected"]);
 
@@ -41,6 +43,7 @@ const handleZaakSelected = (zaak: Zaak) => {
 
 defineProps({
   zaken: { type: Array as PropType<Zaak[]>, required: true },
+  vraag: { type: Object as PropType<Vraag>, required: true },
 });
 </script>
 
