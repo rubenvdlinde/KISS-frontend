@@ -15,14 +15,25 @@ export type User =
 
 export const useUserStore = defineStore("user", {
   state: () => {
-    return {
-      preferences: useStorage("preferences", { kanaal: "" }) as Ref<{
+    const newState = {
+      preferences: useStorage("preferences", {
+        kanaal: "",
+        skills: [],
+      }) as Ref<{
         kanaal: string;
+        skills: number[];
       }>,
       user: {
         isLoggedIn: false,
       } as User,
     };
+
+    // if there is state in localstorage from before this change, it will return a boolean for skills
+    if (!Array.isArray(newState.preferences.value.skills)) {
+      newState.preferences.value.skills = [];
+    }
+
+    return newState;
   },
   actions: {
     setKanaal(kanaal: string) {

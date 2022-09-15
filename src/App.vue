@@ -37,7 +37,10 @@
           v-if="contactmoment.contactmomentLoopt && route.meta.showNotitie"
         >
           <menu></menu>
-          <tabs-component v-model="currentNotitieTab" class="notitie-tabs">
+          <tabs-component
+            v-model="state.currentNotitieTab"
+            class="notitie-tabs"
+          >
             <template #tab="{ tabName }">
               <span
                 :title="tabName"
@@ -66,7 +69,9 @@
       <contactmoment-starter
         v-if="route.meta.showSearch"
         :beforeStopWarning="
-          contactverzoekTabIsDitry && contactverzoekIsDirty
+          state.contactverzoekTabIsDirty &&
+          state.contactverzoekIsDirty &&
+          !contactmoment.contactverzoek
             ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
             : ''
         "
@@ -84,30 +89,40 @@ import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
 import { useRoute } from "vue-router";
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { ContactmomentNotitie } from "@/features/contactmoment";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
+import { ensureState } from "./stores/create-store";
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
   Terugbel = "Contactverzoek",
 }
-const currentNotitieTab = ref(NotitieTabs.Regulier);
 
-const contactverzoekIsDirty = ref(false);
+const state = ensureState({
+  stateId: "App",
+  stateFactory() {
+    return {
+      currentNotitieTab: NotitieTabs.Regulier,
+      contactverzoekTabIsDirty: false,
+      contactverzoekIsDirty: false,
+    };
+  },
+});
 
 const handleContactverzoekIsDirty = (isDirty: boolean) => {
-  contactverzoekIsDirty.value = isDirty;
+  state.value.contactverzoekIsDirty = isDirty;
 };
 
-const contactverzoekTabIsDitry = ref(false);
-
-watch(currentNotitieTab, (t: string) => {
-  if (t === NotitieTabs.Terugbel) {
-    contactverzoekTabIsDitry.value = true;
+watch(
+  () => state.value.currentNotitieTab,
+  (t: string) => {
+    if (t === NotitieTabs.Terugbel) {
+      state.value.contactverzoekTabIsDirty = true;
+    }
   }
-});
+);
 //Notities end
 
 const contactmoment = useContactmomentStore();

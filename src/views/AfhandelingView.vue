@@ -1,13 +1,12 @@
 <template>
-  <div class="afhandeling">
+  <simple-spinner v-if="saving" />
+  <div class="afhandeling" v-else>
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
     <a @click="$router.back()" href="#"> terug </a>
 
-    <simple-spinner v-if="saving" />
-
     <application-message
-      v-else-if="errorMessage != ''"
+      v-if="errorMessage != ''"
       messageType="error"
       :message="errorMessage"
     />
