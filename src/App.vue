@@ -52,7 +52,6 @@
                 >Notitieblok</utrecht-heading
               >
               <textarea
-                v-if="contactmomentStore.huidigeVraag"
                 aria-labelledby="notitieblok"
                 v-focus
                 class="utrecht-textarea"
