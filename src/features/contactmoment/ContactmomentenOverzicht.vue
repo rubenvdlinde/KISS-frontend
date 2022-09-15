@@ -1,7 +1,7 @@
 <template>
   <!-- TODO this is semantically weird: a list pretending to be a table -->
   <!-- Unless the user group has a very good reason, I would rather just make it a list of <dl>s with no fake header row -->
-  <article>
+  <section>
     <utrecht-heading class="contactmomenten-header" model-value :level="level">
       Contactmomenten
     </utrecht-heading>
@@ -72,7 +72,7 @@
       />
     </template>
     <p v-else>Geen contactmomenten gevonden.</p>
-  </article>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -157,11 +157,18 @@ summary {
 }
 
 dl {
+  padding-inline-start: var(--spacing-default);
   display: grid;
   column-gap: var(--gap);
   row-gap: 1rem;
   grid-template-columns: var(--column-width) 1fr;
   padding-block: var(--spacing-large);
+}
+
+summary {
+  span {
+    padding-inline-start: var(--spacing-default);
+  }
 }
 
 .tekst {
@@ -186,6 +193,10 @@ details,
 .header-row {
   padding-block-start: var(--spacing-default);
   padding-block-end: var(--spacing-default);
+
+  span {
+    padding-inline-start: var(--spacing-default);
+  }
 }
 
 details[open],

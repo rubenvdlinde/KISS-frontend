@@ -18,4 +18,5 @@ export interface Zaak {
   status: string;
   fataleDatum: Date;
   behandelaar: string;
+  toelichting: string;
 }
