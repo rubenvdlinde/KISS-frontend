@@ -4,10 +4,10 @@
       <the-toast-section />
       <div
         class="app-layout"
-        :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
+        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
       >
         <header
-          :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
+          :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
         >
           <global-search v-if="route.meta.showSearch">
             <template #articleFooter="{ id, title }">
@@ -22,7 +22,7 @@
             >Uitloggen</a
           >
         </header>
-        <nav v-if="contactmoment.contactmomentLoopt && route.meta.showNav">
+        <nav v-if="contactmomentStore.contactmomentLoopt && route.meta.showNav">
           <li>
             <router-link :to="{ name: 'home' }">Start</router-link>
           </li>
@@ -34,18 +34,18 @@
           </li>
         </nav>
         <aside
-          v-if="contactmoment.contactmomentLoopt && route.meta.showNotitie"
+          v-if="contactmomentStore.contactmomentLoopt && route.meta.showNotitie"
         >
           <menu class="vragen-menu">
-            <li v-for="(vraag, idx) in contactmoment.vragen" :key="idx">
-              <span v-if="vraag === contactmoment.huidigeVraag">
+            <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
+              <span v-if="vraag === contactmomentStore.huidigeVraag">
                 {{ idx + 1 }}
               </span>
               <button
                 v-else
                 type="button"
                 :title="`Ga naar vraag ${idx + 1}`"
-                @click="contactmoment.huidigeVraag = vraag"
+                @click="contactmomentStore.huidigeVraag = vraag"
               >
                 {{ idx + 1 }}
               </button>
@@ -55,7 +55,7 @@
                 class="icon-after plus new-question"
                 type="button"
                 title="Nieuwe vraag"
-                @click="contactmoment.startNieuweVraag"
+                @click="contactmomentStore.startNieuweVraag"
               ></button>
             </li>
           </menu>
@@ -77,17 +77,15 @@
                 >Notitieblok</utrecht-heading
               >
               <textarea
-                v-if="contactmoment.huidigeVraag"
+                v-if="contactmomentStore.huidigeVraag"
                 aria-labelledby="notitieblok"
                 v-focus
                 class="utrecht-textarea"
-                v-model="contactmoment.huidigeVraag.notitie"
+                v-model="contactmomentStore.huidigeVraag.notitie"
               />
             </template>
             <template #[NotitieTabs.Terugbel]>
-              <contactverzoek-formulier
-                @isDirty="handleContactverzoekIsDirty"
-              />
+              <contactverzoek-formulier />
             </template>
           </tabs-component>
         </aside>
@@ -95,16 +93,7 @@
           <router-view />
         </main>
       </div>
-      <contactmoment-starter
-        v-if="route.meta.showSearch"
-        :beforeStopWarning="
-          state.contactverzoekTabIsDirty &&
-          state.contactverzoekIsDirty &&
-          !contactmoment.huidigeVraag?.contactverzoek
-            ? 'Let op, je hebt een contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd.'
-            : ''
-        "
-      />
+      <contactmoment-starter v-if="route.meta.showSearch" />
     </template>
   </login-overlay>
 </template>
@@ -118,7 +107,6 @@ import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
 import { useRoute } from "vue-router";
-import { watch } from "vue";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ensureState } from "./stores/create-store";
@@ -134,28 +122,11 @@ const state = ensureState({
   stateFactory() {
     return {
       currentNotitieTab: NotitieTabs.Regulier,
-      contactverzoekTabIsDirty: false,
-      contactverzoekIsDirty: false,
     };
   },
 });
 
-const handleContactverzoekIsDirty = (isDirty: boolean) => {
-  state.value.contactverzoekIsDirty = isDirty;
-};
-
-watch(
-  () => state.value.currentNotitieTab,
-  (t: string) => {
-    if (t === NotitieTabs.Terugbel) {
-      state.value.contactverzoekTabIsDirty = true;
-    }
-  }
-);
-//Notities end
-
-const contactmoment = useContactmomentStore();
-
+const contactmomentStore = useContactmomentStore();
 const route = useRoute();
 </script>
 

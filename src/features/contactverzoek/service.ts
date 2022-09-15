@@ -4,7 +4,7 @@ import type { NieuweKlant } from "@/stores/contactmoment";
 export interface Contactverzoek {
   bronorganisatie: string; //verplicht in de api
   todo: {
-    name: string;
+    name: "contactverzoek";
     description: string;
     attendees: string[];
   };

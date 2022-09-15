@@ -1,3 +1,4 @@
+import type { ContactverzoekForm } from "@/features/contactverzoek";
 import type { Klant } from "@/features/klant/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { getFormattedUtcDate } from "@/services";
@@ -10,25 +11,51 @@ export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
 export interface Vraag {
   zaken: ContactmomentZaak[];
   notitie: string;
-  contactverzoek: { url: string; medewerker: string } | undefined;
+  contactverzoek: ContactverzoekForm;
   startdatum: string;
   kanaal: string;
   resultaat: string;
   klanten: { klant: Klant; shouldStore: boolean }[];
 }
 
+function initVraag(): Vraag {
+  return {
+    zaken: [],
+    notitie: "",
+    contactverzoek: {
+      voornaam: "",
+      voorvoegselAchternaam: undefined,
+      achternaam: "",
+      telefoonnummer1: "",
+      telefoonnummer2: "",
+      emailadres: "",
+      attendee: "",
+      description: "",
+      useKlantFromStore: false,
+      isDirty: false,
+      isSubmitted: false,
+      url: undefined,
+    },
+    startdatum: getFormattedUtcDate(),
+    kanaal: "",
+    resultaat: "",
+    klanten: [],
+  };
+}
+
 interface ContactmomentState {
   contactmomentLoopt: boolean;
   vragen: Vraag[];
-  huidigeVraag: Vraag | undefined;
+  huidigeVraag: Vraag;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
   state: () => {
+    const huidigeVraag = initVraag();
     return {
       contactmomentLoopt: false,
-      vragen: [],
-      huidigeVraag: undefined,
+      vragen: [huidigeVraag],
+      huidigeVraag,
     } as ContactmomentState;
   },
   getters: {
@@ -37,27 +64,23 @@ export const useContactmomentStore = defineStore("contactmoment", {
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
+    huidigeVraagIndex: (state) => state.vragen.indexOf(state.huidigeVraag),
   },
   actions: {
     start() {
       if (this.contactmomentLoopt) return;
-      this.startNieuweVraag();
       this.contactmomentLoopt = true;
     },
     startNieuweVraag() {
-      const nieuweVraag: Vraag = {
-        zaken: [],
-        notitie: "",
-        contactverzoek: undefined,
-        startdatum: getFormattedUtcDate(),
-        kanaal: "",
-        resultaat: "",
-        klanten: this.huidigeVraag?.klanten
-          ? this.huidigeVraag.klanten.map((klantKoppeling) => ({
-              ...klantKoppeling,
-            }))
-          : [],
-      };
+      if (!this.contactmomentLoopt) return;
+      const nieuweVraag = initVraag();
+      if (this.huidigeVraag?.klanten) {
+        nieuweVraag.klanten = this.huidigeVraag.klanten.map(
+          (klantKoppeling) => ({
+            ...klantKoppeling,
+          })
+        );
+      }
       this.vragen.push(nieuweVraag);
       this.huidigeVraag = nieuweVraag;
     },

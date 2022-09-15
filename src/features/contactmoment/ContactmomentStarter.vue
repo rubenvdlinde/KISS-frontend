@@ -1,7 +1,7 @@
 <template>
   <utrecht-button
     model-value
-    v-if="contactmoment.contactmomentLoopt"
+    v-if="contactmomentStore.contactmomentLoopt"
     type="button"
     class="contactmomentLoopt"
     @click="onStopContactMoment"
@@ -56,14 +56,10 @@ export default {
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
-import { useAttrs, defineProps, ref } from "vue";
+import { useAttrs, ref, computed } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ModalTemplate from "@/components/ModalTemplate.vue";
-
-const props = defineProps<{
-  beforeStopWarning?: string;
-}>();
 
 const beforeStopDialogRevealed = ref(false);
 const beforeStopDialog = useConfirmDialog(beforeStopDialogRevealed);
@@ -72,16 +68,33 @@ beforeStopDialog.onConfirm(() => stopContactMoment());
 const attrs = useAttrs();
 
 const router = useRouter();
-const contactmoment = useContactmomentStore();
+const contactmomentStore = useContactmomentStore();
 
 const onStartContactMoment = () => {
   if (attrs.disabled) return;
-  contactmoment.start();
+  contactmomentStore.start();
   router.push({ name: "klanten" });
 };
 
+const beforeStopWarning = computed(() => {
+  const dirtyContactverzoeken = contactmomentStore.vragen
+    .map(({ contactverzoek }, i) => ({
+      questionNumber: i + 1,
+      isDirty: contactverzoek.isDirty,
+    }))
+    .filter(({ isDirty }) => isDirty);
+
+  if (dirtyContactverzoeken.length < 1) return "";
+
+  const questionNumbers = dirtyContactverzoeken
+    .map(({ questionNumber }) => questionNumber)
+    .join(", ");
+
+  return `Let op, je hebt het contactverzoek bij vraag ${questionNumbers} niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd.`;
+});
+
 const onStopContactMoment = () => {
-  if (props.beforeStopWarning) {
+  if (beforeStopWarning.value) {
     beforeStopDialog.reveal();
   } else {
     stopContactMoment();

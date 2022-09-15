@@ -210,6 +210,13 @@ watch(matchingResult, (val) => {
   emit("update:modelValue", val);
 });
 
+watch(
+  () => props.modelValue,
+  (v) => {
+    searchText.value = v;
+  }
+);
+
 watch([inputRef, shouldSetValidity, searchText], ([r, s, v]) => {
   if (!(r instanceof HTMLInputElement)) return;
   r.setCustomValidity(

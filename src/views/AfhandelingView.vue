@@ -127,9 +127,9 @@
             ></textarea>
           </fieldset>
 
-          <p v-if="contactmomentStore.huidigeVraag?.contactverzoek">
+          <p v-if="contactmomentStore.huidigeVraag?.contactverzoek.isSubmitted">
             Contactverzoek verstuurd naar
-            {{ contactmomentStore.huidigeVraag.contactverzoek.medewerker }}
+            {{ contactmomentStore.huidigeVraag.contactverzoek.attendee }}
           </p>
         </section>
       </article>
@@ -178,6 +178,7 @@ import { useUserStore } from "@/stores/user";
 import { useConfirmDialog } from "@vueuse/core";
 import ModalTemplate from "../components/ModalTemplate.vue";
 import { getFormattedUtcDate } from "@/services";
+import { nanoid } from "nanoid";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -265,7 +266,7 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
         zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
         koppelKlanten(savedContactmoment.id),
       ];
-      if (contactmomentStore.huidigeVraag?.contactverzoek) {
+      if (contactmomentStore.huidigeVraag?.contactverzoek.url) {
         nextPromises.push(
           koppelContactverzoek(
             savedContactmoment.id,
@@ -283,7 +284,12 @@ async function submit() {
     errorMessage.value = "";
     const firstVraag = contactmomentStore.vragen[0];
     const otherVragen = contactmomentStore.vragen.slice(1);
-    const { gespreksId } = await saveVraag(firstVraag);
+
+    let { gespreksId } = await saveVraag(firstVraag);
+    if (!gespreksId) {
+      gespreksId = nanoid();
+    }
+
     await Promise.all(otherVragen.map((v) => saveVraag(v, gespreksId)));
 
     //klaar
