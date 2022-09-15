@@ -87,7 +87,7 @@
                 >Alle zoekresultaten</a
               >
               <medewerker-detail
-                :json-object="jsonObject"
+                :medewerkerRaw="jsonObject"
                 v-if="source === 'Smoelenboek'"
                 :title="title"
                 :heading-level="2"
