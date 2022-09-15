@@ -44,6 +44,7 @@ function parseZaak(zaak: any): Zaak {
     status: zaak.embedded.status.statustoelichting,
     fataleDatum,
     behandelaar: getBehandelaarName(),
+    toelichting: zaak.toelichting,
   };
 }
 
@@ -112,8 +113,8 @@ export function useZaaksysteemService() {
 export async function updateToelichting(
   zaak: ZaakDetails,
   toelichting: string
-): Promise<boolean> {
-  const url = `${window.gatewayBaseUri}/api/zaken/${zaak.id}?fields[]=`;
+): Promise<Zaak> {
+  const url = `${window.gatewayBaseUri}/api/zaken/${zaak.id}`;
   const res = await fetchLoggedIn(url, {
     method: "PUT",
     headers: {
@@ -132,5 +133,5 @@ export async function updateToelichting(
   if (!res.ok)
     throw new Error(`Expected to update toelichting: ${res.status.toString()}`);
 
-  return res.ok;
+  return res.json();
 }

@@ -56,10 +56,14 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
 import type { ZaakDetails } from "./types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import {
+  UtrechtHeading,
+  UtrechtButton,
+} from "@utrecht/web-component-library-vue";
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{
   zaak: ZaakDetails;
@@ -77,8 +81,9 @@ const submit = async () => {
   formIsLoading.value = true;
 
   updateToelichting(props.zaak, toelichtingInputValue.value)
-    .then(() => {
+    .then((res) => {
       toast({ text: "De notitie is opgeslagen." });
+      useContactmomentStore().addZaak(res);
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;
