@@ -50,19 +50,17 @@ defineProps({
 <style lang="scss" scoped>
 th,
 td {
+  text-align: left;
   padding-inline-start: var(--spacing-default);
   padding-block: var(--spacing-default);
 }
 
-tr:nth-child(2n) {
-  background-color: var(--color-secondary);
-}
+tr {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-primary);
 
-tbody tr {
-  border-bottom: 1px solid transparent;
   &:hover {
-    background-color: var(--color-tertiary);
-    border-bottom-color: var(--color-primary);
+    background-color: var(--color-secondary);
     cursor: pointer;
   }
 }

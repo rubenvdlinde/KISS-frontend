@@ -1,1 +1,1 @@
-export { default as SearchFeedback } from "./SearchFeedback.vue";
+export { default as ContentFeedback } from "./ContentFeedback.vue";

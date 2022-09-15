@@ -77,15 +77,11 @@ td {
   text-align: left;
 }
 
-tr:nth-child(2n) {
-  background-color: var(--color-secondary);
-}
-
 tbody tr {
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid var(--color-primary);
+
   &:hover {
-    background-color: var(--color-tertiary);
-    border-bottom-color: var(--color-primary);
+    background-color: var(--color-secondary);
     cursor: pointer;
   }
 }

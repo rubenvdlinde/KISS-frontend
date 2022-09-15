@@ -27,6 +27,12 @@
       <div v-html="html"></div>
     </section>
   </article>
+
+  <content-feedback
+    :name="title"
+    :url="kennisartikelRaw.url"
+    :current-section="getCurrentFeedbackSection"
+  />
 </template>
 <script setup lang="ts">
 import {
@@ -37,6 +43,8 @@ import {
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
+import { ContentFeedback } from "../feedback/index";
+import type { CurrentFeedbackSection } from "../feedback/types";
 
 const knownSections = {
   specifiekeTekst: "Inleiding",
@@ -73,6 +81,14 @@ function processHtml(html: string) {
 
 const currentSectionIndex = ref(0);
 
+const getCurrentFeedbackSection = computed((): CurrentFeedbackSection => {
+  const currentSection = mappedSections.value[currentSectionIndex.value];
+  return {
+    label: currentSection.label,
+    id: currentSection.key,
+  };
+});
+
 const kennisartikel = computed<Record<string, string>>(() => {
   const { vertalingen } = props.kennisartikelRaw || {};
   if (!Array.isArray(vertalingen)) return {};
@@ -82,13 +98,15 @@ const kennisartikel = computed<Record<string, string>>(() => {
 const processedSections = computed(() => {
   const allSections = Object.entries(knownSections).map(([key, label]) => ({
     label,
+    key: key,
     text: kennisartikel.value[key],
   }));
 
   const sectionsWithActualText = allSections.filter(({ text }) => !!text);
 
   const sectionsWithProcessedHtml = sectionsWithActualText.map(
-    ({ label, text }) => ({
+    ({ label, text, key }) => ({
+      key: key,
       label,
       html: processHtml(text),
     })

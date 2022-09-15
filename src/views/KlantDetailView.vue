@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <section>
     <utrecht-heading :level="1" model-value>Klantinformatie</utrecht-heading>
     <nav>
       <ul>
@@ -21,7 +21,7 @@
     ></application-message>
     <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
     <contactmomenten-overzicht :klant-id="klantId" />
-  </article>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -98,7 +98,7 @@ nav {
   }
 }
 
-article > * {
+section > * {
   margin-block-end: var(--spacing-large);
 }
 </style>

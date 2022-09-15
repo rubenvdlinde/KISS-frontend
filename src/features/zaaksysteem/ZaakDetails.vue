@@ -8,14 +8,18 @@
     </div>
 
     <div class="toelichting">
-      <utrecht-heading class="toelichting-heading" :level="3" model-value
-        >Toelichting
-        <button
-          v-if="!isEditingToelichting"
-          @click="toggleEditingToelichting"
-          title="Bewerken"
-          class="icon-after pen"
-      /></utrecht-heading>
+      <utrecht-heading :level="3" model-value>
+        <div class="toelichting-heading">
+          <span>Toelichting</span>
+          <button
+            v-if="!isEditingToelichting"
+            @click="toggleEditingToelichting"
+            title="Bewerken"
+            class="icon-after pen"
+          />
+          <simple-spinner class="spinner" v-if="formIsLoading" />
+        </div>
+      </utrecht-heading>
 
       <form class="new-note" @submit.prevent="submit">
         <textarea
@@ -58,10 +62,14 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./service";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{
   zaak: ZaakDetails;
 }>();
+
+const contactmomentStore = useContactmomentStore();
 
 const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
@@ -75,8 +83,9 @@ const submit = async () => {
   formIsLoading.value = true;
 
   updateToelichting(props.zaak, toelichtingInputValue.value)
-    .then(() => {
+    .then((res) => {
       toast({ text: "De notitie is opgeslagen." });
+      contactmomentStore.addZaak(res, contactmomentStore.huidigeVraag);
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;
@@ -127,10 +136,16 @@ section > *:not(:last-child) {
 
   button {
     all: unset;
+    margin-inline-start: var(--spacing-default);
 
     &:hover {
       cursor: pointer;
     }
   }
+}
+
+.spinner {
+  font-size: 16px;
+  margin-inline-start: var(--spacing-default);
 }
 </style>
