@@ -19,15 +19,16 @@
       >
     </template>
   </modal-template>
-  <form class="afhandeling" @submit.prevent="submit">
+
+  <simple-spinner v-if="saving || gespreksresultaten.loading" />
+
+  <form v-else class="afhandeling" @submit.prevent="submit">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
     <a @click="$router.back()" href="#"> terug </a>
 
-    <simple-spinner v-if="saving || gespreksresultaten.loading" />
-
     <application-message
-      v-else-if="errorMessage != ''"
+      v-if="errorMessage != ''"
       messageType="error"
       :message="errorMessage"
     />
