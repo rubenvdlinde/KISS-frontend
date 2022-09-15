@@ -19,7 +19,11 @@
       </thead>
 
       <tbody>
-        <tr v-for="zaak in zaken.data.page" :key="zaak.id">
+        <tr
+          v-for="zaak in zaken.data.page"
+          :key="zaak.id"
+          @click="handleZaakSelected(zaak)"
+        >
           <td>{{ zaak.identificatie }}</td>
           <td>{{ zaak.zaaktype }}</td>
           <td>{{ zaak.status }}</td>
@@ -39,6 +43,11 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { useZaaksysteemService } from "./service";
 import { formatDateOnly } from "@/helpers/date";
+import type { Zaak } from "./types";
+import { useContactmomentStore } from "@/stores/contactmoment";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps({
   klantBsn: {
@@ -50,13 +59,15 @@ const props = defineProps({
 const zaakService = useZaaksysteemService();
 
 const zaken = zaakService.findByBsn(props.klantBsn).withFetcher();
+
+const handleZaakSelected = (zaak: Zaak) => {
+  useContactmomentStore().addZaak(zaak);
+  router.push({ name: "zaakDetail", params: { id: zaak.id } });
+};
 </script>
 
 <style lang="scss" scoped>
 .container {
-  margin-inline-start: var(--spacing-default);
-  margin-inline-end: var(--spacing-default);
-
   > *:not(:last-child) {
     margin-block-end: var(--spacing-default);
   }
@@ -64,13 +75,20 @@ const zaken = zaakService.findByBsn(props.klantBsn).withFetcher();
 
 table {
   width: 100%;
+}
 
-  thead > th:not(:last-child) {
-    padding-inline-end: var(--spacing-default);
-  }
+th,
+td {
+  text-align: left;
+  padding-inline-start: var(--spacing-default);
+  padding-block: var(--spacing-default);
+}
 
-  td {
-    padding-block: var(--spacing-default);
+tbody tr {
+  border-bottom: 1px solid var(--color-primary);
+  &:hover {
+    background-color: var(--color-secondary);
+    cursor: pointer;
   }
 }
 </style>
