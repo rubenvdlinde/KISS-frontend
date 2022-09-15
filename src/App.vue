@@ -9,6 +9,8 @@
         <header
           :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
         >
+          <global-search v-if="route.meta.showSearch" />
+
           <a
             :href="logoutUrl"
             @click="onLogout"
@@ -77,7 +79,9 @@
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import { GlobalSearch } from "@/features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import { ContentFeedback } from "@/features/feedback";
 import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
