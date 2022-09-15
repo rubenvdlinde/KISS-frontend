@@ -58,7 +58,6 @@ const onStopContactMoment = async () => {
   if (contactmomentStore.huidigeVraag.contactverzoek.isDirty) {
     const { isCanceled } = await beforeStopDialog.reveal();
     if (isCanceled) return;
-    contactmomentStore.huidigeVraag.contactverzoek.isDirty = false;
   }
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
