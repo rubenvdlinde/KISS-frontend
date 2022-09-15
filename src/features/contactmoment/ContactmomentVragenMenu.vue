@@ -53,3 +53,45 @@ async function validateContactverzoek() {
   return !isCanceled;
 }
 </script>
+
+<style lang="scss" scoped>
+.vragen-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+
+  button:hover {
+    cursor: pointer;
+  }
+
+  li {
+    display: flex;
+    align-items: stretch;
+    aspect-ratio: 1;
+
+    &:last-of-type {
+      grid-column: -2 / -1;
+    }
+  }
+
+  button,
+  span {
+    display: flex;
+    background: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  button {
+    color: var(--color-white);
+  }
+
+  span {
+    background: var(--color-white);
+    color: var(--color-primary);
+  }
+}
+</style>
