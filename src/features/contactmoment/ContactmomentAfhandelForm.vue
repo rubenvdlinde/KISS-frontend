@@ -19,7 +19,7 @@
         Details
       </legend>
 
-      <label for="kanaal" class="utrecht-form-label">kanaal</label>
+      <label for="kanaal" class="utrecht-form-label">Kanaal</label>
       <select
         id="kanaal"
         v-model="contactmoment.kanaal"
@@ -37,7 +37,7 @@
       </select>
 
       <label for="gespreksresultaat" class="utrecht-form-label"
-        >gespreksresultaat</label
+        >Gespreksresultaat</label
       >
       <select
         id="gespreksresultaat"
