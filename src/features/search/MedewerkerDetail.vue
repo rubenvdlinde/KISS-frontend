@@ -10,9 +10,9 @@
         >
         <dl>
           <dt>E-mailadres:</dt>
-          <dd>{{ jsonObject?.user }}</dd>
+          <dd>{{ medewerkerRaw?.user }}</dd>
           <dt>Telefoonnummer:</dt>
-          <dd>{{ jsonObject?.contact?.telefoonnummer1 }}</dd>
+          <dd>{{ medewerkerRaw?.contact?.telefoonnummer1 }}</dd>
         </dl>
       </section>
       <section>
@@ -24,7 +24,7 @@
             <tr>
               <th></th>
               <th
-                v-for="(_, day) in jsonObject?.calendar?.availabilities"
+                v-for="(_, day) in medewerkerRaw?.calendar?.availabilities"
                 :key="day"
               >
                 {{ day }}
@@ -35,7 +35,7 @@
             <tr>
               <th scope="row">ochtend</th>
               <td
-                v-for="(value, day) in jsonObject?.calendar?.availabilities"
+                v-for="(value, day) in medewerkerRaw?.calendar?.availabilities"
                 :key="day"
                 :class="[value.ochtend ? 'groen' : 'rood']"
               >
@@ -45,7 +45,7 @@
             <tr>
               <th scope="row">middag</th>
               <td
-                v-for="(value, day) in jsonObject?.calendar?.availabilities"
+                v-for="(value, day) in medewerkerRaw?.calendar?.availabilities"
                 :key="day"
                 :class="[value.middag ? 'groen' : 'rood']"
               >
@@ -61,30 +61,47 @@
         >Detailgegevens</utrecht-heading
       >
       <img
-        v-if="jsonObject.optionalProfilePicture"
-        :src="jsonObject.optionalProfilePicture"
+        v-if="medewerkerRaw.optionalProfilePicture"
+        :src="medewerkerRaw.optionalProfilePicture"
         width="128"
       />
       <dl>
         <dt>Functie:</dt>
-        <dd>{{ jsonObject?.function }}</dd>
+        <dd>{{ medewerkerRaw?.function }}</dd>
         <dt>Afdeling:</dt>
-        <dd>{{ jsonObject?.department }}</dd>
+        <dd>{{ medewerkerRaw?.department }}</dd>
         <dt>Wat kun je en wat doe je:</dt>
-        <dd>{{ jsonObject?.skills }}</dd>
-        <template v-if="jsonObject?.replacement?.name">
+        <dd>{{ medewerkerRaw?.skills }}</dd>
+        <template v-if="medewerkerRaw?.replacement?.name">
           <dt>Vervanger:</dt>
-          <dd>{{ jsonObject.replacement.name }}</dd>
+          <dd>{{ medewerkerRaw.replacement.name }}</dd>
         </template>
       </dl>
     </section>
   </article>
+
+  <content-feedback
+    :name="title"
+    :url="medewerkerRaw.url"
+    :current-section="currentFeedbackSection"
+  />
 </template>
 
 <script lang="ts" setup>
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { ContentFeedback } from "../feedback/index";
+import type { CurrentFeedbackSection } from "../feedback/types";
 
-defineProps<{ jsonObject: any; headingLevel: 2 | 3 | 4; title: string }>();
+const props = defineProps<{
+  medewerkerRaw: any;
+  headingLevel: 2 | 3 | 4;
+  title: string;
+}>();
+
+const currentFeedbackSection: CurrentFeedbackSection = {
+  label: props.title,
+  id: props.medewerkerRaw?.user,
+};
 </script>
 
 <style lang="scss" scoped>

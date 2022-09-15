@@ -38,6 +38,10 @@ export function useFeedbackService() {
 
 function mapModel(feedbackModel: Feedback) {
   const fields = [
+    [
+      "De sectie waar het om gaat",
+      `${feedbackModel.currentSection.label} (${feedbackModel.currentSection.id})`,
+    ],
     ["De tekst waar het om gaat", feedbackModel.content],
     ["Feedback", feedbackModel.opmerking],
     ["Aanleiding", feedbackModel.aanleiding],
@@ -47,7 +51,7 @@ function mapModel(feedbackModel: Feedback) {
   const description = fields.map((x) => x.join(":\r\n")).join("\r\n\r\n");
 
   return {
-    topic: feedbackModel.uri,
+    topic: feedbackModel.url,
     name: feedbackModel.naam,
     description,
   };

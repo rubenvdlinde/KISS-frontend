@@ -4,8 +4,9 @@
     <feedback-form
       @cancelled="feedbackCancelled"
       @saved="feedbackSaved"
-      :id="id"
+      :url="url"
       :name="name"
+      :current-section="currentSection"
     ></feedback-form>
   </section>
   <menu v-else>
@@ -30,10 +31,12 @@ import { ref, defineProps } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import FeedbackForm from "./components/FeedbackForm.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import type { CurrentFeedbackSection } from "./types";
 
 defineProps<{
-  id: unknown | URL;
+  url: unknown | URL;
   name: string;
+  currentSection: CurrentFeedbackSection;
 }>();
 
 const isOpen = ref(false);
