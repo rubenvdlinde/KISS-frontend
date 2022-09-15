@@ -69,6 +69,8 @@ const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
+const contactmomentStore = useContactmomentStore();
+
 const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
 const toelichtingInputValue = ref<string>(props.zaak.toelichting);
@@ -83,7 +85,7 @@ const submit = async () => {
   updateToelichting(props.zaak, toelichtingInputValue.value)
     .then((res) => {
       toast({ text: "De notitie is opgeslagen." });
-      useContactmomentStore().addZaak(res);
+      contactmomentStore.addZaak(res);
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;
