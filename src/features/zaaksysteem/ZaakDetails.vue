@@ -8,98 +8,20 @@
     </div>
 
     <div class="toelichting">
-      <utrecht-heading :level="3" model-value>
-        <div class="toelichting-heading">
-          <span>Toelichting</span>
-          <button
-            v-if="!isEditingToelichting"
-            @click="toggleEditingToelichting"
-            title="Bewerken"
-            class="icon-after pen"
-          />
-          <simple-spinner class="spinner" v-if="formIsLoading" />
-        </div>
-      </utrecht-heading>
-
-      <form class="new-note" @submit.prevent="submit">
-        <textarea
-          required
-          :disabled="!isEditingToelichting"
-          class="utrecht-textarea utrecht-textarea--html-textarea"
-          rows="10"
-          placeholder="Schrijf een nieuwe notitie bij de zaak"
-          v-model="toelichtingInputValue"
-        ></textarea>
-
-        <menu v-if="isEditingToelichting">
-          <utrecht-button
-            :disabled="formIsLoading"
-            modelValue
-            @click="toggleEditingToelichting"
-            type="button"
-            appearance="secondary-action-button"
-            >Annuleren</utrecht-button
-          >
-          <button
-            :disabled="formIsLoading"
-            class="utrecht-button utrecht-button--submit"
-            type="submit"
-          >
-            Opslaan
-          </button>
-        </menu>
-      </form>
+      <zaak-toelichting :zaak="zaak" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { defineProps } from "vue";
 import type { ZaakDetails } from "./types";
-import {
-  UtrechtHeading,
-  UtrechtButton,
-} from "@utrecht/web-component-library-vue";
-import { toast } from "@/stores/toast";
-import { updateToelichting } from "./service";
-import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { useContactmomentStore } from "@/stores/contactmoment";
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import ZaakToelichting from "./components/ZaakToelichting.vue";
 
-const props = defineProps<{
+defineProps<{
   zaak: ZaakDetails;
 }>();
-
-const contactmomentStore = useContactmomentStore();
-
-const formIsLoading = ref<boolean>(false);
-const isEditingToelichting = ref<boolean>(false);
-const toelichtingInputValue = ref<string>(props.zaak.toelichting);
-
-const toggleEditingToelichting = () => {
-  isEditingToelichting.value = !isEditingToelichting.value;
-};
-
-const submit = async () => {
-  formIsLoading.value = true;
-
-  updateToelichting(props.zaak, toelichtingInputValue.value)
-    .then((res) => {
-      toast({ text: "De notitie is opgeslagen." });
-      contactmomentStore.addZaak(res);
-    })
-    .catch(() => {
-      toelichtingInputValue.value = props.zaak.toelichting;
-
-      toast({
-        type: "error",
-        text: "Oeps het lukt niet om deze notitie op te slaan. Probeer het later opnieuw.",
-      });
-    })
-    .finally(() => {
-      toggleEditingToelichting();
-      formIsLoading.value = false;
-    });
-};
 </script>
 
 <style scoped lang="scss">
