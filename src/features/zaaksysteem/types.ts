@@ -6,6 +6,12 @@ export type ZaakDetails = {
   bronorganisatie: string;
   verantwoordelijkeOrganisatie: string;
   zaaktype: string;
+  zaaktypeLabel: string;
+  status: string;
+  behandelaar: string;
+  aanvrager: string;
+  fataleDatum: Date;
+  streefDatum: Date;
 };
 
 export interface Zaak {

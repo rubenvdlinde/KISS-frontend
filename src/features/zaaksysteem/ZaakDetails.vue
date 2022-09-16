@@ -8,7 +8,7 @@
     </div>
 
     <tabs-component v-model="activeTab">
-      <template #[Tabs.algemeen]> Algemeen </template>
+      <template #[Tabs.algemeen]> <zaak-algemeen :zaak="zaak" /> </template>
       <template #[Tabs.documenten]> Documenten </template>
       <template #[Tabs.betrokkenen]> Betrokkenen </template>
       <template #[Tabs.contactmomenten]> Contactmomenten </template>
@@ -28,6 +28,7 @@ import type { ZaakDetails } from "./types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ZaakToelichting from "./components/ZaakToelichting.vue";
 import TabsComponent from "../../components/TabsComponent.vue";
+import ZaakAlgemeen from "./components/ZaakAlgemeen.vue";
 
 defineProps<{
   zaak: ZaakDetails;
