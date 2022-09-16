@@ -93,6 +93,8 @@ const submit = async () => {
 
 <style scoped lang="scss">
 .edit-toelichting {
+  max-width: 600px;
+
   > *:not(:last-child) {
     margin-block-end: var(--spacing-small);
   }
