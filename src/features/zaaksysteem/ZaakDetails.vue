@@ -7,6 +7,15 @@
       <router-link :to="{ name: 'zaken' }">{{ "< Ga terug" }}</router-link>
     </div>
 
+    <tabs-component v-model="activeTab">
+      <template #[Tabs.algemeen]> Algemeen </template>
+      <template #[Tabs.documenten]> Documenten </template>
+      <template #[Tabs.betrokkenen]> Betrokkenen </template>
+      <template #[Tabs.contactmomenten]> Contactmomenten </template>
+      <template #[Tabs.historie]> Historie </template>
+      <template #[Tabs.locatie]> Locatie </template>
+    </tabs-component>
+
     <div class="toelichting">
       <zaak-toelichting :zaak="zaak" />
     </div>
@@ -14,14 +23,25 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import type { ZaakDetails } from "./types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ZaakToelichting from "./components/ZaakToelichting.vue";
+import TabsComponent from "../../components/TabsComponent.vue";
 
 defineProps<{
   zaak: ZaakDetails;
 }>();
+
+enum Tabs {
+  algemeen = "Algemeen",
+  documenten = "Documenten",
+  betrokkenen = "Betrokkenen",
+  contactmomenten = "Contactmomenten",
+  historie = "Historie",
+  locatie = "Locatie",
+}
+const activeTab = ref(Tabs.algemeen);
 </script>
 
 <style scoped lang="scss">

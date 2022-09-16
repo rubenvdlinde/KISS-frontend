@@ -108,11 +108,6 @@ watch(
   --tab-spacing: var(--spacing-default);
   padding-inline: var(--spacing-large);
   padding-block: var(--spacing-default);
-  margin-inline-start: calc(-1 * var(--tab-spacing));
-
-  //verschilt per toepassing..heleaal weg of configurabel maken
-  // border-start-end-radius: var(--radius-default);
-  // border-start-start-radius: var(--radius-default);
 }
 
 [role="tabpanel"],
