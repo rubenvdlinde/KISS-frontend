@@ -1,6 +1,6 @@
 <template>
   <label @click.stop>
-    <input type="checkbox" @click.stop="koppel" :checked="selected" />
+    <input type="checkbox" @click.stop="toggleZaak" :checked="isLinked" />
     <span>Opslaan bij contactmoment</span>
   </label>
 </template>
@@ -13,11 +13,11 @@ const props = defineProps<{ zaak: Zaak; vraag: Vraag }>();
 
 const contactmoment = useContactmomentStore();
 
-const koppel = () => {
-  contactmoment.toggleZaak(props.zaak, props.vraag);
+const toggleZaak = () => {
+  contactmoment.upsertZaak(props.zaak, props.vraag, !isLinked.value);
 };
 
-const selected = computed(() => {
+const isLinked = computed(() => {
   return contactmoment.isZaakLinkedToContactmoment(props.zaak.id, props.vraag);
 });
 </script>

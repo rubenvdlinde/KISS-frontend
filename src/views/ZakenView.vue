@@ -38,7 +38,7 @@ const currentBsn = ref<string>();
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
 const handleZaakSelected = (zaak: Zaak) => {
-  contactmomentStore.addZaak(zaak, contactmomentStore.huidigeVraag);
+  contactmomentStore.upsertZaak(zaak, contactmomentStore.huidigeVraag);
   router.push({ name: "zaakDetail", params: { id: zaak.id } });
 };
 

@@ -86,33 +86,21 @@ export const useContactmomentStore = defineStore("contactmoment", {
       // Temporary. When we implement multiple running contactmomenten, each will have it's own state
       resetAllState();
     },
-    addZaak(zaak: Zaak, vraag: Vraag) {
-      const match = vraag.zaken.find((element) => element.zaak.id === zaak.id);
+    upsertZaak(zaak: Zaak, vraag: Vraag, shouldStore = true) {
+      const existingZaak = vraag.zaken.find(
+        (contacmomentZaak) => contacmomentZaak.zaak.id === zaak.id
+      );
 
-      if (match) {
-        match.zaak = zaak;
-        match.shouldStore = true;
+      if (existingZaak) {
+        existingZaak.zaak = zaak;
+        existingZaak.shouldStore = shouldStore;
         return;
       }
 
       //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
       vraag.zaken.push({
         zaak,
-        shouldStore: true,
-      });
-    },
-    toggleZaak(zaak: Zaak, vraag: Vraag) {
-      const match = vraag.zaken.find((element) => element.zaak.id === zaak.id);
-
-      if (match) {
-        match.zaak = zaak;
-        match.shouldStore = !match.shouldStore;
-        return;
-      }
-
-      vraag.zaken.push({
-        zaak,
-        shouldStore: true,
+        shouldStore,
       });
     },
     isZaakLinkedToContactmoment(id: string, vraag: Vraag) {
