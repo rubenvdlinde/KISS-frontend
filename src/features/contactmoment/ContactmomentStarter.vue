@@ -20,7 +20,7 @@
     Start contactmoment
   </utrecht-button>
 
-  <simple-dialog
+  <prompt-modal
     :dialog="beforeStopDialog"
     message="Let op, je hebt het contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd."
   />
@@ -38,7 +38,7 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
 import { useAttrs } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
-import SimpleDialog from "../../components/SimpleDialog.vue";
+import PromptModal from "@/components/PromptModal.vue";
 
 const beforeStopDialog = useConfirmDialog();
 

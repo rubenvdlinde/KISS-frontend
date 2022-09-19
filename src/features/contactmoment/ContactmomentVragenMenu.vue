@@ -1,5 +1,5 @@
 <template>
-  <SimpleDialog
+  <prompt-modal
     :dialog="dialog"
     message="Let op, je hebt het contactverzoek niet afgerond. Als je deze vraag verlaat, wordt het contactverzoek niet verstuurd."
   />
@@ -30,7 +30,7 @@
 <script lang="ts" setup>
 import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
 import { useConfirmDialog } from "@vueuse/core";
-import SimpleDialog from "../../components/SimpleDialog.vue";
+import PromptModal from "@/components/PromptModal.vue";
 
 const contactmomentStore = useContactmomentStore();
 const dialog = useConfirmDialog();
