@@ -140,6 +140,50 @@
         </ul>
       </section>
 
+      <section
+        v-if="contactmomentStore.nieuwsberichten.length"
+        class="gerelateerde-resources"
+      >
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.nieuwsberichten.length > 1
+            ? "Gerelateerde nieuwsberichten"
+            : "Gerelateerde nieuwsbericht"
+        }}</utrecht-heading>
+        <ul>
+          <li
+            v-for="nieuwsbericht in contactmomentStore.nieuwsberichten"
+            :key="nieuwsbericht.id"
+          >
+            <label>
+              {{ nieuwsbericht.title }}
+              <input type="checkbox" v-model="nieuwsbericht.shouldStore" />
+            </label>
+          </li>
+        </ul>
+      </section>
+
+      <section
+        v-if="contactmomentStore.werkinstructies.length"
+        class="gerelateerde-resources"
+      >
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.werkinstructies.length > 1
+            ? "Gerelateerde werkinstructies"
+            : "Gerelateerde werkinstructie"
+        }}</utrecht-heading>
+        <ul>
+          <li
+            v-for="werkinstructie in contactmomentStore.werkinstructies"
+            :key="werkinstructie.id"
+          >
+            <label>
+              {{ werkinstructie.title }}
+              <input type="checkbox" v-model="werkinstructie.shouldStore" />
+            </label>
+          </li>
+        </ul>
+      </section>
+
       <section>
         <contactmoment-notitie class="notitie utrecht-textarea" />
       </section>

@@ -4,6 +4,8 @@ import type {
   Website,
   Storable,
   Kennisartikel,
+  Nieuwsbericht,
+  Werkinstructie,
 } from "@/features/search/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
@@ -24,6 +26,8 @@ interface ContactmomentState {
   medewerkers: (Medewerker & Storable)[];
   websites: (Website & Storable)[];
   kennisartikelen: (Kennisartikel & Storable)[];
+  nieuwsberichten: (Nieuwsbericht & Storable)[];
+  werkinstructies: (Werkinstructie & Storable)[];
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -39,6 +43,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
       medewerkers: [],
       websites: [],
       kennisartikelen: [],
+      nieuwsberichten: [],
+      werkinstructies: [],
     } as ContactmomentState;
   },
   getters: {
@@ -159,6 +165,32 @@ export const useContactmomentStore = defineStore("contactmoment", {
       });
 
       this.websites.push({ ...website, shouldStore: true });
+    },
+
+    toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
+      const foundBerichtIndex = this.nieuwsberichten.findIndex(
+        (n) => n.id === nieuwsbericht.id
+      );
+
+      if (foundBerichtIndex !== -1) {
+        this.nieuwsberichten.splice(foundBerichtIndex, 1);
+        return;
+      }
+
+      this.nieuwsberichten.push({ ...nieuwsbericht, shouldStore: true });
+    },
+
+    toggleWerkinstructie(werkinstructie: Werkinstructie) {
+      const foundWerkinstructieIndex = this.werkinstructies.findIndex(
+        (k) => k.id === werkinstructie.id
+      );
+
+      if (foundWerkinstructieIndex !== -1) {
+        this.werkinstructies.splice(foundWerkinstructieIndex, 1);
+        return;
+      }
+
+      this.werkinstructies.push({ ...werkinstructie, shouldStore: true });
     },
   },
 });

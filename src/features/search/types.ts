@@ -30,6 +30,16 @@ export type Kennisartikel = {
   title: string;
 };
 
+export type Nieuwsbericht = {
+  id: string;
+  title: string;
+};
+
+export type Werkinstructie = {
+  id: string;
+  title: string;
+};
+
 export type Storable = {
   shouldStore?: boolean;
 };
