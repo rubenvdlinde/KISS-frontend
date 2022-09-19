@@ -118,6 +118,28 @@
         </ul>
       </section>
 
+      <section
+        v-if="contactmomentStore.kennisartikelen.length"
+        class="gerelateerde-resources"
+      >
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.kennisartikelen.length > 1
+            ? "Gerelateerde kennisartikelen"
+            : "Gerelateerde kennisartikel"
+        }}</utrecht-heading>
+        <ul>
+          <li
+            v-for="kennisartikel in contactmomentStore.kennisartikelen"
+            :key="kennisartikel.id"
+          >
+            <label>
+              {{ kennisartikel.title }}
+              <input type="checkbox" v-model="kennisartikel.shouldStore" />
+            </label>
+          </li>
+        </ul>
+      </section>
+
       <section>
         <contactmoment-notitie class="notitie utrecht-textarea" />
       </section>

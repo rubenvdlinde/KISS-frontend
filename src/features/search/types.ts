@@ -25,6 +25,11 @@ export type Website = {
   url: string;
 };
 
+export type Kennisartikel = {
+  id: string;
+  title: string;
+};
+
 export type Storable = {
   shouldStore?: boolean;
 };

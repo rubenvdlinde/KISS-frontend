@@ -149,7 +149,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 import MedewerkerDetail from "./MedewerkerDetail.vue";
 import KennisartikelDetail from "./KennisartikelDetail.vue";
-import type { Medewerker } from "@/features/search/types";
+import type { Medewerker, Kennisartikel } from "@/features/search/types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const emit = defineEmits<{
@@ -220,8 +220,11 @@ const selectSearchResult = (
 ) => {
   currentId.value = id;
 
+  console.log(source);
+
   if (contactmomentStore.contactmomentLoopt) {
     if (source === "Smoelenboek") handleSmoelenboekSelected(jsonObject);
+    if (source === "Kennisartikel") handleKennisartikelSelected(jsonObject);
   }
 
   emit("result-selected", {
@@ -234,6 +237,10 @@ const selectSearchResult = (
 
 const handleSmoelenboekSelected = (medewerker: Medewerker): void => {
   contactmomentStore.addMedewerker(medewerker);
+};
+
+const handleKennisartikelSelected = (kennisartikel: Kennisartikel): void => {
+  contactmomentStore.addKennisartikel(kennisartikel);
 };
 
 const handleWebsiteSelected = (url: string, title: string): void => {

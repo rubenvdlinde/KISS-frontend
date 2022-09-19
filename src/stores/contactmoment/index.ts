@@ -1,5 +1,10 @@
 import type { Klant } from "@/features/klant/types";
-import type { Medewerker, Website, Storable } from "@/features/search/types";
+import type {
+  Medewerker,
+  Website,
+  Storable,
+  Kennisartikel,
+} from "@/features/search/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
 import { resetAllState } from "../create-store";
@@ -18,6 +23,7 @@ interface ContactmomentState {
   startdatum: string;
   medewerkers: (Medewerker & Storable)[];
   websites: (Website & Storable)[];
+  kennisartikelen: (Kennisartikel & Storable)[];
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -32,6 +38,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       startdatum: "",
       medewerkers: [],
       websites: [],
+      kennisartikelen: [],
     } as ContactmomentState;
   },
   getters: {
@@ -123,6 +130,23 @@ export const useContactmomentStore = defineStore("contactmoment", {
         voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
         achternaam: medewerker.contact.achternaam,
         emailadres: medewerker.contact.emailadres,
+        shouldStore: true,
+      });
+    },
+
+    addKennisartikel(kennisartikel: any) {
+      console.log({ kennisartikel });
+      if (this.kennisartikelen.find((k) => k.id === kennisartikel.uuid)) return;
+
+      this.kennisartikelen.forEach((k) => {
+        k.shouldStore = false;
+      });
+
+      this.kennisartikelen.push({
+        title:
+          kennisartikel?.vertalingen[0]?.productTitelDecentraal ??
+          "Onbekende titel",
+        id: kennisartikel.uuid,
         shouldStore: true,
       });
     },
