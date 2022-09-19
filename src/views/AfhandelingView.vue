@@ -171,7 +171,7 @@ import { toast } from "@/stores/toast";
 
 import {
   koppelKlant,
-  useContactmomentService,
+  saveContactmoment,
   koppelObject,
   useGespreksResultaten,
 } from "@/features/contactmoment";
@@ -186,7 +186,6 @@ import { nanoid } from "nanoid";
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
 const saving = ref(false);
-const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 const gespreksresultaten = useGespreksResultaten();
 
@@ -243,39 +242,37 @@ const koppelContactverzoek = (
 
 const saveVraag = (vraag: Vraag, gespreksId?: string) => {
   //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
-  return contactmomentService
-    .save({
-      gespreksId,
-      vorigContactmoment: undefined,
-      voorkeurskanaal: "",
-      voorkeurstaal: "",
-      tekst: vraag.notitie,
-      onderwerpLinks: [],
-      initiatiefnemer: "klant", //enum "gemeente" of "klant"
-      medewerker: "",
-      medewerkerIdentificatie: undefined,
-      resultaat: vraag.resultaat,
-      kanaal: vraag.kanaal,
-      bronorganisatie:
-        Array.isArray(window.organisatieIds) && window.organisatieIds[0]
-          ? window.organisatieIds[0]
-          : "",
-      registratiedatum: getFormattedUtcDate(),
-      startdatum: vraag.startdatum,
-      einddatum: getFormattedUtcDate(),
-    })
-    .then((savedContactmoment) => {
-      const nextPromises: Promise<unknown>[] = [
-        zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
-        koppelKlanten(vraag, savedContactmoment.id),
-      ];
-      if (vraag.contactverzoek.url) {
-        nextPromises.push(
-          koppelContactverzoek(savedContactmoment.id, vraag.contactverzoek.url)
-        );
-      }
-      return Promise.all(nextPromises).then(() => savedContactmoment);
-    });
+  return saveContactmoment({
+    gespreksId,
+    vorigContactmoment: undefined,
+    voorkeurskanaal: "",
+    voorkeurstaal: "",
+    tekst: vraag.notitie,
+    onderwerpLinks: [],
+    initiatiefnemer: "klant", //enum "gemeente" of "klant"
+    medewerker: "",
+    medewerkerIdentificatie: undefined,
+    resultaat: vraag.resultaat,
+    kanaal: vraag.kanaal,
+    bronorganisatie:
+      Array.isArray(window.organisatieIds) && window.organisatieIds[0]
+        ? window.organisatieIds[0]
+        : "",
+    registratiedatum: getFormattedUtcDate(),
+    startdatum: vraag.startdatum,
+    einddatum: getFormattedUtcDate(),
+  }).then((savedContactmoment) => {
+    const nextPromises: Promise<unknown>[] = [
+      zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
+      koppelKlanten(vraag, savedContactmoment.id),
+    ];
+    if (vraag.contactverzoek.url) {
+      nextPromises.push(
+        koppelContactverzoek(savedContactmoment.id, vraag.contactverzoek.url)
+      );
+    }
+    return Promise.all(nextPromises).then(() => savedContactmoment);
+  });
 };
 
 async function submit() {

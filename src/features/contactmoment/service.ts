@@ -14,32 +14,19 @@ import type {
   Contactmoment,
 } from "./types";
 
-export function useContactmomentService() {
-  if (!window.gatewayBaseUri) {
-    console.error("gatewayBaseUri missing");
-  }
-
-  const contactmomentenUrl = window.gatewayBaseUri + "/api/contactmomenten";
-
-  const save = (
-    data: Contactmoment
-  ): Promise<{ id: string; url: string; gespreksId: string }> =>
-    fetchLoggedIn(contactmomentenUrl, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then(throwIfNotOk)
-      .then((r) => r.json());
-
-  return {
-    save,
-    // saveZaak,
-  };
-}
+export const saveContactmoment = (
+  data: Contactmoment
+): Promise<{ id: string; url: string; gespreksId: string }> =>
+  fetchLoggedIn(window.gatewayBaseUri + "/api/contactmomenten", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then(throwIfNotOk)
+    .then((r) => r.json());
 
 const gespreksResultatenBaseUri =
   window.gatewayBaseUri + "/api/ref/resultaattypeomschrijvingen";
