@@ -8,7 +8,7 @@ export * from "./types";
 export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
 export type ContactmomentContactVerzoek = {
   url: string;
-  attendee: string;
+  medewerker: string;
   isDirty: boolean;
   isSubmitted: boolean;
 };
@@ -29,7 +29,7 @@ function initVraag(): Vraag {
     notitie: "",
     contactverzoek: {
       url: "",
-      attendee: "",
+      medewerker: "",
       isDirty: false,
       isSubmitted: false,
     },

@@ -132,7 +132,7 @@
 
           <p v-if="vraag.contactverzoek.isSubmitted">
             Contactverzoek verstuurd naar
-            {{ vraag.contactverzoek.attendee }}
+            {{ vraag.contactverzoek.medewerker }}
           </p>
         </section>
       </article>

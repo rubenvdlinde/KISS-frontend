@@ -17,7 +17,7 @@ erbij voor het vrij invullen.
   <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
   <p v-if="contactVerzoekFromStore.isSubmitted">
     Contactverzoek verstuurd naar
-    {{ contactVerzoekFromStore.attendee }}
+    {{ contactVerzoekFromStore.medewerker }}
   </p>
   <SimpleSpinner v-else-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
@@ -25,7 +25,7 @@ erbij voor het vrij invullen.
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
         class="utrecht-textbox utrecht-textbox--html-input"
-        v-model="formData.attendee"
+        v-model="formData.medewerker"
         required
       >
         <template #label
@@ -204,7 +204,7 @@ const formData = ensureState({
       telefoonnummer1: "",
       telefoonnummer2: "",
       emailadres: "",
-      attendee: "",
+      medewerker: "",
       description: "",
       useKlantFromStore: false,
     };
@@ -281,7 +281,7 @@ watch(
 );
 
 watch(
-  () => formData.value.attendee,
+  () => formData.value.medewerker,
   (a) => {
     if (a) {
       contactVerzoekFromStore.value.isDirty = true;
@@ -299,7 +299,7 @@ async function submit() {
       voorvoegselAchternaam,
       achternaam,
       description,
-      attendee,
+      medewerker,
       useKlantFromStore,
     } = formData.value;
 
@@ -340,7 +340,7 @@ async function submit() {
       todo: {
         name: "contactverzoek",
         description,
-        attendees: [attendee],
+        attendees: [medewerker],
       },
     });
 
