@@ -103,10 +103,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
       });
     },
     isZaakLinkedToContactmoment(id: string, vraag: Vraag) {
-      return (
-        vraag.zaken.some(
-          ({ zaak, shouldStore }) => shouldStore && zaak.id === id
-        ) ?? false
+      return vraag.zaken.some(
+        ({ zaak, shouldStore }) => shouldStore && zaak.id === id
       );
     },
     setKlant(klant: Klant) {
