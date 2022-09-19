@@ -55,7 +55,7 @@ const onStartContactMoment = () => {
 
 const onStopContactMoment = async () => {
   if (attrs.disabled) return;
-  if (contactmomentStore.huidigeVraag.contactverzoek.isDirty) {
+  if (contactmomentStore.huidigeVraag.contactverzoek.isInProgress) {
     const { isCanceled } = await beforeStopDialog.reveal();
     if (isCanceled) return;
   }

@@ -9,7 +9,7 @@ export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
 export type ContactmomentContactVerzoek = {
   url: string;
   medewerker: string;
-  isDirty: boolean;
+  isInProgress: boolean;
   isSubmitted: boolean;
 };
 
@@ -30,7 +30,7 @@ function initVraag(): Vraag {
     contactverzoek: {
       url: "",
       medewerker: "",
-      isDirty: false,
+      isInProgress: false,
       isSubmitted: false,
     },
     startdatum: getFormattedUtcDate(),

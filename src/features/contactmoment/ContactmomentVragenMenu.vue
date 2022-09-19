@@ -48,7 +48,7 @@ async function switchVraag(vraag: Vraag) {
 }
 
 async function validateContactverzoek() {
-  if (!contactmomentStore.huidigeVraag.contactverzoek.isDirty) return true;
+  if (!contactmomentStore.huidigeVraag.contactverzoek.isInProgress) return true;
   const { isCanceled } = await dialog.reveal();
   return !isCanceled;
 }

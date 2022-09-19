@@ -44,7 +44,7 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
-          @input="isDirtyCheck"
+          @input="setFormInProgress"
         />
       </label>
 
@@ -55,7 +55,7 @@ erbij voor het vrij invullen.
           v-model="formData.voorvoegselAchternaam"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
-          @input="isDirtyCheck"
+          @input="setFormInProgress"
         />
       </label>
 
@@ -67,7 +67,7 @@ erbij voor het vrij invullen.
           class="utrecht-textbox utrecht-textbox--html-input"
           required
           :disabled="klantReadonly"
-          @input="isDirtyCheck"
+          @input="setFormInProgress"
         />
       </label>
 
@@ -79,7 +79,7 @@ erbij voor het vrij invullen.
           v-model="formData.emailadres"
           class="utrecht-textbox utrecht-textbox--html-input"
           :disabled="klantReadonly"
-          @input="isDirtyCheck"
+          @input="setFormInProgress"
         />
       </label>
 
@@ -102,7 +102,7 @@ erbij voor het vrij invullen.
               type="tel"
               v-model="formData.telefoonnummer1"
               class="utrecht-textbox utrecht-textbox--html-input"
-              @input="isDirtyCheck"
+              @input="setFormInProgress"
             />
           </template>
         </non-blocking-errors>
@@ -127,7 +127,7 @@ erbij voor het vrij invullen.
               type="tel"
               v-model="formData.telefoonnummer2"
               class="utrecht-textbox utrecht-textbox--html-input"
-              @input="isDirtyCheck"
+              @input="setFormInProgress"
             />
           </template>
         </non-blocking-errors>
@@ -150,7 +150,7 @@ erbij voor het vrij invullen.
         v-model="formData.description"
         class="utrecht-textarea utrecht-textarea--html-textarea"
         required
-        @input="isDirtyCheck"
+        @input="setFormInProgress"
       />
     </label>
 
@@ -211,8 +211,6 @@ const formData = ensureState({
   },
 });
 
-//available medewerkers
-
 const contactVerzoekFromStore = computed(
   () => contactmomentStore.huidigeVraag.contactverzoek
 );
@@ -246,7 +244,7 @@ watch(
     formData.value.useKlantFromStore = klant != null;
 
     if (klant) {
-      contactVerzoekFromStore.value.isDirty = true;
+      contactVerzoekFromStore.value.isInProgress = true;
     }
   },
   { immediate: true, deep: true }
@@ -266,7 +264,7 @@ watch(
       (!formData.value.description || formData.value.description === o)
     ) {
       formData.value.description = n;
-      contactVerzoekFromStore.value.isDirty = true;
+      contactVerzoekFromStore.value.isInProgress = true;
     }
   },
   { immediate: true }
@@ -276,7 +274,7 @@ watch(
   () => contactmomentStore.huidigeVraag,
   () => {
     formData.reset();
-    contactVerzoekFromStore.value.isDirty = false;
+    contactVerzoekFromStore.value.isInProgress = false;
   }
 );
 
@@ -284,7 +282,7 @@ watch(
   () => formData.value.medewerker,
   (a) => {
     if (a) {
-      contactVerzoekFromStore.value.isDirty = true;
+      contactVerzoekFromStore.value.isInProgress = true;
     }
   }
 );
@@ -346,7 +344,7 @@ async function submit() {
 
     await koppelKlant({ klantId, contactmomentId: id });
 
-    contactVerzoekFromStore.value.isDirty = false;
+    contactVerzoekFromStore.value.isInProgress = false;
     contactVerzoekFromStore.value.url = url;
     contactVerzoekFromStore.value.isSubmitted = true;
   } catch (e) {
@@ -366,9 +364,9 @@ const wisGeselecteerdeKlant = () => {
   formData.value.useKlantFromStore = false;
 };
 
-const isDirtyCheck = (e: any) => {
+const setFormInProgress = (e: any) => {
   if (e.target.value) {
-    contactVerzoekFromStore.value.isDirty = true;
+    contactVerzoekFromStore.value.isInProgress = true;
   }
 };
 </script>
