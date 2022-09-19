@@ -347,6 +347,7 @@ async function submit() {
     contactVerzoekFromStore.value.isInProgress = false;
     contactVerzoekFromStore.value.url = url;
     contactVerzoekFromStore.value.isSubmitted = true;
+    contactVerzoekFromStore.value.medewerker = medewerker;
   } catch (e) {
     error.value = true;
   } finally {
