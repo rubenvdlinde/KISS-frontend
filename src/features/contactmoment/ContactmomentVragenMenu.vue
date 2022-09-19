@@ -36,21 +36,24 @@ const contactmomentStore = useContactmomentStore();
 const dialog = useConfirmDialog();
 
 async function startNieuweVraag() {
-  if (await validateContactverzoek()) {
-    contactmomentStore.startNieuweVraag();
+  if (contactmomentStore.wouldLoseProgress) {
+    await waitForConfirmation();
   }
+  contactmomentStore.startNieuweVraag();
 }
 
 async function switchVraag(vraag: Vraag) {
-  if (await validateContactverzoek()) {
-    contactmomentStore.huidigeVraag = vraag;
+  if (contactmomentStore.wouldLoseProgress) {
+    await waitForConfirmation();
   }
+  contactmomentStore.switchVraag(vraag);
 }
 
-async function validateContactverzoek() {
-  if (!contactmomentStore.huidigeVraag.contactverzoek.isInProgress) return true;
+async function waitForConfirmation() {
   const { isCanceled } = await dialog.reveal();
-  return !isCanceled;
+  if (isCanceled) {
+    throw new Error("canceled");
+  }
 }
 </script>
 

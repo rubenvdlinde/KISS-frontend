@@ -55,12 +55,18 @@ const onStartContactMoment = () => {
 
 const onStopContactMoment = async () => {
   if (attrs.disabled) return;
-  if (contactmomentStore.huidigeVraag.contactverzoek.isInProgress) {
-    const { isCanceled } = await beforeStopDialog.reveal();
-    if (isCanceled) return;
+  if (contactmomentStore.wouldLoseProgress) {
+    await waitForConfirmation();
   }
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
+
+async function waitForConfirmation() {
+  const { isCanceled } = await beforeStopDialog.reveal();
+  if (isCanceled) {
+    throw new Error("canceled");
+  }
+}
 </script>
 
 <style scoped lang="scss">

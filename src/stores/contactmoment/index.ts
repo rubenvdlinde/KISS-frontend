@@ -61,6 +61,9 @@ export const useContactmomentStore = defineStore("contactmoment", {
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
+    wouldLoseProgress(): boolean {
+      return this.huidigeVraag.contactverzoek.isInProgress;
+    },
   },
   actions: {
     start() {
@@ -68,7 +71,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
       this.contactmomentLoopt = true;
     },
     startNieuweVraag() {
-      if (!this.contactmomentLoopt) return;
       const nieuweVraag = initVraag();
       if (this.huidigeVraag.klanten) {
         nieuweVraag.klanten = this.huidigeVraag.klanten.map(
@@ -78,7 +80,10 @@ export const useContactmomentStore = defineStore("contactmoment", {
         );
       }
       this.vragen.push(nieuweVraag);
-      this.huidigeVraag = nieuweVraag;
+      this.switchVraag(nieuweVraag);
+    },
+    switchVraag(vraag: Vraag) {
+      this.huidigeVraag = vraag;
     },
     stop() {
       this.$reset();
