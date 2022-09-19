@@ -11,3 +11,12 @@ export type Source = {
   type: string;
   name: string;
 };
+
+export type Medewerker = {
+  id: string;
+  voornaam: string;
+  voorvoegselAchternaam?: string;
+  achternaam: string;
+  emailadres: string;
+  shouldStore?: boolean;
+};

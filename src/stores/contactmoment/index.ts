@@ -1,4 +1,5 @@
 import type { Klant } from "@/features/klant/types";
+import type { Medewerker } from "@/features/search/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
 import { resetAllState } from "../create-store";
@@ -15,6 +16,7 @@ interface ContactmomentState {
   contactverzoek: { url: string; medewerker: string } | undefined;
   nieuweKlant: NieuweKlant | undefined;
   startdatum: string;
+  medewerkers: Medewerker[];
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -27,6 +29,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       contactverzoek: undefined,
       nieuweKlant: undefined,
       startdatum: "",
+      medewerkers: [],
     } as ContactmomentState;
   },
   getters: {
@@ -97,6 +100,11 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     setNotitie(notitie: string) {
       this.notitie = notitie;
+    },
+    addMedewerker(medewerker: Medewerker) {
+      if (this.medewerkers.find((m) => m.id === medewerker.id)) return;
+
+      this.medewerkers.push({ ...medewerker, shouldStore: true });
     },
   },
 });
