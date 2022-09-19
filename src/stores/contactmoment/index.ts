@@ -128,9 +128,5 @@ export const useContactmomentStore = defineStore("contactmoment", {
         klant,
       });
     },
-    setNotitie(notitie: string) {
-      if (!this.huidigeVraag) return;
-      this.huidigeVraag.notitie = notitie;
-    },
   },
 });
