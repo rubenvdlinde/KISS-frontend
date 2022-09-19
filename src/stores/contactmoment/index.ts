@@ -101,10 +101,21 @@ export const useContactmomentStore = defineStore("contactmoment", {
     setNotitie(notitie: string) {
       this.notitie = notitie;
     },
-    addMedewerker(medewerker: Medewerker) {
+    addMedewerker(medewerker: any) {
       if (this.medewerkers.find((m) => m.id === medewerker.id)) return;
 
-      this.medewerkers.push({ ...medewerker, shouldStore: true });
+      this.medewerkers.forEach((m) => {
+        m.shouldStore = false;
+      });
+
+      this.medewerkers.push({
+        id: medewerker.id,
+        voornaam: medewerker.contact.voornaam,
+        voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
+        achternaam: medewerker.contact.achternaam,
+        emailadres: medewerker.contact.emailadres,
+        shouldStore: true,
+      });
     },
   },
 });

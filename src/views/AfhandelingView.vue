@@ -14,7 +14,7 @@
     <template v-else-if="contactmomentStore.contactmomentLoopt">
       <section
         v-if="contactmomentStore.klanten.length"
-        class="gerelateerde-klanten"
+        class="gerelateerde-resources"
       >
         <utrecht-heading :level="2" model-value>{{
           contactmomentStore.klanten.length > 1
@@ -61,6 +61,39 @@
         <zaken-overzicht :zaken="contactmomentStore.zaken" />
       </section>
 
+      <section
+        v-if="contactmomentStore.medewerkers.length"
+        class="gerelateerde-resources"
+      >
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.medewerkers.length > 1
+            ? "Gerelateerde medewerkers"
+            : "Gerelateerde medewerker"
+        }}</utrecht-heading>
+        <ul>
+          <li
+            v-for="medewerker in contactmomentStore.medewerkers"
+            :key="medewerker.id"
+          >
+            <label>
+              <span v-if="medewerker.voornaam || medewerker.achternaam"
+                >{{
+                  [
+                    medewerker.voornaam,
+                    medewerker.voorvoegselAchternaam,
+                    medewerker.achternaam,
+                  ]
+                    .filter((x) => x)
+                    .join(" ")
+                }}
+                ({{ medewerker.emailadres }})</span
+              >
+              <input type="checkbox" v-model="medewerker.shouldStore" />
+            </label>
+          </li>
+        </ul>
+      </section>
+
       <section>
         <contactmoment-notitie class="notitie utrecht-textarea" />
       </section>
@@ -96,6 +129,8 @@ const contactmomentStore = useContactmomentStore();
 const saving = ref(false);
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
+
+console.log({ contactmomentStore });
 
 const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
   const promises = contactmomentStore?.zaken
@@ -202,7 +237,7 @@ const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
   margin-top: var(--spacing-default);
 }
 
-.gerelateerde-klanten {
+.gerelateerde-resources {
   li > label {
     display: grid;
     grid-auto-flow: column;
