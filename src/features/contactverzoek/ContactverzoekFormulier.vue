@@ -233,7 +233,7 @@ const emailRequiredMessage = computed(() =>
 );
 
 watch(
-  () => contactmomentStore.klant,
+  () => contactmomentStore.klantVoorHuidigeVraag,
   (klant) => {
     formData.value.voornaam = klant?.voornaam || "";
     formData.value.voorvoegselAchternaam = klant?.voorvoegselAchternaam;
@@ -328,7 +328,7 @@ async function submit() {
       klantId = newKlantResult.id;
       formData.value.useKlantFromStore = true;
     } else {
-      klantId = contactmomentStore.klant?.id ?? "";
+      klantId = contactmomentStore.klantVoorHuidigeVraag?.id ?? "";
     }
 
     if (!klantId) {

@@ -85,7 +85,7 @@ watch(
 );
 
 watch(klant, (k) => {
-  if (!k || k === contactmomentStore.klant) return;
+  if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
   contactmomentStore.setKlant(k);
 });
 </script>

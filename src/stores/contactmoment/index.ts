@@ -56,12 +56,11 @@ export const useContactmomentStore = defineStore("contactmoment", {
     } as ContactmomentState;
   },
   getters: {
-    klant(state): Klant | undefined {
+    klantVoorHuidigeVraag(state): Klant | undefined {
       return state.huidigeVraag.klanten
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
-    huidigeVraagIndex: (state) => state.vragen.indexOf(state.huidigeVraag),
   },
   actions: {
     start() {
