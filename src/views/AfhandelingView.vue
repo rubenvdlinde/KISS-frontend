@@ -110,7 +110,7 @@
               v-focus
               required
               v-if="gespreksresultaten.success"
-              :disabled="!!vraag.contactverzoek"
+              :disabled="vraag.contactverzoek.isSubmitted"
             >
               <option
                 v-for="gespreksresultaat in gespreksresultaten.data"
@@ -191,7 +191,7 @@ const gespreksresultaten = useGespreksResultaten();
 
 onMounted(() => {
   for (const vraag of contactmomentStore.vragen) {
-    if (vraag.contactverzoek) {
+    if (vraag.contactverzoek.isSubmitted) {
       vraag.resultaat = "Terugbelnotitie gemaakt";
     }
     if (!vraag.kanaal) {
