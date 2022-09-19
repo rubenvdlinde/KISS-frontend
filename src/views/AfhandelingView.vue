@@ -94,6 +94,30 @@
         </ul>
       </section>
 
+      <section
+        v-if="contactmomentStore.websites.length"
+        class="gerelateerde-resources"
+      >
+        <utrecht-heading :level="2" model-value>{{
+          contactmomentStore.websites.length > 1
+            ? "Gerelateerde websites"
+            : "Gerelateerde website"
+        }}</utrecht-heading>
+        <ul>
+          <li v-for="website in contactmomentStore.websites" :key="website.url">
+            <label>
+              <a
+                :href="website.url"
+                rel="noopener noreferrer"
+                target="_blank"
+                >{{ website.title }}</a
+              >
+              <input type="checkbox" v-model="website.shouldStore" />
+            </label>
+          </li>
+        </ul>
+      </section>
+
       <section>
         <contactmoment-notitie class="notitie utrecht-textarea" />
       </section>

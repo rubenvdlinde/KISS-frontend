@@ -54,9 +54,8 @@
                 </a>
                 <a
                   v-else
-                  :href="url.toString()"
+                  @click="handleWebsiteSelected(url.toString(), title)"
                   class="icon-after chevron-down"
-                  target="_blank"
                   rel="noopener noreferrer"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
@@ -235,6 +234,11 @@ const selectSearchResult = (
 
 const handleSmoelenboekSelected = (medewerker: Medewerker): void => {
   contactmomentStore.addMedewerker(medewerker);
+};
+
+const handleWebsiteSelected = (url: string, title: string): void => {
+  contactmomentStore.addWebsite({ url, title });
+  window.open(url);
 };
 </script>
 

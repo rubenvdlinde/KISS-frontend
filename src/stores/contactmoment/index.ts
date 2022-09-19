@@ -1,12 +1,12 @@
 import type { Klant } from "@/features/klant/types";
-import type { Medewerker } from "@/features/search/types";
+import type { Medewerker, Website, Storable } from "@/features/search/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { defineStore } from "pinia";
 import { resetAllState } from "../create-store";
 import type { NieuweKlant } from "./types";
 export * from "./types";
 
-export type ContactmomentZaak = Zaak & { shouldStore: boolean };
+export type ContactmomentZaak = Zaak & Storable;
 
 interface ContactmomentState {
   contactmomentLoopt: boolean;
@@ -16,7 +16,8 @@ interface ContactmomentState {
   contactverzoek: { url: string; medewerker: string } | undefined;
   nieuweKlant: NieuweKlant | undefined;
   startdatum: string;
-  medewerkers: Medewerker[];
+  medewerkers: (Medewerker & Storable)[];
+  websites: (Website & Storable)[];
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -30,6 +31,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       nieuweKlant: undefined,
       startdatum: "",
       medewerkers: [],
+      websites: [],
     } as ContactmomentState;
   },
   getters: {
@@ -40,11 +42,13 @@ export const useContactmomentStore = defineStore("contactmoment", {
     start() {
       this.contactmomentLoopt = true;
     },
+
     stop() {
       this.$reset();
       // Temporary. When we implement multiple running contactmomenten, each will have it's own state
       resetAllState();
     },
+
     addZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
       const index = this.zaken.findIndex((element) => element.id === zaak.id);
@@ -57,6 +61,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
         existingZaak.shouldStore = true;
       }
     },
+
     toggleZaak(zaak: Zaak) {
       const contactmomentZaak = zaak as ContactmomentZaak;
       const index = this.zaken.findIndex((element) => element.id === zaak.id);
@@ -72,10 +77,12 @@ export const useContactmomentStore = defineStore("contactmoment", {
         return existingZaak.shouldStore;
       }
     },
+
     isZaakLinkedToContactmoment(id: string) {
       const zaak = this.zaken.find((element) => element.id === id);
       return zaak ? zaak.shouldStore : false;
     },
+
     setKlant(klant: Klant) {
       this.nieuweKlant = undefined;
 
@@ -98,9 +105,11 @@ export const useContactmomentStore = defineStore("contactmoment", {
 
       return true;
     },
+
     setNotitie(notitie: string) {
       this.notitie = notitie;
     },
+
     addMedewerker(medewerker: any) {
       if (this.medewerkers.find((m) => m.id === medewerker.id)) return;
 
@@ -116,6 +125,16 @@ export const useContactmomentStore = defineStore("contactmoment", {
         emailadres: medewerker.contact.emailadres,
         shouldStore: true,
       });
+    },
+
+    addWebsite(website: Website) {
+      if (this.websites.find((w) => w.url === website.url)) return;
+
+      this.websites.forEach((w) => {
+        w.shouldStore = false;
+      });
+
+      this.websites.push({ ...website, shouldStore: true });
     },
   },
 });

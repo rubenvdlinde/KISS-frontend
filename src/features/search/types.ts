@@ -18,5 +18,13 @@ export type Medewerker = {
   voorvoegselAchternaam?: string;
   achternaam: string;
   emailadres: string;
+};
+
+export type Website = {
+  title: string;
+  url: string;
+};
+
+export type Storable = {
   shouldStore?: boolean;
 };
