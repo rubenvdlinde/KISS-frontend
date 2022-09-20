@@ -10,7 +10,7 @@
           localeString(bericht.date)
         }}</time>
 
-        <menu>
+        <div>
           <input
             v-if="contactmomentStore.contactmomentLoopt"
             class="save-bericht-to-contactmoment-checkbox"
@@ -26,7 +26,7 @@
             class="toggle-read icon-after book"
             :disabled="toggleReadIsLoading"
           />
-        </menu>
+        </div>
       </div>
 
       <utrecht-heading model-value :level="level">
@@ -85,12 +85,12 @@ const contactmomentStore = useContactmomentStore();
 const berichtSelectedInContactmoment = computed(() => {
   const foundInNieuwsberichten =
     contactmomentStore.nieuwsberichten.findIndex(
-      (n) => n.id === props.bericht.id
+      (n) => n.nieuwsbericht.id === props.bericht.id
     ) !== -1;
 
   const foundInWerkinstructies =
     contactmomentStore.werkinstructies.findIndex(
-      (w) => w.id === props.bericht.id
+      (w) => w.werkinstructie.id === props.bericht.id
     ) !== -1;
 
   return foundInNieuwsberichten || foundInWerkinstructies;
@@ -182,7 +182,7 @@ article {
       justify-content: space-between;
       align-items: center;
 
-      menu {
+      div {
         display: flex;
         gap: var(--spacing-default);
 
@@ -245,7 +245,7 @@ article {
       font-weight: normal;
     }
 
-    .heading-top-row menu .toggle-read {
+    .heading-top-row div .toggle-read {
       color: var(--color-tertiary);
     }
 
