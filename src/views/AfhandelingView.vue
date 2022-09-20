@@ -268,6 +268,7 @@ const saveContact = (contactmoment: Contactmoment) => {
   addNotitieToContactmoment(contactmoment);
   addStartdatumToContactmoment(contactmoment);
   addKennisartikelenToContactmoment(contactmoment);
+  addWebsitesToContactmoment(contactmoment);
 
   return contactmomentService
     .save(contactmoment)
@@ -316,6 +317,16 @@ const addKennisartikelenToContactmoment = (contactmoment: Contactmoment) => {
     if (!kennisartikel.shouldStore) return;
 
     contactmoment.onderwerpLinks.push(kennisartikel.kennisartikel.url);
+  });
+};
+
+const addWebsitesToContactmoment = (contactmoment: Contactmoment) => {
+  if (!contactmomentStore.websites) return;
+
+  contactmomentStore.websites.forEach((website) => {
+    if (!website.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(website.website.url);
   });
 };
 </script>
