@@ -37,16 +37,11 @@
 
 <script setup lang="ts">
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
-import type { ComputedRef, PropType } from "vue";
+import type { UseConfirmDialogReturn } from "@vueuse/core";
+import type { PropType } from "vue";
 import ModalTemplate from "./ModalTemplate.vue";
 
-// we use dialogs from @vueuse. however, this library doesn't export the return type
-// that's why we define our own type here
-type DialogFromLibrary = {
-  isRevealed: ComputedRef<boolean>;
-  confirm: () => void;
-  cancel: () => void;
-};
+type DialogFromLibrary = UseConfirmDialogReturn<unknown, unknown, unknown>;
 
 defineProps({
   dialog: {
