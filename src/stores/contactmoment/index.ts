@@ -147,11 +147,11 @@ export const useContactmomentStore = defineStore("contactmoment", {
 
     addKennisartikel(kennisartikel: any) {
       this.kennisartikelen.forEach(
-        (k) => (k.shouldStore = k.kennisartikel.id === kennisartikel.uuid)
+        (k) => (k.shouldStore = k.kennisartikel.url === kennisartikel.url)
       );
 
       const newKennisartikelIndex = this.kennisartikelen.findIndex(
-        (k) => k.kennisartikel.id === kennisartikel.uuid
+        (k) => k.kennisartikel.url === kennisartikel.url
       );
 
       if (newKennisartikelIndex === -1) {
@@ -160,7 +160,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
             title:
               kennisartikel.vertalingen[0]?.productTitelDecentraal ??
               "Onbekende titel",
-            id: kennisartikel.uuid,
+            url: kennisartikel.url,
           },
           shouldStore: true,
         });

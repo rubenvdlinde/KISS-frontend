@@ -26,7 +26,7 @@ export type Website = {
 };
 
 export type Kennisartikel = {
-  id: string;
+  url: string;
   title: string;
 };
 

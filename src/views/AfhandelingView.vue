@@ -136,7 +136,7 @@
         <ul>
           <li
             v-for="record in contactmomentStore.kennisartikelen"
-            :key="record.kennisartikel.id"
+            :key="record.kennisartikel.url"
           >
             <label>
               {{ record.kennisartikel.title }}
@@ -265,9 +265,9 @@ const saveContact = (contactmoment: Contactmoment) => {
   saving.value = true;
   errorMessage.value = "";
 
-  //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
-  enrichContactmomentWithNotitie(contactmoment);
-  enrichContactmomentWithStartdatum(contactmoment);
+  addNotitieToContactmoment(contactmoment);
+  addStartdatumToContactmoment(contactmoment);
+  addKennisartikelenToContactmoment(contactmoment);
 
   return contactmomentService
     .save(contactmoment)
@@ -301,12 +301,22 @@ const saveContact = (contactmoment: Contactmoment) => {
     });
 };
 
-const enrichContactmomentWithNotitie = (contactmoment: Contactmoment) => {
+const addNotitieToContactmoment = (contactmoment: Contactmoment) => {
   contactmoment.tekst = contactmomentStore.notitie;
 };
 
-const enrichContactmomentWithStartdatum = (contactmoment: Contactmoment) => {
+const addStartdatumToContactmoment = (contactmoment: Contactmoment) => {
   contactmoment.startdatum = contactmomentStore.startdatum;
+};
+
+const addKennisartikelenToContactmoment = (contactmoment: Contactmoment) => {
+  if (!contactmomentStore.kennisartikelen) return;
+
+  contactmomentStore.kennisartikelen.forEach((kennisartikel) => {
+    if (!kennisartikel.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(kennisartikel.kennisartikel.url);
+  });
 };
 </script>
 
