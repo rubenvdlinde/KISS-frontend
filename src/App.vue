@@ -59,8 +59,15 @@
               />
             </template>
             <template #[NotitieTabs.Terugbel]>
-              <contactverzoek-formulier
-                v-if="state.currentNotitieTab === NotitieTabs.Terugbel"
+              <p v-if="contactverzoekIsSentToMedewerker">
+                Contactverzoek verstuurd naar
+                {{ contactverzoekIsSentToMedewerker }}
+              </p>
+              <ContactverzoekFormulier
+                :huidige-vraag="contactmomentStore.huidigeVraag"
+                :huidige-klant="contactmomentStore.klantVoorHuidigeVraag"
+                @start="handleContactverzoekStart"
+                @submit="handleContactverzoekSubmit"
               />
             </template>
           </tabs-component>
@@ -87,7 +94,7 @@ import TabsComponent from "@/components/TabsComponent.vue";
 import { ensureState } from "./stores/create-store";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ContactmomentVragenMenu from "./features/contactmoment/ContactmomentVragenMenu.vue";
-import { watch } from "vue";
+import { watch, computed } from "vue";
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
@@ -112,6 +119,28 @@ watch(
     state.reset();
   }
 );
+
+const contactverzoekIsSentToMedewerker = computed(
+  () => contactmomentStore.huidigeVraag.contactverzoek.medewerker
+);
+
+const handleContactverzoekStart = () => {
+  contactmomentStore.huidigeVraag.contactverzoek.isInProgress = true;
+};
+
+const handleContactverzoekSubmit = ({
+  medewerker,
+  url,
+}: {
+  medewerker: string;
+  url: string;
+}) => {
+  const { contactverzoek } = contactmomentStore.huidigeVraag;
+  contactverzoek.url = url;
+  contactverzoek.medewerker = medewerker;
+  contactverzoek.isSubmitted = true;
+  contactverzoek.isInProgress = false;
+};
 </script>
 
 <style lang="scss">
