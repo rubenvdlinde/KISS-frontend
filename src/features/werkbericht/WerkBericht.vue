@@ -82,11 +82,19 @@ const props = defineProps({
 
 const contactmomentStore = useContactmomentStore();
 
-const berichtSelectedInContactmoment = ref(
-  contactmomentStore.nieuwsberichten.findIndex(
-    (n) => n.id === props.bericht.id
-  ) !== -1
-);
+const berichtSelectedInContactmoment = computed(() => {
+  const foundInNieuwsberichten =
+    contactmomentStore.nieuwsberichten.findIndex(
+      (n) => n.id === props.bericht.id
+    ) !== -1;
+
+  const foundInWerkinstructies =
+    contactmomentStore.werkinstructies.findIndex(
+      (w) => w.id === props.bericht.id
+    ) !== -1;
+
+  return foundInNieuwsberichten || foundInWerkinstructies;
+});
 
 const read = ref<boolean>(props.bericht.read);
 const toggleReadIsLoading = ref<boolean>(false);
