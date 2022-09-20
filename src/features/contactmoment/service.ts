@@ -59,7 +59,6 @@ export function useContactmomentService() {
   return {
     save,
     getGespreksResultaten,
-    // saveZaak,
   };
 }
 

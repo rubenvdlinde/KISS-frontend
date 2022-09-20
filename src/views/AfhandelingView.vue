@@ -269,6 +269,9 @@ const saveContact = (contactmoment: Contactmoment) => {
   addStartdatumToContactmoment(contactmoment);
   addKennisartikelenToContactmoment(contactmoment);
   addWebsitesToContactmoment(contactmoment);
+  addMedewerkersToContactmoment(contactmoment);
+  addNieuwsberichtToContactmoment(contactmoment);
+  addWerkinstructiesToContactmoment(contactmoment);
 
   return contactmomentService
     .save(contactmoment)
@@ -327,6 +330,42 @@ const addWebsitesToContactmoment = (contactmoment: Contactmoment) => {
     if (!website.shouldStore) return;
 
     contactmoment.onderwerpLinks.push(website.website.url);
+  });
+};
+
+const addMedewerkersToContactmoment = (contactmoment: Contactmoment) => {
+  if (!contactmomentStore.medewerkers) return;
+
+  contactmomentStore.medewerkers.forEach((medewerker) => {
+    if (!medewerker.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(
+      `/medewerkers/${medewerker.medewerker.id}`
+    );
+  });
+};
+
+const addNieuwsberichtToContactmoment = (contactmoment: Contactmoment) => {
+  if (!contactmomentStore.nieuwsberichten) return;
+
+  contactmomentStore.nieuwsberichten.forEach((nieuwsbericht) => {
+    if (!nieuwsbericht.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(
+      `/nieuwsberichten/${nieuwsbericht.nieuwsbericht.id}`
+    );
+  });
+};
+
+const addWerkinstructiesToContactmoment = (contactmoment: Contactmoment) => {
+  if (!contactmomentStore.werkinstructies) return;
+
+  contactmomentStore.werkinstructies.forEach((werkinstructie) => {
+    if (!werkinstructie.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(
+      `/werkinstructies/${werkinstructie.werkinstructie.id}`
+    );
   });
 };
 </script>
