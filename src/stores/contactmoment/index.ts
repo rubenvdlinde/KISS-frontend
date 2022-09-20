@@ -124,46 +124,54 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addMedewerker(medewerker: any) {
-      if (this.medewerkers.find((m) => m.id === medewerker.id)) return;
+      this.medewerkers.forEach((m) => (m.shouldStore = m.id === medewerker.id));
 
-      this.medewerkers.forEach((m) => {
-        m.shouldStore = false;
-      });
+      const newMedewerkerIndex = this.medewerkers.findIndex(
+        (m) => m.id === medewerker.id
+      );
 
-      this.medewerkers.push({
-        id: medewerker.id,
-        voornaam: medewerker.contact.voornaam,
-        voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
-        achternaam: medewerker.contact.achternaam,
-        emailadres: medewerker.contact.emailadres,
-        shouldStore: true,
-      });
+      if (newMedewerkerIndex === -1) {
+        this.medewerkers.push({
+          id: medewerker.id,
+          voornaam: medewerker.contact.voornaam,
+          voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
+          achternaam: medewerker.contact.achternaam,
+          emailadres: medewerker.contact.emailadres,
+          shouldStore: true,
+        });
+      }
     },
 
     addKennisartikel(kennisartikel: any) {
-      if (this.kennisartikelen.find((k) => k.id === kennisartikel.uuid)) return;
+      this.kennisartikelen.forEach(
+        (k) => (k.shouldStore = k.id === kennisartikel.uuid)
+      );
 
-      this.kennisartikelen.forEach((k) => {
-        k.shouldStore = false;
-      });
+      const newKennisartikelIndex = this.kennisartikelen.findIndex(
+        (k) => k.id === kennisartikel.uuid
+      );
 
-      this.kennisartikelen.push({
-        title:
-          kennisartikel?.vertalingen[0]?.productTitelDecentraal ??
-          "Onbekende titel",
-        id: kennisartikel.uuid,
-        shouldStore: true,
-      });
+      if (newKennisartikelIndex === -1) {
+        this.kennisartikelen.push({
+          title:
+            kennisartikel.vertalingen[0]?.productTitelDecentraal ??
+            "Onbekende titel",
+          id: kennisartikel.uuid,
+          shouldStore: true,
+        });
+      }
     },
 
     addWebsite(website: Website) {
-      if (this.websites.find((w) => w.url === website.url)) return;
+      this.websites.forEach((w) => (w.shouldStore = w.url === website.url));
 
-      this.websites.forEach((w) => {
-        w.shouldStore = false;
-      });
+      const newWebsiteIndex = this.websites.findIndex(
+        (w) => w.url === website.url
+      );
 
-      this.websites.push({ ...website, shouldStore: true });
+      if (newWebsiteIndex === -1) {
+        this.websites.push({ ...website, shouldStore: true });
+      }
     },
 
     toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
