@@ -72,23 +72,26 @@
         }}</utrecht-heading>
         <ul>
           <li
-            v-for="medewerker in contactmomentStore.medewerkers"
-            :key="medewerker.id"
+            v-for="record in contactmomentStore.medewerkers"
+            :key="record.medewerker.id"
           >
             <label>
-              <span v-if="medewerker.voornaam || medewerker.achternaam"
+              <span
+                v-if="
+                  record.medewerker.voornaam || record.medewerker.achternaam
+                "
                 >{{
                   [
-                    medewerker.voornaam,
-                    medewerker.voorvoegselAchternaam,
-                    medewerker.achternaam,
+                    record.medewerker.voornaam,
+                    record.medewerker.voorvoegselAchternaam,
+                    record.medewerker.achternaam,
                   ]
                     .filter((x) => x)
                     .join(" ")
                 }}
-                ({{ medewerker.emailadres }})</span
+                ({{ record.medewerker.emailadres }})</span
               >
-              <input type="checkbox" v-model="medewerker.shouldStore" />
+              <input type="checkbox" v-model="record.shouldStore" />
             </label>
           </li>
         </ul>
@@ -104,15 +107,18 @@
             : "Gerelateerde website"
         }}</utrecht-heading>
         <ul>
-          <li v-for="website in contactmomentStore.websites" :key="website.url">
+          <li
+            v-for="record in contactmomentStore.websites"
+            :key="record.website.url"
+          >
             <label>
               <a
-                :href="website.url"
+                :href="record.website.url"
                 rel="noopener noreferrer"
                 target="_blank"
-                >{{ website.title }}</a
+                >{{ record.website.title }}</a
               >
-              <input type="checkbox" v-model="website.shouldStore" />
+              <input type="checkbox" v-model="record.shouldStore" />
             </label>
           </li>
         </ul>
@@ -129,12 +135,12 @@
         }}</utrecht-heading>
         <ul>
           <li
-            v-for="kennisartikel in contactmomentStore.kennisartikelen"
-            :key="kennisartikel.id"
+            v-for="record in contactmomentStore.kennisartikelen"
+            :key="record.kennisartikel.id"
           >
             <label>
-              {{ kennisartikel.title }}
-              <input type="checkbox" v-model="kennisartikel.shouldStore" />
+              {{ record.kennisartikel.title }}
+              <input type="checkbox" v-model="record.shouldStore" />
             </label>
           </li>
         </ul>
@@ -151,12 +157,12 @@
         }}</utrecht-heading>
         <ul>
           <li
-            v-for="nieuwsbericht in contactmomentStore.nieuwsberichten"
-            :key="nieuwsbericht.id"
+            v-for="record in contactmomentStore.nieuwsberichten"
+            :key="record.nieuwsbericht.id"
           >
             <label>
-              {{ nieuwsbericht.title }}
-              <input type="checkbox" v-model="nieuwsbericht.shouldStore" />
+              {{ record.nieuwsbericht.title }}
+              <input type="checkbox" v-model="record.shouldStore" />
             </label>
           </li>
         </ul>
@@ -173,12 +179,12 @@
         }}</utrecht-heading>
         <ul>
           <li
-            v-for="werkinstructie in contactmomentStore.werkinstructies"
-            :key="werkinstructie.id"
+            v-for="record in contactmomentStore.werkinstructies"
+            :key="record.werkinstructie.id"
           >
             <label>
-              {{ werkinstructie.title }}
-              <input type="checkbox" v-model="werkinstructie.shouldStore" />
+              {{ record.werkinstructie.title }}
+              <input type="checkbox" v-model="record.shouldStore" />
             </label>
           </li>
         </ul>

@@ -39,7 +39,3 @@ export type Werkinstructie = {
   id: string;
   title: string;
 };
-
-export type Storable = {
-  shouldStore?: boolean;
-};

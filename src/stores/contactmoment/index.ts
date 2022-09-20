@@ -2,7 +2,6 @@ import type { Klant } from "@/features/klant/types";
 import type {
   Medewerker,
   Website,
-  Storable,
   Kennisartikel,
   Nieuwsbericht,
   Werkinstructie,
@@ -13,7 +12,7 @@ import { resetAllState } from "../create-store";
 import type { NieuweKlant } from "./types";
 export * from "./types";
 
-export type ContactmomentZaak = Zaak & Storable;
+export type ContactmomentZaak = Zaak & { shouldStore: boolean };
 
 interface ContactmomentState {
   contactmomentLoopt: boolean;
@@ -23,11 +22,11 @@ interface ContactmomentState {
   contactverzoek: { url: string; medewerker: string } | undefined;
   nieuweKlant: NieuweKlant | undefined;
   startdatum: string;
-  medewerkers: (Medewerker & Storable)[];
-  websites: (Website & Storable)[];
-  kennisartikelen: (Kennisartikel & Storable)[];
-  nieuwsberichten: (Nieuwsbericht & Storable)[];
-  werkinstructies: (Werkinstructie & Storable)[];
+  medewerkers: { medewerker: Medewerker; shouldStore: boolean }[];
+  websites: { website: Website; shouldStore: boolean }[];
+  kennisartikelen: { kennisartikel: Kennisartikel; shouldStore: boolean }[];
+  nieuwsberichten: { nieuwsbericht: Nieuwsbericht; shouldStore: boolean }[];
+  werkinstructies: { werkinstructie: Werkinstructie; shouldStore: boolean }[];
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
@@ -124,19 +123,23 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addMedewerker(medewerker: any) {
-      this.medewerkers.forEach((m) => (m.shouldStore = m.id === medewerker.id));
+      this.medewerkers.forEach(
+        (m) => (m.shouldStore = m.medewerker.id === medewerker.id)
+      );
 
       const newMedewerkerIndex = this.medewerkers.findIndex(
-        (m) => m.id === medewerker.id
+        (m) => m.medewerker.id === medewerker.id
       );
 
       if (newMedewerkerIndex === -1) {
         this.medewerkers.push({
-          id: medewerker.id,
-          voornaam: medewerker.contact.voornaam,
-          voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
-          achternaam: medewerker.contact.achternaam,
-          emailadres: medewerker.contact.emailadres,
+          medewerker: {
+            id: medewerker.id,
+            voornaam: medewerker.contact.voornaam,
+            voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
+            achternaam: medewerker.contact.achternaam,
+            emailadres: medewerker.contact.emailadres,
+          },
           shouldStore: true,
         });
       }
@@ -144,39 +147,43 @@ export const useContactmomentStore = defineStore("contactmoment", {
 
     addKennisartikel(kennisartikel: any) {
       this.kennisartikelen.forEach(
-        (k) => (k.shouldStore = k.id === kennisartikel.uuid)
+        (k) => (k.shouldStore = k.kennisartikel.id === kennisartikel.uuid)
       );
 
       const newKennisartikelIndex = this.kennisartikelen.findIndex(
-        (k) => k.id === kennisartikel.uuid
+        (k) => k.kennisartikel.id === kennisartikel.uuid
       );
 
       if (newKennisartikelIndex === -1) {
         this.kennisartikelen.push({
-          title:
-            kennisartikel.vertalingen[0]?.productTitelDecentraal ??
-            "Onbekende titel",
-          id: kennisartikel.uuid,
+          kennisartikel: {
+            title:
+              kennisartikel.vertalingen[0]?.productTitelDecentraal ??
+              "Onbekende titel",
+            id: kennisartikel.uuid,
+          },
           shouldStore: true,
         });
       }
     },
 
     addWebsite(website: Website) {
-      this.websites.forEach((w) => (w.shouldStore = w.url === website.url));
+      this.websites.forEach(
+        (w) => (w.shouldStore = w.website.url === website.url)
+      );
 
       const newWebsiteIndex = this.websites.findIndex(
-        (w) => w.url === website.url
+        (w) => w.website.url === website.url
       );
 
       if (newWebsiteIndex === -1) {
-        this.websites.push({ ...website, shouldStore: true });
+        this.websites.push({ website, shouldStore: true });
       }
     },
 
     toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
       const foundBerichtIndex = this.nieuwsberichten.findIndex(
-        (n) => n.id === nieuwsbericht.id
+        (n) => n.nieuwsbericht.id === nieuwsbericht.id
       );
 
       if (foundBerichtIndex !== -1) {
@@ -184,12 +191,12 @@ export const useContactmomentStore = defineStore("contactmoment", {
         return;
       }
 
-      this.nieuwsberichten.push({ ...nieuwsbericht, shouldStore: true });
+      this.nieuwsberichten.push({ nieuwsbericht, shouldStore: true });
     },
 
     toggleWerkinstructie(werkinstructie: Werkinstructie) {
       const foundWerkinstructieIndex = this.werkinstructies.findIndex(
-        (k) => k.id === werkinstructie.id
+        (w) => w.werkinstructie.id === werkinstructie.id
       );
 
       if (foundWerkinstructieIndex !== -1) {
@@ -197,7 +204,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
         return;
       }
 
-      this.werkinstructies.push({ ...werkinstructie, shouldStore: true });
+      this.werkinstructies.push({ werkinstructie, shouldStore: true });
     },
   },
 });
