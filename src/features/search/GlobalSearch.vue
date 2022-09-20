@@ -54,9 +54,10 @@
                 </a>
                 <a
                   v-else
-                  @click="
+                  @click.prevent="
                     handleWebsiteSelected({ url: url.toString(), title: title })
                   "
+                  :href="url.toString()"
                   class="icon-after chevron-down"
                   rel="noopener noreferrer"
                   ><span :class="`category-${source}`">{{ source }}</span
