@@ -158,7 +158,7 @@
         <ul>
           <li
             v-for="record in contactmomentStore.nieuwsberichten"
-            :key="record.nieuwsbericht.id"
+            :key="record.nieuwsbericht.url"
           >
             <label>
               {{ record.nieuwsbericht.title }}
@@ -180,7 +180,7 @@
         <ul>
           <li
             v-for="record in contactmomentStore.werkinstructies"
-            :key="record.werkinstructie.id"
+            :key="record.werkinstructie.url"
           >
             <label>
               {{ record.werkinstructie.title }}
@@ -351,9 +351,7 @@ const addNieuwsberichtToContactmoment = (contactmoment: Contactmoment) => {
   contactmomentStore.nieuwsberichten.forEach((nieuwsbericht) => {
     if (!nieuwsbericht.shouldStore) return;
 
-    contactmoment.onderwerpLinks.push(
-      `/nieuwsberichten/${nieuwsbericht.nieuwsbericht.id}`
-    );
+    contactmoment.onderwerpLinks.push(nieuwsbericht.nieuwsbericht.url);
   });
 };
 
@@ -363,9 +361,7 @@ const addWerkinstructiesToContactmoment = (contactmoment: Contactmoment) => {
   contactmomentStore.werkinstructies.forEach((werkinstructie) => {
     if (!werkinstructie.shouldStore) return;
 
-    contactmoment.onderwerpLinks.push(
-      `/werkinstructies/${werkinstructie.werkinstructie.id}`
-    );
+    contactmoment.onderwerpLinks.push(werkinstructie.werkinstructie.url);
   });
 };
 </script>

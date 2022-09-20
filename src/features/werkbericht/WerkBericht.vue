@@ -85,12 +85,12 @@ const contactmomentStore = useContactmomentStore();
 const berichtSelectedInContactmoment = computed(() => {
   const foundInNieuwsberichten =
     contactmomentStore.nieuwsberichten.findIndex(
-      (n) => n.nieuwsbericht.id === props.bericht.id
+      (n) => n.nieuwsbericht.url === props.bericht.url
     ) !== -1;
 
   const foundInWerkinstructies =
     contactmomentStore.werkinstructies.findIndex(
-      (w) => w.werkinstructie.id === props.bericht.id
+      (w) => w.werkinstructie.url === props.bericht.url
     ) !== -1;
 
   return foundInNieuwsberichten || foundInWerkinstructies;
@@ -151,7 +151,7 @@ const sanitized = computed(() => processHtml(props.bericht.content));
 
 const handleToggleBerichtInContactmoment = (): void => {
   const type = props.bericht.types[0];
-  const bericht = { id: props.bericht.id, title: props.bericht.title };
+  const bericht = { url: props.bericht.url, title: props.bericht.title };
 
   type === "nieuws" && contactmomentStore.toggleNieuwsbericht(bericht);
   type === "werkinstructie" && contactmomentStore.toggleWerkinstructie(bericht);

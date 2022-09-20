@@ -31,11 +31,11 @@ export type Kennisartikel = {
 };
 
 export type Nieuwsbericht = {
-  id: string;
+  url: string;
   title: string;
 };
 
 export type Werkinstructie = {
-  id: string;
+  url: string;
   title: string;
 };

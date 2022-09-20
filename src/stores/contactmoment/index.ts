@@ -183,7 +183,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
 
     toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
       const foundBerichtIndex = this.nieuwsberichten.findIndex(
-        (n) => n.nieuwsbericht.id === nieuwsbericht.id
+        (n) => n.nieuwsbericht.url === nieuwsbericht.url
       );
 
       if (foundBerichtIndex !== -1) {
@@ -196,7 +196,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
 
     toggleWerkinstructie(werkinstructie: Werkinstructie) {
       const foundWerkinstructieIndex = this.werkinstructies.findIndex(
-        (w) => w.werkinstructie.id === werkinstructie.id
+        (w) => w.werkinstructie.url === werkinstructie.url
       );
 
       if (foundWerkinstructieIndex !== -1) {
