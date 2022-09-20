@@ -220,8 +220,6 @@ const selectSearchResult = (
 ) => {
   currentId.value = id;
 
-  console.log(source);
-
   if (contactmomentStore.contactmomentLoopt) {
     if (source === "Smoelenboek") handleSmoelenboekSelected(jsonObject);
     if (source === "Kennisartikel") handleKennisartikelSelected(jsonObject);

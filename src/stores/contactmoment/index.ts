@@ -141,7 +141,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addKennisartikel(kennisartikel: any) {
-      console.log({ kennisartikel });
       if (this.kennisartikelen.find((k) => k.id === kennisartikel.uuid)) return;
 
       this.kennisartikelen.forEach((k) => {

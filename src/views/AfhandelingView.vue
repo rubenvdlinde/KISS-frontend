@@ -220,8 +220,6 @@ const saving = ref(false);
 const contactmomentService = useContactmomentService();
 const errorMessage = ref("");
 
-console.log({ contactmomentStore });
-
 const zakenToevoegenAanContactmoment = (contactmomentId: string) => {
   const promises = contactmomentStore?.zaken
     .filter((zaak) => zaak.shouldStore)
