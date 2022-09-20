@@ -54,7 +54,9 @@
                 </a>
                 <a
                   v-else
-                  @click="handleWebsiteSelected(url.toString(), title)"
+                  @click="
+                    handleWebsiteSelected({ url: url.toString(), title: title })
+                  "
                   class="icon-after chevron-down"
                   rel="noopener noreferrer"
                   ><span :class="`category-${source}`">{{ source }}</span
@@ -149,7 +151,11 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 import MedewerkerDetail from "./MedewerkerDetail.vue";
 import KennisartikelDetail from "./KennisartikelDetail.vue";
-import type { Medewerker, Kennisartikel } from "@/features/search/types";
+import type {
+  Medewerker,
+  Kennisartikel,
+  Website,
+} from "@/features/search/types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 
 const emit = defineEmits<{
@@ -241,9 +247,9 @@ const handleKennisartikelSelected = (kennisartikel: Kennisartikel): void => {
   contactmomentStore.addKennisartikel(kennisartikel);
 };
 
-const handleWebsiteSelected = (url: string, title: string): void => {
-  contactmomentStore.addWebsite({ url, title });
-  window.open(url);
+const handleWebsiteSelected = (website: Website): void => {
+  contactmomentStore.addWebsite(website);
+  window.open(website.url);
 };
 </script>
 
