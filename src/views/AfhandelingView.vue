@@ -1,24 +1,10 @@
 <template>
-  <modal-template v-if="cancelDialogRevealed">
-    <template #message>
-      <paragraph>
-        Weet je zeker dat je het contactmoment wilt annuleren? Alle gegevens
-        worden verwijderd.
-      </paragraph>
-    </template>
-
-    <template #menu>
-      <utrecht-button
-        modelValue
-        @click="cancelDialog.cancel"
-        appearance="secondary-action-button"
-        >Nee</utrecht-button
-      >
-      <utrecht-button modelValue @click="cancelDialog.confirm"
-        >Ja</utrecht-button
-      >
-    </template>
-  </modal-template>
+  <prompt-modal
+    :dialog="cancelDialog"
+    message="Weet je zeker dat je het contactmoment wilt annuleren? Alle gegevens worden verwijderd."
+    cancel-message="Nee"
+    confirm-message="Ja"
+  />
 
   <simple-spinner v-if="saving || gespreksresultaten.loading" />
 
@@ -179,7 +165,7 @@ import {
 import { ZakenOverzicht } from "@/features/zaaksysteem";
 import { useUserStore } from "@/stores/user";
 import { useConfirmDialog } from "@vueuse/core";
-import ModalTemplate from "../components/ModalTemplate.vue";
+import PromptModal from "@/components/PromptModal.vue";
 import { getFormattedUtcDate } from "@/services";
 import { nanoid } from "nanoid";
 
@@ -308,8 +294,7 @@ function setUserChannel(e: Event) {
   userStore.setKanaal(e.target.value);
 }
 
-const cancelDialogRevealed = ref(false);
-const cancelDialog = useConfirmDialog(cancelDialogRevealed);
+const cancelDialog = useConfirmDialog();
 cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
   router.push({ name: "home" });
