@@ -10,23 +10,27 @@
           localeString(bericht.date)
         }}</time>
 
-        <div>
-          <input
-            v-if="contactmomentStore.contactmomentLoopt"
-            class="save-bericht-to-contactmoment-checkbox"
-            type="checkbox"
-            title="Opslaan bij contactmoment"
-            v-model="berichtSelectedInContactmoment"
-            @click.stop="handleToggleBerichtInContactmoment"
-          />
+        <menu>
+          <li>
+            <input
+              v-if="contactmomentStore.contactmomentLoopt"
+              class="save-bericht-to-contactmoment-checkbox"
+              type="checkbox"
+              title="Opslaan bij contactmoment"
+              v-model="berichtSelectedInContactmoment"
+              @click.stop="handleToggleBerichtInContactmoment"
+            />
+          </li>
 
-          <button
-            @click="toggleRead"
-            :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
-            class="toggle-read icon-after book"
-            :disabled="toggleReadIsLoading"
-          />
-        </div>
+          <li>
+            <button
+              @click="toggleRead"
+              :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
+              class="toggle-read icon-after book"
+              :disabled="toggleReadIsLoading"
+            />
+          </li>
+        </menu>
       </div>
 
       <utrecht-heading model-value :level="level">
@@ -182,7 +186,7 @@ article {
       justify-content: space-between;
       align-items: center;
 
-      div {
+      menu {
         display: flex;
         gap: var(--spacing-default);
 
@@ -197,7 +201,7 @@ article {
           all: unset;
           color: var(--color-headings);
           position: relative;
-          top: 1px;
+          top: 4px;
 
           &:hover {
             color: var(--color-tertiary);
@@ -245,7 +249,7 @@ article {
       font-weight: normal;
     }
 
-    .heading-top-row div .toggle-read {
+    .heading-top-row menu .toggle-read {
       color: var(--color-tertiary);
     }
 
