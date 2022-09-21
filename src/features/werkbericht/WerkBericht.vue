@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, type PropType } from "vue";
+import { computed, ref, watch, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import {
   UtrechtHeading,
@@ -67,6 +67,13 @@ const props = defineProps({
 });
 
 const read = ref<boolean>(props.bericht.read);
+watch(
+  () => props.bericht.read,
+  (newValue) => {
+    read.value = newValue;
+  }
+);
+
 const toggleReadIsLoading = ref<boolean>(false);
 
 const toggleRead = async (): Promise<void> => {
