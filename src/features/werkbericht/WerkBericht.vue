@@ -88,12 +88,12 @@ const contactmomentStore = useContactmomentStore();
 
 const berichtSelectedInContactmoment = computed(() => {
   const foundInNieuwsberichten =
-    contactmomentStore.nieuwsberichten.findIndex(
+    contactmomentStore.huidigeVraag.nieuwsberichten.findIndex(
       (n) => n.nieuwsbericht.url === props.bericht.url
     ) !== -1;
 
   const foundInWerkinstructies =
-    contactmomentStore.werkinstructies.findIndex(
+    contactmomentStore.huidigeVraag.werkinstructies.findIndex(
       (w) => w.werkinstructie.url === props.bericht.url
     ) !== -1;
 
