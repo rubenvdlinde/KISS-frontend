@@ -1,27 +1,24 @@
 <template>
-  <label>
-    <input type="checkbox" @click.stop="koppel" v-model="selected" />
+  <label @click.stop>
+    <input type="checkbox" @click.stop="toggleZaak" :checked="isLinked" />
     <span>Opslaan bij contactmoment</span>
   </label>
 </template>
 <script lang="ts" setup>
-import { useContactmomentStore } from "@/stores/contactmoment";
+import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
 import type { Zaak } from "./types";
-import { ref, onMounted, type PropType } from "vue";
+import { computed } from "vue";
 
-const props = defineProps({
-  zaak: { type: Object as PropType<Zaak>, default: null },
-});
+const props = defineProps<{ zaak: Zaak; vraag: Vraag }>();
 
 const contactmoment = useContactmomentStore();
-const selected = ref(false);
 
-const koppel = () => {
-  selected.value = contactmoment.toggleZaak(props.zaak);
+const toggleZaak = () => {
+  contactmoment.upsertZaak(props.zaak, props.vraag, !isLinked.value);
 };
 
-onMounted(() => {
-  selected.value = contactmoment.isZaakLinkedToContactmoment(props.zaak.id);
+const isLinked = computed(() => {
+  return contactmoment.isZaakLinkedToContactmoment(props.zaak.id, props.vraag);
 });
 </script>
 

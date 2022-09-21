@@ -4,10 +4,10 @@
       <the-toast-section />
       <div
         class="app-layout"
-        :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
+        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
       >
         <header
-          :class="{ contactmomentLoopt: contactmoment.contactmomentLoopt }"
+          :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
         >
           <global-search v-if="route.meta.showSearch" />
 
@@ -19,7 +19,7 @@
             >Uitloggen</a
           >
         </header>
-        <nav v-if="contactmoment.contactmomentLoopt && route.meta.showNav">
+        <nav v-if="contactmomentStore.contactmomentLoopt && route.meta.showNav">
           <li>
             <router-link :to="{ name: 'home' }">Start</router-link>
           </li>
@@ -31,9 +31,9 @@
           </li>
         </nav>
         <aside
-          v-if="contactmoment.contactmomentLoopt && route.meta.showNotitie"
+          v-if="contactmomentStore.contactmomentLoopt && route.meta.showNotitie"
         >
-          <menu></menu>
+          <contactmoment-vragen-menu />
           <tabs-component
             v-model="state.currentNotitieTab"
             class="notitie-tabs"
@@ -48,13 +48,26 @@
               ></span>
             </template>
             <template #[NotitieTabs.Regulier]>
-              <contactmoment-notitie
-                class="notitie utrecht-textarea"
-              ></contactmoment-notitie>
+              <utrecht-heading id="notitieblok" model-value :level="2"
+                >Notitieblok</utrecht-heading
+              >
+              <textarea
+                aria-labelledby="notitieblok"
+                v-focus
+                class="utrecht-textarea"
+                v-model="contactmomentStore.huidigeVraag.notitie"
+              />
             </template>
             <template #[NotitieTabs.Terugbel]>
-              <contactverzoek-formulier
-                @isDirty="handleContactverzoekIsDirty"
+              <p v-if="contactverzoekIsSentToMedewerker">
+                Contactverzoek verstuurd naar
+                {{ contactverzoekIsSentToMedewerker }}
+              </p>
+              <ContactverzoekFormulier
+                :huidige-vraag="contactmomentStore.huidigeVraag"
+                :huidige-klant="contactmomentStore.klantVoorHuidigeVraag"
+                @start="handleContactverzoekStart"
+                @submit="handleContactverzoekSubmit"
               />
             </template>
           </tabs-component>
@@ -63,16 +76,7 @@
           <router-view />
         </main>
       </div>
-      <contactmoment-starter
-        v-if="route.meta.showSearch"
-        :beforeStopWarning="
-          state.contactverzoekTabIsDirty &&
-          state.contactverzoekIsDirty &&
-          !contactmoment.contactverzoek
-            ? 'Let op, u heeft een contactverzoek niet afgerond. Als u dit contactmoment afsluit wordt het contactverzoek niet verstuurt.'
-            : ''
-        "
-      />
+      <contactmoment-starter v-if="route.meta.showSearch" />
     </template>
   </login-overlay>
 </template>
@@ -81,50 +85,62 @@
 import { RouterView } from "vue-router";
 import { GlobalSearch } from "@/features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { ContentFeedback } from "@/features/feedback";
 import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
 import { ContactmomentStarter } from "@/features/contactmoment";
 import { useRoute } from "vue-router";
-import { watch } from "vue";
-import { ContactmomentNotitie } from "@/features/contactmoment";
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ensureState } from "./stores/create-store";
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import ContactmomentVragenMenu from "./features/contactmoment/ContactmomentVragenMenu.vue";
+import { watch, computed } from "vue";
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
   Terugbel = "Contactverzoek",
 }
 
+const contactmomentStore = useContactmomentStore();
+const route = useRoute();
+
 const state = ensureState({
   stateId: "App",
   stateFactory() {
     return {
       currentNotitieTab: NotitieTabs.Regulier,
-      contactverzoekTabIsDirty: false,
-      contactverzoekIsDirty: false,
     };
   },
 });
 
-const handleContactverzoekIsDirty = (isDirty: boolean) => {
-  state.value.contactverzoekIsDirty = isDirty;
-};
-
 watch(
-  () => state.value.currentNotitieTab,
-  (t: string) => {
-    if (t === NotitieTabs.Terugbel) {
-      state.value.contactverzoekTabIsDirty = true;
-    }
+  () => contactmomentStore.huidigeVraag,
+  () => {
+    state.reset();
   }
 );
-//Notities end
 
-const contactmoment = useContactmomentStore();
+const contactverzoekIsSentToMedewerker = computed(
+  () => contactmomentStore.huidigeVraag.contactverzoek.medewerker
+);
 
-const route = useRoute();
+const handleContactverzoekStart = () => {
+  contactmomentStore.huidigeVraag.contactverzoek.isInProgress = true;
+};
+
+const handleContactverzoekSubmit = ({
+  medewerker,
+  url,
+}: {
+  medewerker: string;
+  url: string;
+}) => {
+  const { contactverzoek } = contactmomentStore.huidigeVraag;
+  contactverzoek.url = url;
+  contactverzoek.medewerker = medewerker;
+  contactverzoek.isSubmitted = true;
+  contactverzoek.isInProgress = false;
+};
 </script>
 
 <style lang="scss">
@@ -277,6 +293,10 @@ body {
 
 utrecht-icon-loupe {
   pointer-events: none;
+}
+
+.utrecht-select {
+  appearance: auto;
 }
 
 button:hover {
@@ -491,6 +511,7 @@ form {
 menu {
   list-style: none;
 }
+
 .kiss-theme {
   --font-family: "Open Sans", sans-serif;
   --utrecht-paragraph-font-family: var(--font-family);
@@ -600,9 +621,9 @@ aside {
     padding: 0px;
     border: none;
     outline: none;
+    flex: 1;
   }
 
-  menu,
   [role="tablist"] {
     height: 3rem;
   }
@@ -647,7 +668,7 @@ aside {
     color: var(--color-white);
 
     &[aria-selected="true"] {
-      color: var(--color-tertiary);
+      color: var(--color-primary);
     }
   }
 }

@@ -1,1 +1,1 @@
-<template><p>U wordt doorgestuurd naar de login pagina...</p></template>
+<template><p>Je wordt doorgestuurd naar de login pagina...</p></template>

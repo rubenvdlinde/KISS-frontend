@@ -61,9 +61,10 @@ watch(
       return;
     }
 
-    const fromStore = contactmomentStore.klanten
-      .filter((x) => x.klant.id === klantId.value)
-      .map((x) => x.klant)[0];
+    const fromStore = contactmomentStore.vragen
+      .flatMap(({ klanten }) => klanten)
+      .map(({ klant }) => klant)
+      .find(({ id }) => id === klantId.value);
 
     if (fromStore) {
       klant.value = fromStore;
@@ -84,7 +85,7 @@ watch(
 );
 
 watch(klant, (k) => {
-  if (!k || k === contactmomentStore.klant) return;
+  if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
   contactmomentStore.setKlant(k);
 });
 </script>

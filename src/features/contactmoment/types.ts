@@ -33,6 +33,7 @@ export interface Contactmoment {
   medewerkerIdentificatie: MedewerkerIdentificatie | undefined;
   startdatum: string;
   einddatum: string;
+  gespreksId?: string;
 }
 
 export interface ContactmomentZaak {

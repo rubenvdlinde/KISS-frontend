@@ -47,6 +47,7 @@ import type { Zaak } from "./types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
 
+const contactmomentStore = useContactmomentStore();
 const router = useRouter();
 
 const props = defineProps({
@@ -61,7 +62,7 @@ const zaakService = useZaaksysteemService();
 const zaken = zaakService.findByBsn(props.klantBsn).withFetcher();
 
 const handleZaakSelected = (zaak: Zaak) => {
-  useContactmomentStore().addZaak(zaak);
+  contactmomentStore.upsertZaak(zaak, contactmomentStore.huidigeVraag);
   router.push({ name: "zaakDetail", params: { id: zaak.id } });
 };
 </script>
