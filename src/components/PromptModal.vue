@@ -1,9 +1,11 @@
 <template>
   <dialog ref="dialogRef" @close="onClose">
     <form method="dialog">
-      <paragraph>
-        {{ message }}
-      </paragraph>
+      <slot>
+        <paragraph v-if="message">
+          {{ message }}
+        </paragraph>
+      </slot>
       <menu>
         <li>
           <button
@@ -42,7 +44,7 @@ const props = defineProps({
   },
   message: {
     type: String,
-    required: true,
+    default: "",
   },
   cancelMessage: {
     type: String,
@@ -88,6 +90,7 @@ dialog {
   border-radius: var(--radius-default);
   padding: 2rem;
   border: 1px solid var(--color-primary);
+  min-width: 50%;
 }
 ::backdrop {
   background-color: rgba(102, 102, 102, 0.8);

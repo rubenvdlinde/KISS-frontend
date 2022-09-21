@@ -1,24 +1,12 @@
 <template>
-  <ModalTemplate v-if="isRevealed">
-    <template #message>
-      <ul class="errors">
-        <li v-for="(message, i) in allMessages" :key="i">
-          {{ message }}
-        </li>
-      </ul>
-      <p>Wil je de gegevens toch opslaan?</p>
-    </template>
-
-    <template #menu>
-      <utrecht-button
-        modelValue
-        @click="cancel"
-        appearance="secondary-action-button"
-        >Nee</utrecht-button
-      >
-      <utrecht-button modelValue @click="confirm">Ja</utrecht-button>
-    </template>
-  </ModalTemplate>
+  <prompt-modal :dialog="dialog" confirm-message="Ja" cancel-message="Nee">
+    <ul class="errors">
+      <li v-for="(message, i) in allMessages" :key="i">
+        {{ message }}
+      </li>
+    </ul>
+    <p>Wil je de gegevens toch opslaan?</p>
+  </prompt-modal>
   <form v-bind="$attrs" @submit.prevent="submit">
     <slot></slot>
   </form>
@@ -33,8 +21,7 @@ export default {
 <script setup lang="ts">
 import { useConfirmDialog } from "@vueuse/core";
 import { provideValidationMessages } from "./useValidationMessages";
-import ModalTemplate from "../ModalTemplate.vue";
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import PromptModal from "../PromptModal.vue";
 import type { FormHTMLAttributes } from "vue";
 
 // needed by vue compiler
@@ -42,28 +29,25 @@ import type { FormHTMLAttributes } from "vue";
 export interface NonBlockingFormProps extends FormHTMLAttributes {}
 defineProps<NonBlockingFormProps>();
 
-const { isRevealed, reveal, confirm, cancel } = useConfirmDialog();
+const dialog = useConfirmDialog();
 
 const allMessages = provideValidationMessages();
 
 const emit = defineEmits<{ (e: "submit", payload: Event): void }>();
 
-function submit(e: Event) {
+async function submit(e: Event) {
   if (allMessages.value.length) {
-    reveal().then(({ isCanceled }) => {
-      if (!isCanceled) {
-        emit("submit", e);
-      }
-    });
-  } else {
-    emit("submit", e);
+    const { isCanceled } = await dialog.reveal();
+    if (isCanceled) return;
   }
+
+  emit("submit", e);
 }
 </script>
 
 <style lang="scss" scopde>
 .errors {
   list-style: disc;
-  margin-bottom: var(--spacing-small);
+  margin-inline-start: var(--spacing-default);
 }
 </style>
