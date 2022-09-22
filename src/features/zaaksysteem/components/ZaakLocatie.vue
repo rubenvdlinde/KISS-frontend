@@ -2,7 +2,7 @@
   <section>
     <utrecht-heading :level="2" modelValue>Locatie</utrecht-heading>
 
-    <span>Dit tabblad heeft nog doorontwikkeling nodig.</span>
+    <span>Dit tabblad is nog in ontwikkeling.</span>
   </section>
 </template>
 

@@ -4,11 +4,7 @@
 
     <simple-spinner v-if="contactmomenten.loading" />
 
-    <span v-if="contactmomenten.error">
-      Er ging iets mis. Probeer het later nog eens.
-    </span>
-
-    <template v-if="contactmomenten.success">
+    <template v-if="contactmomenten.success && contactmomenten.data.length">
       <table>
         <thead>
           <tr>
@@ -31,6 +27,14 @@
         </tbody>
       </table>
     </template>
+
+    <span v-if="contactmomenten.success && !contactmomenten.data.length"
+      >Geen contactmomenten gevonden.</span
+    >
+
+    <span v-if="contactmomenten.error">
+      Er ging iets mis. Probeer het later nog eens.
+    </span>
   </section>
 </template>
 
