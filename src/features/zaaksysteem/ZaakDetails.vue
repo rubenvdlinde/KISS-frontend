@@ -9,11 +9,18 @@
 
     <tabs-component v-model="activeTab">
       <template #[Tabs.algemeen]> <zaak-algemeen :zaak="zaak" /> </template>
-      <template #[Tabs.documenten]> Documenten </template>
-      <template #[Tabs.betrokkenen]> Betrokkenen </template>
+
+      <template #[Tabs.documenten]> <zaak-documenten :zaak="zaak" /> </template>
+
+      <template #[Tabs.betrokkenen]>
+        <zaak-betrokkenen :zaak="zaak" />
+      </template>
+
       <template #[Tabs.contactmomenten]> Contactmomenten </template>
-      <template #[Tabs.historie]> Historie </template>
-      <template #[Tabs.locatie]> Locatie </template>
+
+      <template #[Tabs.historie]> <zaak-historie :zaak="zaak" /> </template>
+
+      <template #[Tabs.locatie]> <zaak-locatie :zaak="zaak" /> </template>
     </tabs-component>
 
     <div class="toelichting">
@@ -29,6 +36,10 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ZaakToelichting from "./components/ZaakToelichting.vue";
 import TabsComponent from "../../components/TabsComponent.vue";
 import ZaakAlgemeen from "./components/ZaakAlgemeen.vue";
+import ZaakDocumenten from "./components/ZaakDocumenten.vue";
+import ZaakBetrokkenen from "./components/ZaakBetrokkenen.vue";
+import ZaakHistorie from "./components/ZaakHistorie.vue";
+import ZaakLocatie from "./components/ZaakLocatie.vue";
 
 defineProps<{
   zaak: ZaakDetails;
