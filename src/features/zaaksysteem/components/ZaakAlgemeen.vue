@@ -29,23 +29,23 @@
       <ul>
         <li>
           <span class="label">Indiendatum</span>
-          <span class="value">{{ formatDateAndTime(zaak.startdatum) }}</span>
+          <span class="value">{{ formatDateOnly(zaak.indienDatum) }}</span>
         </li>
         <li>
           <span class="label">Registratiedatum</span>
-          <span class="value">{{ formatDateAndTime(zaak.startdatum) }}</span>
+          <span class="value">{{ formatDateOnly(zaak.registratieDatum) }}</span>
         </li>
         <li>
           <span class="label">Startdatum</span>
-          <span class="value">{{ formatDateAndTime(zaak.startdatum) }}</span>
+          <span class="value">{{ formatDateOnly(zaak.startdatum) }}</span>
         </li>
         <li>
           <span class="label">Streefdatum</span>
-          <span class="value">{{ formatDateAndTime(zaak.streefDatum) }}</span>
+          <span class="value">{{ formatDateOnly(zaak.streefDatum) }}</span>
         </li>
         <li>
           <span class="label">Fatale datum</span>
-          <span class="value">{{ formatDateAndTime(zaak.fataleDatum) }}</span>
+          <span class="value">{{ formatDateOnly(zaak.fataleDatum) }}</span>
         </li>
       </ul>
     </div>
@@ -56,13 +56,11 @@
 import { defineProps } from "vue";
 import type { ZaakDetails } from "./../types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { formatDateAndTime } from "@/helpers/date";
+import { formatDateOnly } from "@/helpers/date";
 
-const props = defineProps<{
+defineProps<{
   zaak: ZaakDetails;
 }>();
-
-console.log({ zaak: props.zaak });
 </script>
 
 <style scoped lang="scss">

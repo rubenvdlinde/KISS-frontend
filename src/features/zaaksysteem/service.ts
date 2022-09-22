@@ -10,9 +10,13 @@ import {
 import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
 
-const getBehandelaarName = (zaak: any): string => {
+type Roltype = "behandelaar" | "initiator";
+
+const getNamePerRoltype = (zaak: any, roltype: Roltype): string => {
   const behandelaar = zaak.embedded.rollen.find(
-    (rol: any) => rol.betrokkeneType === "medewerker"
+    (rol: any) =>
+      rol.betrokkeneType === "medewerker" &&
+      rol.omschrijvingGeneriek === roltype
   );
 
   const identificatie = behandelaar?.embedded?.betrokkeneIdentificatie;
@@ -43,7 +47,7 @@ function parseZaak(zaak: any): Zaak {
     registratiedatum: startdatum,
     status: zaak.embedded.status.statustoelichting,
     fataleDatum,
-    behandelaar: getBehandelaarName(zaak),
+    behandelaar: getNamePerRoltype(zaak, "behandelaar"),
     toelichting: zaak.toelichting,
   };
 }
@@ -107,11 +111,13 @@ export function useZaaksysteemService() {
             zaaktype: zaak.embedded.zaaktype.id,
             zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
             status: zaak.embedded.status.statustoelichting,
-            behandelaar: getBehandelaarName(zaak),
-            aanvrager: getBehandelaarName(zaak),
+            behandelaar: getNamePerRoltype(zaak, "behandelaar"),
+            aanvrager: getNamePerRoltype(zaak, "initiator"),
             startdatum: startdatum,
             fataleDatum: fataleDatum,
             streefDatum: streefDatum,
+            indienDatum: zaak.publicatiedatum ?? "Onbekend",
+            registratieDatum: new Date(zaak.registratiedatum),
           } as ZaakDetails;
         });
     }

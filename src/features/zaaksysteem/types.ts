@@ -12,6 +12,8 @@ export type ZaakDetails = {
   aanvrager: string;
   fataleDatum: Date;
   streefDatum: Date;
+  indienDatum: Date;
+  registratieDatum: Date;
 };
 
 export interface Zaak {
