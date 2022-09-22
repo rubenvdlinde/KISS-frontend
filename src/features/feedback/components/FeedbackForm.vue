@@ -76,23 +76,12 @@
   </form>
 
   <!-- Annuleer Dialog -->
-  <modal-template v-if="cancelDialogRevealed">
-    <template #message>
-      <paragraph>
-        Weet u zeker dat u wilt annuleren? Alle gegevens worden verwijderd.
-      </paragraph>
-    </template>
-
-    <template #menu>
-      <button
-        @click="cancelDialog.cancel"
-        class="utrecht-button utrecht-button--secondary-action"
-      >
-        Nee
-      </button>
-      <button @click="cancelDialog.confirm" class="utrecht-button">Ja</button>
-    </template>
-  </modal-template>
+  <prompt-modal
+    :dialog="cancelDialog"
+    message="Weet je zeker dat je wilt annuleren? Alle gegevens worden verwijderd."
+    cancel-message="Nee"
+    confirm-message="Ja"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -102,8 +91,7 @@ import type { CurrentFeedbackSection, Feedback } from "../types";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import ModalTemplate from "@/components/ModalTemplate.vue";
-import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import PromptModal from "@/components/PromptModal.vue";
 import type { ServiceData } from "@/services/index";
 import { useUserStore } from "@/stores/user";
 
@@ -119,8 +107,7 @@ const userStore = useUserStore();
 
 const serviceResult = ref<ServiceData<Feedback>>();
 const service = useFeedbackService();
-const cancelDialogRevealed = ref(false);
-const cancelDialog = useConfirmDialog(cancelDialogRevealed);
+const cancelDialog = useConfirmDialog();
 const emit = defineEmits(["cancelled", "saved"]);
 const feedback: Feedback = reactive({
   naam: props.name,

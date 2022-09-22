@@ -117,7 +117,7 @@ watch(singleKlant, (n, o) => {
 });
 
 watch(
-  () => contactmomentStore.klant,
+  () => contactmomentStore.klantVoorHuidigeVraag,
   () => {
     klanten.refresh();
   },

@@ -36,9 +36,9 @@ const activeTab = ref(Tabs.personenZoeker);
 const currentBsn = ref<string>();
 
 const router = useRouter();
-
+const contactmomentStore = useContactmomentStore();
 const handleZaakSelected = (zaak: Zaak) => {
-  useContactmomentStore().addZaak(zaak);
+  contactmomentStore.upsertZaak(zaak, contactmomentStore.huidigeVraag);
   router.push({ name: "zaakDetail", params: { id: zaak.id } });
 };
 

@@ -1,102 +1,137 @@
 import type { Klant } from "@/features/klant/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
+import { getFormattedUtcDate } from "@/services";
 import { defineStore } from "pinia";
 import { resetAllState } from "../create-store";
-import type { NieuweKlant } from "./types";
 export * from "./types";
 
-export type ContactmomentZaak = Zaak & { shouldStore: boolean };
+export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
+export type ContactmomentContactVerzoek = {
+  url: string;
+  medewerker: string;
+  isInProgress: boolean;
+  isSubmitted: boolean;
+};
+
+export interface Vraag {
+  zaken: ContactmomentZaak[];
+  notitie: string;
+  contactverzoek: ContactmomentContactVerzoek;
+  startdatum: string;
+  kanaal: string;
+  resultaat: string;
+  klanten: { klant: Klant; shouldStore: boolean }[];
+}
+
+function initVraag(): Vraag {
+  return {
+    zaken: [],
+    notitie: "",
+    contactverzoek: {
+      url: "",
+      medewerker: "",
+      isInProgress: false,
+      isSubmitted: false,
+    },
+    startdatum: getFormattedUtcDate(),
+    kanaal: "",
+    resultaat: "",
+    klanten: [],
+  };
+}
 
 interface ContactmomentState {
   contactmomentLoopt: boolean;
-  zaken: ContactmomentZaak[];
-  klanten: { klant: Klant; shouldStore: boolean }[];
-  notitie: string;
-  contactverzoek: { url: string; medewerker: string } | undefined;
-  nieuweKlant: NieuweKlant | undefined;
-  startdatum: string;
+  vragen: Vraag[];
+  huidigeVraag: Vraag;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
   state: () => {
+    const huidigeVraag = initVraag();
     return {
       contactmomentLoopt: false,
-      zaken: <ContactmomentZaak[]>[],
-      klanten: [],
-      notitie: "",
-      contactverzoek: undefined,
-      nieuweKlant: undefined,
-      startdatum: "",
+      vragen: [huidigeVraag],
+      huidigeVraag,
     } as ContactmomentState;
   },
   getters: {
-    klant: (state): Klant | undefined =>
-      state.klanten.filter((x) => x.shouldStore).map((x) => x.klant)[0],
+    klantVoorHuidigeVraag(state): Klant | undefined {
+      return state.huidigeVraag.klanten
+        ?.filter((x) => x.shouldStore)
+        ?.map((x) => x.klant)?.[0];
+    },
+    wouldLoseProgress(): boolean {
+      return this.huidigeVraag.contactverzoek.isInProgress;
+    },
   },
   actions: {
     start() {
+      if (this.contactmomentLoopt) return;
       this.contactmomentLoopt = true;
+    },
+    startNieuweVraag() {
+      const nieuweVraag = initVraag();
+      if (this.huidigeVraag.klanten) {
+        nieuweVraag.klanten = this.huidigeVraag.klanten.map(
+          (klantKoppeling) => ({
+            ...klantKoppeling,
+          })
+        );
+      }
+      this.vragen.push(nieuweVraag);
+      this.switchVraag(nieuweVraag);
+    },
+    switchVraag(vraag: Vraag) {
+      this.huidigeVraag = vraag;
     },
     stop() {
       this.$reset();
       // Temporary. When we implement multiple running contactmomenten, each will have it's own state
       resetAllState();
     },
-    addZaak(zaak: Zaak) {
-      const contactmomentZaak = zaak as ContactmomentZaak;
-      const index = this.zaken.findIndex((element) => element.id === zaak.id);
-      if (index === -1) {
-        //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
-        this.zaken.push(contactmomentZaak);
-        contactmomentZaak.shouldStore = true;
-      } else {
-        const existingZaak = this.zaken[index];
-        existingZaak.shouldStore = true;
+    upsertZaak(zaak: Zaak, vraag: Vraag, shouldStore = true) {
+      const existingZaak = vraag.zaken.find(
+        (contacmomentZaak) => contacmomentZaak.zaak.id === zaak.id
+      );
+
+      if (existingZaak) {
+        existingZaak.zaak = zaak;
+        existingZaak.shouldStore = shouldStore;
+        return;
       }
+
+      //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
+      vraag.zaken.push({
+        zaak,
+        shouldStore,
+      });
     },
-    toggleZaak(zaak: Zaak) {
-      const contactmomentZaak = zaak as ContactmomentZaak;
-      const index = this.zaken.findIndex((element) => element.id === zaak.id);
-      if (index === -1) {
-        //als de zaak nog niet gekoppeld was aan het contact moment dan voegen we hem eerst toe
-        this.zaken.push(contactmomentZaak);
-        contactmomentZaak.shouldStore = true;
-        return true;
-      } else {
-        const existingZaak = this.zaken[index];
-        //toggle of hij wel niet opgeslagen moet worden bij het contactmoment
-        existingZaak.shouldStore = !existingZaak.shouldStore;
-        return existingZaak.shouldStore;
-      }
-    },
-    isZaakLinkedToContactmoment(id: string) {
-      const zaak = this.zaken.find((element) => element.id === id);
-      return zaak ? zaak.shouldStore : false;
+    isZaakLinkedToContactmoment(id: string, vraag: Vraag) {
+      return vraag.zaken.some(
+        ({ zaak, shouldStore }) => shouldStore && zaak.id === id
+      );
     },
     setKlant(klant: Klant) {
-      this.nieuweKlant = undefined;
+      if (!this.huidigeVraag) return;
+      const match = this.huidigeVraag.klanten.find(
+        (x) => x.klant.id === klant.id
+      );
 
-      const match = this.klanten.find((x) => x.klant.id === klant.id);
-      if (match?.shouldStore) return false;
-
-      this.klanten.forEach((x) => {
+      this.huidigeVraag.klanten.forEach((x) => {
         x.shouldStore = false;
       });
 
       if (match) {
         match.klant = klant;
         match.shouldStore = true;
-      } else {
-        this.klanten.push({
-          shouldStore: true,
-          klant,
-        });
+        return;
       }
 
-      return true;
-    },
-    setNotitie(notitie: string) {
-      this.notitie = notitie;
+      this.huidigeVraag.klanten.push({
+        shouldStore: true,
+        klant,
+      });
     },
   },
 });

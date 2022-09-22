@@ -72,7 +72,7 @@ export function useZaaksysteemService() {
     const getFindByBsnURL = () => {
       if (!bsn) return "";
 
-      return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=zaaktype`;
+      return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=zaaktype&extend[]=status&extend[]=rollen`;
     };
 
     const getZaakByBsn = (url: string): Promise<Paginated<Zaak>> =>

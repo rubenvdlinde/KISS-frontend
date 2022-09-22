@@ -43,6 +43,7 @@
       <zaken-overzicht
         v-else-if="store.zaken.length > 0"
         :zaken="store.zaken"
+        :vraag="contactmomentStore.huidigeVraag"
         @zaak-selected="zaakSelected"
       ></zaken-overzicht>
 
@@ -63,10 +64,13 @@ import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps({
   populatedBsn: { type: String, default: null },
 });
+
+const contactmomentStore = useContactmomentStore();
 
 const store = ensureState({
   stateId: "zaak-zoeker",

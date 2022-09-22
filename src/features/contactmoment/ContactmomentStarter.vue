@@ -1,7 +1,7 @@
 <template>
   <utrecht-button
     model-value
-    v-if="contactmoment.contactmomentLoopt"
+    v-if="contactmomentStore.contactmomentLoopt"
     type="button"
     class="contactmomentLoopt"
     @click="onStopContactMoment"
@@ -20,30 +20,10 @@
     Start contactmoment
   </utrecht-button>
 
-  <modal-template v-if="beforeStopDialogRevealed">
-    <template #message>
-      <paragraph>
-        {{ beforeStopWarning }}
-      </paragraph>
-    </template>
-
-    <template #menu>
-      <button
-        modelValue
-        @click="beforeStopDialog.cancel"
-        class="utrecht-button utrecht-button--secondary-action"
-      >
-        Hier blijven
-      </button>
-      <button
-        modelValue
-        @click="beforeStopDialog.confirm"
-        class="utrecht-button utrecht-button--action"
-      >
-        Doorgaan
-      </button>
-    </template>
-  </modal-template>
+  <prompt-modal
+    :dialog="beforeStopDialog"
+    message="Let op, je hebt het contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd."
+  />
 </template>
 
 <script lang="ts">
@@ -56,44 +36,37 @@ export default {
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
-import { useAttrs, defineProps, ref } from "vue";
+import { useAttrs } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
-import Paragraph from "@/nl-design-system/components/Paragraph.vue";
-import ModalTemplate from "@/components/ModalTemplate.vue";
-import { getFormattedUtcDate } from "@/services";
+import PromptModal from "@/components/PromptModal.vue";
 
-const props = defineProps<{
-  beforeStopWarning?: string;
-}>();
-
-const beforeStopDialogRevealed = ref(false);
-const beforeStopDialog = useConfirmDialog(beforeStopDialogRevealed);
-beforeStopDialog.onConfirm(() => stopContactMoment());
+const beforeStopDialog = useConfirmDialog();
 
 const attrs = useAttrs();
 
 const router = useRouter();
-const contactmoment = useContactmomentStore();
+const contactmomentStore = useContactmomentStore();
 
 const onStartContactMoment = () => {
   if (attrs.disabled) return;
-  contactmoment.startdatum = getFormattedUtcDate();
-  contactmoment.start();
+  contactmomentStore.start();
   router.push({ name: "klanten" });
 };
 
-const onStopContactMoment = () => {
-  if (props.beforeStopWarning) {
-    beforeStopDialog.reveal();
-  } else {
-    stopContactMoment();
-  }
-};
-
-const stopContactMoment = () => {
+const onStopContactMoment = async () => {
   if (attrs.disabled) return;
+  if (contactmomentStore.wouldLoseProgress) {
+    await waitForConfirmation();
+  }
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
+
+async function waitForConfirmation() {
+  const { isCanceled } = await beforeStopDialog.reveal();
+  if (isCanceled) {
+    throw new Error("canceled");
+  }
+}
 </script>
 
 <style scoped lang="scss">

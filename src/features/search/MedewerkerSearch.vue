@@ -134,6 +134,7 @@ function previousIndex() {
 function selectItem() {
   if (!listItems.value.length) return;
   searchText.value = listItems.value[activeIndex.value].value;
+  focusNextFormItem(inputRef.value);
 }
 
 const emit = defineEmits(["update:modelValue"]);
@@ -209,6 +210,13 @@ const shouldSetValidity = computed(
 watch(matchingResult, (val) => {
   emit("update:modelValue", val);
 });
+
+watch(
+  () => props.modelValue,
+  (v) => {
+    searchText.value = v;
+  }
+);
 
 watch([inputRef, shouldSetValidity, searchText], ([r, s, v]) => {
   if (!(r instanceof HTMLInputElement)) return;
