@@ -85,7 +85,7 @@ section {
 }
 
 ul > li:not(:last-child) {
-  margin-block-end: var(--spacing-small);
+  margin-block-end: var(--spacing-default);
 }
 
 li {
