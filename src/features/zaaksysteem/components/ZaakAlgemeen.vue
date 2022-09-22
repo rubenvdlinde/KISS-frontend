@@ -37,7 +37,9 @@
         </li>
         <li>
           <span class="label">Startdatum</span>
-          <span class="value">{{ formatDateOnly(zaak.startdatum) }}</span>
+          <span class="value">{{
+            formatDateOnly(new Date(zaak.startdatum))
+          }}</span>
         </li>
         <li>
           <span class="label">Streefdatum</span>

@@ -65,7 +65,6 @@ enum Tabs {
   locatie = "Locatie",
 }
 const activeTab = ref(Tabs.algemeen);
-
 </script>
 
 <style scoped lang="scss">

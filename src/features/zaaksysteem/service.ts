@@ -95,13 +95,12 @@ export function useZaaksysteemService() {
         .then(throwIfNotOk)
         .then((x) => x.json())
         .then((zaak) => {
-          const startdatum = new Date(zaak.startdatum);
-          const fataleDatum = DateTime.fromJSDate(startdatum)
+          const fataleDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
             .plus({
               days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
             })
             .toJSDate();
-          const streefDatum = DateTime.fromJSDate(startdatum)
+          const streefDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
             .plus({
               days: parseInt(zaak.embedded.zaaktype.servicenorm, 10),
             })
@@ -114,7 +113,7 @@ export function useZaaksysteemService() {
             status: zaak.embedded.status.statustoelichting,
             behandelaar: getNamePerRoltype(zaak, "behandelaar"),
             aanvrager: getNamePerRoltype(zaak, "initiator"),
-            startdatum: startdatum,
+            startdatum: zaak.startdatum,
             fataleDatum: fataleDatum,
             streefDatum: streefDatum,
             indienDatum: zaak.publicatiedatum ?? "Onbekend",
