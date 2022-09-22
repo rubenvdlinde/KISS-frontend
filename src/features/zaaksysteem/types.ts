@@ -14,6 +14,7 @@ export type ZaakDetails = {
   streefDatum: Date;
   indienDatum: Date;
   registratieDatum: Date;
+  self: string;
 };
 
 export interface Zaak {

@@ -9,6 +9,7 @@ import {
 } from "@/services";
 import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
+import type { ContactmomentViewModel } from "../contactmoment";
 
 type Roltype = "behandelaar" | "initiator";
 
@@ -118,20 +119,39 @@ export function useZaaksysteemService() {
             streefDatum: streefDatum,
             indienDatum: zaak.publicatiedatum ?? "Onbekend",
             registratieDatum: new Date(zaak.registratiedatum),
+            self: zaak["x-commongateway-metadata"].self,
           } as ZaakDetails;
         });
     }
 
     return ServiceResult.fromFetcher(
-      `${zaaksysteemBaseUri}/${id}?extend[]=all`,
+      `${zaaksysteemBaseUri}/${id}?extend[]=all&extend[]=x-commongateway-metadata.self`,
       get
     );
+  };
+
+  const getContactmomentenByZaak = (
+    zaakUri: string
+  ): ServiceData<ContactmomentViewModel[]> => {
+    const url = `${window.gatewayBaseUri}/api/objectcontactmomenten?extend[]=all&object=${zaakUri}&objectType=zaak`;
+
+    function get(url: string): Promise<ContactmomentViewModel[]> {
+      return fetchLoggedIn(url)
+        .then(throwIfNotOk)
+        .then((x) => x.json())
+        .then((contactmoment) =>
+          contactmoment.results.map((c: any) => c.embedded.contactmoment)
+        );
+    }
+
+    return ServiceResult.fromFetcher(url, get);
   };
 
   return {
     findByZaak,
     findByBsn,
     getZaak,
+    getContactmomentenByZaak,
   };
 }
 

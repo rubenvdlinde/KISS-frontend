@@ -8,19 +8,29 @@
     </div>
 
     <tabs-component v-model="activeTab">
-      <template #[Tabs.algemeen]> <zaak-algemeen :zaak="zaak" /> </template>
+      <template #[Tabs.algemeen]>
+        <zaak-algemeen :zaak="zaak" />
+      </template>
 
-      <template #[Tabs.documenten]> <zaak-documenten :zaak="zaak" /> </template>
+      <template #[Tabs.documenten]>
+        <zaak-documenten :zaak="zaak" />
+      </template>
 
       <template #[Tabs.betrokkenen]>
         <zaak-betrokkenen :zaak="zaak" />
       </template>
 
-      <template #[Tabs.contactmomenten]> Contactmomenten </template>
+      <template #[Tabs.contactmomenten]>
+        <zaak-contactmomenten :zaak="zaak" />
+      </template>
 
-      <template #[Tabs.historie]> <zaak-historie :zaak="zaak" /> </template>
+      <template #[Tabs.historie]>
+        <zaak-historie :zaak="zaak" />
+      </template>
 
-      <template #[Tabs.locatie]> <zaak-locatie :zaak="zaak" /> </template>
+      <template #[Tabs.locatie]>
+        <zaak-locatie :zaak="zaak" />
+      </template>
     </tabs-component>
 
     <div class="toelichting">
@@ -40,6 +50,7 @@ import ZaakDocumenten from "./components/ZaakDocumenten.vue";
 import ZaakBetrokkenen from "./components/ZaakBetrokkenen.vue";
 import ZaakHistorie from "./components/ZaakHistorie.vue";
 import ZaakLocatie from "./components/ZaakLocatie.vue";
+import ZaakContactmomenten from "./components/ZaakContactmomenten.vue";
 
 defineProps<{
   zaak: ZaakDetails;
