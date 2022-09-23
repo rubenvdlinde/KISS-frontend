@@ -18,7 +18,9 @@
           <span id="gespreksresultaat-header">Gespreksresultaat</span>
         </li>
         <li
-          v-for="contactmoment in contactmomenten.data.page"
+          v-for="contactmoment in contactmomenten.data.page.filter(
+            (c) => !c.contactverzoeken.length
+          )"
           :key="contactmoment.id"
         >
           <details @click="toggleDetails">
