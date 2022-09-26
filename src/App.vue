@@ -90,7 +90,7 @@ body {
   grid-template-columns: 20rem 1fr;
   grid-template-areas:
     "aside header"
-    "main main";
+    "nothing main";
   border-top: 4px solid var(--color-primary);
 }
 
@@ -111,10 +111,6 @@ body {
   grid-area: main;
   padding: var(--spacing-large);
   padding-inline-end: var(--container-padding);
-}
-
-.app-layout:not(.contactmomentLoopt) > main {
-  margin: 0 auto;
 }
 
 utrecht-icon-loupe {
