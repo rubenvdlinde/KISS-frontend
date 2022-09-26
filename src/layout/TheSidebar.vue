@@ -133,7 +133,7 @@ aside {
 }
 
 .notitie-tabs {
-  margin-block-start: var(--spacing-default);
+  margin-block-start: var(--spacing-small);
 
   --tab-bg: var(--color-white);
 
