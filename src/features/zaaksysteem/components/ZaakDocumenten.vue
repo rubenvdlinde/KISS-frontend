@@ -15,34 +15,17 @@
         </thead>
         <tbody>
           <tr v-for="document in zaak.documenten" :key="document.id">
-            <td>{{ document.embedded.informatieobject.titel }}</td>
-            <td>
-              {{
-                formatBytes(
-                  parseInt(
-                    document.embedded.informatieobject.bestandsomvang,
-                    16
-                  )
-                )
-              }}
-            </td>
-            <td>
-              {{
-                formatDateOnly(
-                  new Date(document.embedded.informatieobject.creatiedatum)
-                )
-              }}
-            </td>
+            <td>{{ document.titel }}</td>
+            <td>{{ formatBytes(document.bestandsomvang) }}</td>
+            <td>{{ formatDateOnly(document.creatiedatum) }}</td>
             <td class="vertrouwelijkheid-label">
-              {{
-                document.embedded.informatieobject.vertrouwelijkheidaanduiding
-              }}
+              {{ document.vertrouwelijkheidaanduiding }}
             </td>
             <td>
               <a
-                :href="`data:${document.embedded.informatieobject.formaat}; base64, ${document.embedded.informatieobject.inhoud}`"
+                :href="`data:${document.formaat}; base64, ${document.inhoud}`"
                 target="_blank"
-                :download="document.embedded.informatieobject.titel"
+                :download="document.titel"
                 >> Downloaden</a
               >
             </td>
