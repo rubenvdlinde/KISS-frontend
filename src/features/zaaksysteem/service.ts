@@ -119,6 +119,7 @@ export function useZaaksysteemService() {
             indienDatum: zaak.publicatiedatum ?? "Onbekend",
             registratieDatum: new Date(zaak.registratiedatum),
             self: zaak["x-commongateway-metadata"].self,
+            documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
           } as ZaakDetails;
         });
     }
@@ -179,3 +180,16 @@ export async function updateToelichting(
 
   return res.json();
 }
+
+const mapDocumenten = (rawDocumenten: any[]) => {
+  return rawDocumenten.map((document) => ({
+    id: document.embedded.informatieobject.id,
+    titel: document.embedded.informatieobject.titel,
+    bestandsomvang: document.embedded.informatieobject.bestandsomvang,
+    creatiedatum: new Date(document.embedded.informatieobject.creatiedatum),
+    vertrouwelijkheidaanduiding:
+      document.embedded.informatieobject.vertrouwelijkheidaanduiding,
+    formaat: document.embedded.informatieobject.formaat,
+    inhoud: document.embedded.informatieobject.inhoud,
+  }));
+};

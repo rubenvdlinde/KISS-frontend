@@ -15,7 +15,18 @@ export type ZaakDetails = {
   indienDatum: Date;
   registratieDatum: Date;
   self: string;
+  documenten?: Document[];
 };
+
+export interface Document {
+  id: string;
+  titel: string;
+  bestandsomvang: number;
+  creatiedatum: Date;
+  vertrouwelijkheidaanduiding: string;
+  formaat: string;
+  inhoud: string;
+}
 
 export interface Zaak {
   identificatie: string;
