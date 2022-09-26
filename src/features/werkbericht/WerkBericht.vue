@@ -1,25 +1,42 @@
 <template>
-  <article :class="read && 'read'">
+  <article :class="{ read: read }">
     <small v-if="showType && bericht.types.length">
       {{ bericht.types.join(", ") }}
     </small>
 
     <div class="heading-container">
+      <div class="heading-top-row">
+        <time :datetime="bericht.date.toISOString()">{{
+          localeString(bericht.date)
+        }}</time>
+
+        <menu>
+          <li>
+            <input
+              v-if="contactmomentStore.contactmomentLoopt"
+              class="save-bericht-to-contactmoment-checkbox"
+              type="checkbox"
+              title="Opslaan bij contactmoment"
+              v-model="berichtSelectedInContactmoment"
+              @click.stop="handleToggleBerichtInContactmoment"
+            />
+          </li>
+
+          <li>
+            <button
+              @click="toggleRead"
+              :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
+              class="toggle-read icon-after book"
+              :disabled="toggleReadIsLoading"
+            />
+          </li>
+        </menu>
+      </div>
+
       <utrecht-heading model-value :level="level">
         <span class="title">{{ bericht.title }}</span>
       </utrecht-heading>
-
-      <button
-        @click="toggleRead"
-        :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
-        class="toggle-read icon-after book"
-        :disabled="toggleReadIsLoading"
-      />
     </div>
-
-    <time :datetime="bericht.date.toISOString()">{{
-      localeString(bericht.date)
-    }}</time>
 
     <div class="skills-container">
       <small
@@ -47,6 +64,7 @@ import {
 import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
 import { toast } from "@/stores/toast";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -64,6 +82,22 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+});
+
+const contactmomentStore = useContactmomentStore();
+
+const berichtSelectedInContactmoment = computed(() => {
+  const foundInNieuwsberichten =
+    contactmomentStore.huidigeVraag.nieuwsberichten.findIndex(
+      (n) => n.nieuwsbericht.url === props.bericht.url
+    ) !== -1;
+
+  const foundInWerkinstructies =
+    contactmomentStore.huidigeVraag.werkinstructies.findIndex(
+      (w) => w.werkinstructie.url === props.bericht.url
+    ) !== -1;
+
+  return foundInNieuwsberichten || foundInWerkinstructies;
 });
 
 const read = ref<boolean>(props.bericht.read);
@@ -118,6 +152,14 @@ function processHtml(html: string) {
 }
 
 const sanitized = computed(() => processHtml(props.bericht.content));
+
+const handleToggleBerichtInContactmoment = (): void => {
+  const type = props.bericht.types[0];
+  const bericht = { url: props.bericht.url, title: props.bericht.title };
+
+  type === "nieuws" && contactmomentStore.toggleNieuwsbericht(bericht);
+  type === "werkinstructie" && contactmomentStore.toggleWerkinstructie(bericht);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -137,20 +179,38 @@ article {
 
   .heading-container {
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 
-    .toggle-read {
-      all: unset;
-      color: var(--color-headings);
+    .heading-top-row {
+      margin-block-end: var(--spacing-small);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-      &:hover {
-        color: var(--color-tertiary);
-        cursor: pointer;
-      }
-      &:hover:disabled {
-        cursor: wait;
+      menu {
+        display: flex;
+        gap: var(--spacing-default);
+
+        .save-bericht-to-contactmoment-checkbox {
+          accent-color: var(--color-primary);
+          transform: scale(1.25);
+          margin: 0;
+          margin-inline-start: 2px;
+        }
+
+        .toggle-read {
+          all: unset;
+          color: var(--color-headings);
+          position: relative;
+          top: 4px;
+
+          &:hover {
+            color: var(--color-tertiary);
+            cursor: pointer;
+          }
+          &:hover:disabled {
+            cursor: wait;
+          }
+        }
       }
     }
   }
@@ -189,7 +249,7 @@ article {
       font-weight: normal;
     }
 
-    .toggle-read {
+    .heading-top-row menu .toggle-read {
       color: var(--color-tertiary);
     }
 

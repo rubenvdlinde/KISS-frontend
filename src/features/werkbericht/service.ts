@@ -95,6 +95,7 @@ function parseWerkbericht(
     date: dateLatest,
     types: typeNames,
     skills: skillNames,
+    url: jsonObject["x-commongateway-metadata"]?.self,
   };
 }
 
@@ -169,6 +170,7 @@ export function useWerkberichten(
     params.push(["limit", "10"]);
     params.push(["order[_dateModified]", "desc"]);
     params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
+    params.push(["extend[]", "x-commongateway-metadata.self"]);
 
     if (typeId) {
       params.push(["openpub-type", typeId.toString()]);

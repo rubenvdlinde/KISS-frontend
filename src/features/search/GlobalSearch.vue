@@ -32,14 +32,22 @@
           <nav v-show="!currentId">
             <ul>
               <li
-                v-for="{ id, title, source, jsonObject, url } in searchResults
-                  .data.page"
+                v-for="{
+                  id,
+                  title,
+                  source,
+                  jsonObject,
+                  url,
+                  self,
+                } in searchResults.data.page"
                 :key="'nav_' + id"
               >
                 <a
                   v-if="!url"
                   href="#"
-                  @click="selectSearchResult(id, source, jsonObject, title)"
+                  @click="
+                    selectSearchResult(id, source, jsonObject, title, self)
+                  "
                   class="icon-after chevron-down"
                 >
                   <span :class="`category-${source}`">{{ source }}</span>
@@ -54,9 +62,11 @@
                 </a>
                 <a
                   v-else
+                  @click.prevent="
+                    handleWebsiteSelected({ url: url.toString(), title: title })
+                  "
                   :href="url.toString()"
                   class="icon-after chevron-down"
-                  target="_blank"
                   rel="noopener noreferrer"
                   ><span :class="`category-${source}`">{{ source }}</span
                   ><span>{{ title }}</span></a
@@ -150,6 +160,12 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 import MedewerkerDetail from "./MedewerkerDetail.vue";
 import KennisartikelDetail from "./KennisartikelDetail.vue";
+import type {
+  Medewerker,
+  Kennisartikel,
+  Website,
+} from "@/features/search/types";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const emit = defineEmits<{
   (
@@ -163,7 +179,8 @@ const emit = defineEmits<{
   ): void;
 }>();
 
-const smoelenboek = "Smoelenboek";
+const contactmomentStore = useContactmomentStore();
+
 const searchInput = ref("");
 const currentSearch = ref("");
 const currentId = ref("");
@@ -214,15 +231,39 @@ const selectSearchResult = (
   id: string,
   source: string,
   jsonObject: any,
-  title: string
+  title: string,
+  self: string | undefined
 ) => {
   currentId.value = id;
+
+  if (contactmomentStore.contactmomentLoopt) {
+    if (source === "Smoelenboek")
+      handleSmoelenboekSelected(jsonObject, self ?? "");
+    if (source === "Kennisartikel") handleKennisartikelSelected(jsonObject);
+  }
+
   emit("result-selected", {
     id,
     title,
     source,
     jsonObject,
   });
+};
+
+const handleSmoelenboekSelected = (
+  medewerker: Medewerker,
+  url: string
+): void => {
+  contactmomentStore.addMedewerker(medewerker, url);
+};
+
+const handleKennisartikelSelected = (kennisartikel: Kennisartikel): void => {
+  contactmomentStore.addKennisartikel(kennisartikel);
+};
+
+const handleWebsiteSelected = (website: Website): void => {
+  contactmomentStore.addWebsite(website);
+  window.open(website.url);
 };
 </script>
 
@@ -335,6 +376,10 @@ nav ul {
     padding-block: var(--spacing-default);
     border-block-end: 1px solid var(--color-tertiary);
     display: flex;
+
+    a:hover {
+      cursor: pointer;
+    }
   }
 }
 

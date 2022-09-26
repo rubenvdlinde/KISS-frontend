@@ -6,4 +6,5 @@ export interface Werkbericht {
   types: string[];
   skills: string[];
   read: boolean;
+  url: string;
 }
