@@ -443,11 +443,9 @@ const addMedewerkersToContactmoment = (
   if (!vraag.medewerkers) return;
 
   vraag.medewerkers.forEach((medewerker) => {
-    if (!medewerker.shouldStore) return;
+    if (!medewerker.shouldStore || !medewerker.medewerker.url) return;
 
-    contactmoment.onderwerpLinks.push(
-      `/medewerkers/${medewerker.medewerker.id}`
-    );
+    contactmoment.onderwerpLinks.push(medewerker.medewerker.url);
   });
 };
 

@@ -5,6 +5,7 @@ export type SearchResult = {
   content: string;
   url?: URL;
   jsonObject: any;
+  self?: string;
 };
 
 export type Source = {
@@ -18,6 +19,7 @@ export type Medewerker = {
   voorvoegselAchternaam?: string;
   achternaam: string;
   emailadres: string;
+  url: string;
 };
 
 export type Website = {

@@ -32,14 +32,22 @@
           <nav v-show="!currentId">
             <ul>
               <li
-                v-for="{ id, title, source, jsonObject, url } in searchResults
-                  .data.page"
+                v-for="{
+                  id,
+                  title,
+                  source,
+                  jsonObject,
+                  url,
+                  self,
+                } in searchResults.data.page"
                 :key="'nav_' + id"
               >
                 <a
                   v-if="!url"
                   href="#"
-                  @click="selectSearchResult(id, source, jsonObject, title)"
+                  @click="
+                    selectSearchResult(id, source, jsonObject, title, self)
+                  "
                   class="icon-after chevron-down"
                 >
                   <span :class="`category-${source}`">{{ source }}</span>
@@ -223,12 +231,14 @@ const selectSearchResult = (
   id: string,
   source: string,
   jsonObject: any,
-  title: string
+  title: string,
+  self: string | undefined
 ) => {
   currentId.value = id;
 
   if (contactmomentStore.contactmomentLoopt) {
-    if (source === "Smoelenboek") handleSmoelenboekSelected(jsonObject);
+    if (source === "Smoelenboek")
+      handleSmoelenboekSelected(jsonObject, self ?? "");
     if (source === "Kennisartikel") handleKennisartikelSelected(jsonObject);
   }
 
@@ -240,8 +250,11 @@ const selectSearchResult = (
   });
 };
 
-const handleSmoelenboekSelected = (medewerker: Medewerker): void => {
-  contactmomentStore.addMedewerker(medewerker);
+const handleSmoelenboekSelected = (
+  medewerker: Medewerker,
+  url: string
+): void => {
+  contactmomentStore.addMedewerker(medewerker, url);
 };
 
 const handleKennisartikelSelected = (kennisartikel: Kennisartikel): void => {

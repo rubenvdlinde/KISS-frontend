@@ -152,7 +152,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       });
     },
 
-    addMedewerker(medewerker: any) {
+    addMedewerker(medewerker: any, url: string) {
       this.huidigeVraag.medewerkers.forEach(
         (m) => (m.shouldStore = m.medewerker.id === medewerker.id)
       );
@@ -169,6 +169,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
             voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
             achternaam: medewerker.contact.achternaam,
             emailadres: medewerker.contact.emailadres,
+            url,
           },
           shouldStore: true,
         });
