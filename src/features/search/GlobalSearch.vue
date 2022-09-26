@@ -271,7 +271,7 @@ const handleWebsiteSelected = (website: Website): void => {
 form {
   grid-area: bar;
   padding-block-start: var(--spacing-small);
-  padding-block-end: var(--spacing-large);
+  padding-block-end: var(--spacing-default);
   display: grid;
   gap: var(--spacing-small);
 }
@@ -298,15 +298,11 @@ fieldset {
 }
 
 .search-results {
-  --search-results-width: calc(var(--container-width) * 0.75);
-  --container-padding: max(
-    var(--spacing-default),
-    calc(50vw - var(--search-results-width) / 2)
-  );
   grid-area: results;
   display: grid;
   justify-items: stretch;
-  padding-inline: var(--container-padding);
+  padding-inline-start: var(--spacing-large);
+  padding-inline-end: var(--container-padding);
   padding-block-end: var(--spacing-default);
   background-color: var(--color-secondary);
   gap: var(--spacing-default);
@@ -341,6 +337,7 @@ fieldset {
 .expand-button {
   grid-area: expand;
   width: 100%;
+  padding-inline-end: var(--container-padding);
   height: fit-content;
   padding-block: 0.25rem;
   border: none;

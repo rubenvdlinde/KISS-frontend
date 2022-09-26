@@ -1,146 +1,25 @@
 <template>
-  <login-overlay>
-    <template #default="{ onLogout }">
-      <the-toast-section />
-      <div
-        class="app-layout"
-        :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
-      >
-        <header
-          :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
-        >
-          <global-search v-if="route.meta.showSearch" />
-
-          <a
-            :href="logoutUrl"
-            @click="onLogout"
-            @keydown.enter="onLogout"
-            class="log-out"
-            >Uitloggen</a
-          >
-        </header>
-        <nav v-if="contactmomentStore.contactmomentLoopt && route.meta.showNav">
-          <li>
-            <router-link :to="{ name: 'home' }">Start</router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'zaken' }">Zaken</router-link>
-          </li>
-        </nav>
-        <aside
-          v-if="contactmomentStore.contactmomentLoopt && route.meta.showNotitie"
-        >
-          <contactmoment-vragen-menu />
-          <tabs-component
-            v-model="state.currentNotitieTab"
-            class="notitie-tabs"
-          >
-            <template #tab="{ tabName }">
-              <span
-                :title="tabName"
-                :class="[
-                  'icon-after',
-                  tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
-                ]"
-              ></span>
-            </template>
-            <template #[NotitieTabs.Regulier]>
-              <utrecht-heading id="notitieblok" model-value :level="2"
-                >Notitieblok</utrecht-heading
-              >
-              <textarea
-                aria-labelledby="notitieblok"
-                v-focus
-                class="utrecht-textarea"
-                v-model="contactmomentStore.huidigeVraag.notitie"
-              />
-            </template>
-            <template #[NotitieTabs.Terugbel]>
-              <p v-if="contactverzoekIsSentToMedewerker">
-                Contactverzoek verstuurd naar
-                {{ contactverzoekIsSentToMedewerker }}
-              </p>
-              <ContactverzoekFormulier
-                :huidige-vraag="contactmomentStore.huidigeVraag"
-                :huidige-klant="contactmomentStore.klantVoorHuidigeVraag"
-                @start="handleContactverzoekStart"
-                @submit="handleContactverzoekSubmit"
-              />
-            </template>
-          </tabs-component>
-        </aside>
-        <main>
-          <router-view />
-        </main>
-      </div>
-      <contactmoment-starter v-if="route.meta.showSearch" />
-    </template>
-  </login-overlay>
+  <the-toast-section />
+  <div
+    class="app-layout"
+    :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
+  >
+    <the-header />
+    <the-sidebar />
+    <main>
+      <router-view />
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { GlobalSearch } from "@/features/search";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { logoutUrl, LoginOverlay } from "@/features/login";
 import TheToastSection from "@/components/TheToastSection.vue";
-import { ContactmomentStarter } from "@/features/contactmoment";
-import { useRoute } from "vue-router";
-import { ContactverzoekFormulier } from "@/features/contactverzoek";
-import TabsComponent from "@/components/TabsComponent.vue";
-import { ensureState } from "./stores/create-store";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import ContactmomentVragenMenu from "./features/contactmoment/ContactmomentVragenMenu.vue";
-import { watch, computed } from "vue";
-
-enum NotitieTabs {
-  Regulier = "Reguliere notitie",
-  Terugbel = "Contactverzoek",
-}
+import TheSidebar from "./layout/TheSidebar.vue";
+import TheHeader from "./layout/TheHeader.vue";
 
 const contactmomentStore = useContactmomentStore();
-const route = useRoute();
-
-const state = ensureState({
-  stateId: "App",
-  stateFactory() {
-    return {
-      currentNotitieTab: NotitieTabs.Regulier,
-    };
-  },
-});
-
-watch(
-  () => contactmomentStore.huidigeVraag,
-  () => {
-    state.reset();
-  }
-);
-
-const contactverzoekIsSentToMedewerker = computed(
-  () => contactmomentStore.huidigeVraag.contactverzoek.medewerker
-);
-
-const handleContactverzoekStart = () => {
-  contactmomentStore.huidigeVraag.contactverzoek.isInProgress = true;
-};
-
-const handleContactverzoekSubmit = ({
-  medewerker,
-  url,
-}: {
-  medewerker: string;
-  url: string;
-}) => {
-  const { contactverzoek } = contactmomentStore.huidigeVraag;
-  contactverzoek.url = url;
-  contactverzoek.medewerker = medewerker;
-  contactverzoek.isSubmitted = true;
-  contactverzoek.isInProgress = false;
-};
 </script>
 
 <style lang="scss">
@@ -166,7 +45,7 @@ const handleContactverzoekSubmit = ({
   // spacing
   --container-width: 80rem;
   --container-padding: max(
-    var(--spacing-default),
+    var(--spacing-large),
     calc(50vw - var(--container-width) / 2)
   );
   --section-width: 30.75rem;
@@ -205,90 +84,37 @@ body {
 
 .app-layout {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   display: grid;
-  grid-template-rows: auto auto 1fr;
-  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 20rem 1fr;
   grid-template-areas:
-    "header"
-    "nav"
-    "main";
+    "aside header"
+    "main main";
+  border-top: 4px solid var(--color-primary);
 }
 
 .app-layout.contactmomentLoopt {
-  grid-template-columns: 1fr 4fr;
+  border-top-color: var(--color-accent);
   grid-template-areas:
-    "header  header"
-    "nav     nav"
+    "aside  header"
     "aside   main";
 }
 
 .app-layout > header {
   grid-area: header;
 }
-.app-layout > nav {
-  grid-area: nav;
-}
 .app-layout > aside {
   grid-area: aside;
 }
 .app-layout > main {
-  max-width: calc(100vw - (var(--container-padding) * 2));
   grid-area: main;
   padding: var(--spacing-large);
+  padding-inline-end: var(--container-padding);
 }
 
 .app-layout:not(.contactmomentLoopt) > main {
   margin: 0 auto;
-}
-
-.app-layout > header {
-  background-color: var(--color-primary);
-  display: grid;
-  grid-template-areas:
-    "padleft gap bar logout padright"
-    "results results results results results"
-    "expand expand expand expand expand";
-  grid-template-columns: var(--container-padding) 1fr 2fr 1fr var(
-      --container-padding
-    );
-  align-items: center;
-
-  .log-out {
-    grid-area: logout;
-    color: var(--color-white);
-    padding: var(--spacing-small);
-    margin-left: auto;
-  }
-}
-
-.app-layout > nav {
-  border-top: 1px solid var(--color-tertiary);
-  width: 100%;
-  background-color: var(--color-primary);
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-default);
-  padding-block: var(--spacing-small);
-  list-style: none;
-  li {
-    margin-inline: var(--spacing-large);
-  }
-  a {
-    text-decoration: none;
-    color: var(--color-white);
-  }
-
-  a.router-link-active {
-    border-bottom: 2px solid var(--color-white);
-  }
-}
-
-.app-layout {
-  border-top: 4px solid var(--color-primary);
-}
-.app-layout.contactmomentLoopt {
-  border-top-color: var(--color-accent);
 }
 
 utrecht-icon-loupe {
@@ -608,27 +434,6 @@ utrecht-button.button-small {
   background-color: var(--color-category-website);
 }
 
-aside {
-  grid-column: 1;
-
-  background-color: var(--color-tertiary);
-  padding-inline: 2px;
-  display: grid;
-  grid-template-rows: auto 1fr;
-
-  textarea.utrecht-textarea {
-    margin-block-start: var(--spacing-default);
-    padding: 0px;
-    border: none;
-    outline: none;
-    flex: 1;
-  }
-
-  [role="tablist"] {
-    height: 3rem;
-  }
-}
-
 //notities start
 
 .contactmomenten-header {
@@ -640,36 +445,5 @@ aside {
   justify-content: center;
   width: 100%;
   height: 100%;
-}
-
-.notitie-tabs {
-  --tab-bg: var(--color-white);
-
-  [role="tablist"] {
-    padding: 0;
-    justify-items: stretch;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-  }
-
-  [role="tabpanel"] {
-    padding: var(--spacing-default);
-    display: flex;
-    flex-direction: column;
-  }
-
-  [role="tab"] {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-white);
-
-    &[aria-selected="true"] {
-      color: var(--color-primary);
-    }
-  }
 }
 </style>

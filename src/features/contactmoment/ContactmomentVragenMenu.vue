@@ -4,6 +4,14 @@
     message="Let op, je hebt het contactverzoek niet afgerond. Als je deze vraag verlaat, wordt het contactverzoek niet verstuurd."
   />
   <menu class="vragen-menu">
+    <li>
+      <button
+        class="icon-after plus new-question"
+        type="button"
+        title="Nieuwe vraag"
+        @click="startNieuweVraag"
+      ></button>
+    </li>
     <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
       <span v-if="vraag === contactmomentStore.huidigeVraag">
         {{ idx + 1 }}
@@ -16,14 +24,6 @@
       >
         {{ idx + 1 }}
       </button>
-    </li>
-    <li>
-      <button
-        class="icon-after plus new-question"
-        type="button"
-        title="Nieuwe vraag"
-        @click="startNieuweVraag"
-      ></button>
     </li>
   </menu>
 </template>
@@ -60,7 +60,9 @@ async function waitForConfirmation() {
 <style lang="scss" scoped>
 .vragen-menu {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(1.5rem, 1fr));
+  gap: var(--spacing-default);
+  padding: var(--spacing-small);
 
   button:hover {
     cursor: pointer;
@@ -70,31 +72,27 @@ async function waitForConfirmation() {
     display: flex;
     align-items: stretch;
     aspect-ratio: 1;
-
-    &:last-of-type {
-      grid-column: -2 / -1;
-    }
+    font-weight: bold;
   }
 
   button,
   span {
     display: flex;
     background: none;
-    margin: 0;
     padding: 0;
+    margin: 0;
     border: none;
     align-items: center;
     justify-content: center;
     width: 100%;
-  }
-
-  button {
-    color: var(--color-white);
+    font: inherit;
+    border-radius: 100%;
+    height: unset;
+    color: inherit;
   }
 
   span {
     background: var(--color-white);
-    color: var(--color-primary);
   }
 }
 </style>
