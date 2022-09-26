@@ -17,7 +17,7 @@
       </template>
 
       <template #[Tabs.contactmomenten]>
-        <zaak-contactmomenten :zaak="zaak" />
+        <zaak-contactmomenten :contactmomenten="contactmomenten" />
       </template>
     </tabs-component>
 
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { computed, defineProps, ref } from "vue";
 import type { ZaakDetails } from "./types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ZaakToelichting from "./components/ZaakToelichting.vue";
@@ -36,17 +36,20 @@ import TabsComponent from "../../components/TabsComponent.vue";
 import ZaakAlgemeen from "./components/ZaakAlgemeen.vue";
 import ZaakDocumenten from "./components/ZaakDocumenten.vue";
 import ZaakContactmomenten from "./components/ZaakContactmomenten.vue";
+import type { ContactmomentViewModel } from "../contactmoment";
 
-defineProps<{
+const props = defineProps<{
   zaak: ZaakDetails;
+  contactmomenten: ContactmomentViewModel[];
 }>();
 
-enum Tabs {
-  algemeen = "Algemeen",
-  documenten = "Documenten",
-  contactmomenten = "Contactmomenten",
-}
-const activeTab = ref(Tabs.algemeen);
+const Tabs = computed(() => ({
+  algemeen: "Algemeen",
+  documenten: `Documenten (${props.zaak.documenten?.length ?? 0})`,
+  contactmomenten: `Contactmomenten (${props.contactmomenten.length})`,
+}));
+
+const activeTab = ref(Tabs.value.algemeen);
 </script>
 
 <style scoped lang="scss">

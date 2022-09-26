@@ -182,6 +182,8 @@ export async function updateToelichting(
 }
 
 const mapDocumenten = (rawDocumenten: any[]) => {
+  if (!rawDocumenten) return [];
+
   return rawDocumenten.map((document) => ({
     id: document.embedded.informatieobject.id,
     titel: document.embedded.informatieobject.titel,
