@@ -16,20 +16,8 @@
         <zaak-documenten :zaak="zaak" />
       </template>
 
-      <template #[Tabs.betrokkenen]>
-        <zaak-betrokkenen :zaak="zaak" />
-      </template>
-
       <template #[Tabs.contactmomenten]>
         <zaak-contactmomenten :zaak="zaak" />
-      </template>
-
-      <template #[Tabs.historie]>
-        <zaak-historie :zaak="zaak" />
-      </template>
-
-      <template #[Tabs.locatie]>
-        <zaak-locatie :zaak="zaak" />
       </template>
     </tabs-component>
 
@@ -47,9 +35,6 @@ import ZaakToelichting from "./components/ZaakToelichting.vue";
 import TabsComponent from "../../components/TabsComponent.vue";
 import ZaakAlgemeen from "./components/ZaakAlgemeen.vue";
 import ZaakDocumenten from "./components/ZaakDocumenten.vue";
-import ZaakBetrokkenen from "./components/ZaakBetrokkenen.vue";
-import ZaakHistorie from "./components/ZaakHistorie.vue";
-import ZaakLocatie from "./components/ZaakLocatie.vue";
 import ZaakContactmomenten from "./components/ZaakContactmomenten.vue";
 
 defineProps<{
@@ -59,10 +44,7 @@ defineProps<{
 enum Tabs {
   algemeen = "Algemeen",
   documenten = "Documenten",
-  betrokkenen = "Betrokkenen",
   contactmomenten = "Contactmomenten",
-  historie = "Historie",
-  locatie = "Locatie",
 }
 const activeTab = ref(Tabs.algemeen);
 </script>
@@ -70,47 +52,5 @@ const activeTab = ref(Tabs.algemeen);
 <style scoped lang="scss">
 section > *:not(:last-child) {
   margin-block-end: var(--spacing-large);
-}
-.notes {
-  gap: var(--spacing-large);
-  display: flex;
-
-  .current-notes {
-    flex: 3;
-  }
-
-  .new-note {
-    flex: 2;
-  }
-}
-
-.new-note {
-  > *:not(:last-child) {
-    margin-block-end: var(--spacing-small);
-  }
-
-  menu {
-    display: flex;
-    gap: var(--spacing-small);
-    float: right;
-  }
-}
-
-.toelichting-heading {
-  display: flex;
-
-  button {
-    all: unset;
-    margin-inline-start: var(--spacing-default);
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
-
-.spinner {
-  font-size: 16px;
-  margin-inline-start: var(--spacing-default);
 }
 </style>
