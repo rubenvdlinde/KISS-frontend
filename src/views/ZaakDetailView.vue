@@ -1,18 +1,14 @@
 <template>
   <article>
-    <simple-spinner v-if="zaak.loading || contactmomenten.loading" />
+    <simple-spinner v-if="zaak.loading" />
 
     <application-message
-      v-if="zaak.error || contactmomenten.error"
+      v-if="zaak.error"
       messageType="error"
       message="Er kon geen zaak gevonden worden"
     ></application-message>
 
-    <zaak-details
-      :contactmomenten="contactmomenten.data"
-      :zaak="zaak.data"
-      v-if="zaak.success && contactmomenten.success"
-    />
+    <zaak-details :zaak="zaak.data" v-if="zaak.success" />
   </article>
 </template>
 
@@ -28,10 +24,6 @@ const route = useRoute();
 const zaaksysteemService = useZaaksysteemService();
 
 const zaak = zaaksysteemService.getZaak(route.params.id.toString());
-
-const contactmomenten = zaaksysteemService.getContactmomentenByZaak(
-  route.params.id.toString()
-);
 </script>
 
 <style scoped lang="scss"></style>

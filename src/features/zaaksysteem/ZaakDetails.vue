@@ -17,7 +17,12 @@
       </template>
 
       <template #[Tabs.contactmomenten]>
-        <zaak-contactmomenten :contactmomenten="contactmomenten" />
+        <zaak-contactmomenten
+          v-if="contactmomenten.success"
+          :contactmomenten="contactmomenten.data"
+        />
+
+        <simple-spinner v-if="contactmomenten.loading" />
       </template>
     </tabs-component>
 
@@ -36,17 +41,22 @@ import TabsComponent from "../../components/TabsComponent.vue";
 import ZaakAlgemeen from "./components/ZaakAlgemeen.vue";
 import ZaakDocumenten from "./components/ZaakDocumenten.vue";
 import ZaakContactmomenten from "./components/ZaakContactmomenten.vue";
-import type { ContactmomentViewModel } from "../contactmoment";
+import { useZaaksysteemService } from "@/features/zaaksysteem/service";
+import SimpleSpinner from "../../components/SimpleSpinner.vue";
 
 const props = defineProps<{
   zaak: ZaakDetails;
-  contactmomenten: ContactmomentViewModel[];
 }>();
+
+const zaaksysteemService = useZaaksysteemService();
+const contactmomenten = zaaksysteemService.getContactmomentenByZaak(
+  props.zaak.self
+);
 
 const Tabs = computed(() => ({
   algemeen: "Algemeen",
   documenten: `Documenten (${props.zaak.documenten?.length ?? 0})`,
-  contactmomenten: `Contactmomenten (${props.contactmomenten.length})`,
+  contactmomenten: `Contactmomenten`,
 }));
 
 const activeTab = ref(Tabs.value.algemeen);
