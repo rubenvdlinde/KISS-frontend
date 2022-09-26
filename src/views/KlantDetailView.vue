@@ -1,6 +1,7 @@
 <template>
   <section>
     <utrecht-heading :level="1" model-value>Klantinformatie</utrecht-heading>
+
     <nav>
       <ul>
         <li>
@@ -12,14 +13,21 @@
         </li>
       </ul>
     </nav>
+
     <simple-spinner v-if="loading" />
+
     <klant-details v-else-if="klant" :klant="klant" />
+
     <application-message
       v-else
       message="Er is geen klant gevonden"
       messageType="error"
     ></application-message>
+
+    <contactverzoeken-overzicht :klant-id="klantId" />
+
     <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
+
     <contactmomenten-overzicht :klant-id="klantId" />
   </section>
 </template>
@@ -36,6 +44,7 @@ import { useRoute } from "vue-router";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 
 const loading = ref(false);
 

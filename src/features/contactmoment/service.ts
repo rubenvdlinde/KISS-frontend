@@ -52,26 +52,26 @@ export const useGespreksResultaten = () => {
   return ServiceResult.fromFetcher(gespreksResultatenBaseUri, fetchBerichten);
 };
 
+const getUrl = (params: Ref<{ id: string; page?: number }>) => {
+  const id = params.value.id;
+  const page = params.value.page || 1;
+  if (!id) return "";
+
+  const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
+  url.searchParams.set("klant.id", id);
+  url.searchParams.set("page", page.toString());
+  url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
+  url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
+  url.searchParams.append("extend[]", "contactmoment.medewerker");
+  url.searchParams.append("fields[]", "contactmoment");
+
+  return url.toString();
+};
+
 export function useKlantContactmomenten(
   params: Ref<{ id: string; page?: number }>
 ) {
-  const getUrl = () => {
-    const id = params.value.id;
-    const page = params.value.page || 1;
-    if (!id) return "";
-
-    const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
-    url.searchParams.set("klant.id", id);
-    url.searchParams.set("page", page.toString());
-    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
-    url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
-    url.searchParams.append("extend[]", "contactmoment.medewerker");
-    url.searchParams.append("fields[]", "contactmoment");
-
-    return url.toString();
-  };
-
-  return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
+  return ServiceResult.fromFetcher(getUrl(params), fetchKlantContactmomenten);
 }
 
 const objectcontactmomentenUrl =
