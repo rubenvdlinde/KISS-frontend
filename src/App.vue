@@ -1,8 +1,13 @@
 <template>
   <the-toast-section />
   <div
-    class="app-layout"
-    :class="{ contactmomentLoopt: contactmomentStore.contactmomentLoopt }"
+    :class="[
+      'app-layout',
+      {
+        'contactmoment-loopt': contactmomentStore.contactmomentLoopt,
+        'hide-sidebar': route.meta.hideSidebar,
+      },
+    ]"
   >
     <the-header />
     <the-sidebar />
@@ -13,13 +18,14 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import TheToastSection from "@/components/TheToastSection.vue";
 import TheSidebar from "./layout/TheSidebar.vue";
 import TheHeader from "./layout/TheHeader.vue";
 
 const contactmomentStore = useContactmomentStore();
+const route = useRoute();
 </script>
 
 <style lang="scss">
@@ -92,13 +98,19 @@ body {
     "aside header"
     "nothing main";
   border-top: 4px solid var(--color-primary);
-}
 
-.app-layout.contactmomentLoopt {
-  border-top-color: var(--color-accent);
-  grid-template-areas:
-    "aside  header"
-    "aside   main";
+  &.contactmoment-loopt {
+    border-top-color: var(--color-accent);
+    grid-template-areas:
+      "aside  header"
+      "aside   main";
+  }
+
+  &.hide-sidebar {
+    grid-template-areas:
+      "header  header"
+      "nothing   main";
+  }
 }
 
 .app-layout > header {

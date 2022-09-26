@@ -35,7 +35,12 @@ const router = createRouter({
       name: "afhandeling",
       component: AfhandelingView,
       beforeEnter: guardContactMoment,
-      meta: { showNav: false, showNotitie: false, showSearch: false },
+      meta: {
+        showNav: false,
+        showNotitie: false,
+        showSearch: false,
+        hideSidebar: true,
+      },
     },
     {
       path: "/klanten",
