@@ -2,7 +2,9 @@
   <section>
     <utrecht-heading :level="2" modelValue>Contactmomenten</utrecht-heading>
 
-    <template v-if="contactmomenten.length">
+    <simple-spinner v-if="contactmomenten.loading" />
+
+    <template v-if="contactmomenten.success && contactmomenten.data.length">
       <table>
         <thead>
           <tr>
@@ -13,7 +15,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="contactmoment in contactmomenten" :key="contactmoment.id">
+          <tr
+            v-for="contactmoment in contactmomenten.data"
+            :key="contactmoment.id"
+          >
             <td>{{ formatDateOnly(new Date(contactmoment.startdatum)) }}</td>
             <td>Onbekend</td>
             <td>{{ contactmoment.kanaal }}</td>
@@ -23,7 +28,13 @@
       </table>
     </template>
 
-    <span v-if="!contactmomenten.length">Geen contactmomenten gevonden.</span>
+    <span v-else-if="contactmomenten.success && !contactmomenten.data.length"
+      >Geen contactmomenten gevonden.</span
+    >
+
+    <span v-if="contactmomenten.error"
+      >Er ging iets mis. Probeer het later nog eens.</span
+    >
   </section>
 </template>
 
@@ -31,11 +42,18 @@
 import { defineProps } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { formatDateOnly } from "@/helpers/date";
-import type { ContactmomentViewModel } from "@/features/contactmoment";
+import type { ZaakDetails } from "../types";
+import { useZaaksysteemService } from "../service";
+import SimpleSpinner from "../../../components/SimpleSpinner.vue";
 
-defineProps<{
-  contactmomenten: ContactmomentViewModel[];
+const props = defineProps<{
+  zaak: ZaakDetails;
 }>();
+
+const zaaksysteemService = useZaaksysteemService();
+const contactmomenten = zaaksysteemService.getContactmomentenByZaak(
+  props.zaak.self
+);
 </script>
 
 <style scoped lang="scss">
