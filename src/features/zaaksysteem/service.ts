@@ -137,7 +137,11 @@ export function useZaaksysteemService() {
   const getContactmomentenByZaak = (
     zaakUri: string
   ): ServiceData<ContactmomentViewModel[]> => {
-    const url = `${window.gatewayBaseUri}/api/objectcontactmomenten?extend[]=all&object=${zaakUri}&objectType=zaak`;
+    const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
+    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
+    url.searchParams.append("extend[]", "all");
+    url.searchParams.append("objectType", "zaak");
+    url.searchParams.append("object", zaakUri);
 
     function get(url: string): Promise<ContactmomentViewModel[]> {
       return fetchLoggedIn(url)
@@ -148,7 +152,7 @@ export function useZaaksysteemService() {
         );
     }
 
-    return ServiceResult.fromFetcher(url, get);
+    return ServiceResult.fromFetcher(url.toString(), get);
   };
 
   return {
