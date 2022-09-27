@@ -20,7 +20,7 @@
             :key="contactmoment.id"
           >
             <td>{{ formatDateOnly(new Date(contactmoment.startdatum)) }}</td>
-            <td>Onbekend</td>
+            <td>{{ contactmoment["x-commongateway-metadata"].owner }}</td>
             <td>{{ contactmoment.kanaal }}</td>
             <td>{{ contactmoment.resultaat }}</td>
           </tr>
@@ -78,11 +78,11 @@ table {
   }
 
   tr {
-    display: flex;
     padding: var(--spacing-default);
 
     & > * {
-      flex: 1;
+      width: 25%;
+      padding: var(--spacing-default);
     }
   }
 
