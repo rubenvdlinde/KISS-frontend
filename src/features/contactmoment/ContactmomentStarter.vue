@@ -71,14 +71,7 @@ async function waitForConfirmation() {
 
 <style scoped lang="scss">
 utrecht-button {
-  position: fixed;
-  bottom: var(--utrecht-space-row-4xl);
-  right: var(--container-padding);
-  --utrecht-button-min-block-size: 3.5rem;
   --utrecht-button-min-inline-size: 15rem;
-}
-
-utrecht-button.contactmomentLoopt {
   --utrecht-button-background-color: var(--color-accent);
 }
 

@@ -4,19 +4,6 @@
     message="Let op, je hebt het contactverzoek niet afgerond. Als je deze vraag verlaat, wordt het contactverzoek niet verstuurd."
   />
   <menu class="vragen-menu">
-    <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
-      <span v-if="vraag === contactmomentStore.huidigeVraag">
-        {{ idx + 1 }}
-      </span>
-      <button
-        v-else
-        type="button"
-        :title="`Ga naar vraag ${idx + 1}`"
-        @click="switchVraag(vraag)"
-      >
-        {{ idx + 1 }}
-      </button>
-    </li>
     <li>
       <button
         class="icon-after plus new-question"
@@ -24,6 +11,16 @@
         title="Nieuwe vraag"
         @click="startNieuweVraag"
       ></button>
+    </li>
+    <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
+      <button
+        type="button"
+        :disabled="vraag === contactmomentStore.huidigeVraag"
+        :title="`Ga naar vraag ${idx + 1}`"
+        @click="switchVraag(vraag)"
+      >
+        {{ idx + 1 }}
+      </button>
     </li>
   </menu>
 </template>
@@ -59,42 +56,29 @@ async function waitForConfirmation() {
 
 <style lang="scss" scoped>
 .vragen-menu {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
-
-  button:hover {
-    cursor: pointer;
-  }
-
-  li {
-    display: flex;
-    align-items: stretch;
-    aspect-ratio: 1;
-
-    &:last-of-type {
-      grid-column: -2 / -1;
-    }
-  }
-
-  button,
-  span {
-    display: flex;
-    background: none;
-    margin: 0;
-    padding: 0;
-    border: none;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-small);
+  padding: var(--spacing-small);
 
   button {
-    color: var(--color-white);
-  }
+    all: unset;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--spacing-large);
+    block-size: var(--spacing-large);
+    border-radius: 50%;
 
-  span {
-    background: var(--color-white);
-    color: var(--color-primary);
+    &:hover {
+      cursor: pointer;
+    }
+
+    &:disabled {
+      background: var(--color-white);
+      cursor: default;
+    }
   }
 }
 </style>

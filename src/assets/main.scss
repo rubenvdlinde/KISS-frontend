@@ -1,0 +1,216 @@
+html,
+body,
+.app-layout {
+    height: 100%;
+    line-height: var(--line-height-default);
+}
+
+body {
+    font-family: var(--utrecht-paragraph-font-family);
+}
+
+.app-layout {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 20.75rem 1fr;
+    grid-template-areas:
+        "aside header"
+        "nothing main";
+    border-top: 4px solid var(--color-primary);
+
+    &.contactmoment-loopt {
+        border-top-color: var(--color-accent);
+        grid-template-areas:
+            "aside  header"
+            "aside   main";
+    }
+
+    &.hide-sidebar {
+        grid-template-areas:
+            "header  header"
+            "nothing   main";
+    }
+}
+
+.app-layout > header {
+    grid-area: header;
+}
+.app-layout > aside {
+    grid-area: aside;
+}
+.app-layout > main {
+    grid-area: main;
+    padding: var(--spacing-large);
+    padding-inline-end: var(--container-padding);
+}
+
+utrecht-icon-loupe {
+    pointer-events: none;
+}
+
+.utrecht-select {
+    appearance: auto;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.main-tabs > nav {
+    background-color: var(--color-secondary);
+}
+
+.tabs-component-zaken {
+    > ul li.is-active {
+        background-color: var(--color-secondary);
+        border-radius: var(--radius-default) var(--radius-default) 0 0;
+    }
+
+    > ul li {
+        display: inline-block;
+        padding: var(--spacing-default);
+
+        a {
+            text-decoration: none;
+            font-size: var(--utrecht-typography-scale-lg);
+            color: var(--utrecht-document-color);
+        }
+    }
+
+    > div {
+        background-color: var(--color-secondary);
+    }
+}
+
+.tabs-component-contactmoment {
+    > ul li.is-active {
+        background-color: var(--color-white);
+    }
+
+    > ul li {
+        display: inline-block;
+        padding: var(--spacing-default);
+
+        a {
+            text-decoration: none;
+            font-size: var(--utrecht-typography-scale-lg);
+            color: var(--utrecht-document-color);
+        }
+    }
+}
+
+a[aria-current="page"] {
+    color: inherit;
+    pointer-events: none;
+
+    &:hover {
+        cursor: none;
+    }
+}
+
+h2 {
+    margin-top: var(--spacing-large);
+}
+
+.search-bar {
+    display: inline-flex;
+    align-items: stretch;
+    max-width: 100%;
+    --border-style: 1px solid var(--color-primary);
+
+    input,
+    select,
+    button {
+        border: none;
+        border-block: var(--border-style);
+
+        &:focus-visible {
+            outline-color: var(--color-primary);
+        }
+    }
+
+    > :first-child {
+        input,
+        select {
+            border-radius: var(--radius-large) 0 0 var(--radius-large);
+            border-inline-start: var(--border-style);
+        }
+    }
+
+    > :last-child {
+        border-radius: 0 var(--radius-large) var(--radius-large) 0;
+        border-inline-end: var(--border-style);
+    }
+
+    button {
+        --utrecht-icon-size: 1rem;
+        background: var(--color-white);
+        font-size: 0;
+        padding-right: var(--spacing-default);
+    }
+
+    utrecht-icon-loupe {
+        pointer-events: none;
+    }
+
+    input,
+    select {
+        padding: 0.5rem;
+    }
+
+    label {
+        font-size: 0;
+        display: flex;
+        align-items: stretch;
+        color: var(--color-error);
+    }
+
+    > :nth-last-child(2) {
+        flex: 1;
+        > input {
+            width: 100%;
+        }
+    }
+
+    input[type="search"] {
+        padding-inline-start: 1rem;
+        &::placeholder {
+            color: black;
+        }
+    }
+}
+
+//forms
+form {
+    span.required::after {
+        content: "*";
+        color: var(--color-error);
+        padding-left: 1ch;
+    }
+}
+
+menu {
+    list-style: none;
+}
+
+// categories
+[class^="category-"],
+[class*=" category-"] {
+    border-radius: 1.5rem;
+    padding-inline: 0.75rem;
+    padding-block: 0.5em;
+    background-color: var(--color-category-default);
+    display: inline-block;
+}
+
+.category-Website {
+    background-color: var(--color-category-website);
+}
+
+//notities start
+
+.contactmomenten-header {
+    margin-inline-start: var(--spacing-default);
+}
