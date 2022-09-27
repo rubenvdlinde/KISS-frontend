@@ -1,6 +1,6 @@
 <template>
   <details ref="detailsEl">
-    <summary class="icon-before filter">{{ label }}</summary>
+    <summary>{{ label }}</summary>
     <fieldset>
       <legend>{{ label }}</legend>
       <label
@@ -55,7 +55,7 @@ summary {
   width: fit-content;
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+
   border-radius: var(--radius-large);
   margin-inline-start: auto;
   font-weight: 500;
@@ -112,12 +112,6 @@ details[open] {
     border-radius: 0;
     width: 100%;
     padding-inline-start: 1rem;
-
-    &::before {
-      mask-image: url("@/assets/icons/chevron-down.svg");
-      height: 0.6rem;
-      transform: rotate(180deg);
-    }
   }
 }
 

@@ -36,6 +36,6 @@ const route = useRoute();
 @import "@/assets/fonts/fonts.css";
 @import "@/assets/reset.css";
 @import "@utrecht/component-library-css";
-@import "@/assets/main.scss";
 @import "@/assets/icons/icons.scss";
+@import "@/assets/main.scss";
 </style>

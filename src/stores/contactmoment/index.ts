@@ -9,7 +9,7 @@ import type {
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { getFormattedUtcDate } from "@/services";
 import { defineStore } from "pinia";
-import { resetAllState } from "../create-store";
+import { createSession, type Session } from "../switchable-store";
 export * from "./types";
 
 export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
@@ -57,55 +57,99 @@ function initVraag(): Vraag {
   };
 }
 
-interface ContactmomentState {
-  contactmomentLoopt: boolean;
+export interface ContactmomentState {
   vragen: Vraag[];
   huidigeVraag: Vraag;
+  session: Session;
+}
+
+function initContactmoment(): ContactmomentState {
+  const vraag = initVraag();
+  return {
+    vragen: [vraag],
+    huidigeVraag: vraag,
+    session: createSession(),
+  };
+}
+
+interface ContactmomentenState {
+  contactmomenten: ContactmomentState[];
+  huidigContactmoment: ContactmomentState | undefined;
+  contactmomentLoopt: boolean;
 }
 
 export const useContactmomentStore = defineStore("contactmoment", {
   state: () => {
-    const huidigeVraag = initVraag();
     return {
       contactmomentLoopt: false,
-      vragen: [huidigeVraag],
-      huidigeVraag,
-    } as ContactmomentState;
+      contactmomenten: [],
+      huidigContactmoment: undefined,
+    } as ContactmomentenState;
   },
   getters: {
     klantVoorHuidigeVraag(state): Klant | undefined {
-      return state.huidigeVraag.klanten
+      return state.huidigContactmoment?.huidigeVraag.klanten
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
     wouldLoseProgress(): boolean {
-      return this.huidigeVraag.contactverzoek.isInProgress;
+      return !!this.huidigContactmoment?.huidigeVraag.contactverzoek
+        .isInProgress;
     },
   },
   actions: {
     start() {
-      if (this.contactmomentLoopt) return;
+      const newMoment = initContactmoment();
+      this.contactmomenten.unshift(newMoment);
+      this.huidigContactmoment = newMoment;
+      newMoment.session.enable();
       this.contactmomentLoopt = true;
+    },
+    switchContactmoment(contactmoment: ContactmomentState) {
+      if (!this.contactmomenten.includes(contactmoment)) return;
+      this.huidigContactmoment = contactmoment;
+      contactmoment.session.enable();
     },
     startNieuweVraag() {
       const nieuweVraag = initVraag();
-      if (this.huidigeVraag.klanten) {
-        nieuweVraag.klanten = this.huidigeVraag.klanten.map(
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+
+      if (huidigContactmoment.huidigeVraag.klanten) {
+        nieuweVraag.klanten = huidigContactmoment.huidigeVraag.klanten.map(
           (klantKoppeling) => ({
             ...klantKoppeling,
           })
         );
       }
-      this.vragen.push(nieuweVraag);
+      huidigContactmoment.vragen.push(nieuweVraag);
       this.switchVraag(nieuweVraag);
     },
     switchVraag(vraag: Vraag) {
-      this.huidigeVraag = vraag;
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      if (!huidigContactmoment.vragen.includes(vraag)) return;
+
+      huidigContactmoment.huidigeVraag.contactverzoek.isInProgress = false;
+      huidigContactmoment.huidigeVraag = vraag;
     },
     stop() {
-      this.$reset();
-      // Temporary. When we implement multiple running contactmomenten, each will have it's own state
-      resetAllState();
+      if (!this.huidigContactmoment) return;
+      const currentIndex = this.contactmomenten.indexOf(
+        this.huidigContactmoment
+      );
+      if (currentIndex == -1) return;
+      this.contactmomenten.splice(currentIndex, 1);
+
+      if (this.contactmomenten.length) {
+        this.switchContactmoment(this.contactmomenten[0]);
+        return;
+      }
+
+      this.huidigContactmoment = undefined;
+      this.contactmomentLoopt = false;
+      // start with an empty session. this is equivalent to resetting all state.
+      createSession().enable();
     },
     upsertZaak(zaak: Zaak, vraag: Vraag, shouldStore = true) {
       const existingZaak = vraag.zaken.find(
@@ -131,12 +175,13 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     setKlant(klant: Klant) {
-      if (!this.huidigeVraag) return;
-      const match = this.huidigeVraag.klanten.find(
-        (x) => x.klant.id === klant.id
-      );
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      const { huidigeVraag } = huidigContactmoment;
 
-      this.huidigeVraag.klanten.forEach((x) => {
+      const match = huidigeVraag.klanten.find((x) => x.klant.id === klant.id);
+
+      huidigeVraag.klanten.forEach((x) => {
         x.shouldStore = false;
       });
 
@@ -146,19 +191,23 @@ export const useContactmomentStore = defineStore("contactmoment", {
         return;
       }
 
-      this.huidigeVraag.klanten.push({
+      huidigeVraag.klanten.push({
         shouldStore: true,
         klant,
       });
     },
 
     addMedewerker(medewerker: any, url: string) {
-      const newMedewerkerIndex = this.huidigeVraag.medewerkers.findIndex(
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      const { huidigeVraag } = huidigContactmoment;
+
+      const newMedewerkerIndex = huidigeVraag.medewerkers.findIndex(
         (m) => m.medewerker.id === medewerker.id
       );
 
       if (newMedewerkerIndex === -1) {
-        this.huidigeVraag.medewerkers.push({
+        huidigeVraag.medewerkers.push({
           medewerker: {
             id: medewerker.id,
             voornaam: medewerker.contact.voornaam,
@@ -175,12 +224,16 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addKennisartikel(kennisartikel: any) {
-      const newKennisartikelIndex = this.huidigeVraag.kennisartikelen.findIndex(
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      const { huidigeVraag } = huidigContactmoment;
+
+      const newKennisartikelIndex = huidigeVraag.kennisartikelen.findIndex(
         (k) => k.kennisartikel.url === kennisartikel.url
       );
 
       if (newKennisartikelIndex === -1) {
-        this.huidigeVraag.kennisartikelen.push({
+        huidigeVraag.kennisartikelen.push({
           kennisartikel: {
             title:
               kennisartikel.vertalingen[0]?.productTitelDecentraal ??
@@ -193,43 +246,54 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addWebsite(website: Website) {
-      const newWebsiteIndex = this.huidigeVraag.websites.findIndex(
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      const { huidigeVraag } = huidigContactmoment;
+
+      const newWebsiteIndex = huidigeVraag.websites.findIndex(
         (w) => w.website.url === website.url
       );
 
       if (newWebsiteIndex === -1) {
-        this.huidigeVraag.websites.push({ website, shouldStore: true });
+        huidigeVraag.websites.push({ website, shouldStore: true });
       }
     },
 
     toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
-      const foundBerichtIndex = this.huidigeVraag.nieuwsberichten.findIndex(
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      const { huidigeVraag } = huidigContactmoment;
+
+      const foundBerichtIndex = huidigeVraag.nieuwsberichten.findIndex(
         (n) => n.nieuwsbericht.url === nieuwsbericht.url
       );
 
       if (foundBerichtIndex !== -1) {
-        this.huidigeVraag.nieuwsberichten.splice(foundBerichtIndex, 1);
+        huidigeVraag.nieuwsberichten.splice(foundBerichtIndex, 1);
         return;
       }
 
-      this.huidigeVraag.nieuwsberichten.push({
+      huidigeVraag.nieuwsberichten.push({
         nieuwsbericht,
         shouldStore: true,
       });
     },
 
     toggleWerkinstructie(werkinstructie: Werkinstructie) {
-      const foundWerkinstructieIndex =
-        this.huidigeVraag.werkinstructies.findIndex(
-          (w) => w.werkinstructie.url === werkinstructie.url
-        );
+      const { huidigContactmoment } = this;
+      if (!huidigContactmoment) return;
+      const { huidigeVraag } = huidigContactmoment;
+
+      const foundWerkinstructieIndex = huidigeVraag.werkinstructies.findIndex(
+        (w) => w.werkinstructie.url === werkinstructie.url
+      );
 
       if (foundWerkinstructieIndex !== -1) {
-        this.huidigeVraag.werkinstructies.splice(foundWerkinstructieIndex, 1);
+        huidigeVraag.werkinstructies.splice(foundWerkinstructieIndex, 1);
         return;
       }
 
-      this.huidigeVraag.werkinstructies.push({
+      huidigeVraag.werkinstructies.push({
         werkinstructie,
         shouldStore: true,
       });

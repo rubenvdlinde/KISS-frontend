@@ -19,6 +19,7 @@
         <td>{{ formatDateOnly(zaak.registratiedatum) }}</td>
         <td>
           <zaak-contactmoment-koppelaar
+            v-if="vraag"
             :zaak="zaak"
             :vraag="vraag"
           ></zaak-contactmoment-koppelaar>
@@ -43,7 +44,7 @@ const handleZaakSelected = (zaak: Zaak) => {
 
 defineProps({
   zaken: { type: Array as PropType<Zaak[]>, required: true },
-  vraag: { type: Object as PropType<Vraag>, required: true },
+  vraag: { type: Object as PropType<Vraag | undefined>, required: true },
 });
 </script>
 

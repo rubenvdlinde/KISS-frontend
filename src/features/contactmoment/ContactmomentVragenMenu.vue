@@ -3,7 +3,7 @@
     :dialog="dialog"
     message="Let op, je hebt het contactverzoek niet afgerond. Als je deze vraag verlaat, wordt het contactverzoek niet verstuurd."
   />
-  <menu class="vragen-menu">
+  <menu class="vragen-menu" v-if="contactmomentStore.huidigContactmoment">
     <li>
       <button
         class="icon-after plus new-question"
@@ -12,10 +12,15 @@
         @click="startNieuweVraag"
       ></button>
     </li>
-    <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
+    <li
+      v-for="(vraag, idx) in contactmomentStore.huidigContactmoment.vragen"
+      :key="idx"
+    >
       <button
         type="button"
-        :disabled="vraag === contactmomentStore.huidigeVraag"
+        :disabled="
+          vraag === contactmomentStore.huidigContactmoment.huidigeVraag
+        "
         :title="`Ga naar vraag ${idx + 1}`"
         @click="switchVraag(vraag)"
       >

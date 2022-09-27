@@ -19,8 +19,11 @@
       :message="errorMessage"
     />
 
-    <template v-else-if="contactmomentStore.contactmomentLoopt">
-      <article v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
+    <template v-else-if="contactmomentStore.huidigContactmoment">
+      <article
+        v-for="(vraag, idx) in contactmomentStore.huidigContactmoment.vragen"
+        :key="idx"
+      >
         <utrecht-heading :level="2" model-value>
           Vraag {{ idx + 1 }}
         </utrecht-heading>
@@ -294,7 +297,8 @@ const errorMessage = ref("");
 const gespreksresultaten = useGespreksResultaten();
 
 onMounted(() => {
-  for (const vraag of contactmomentStore.vragen) {
+  if (!contactmomentStore.huidigContactmoment) return;
+  for (const vraag of contactmomentStore.huidigContactmoment.vragen) {
     if (vraag.contactverzoek.isSubmitted) {
       vraag.resultaat = "Terugbelnotitie gemaakt";
     }
@@ -390,8 +394,11 @@ async function submit() {
   try {
     saving.value = true;
     errorMessage.value = "";
-    const firstVraag = contactmomentStore.vragen[0];
-    const otherVragen = contactmomentStore.vragen.slice(1);
+    if (!contactmomentStore.huidigContactmoment) return;
+
+    const { vragen } = contactmomentStore.huidigContactmoment;
+    const firstVraag = vragen[0];
+    const otherVragen = vragen.slice(1);
 
     let { gespreksId } = await saveVraag(firstVraag);
     if (!gespreksId) {
