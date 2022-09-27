@@ -196,7 +196,7 @@ aside {
   border-start-start-radius: var(--radius-large);
   border-start-end-radius: var(--radius-large);
   color: var(--color-headings);
-  margin-block-start: var(--spacing-large);
+  margin-block-start: var(--spacing-default);
   padding-block-start: var(--spacing-default);
 
   h2 {
