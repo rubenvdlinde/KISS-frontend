@@ -9,6 +9,31 @@ import {
 } from "@/services";
 import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
+import type { ContactmomentViewModel } from "../contactmoment";
+
+type Roltype = "behandelaar" | "initiator";
+
+const getNamePerRoltype = (zaak: any, roltype: Roltype): string => {
+  const behandelaar = zaak.embedded.rollen.find(
+    (rol: any) =>
+      rol.betrokkeneType === "medewerker" &&
+      rol.omschrijvingGeneriek === roltype
+  );
+
+  const identificatie = behandelaar?.embedded?.betrokkeneIdentificatie;
+
+  if (!identificatie) return "Onbekend";
+
+  const name = [
+    identificatie.voornamen,
+    identificatie.voorvoegselGeslachtsnaam,
+    identificatie.geslachtsnaam,
+  ]
+    .filter((item) => item)
+    .join(" ");
+
+  return name;
+};
 
 function parseZaak(zaak: any): Zaak {
   const startdatum = new Date(zaak.startdatum);
@@ -17,22 +42,6 @@ function parseZaak(zaak: any): Zaak {
       days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
     })
     .toJSDate();
-
-  const getBehandelaarName = (): string => {
-    const behandelaar = zaak.embedded.rollen.find(
-      (rol: any) => rol.betrokkeneType === "medewerker"
-    );
-
-    const identificatie = behandelaar?.embedded?.betrokkeneIdentificatie;
-
-    if (!identificatie) return "Onbekend";
-
-    const voornaam = identificatie.voornamen ?? "";
-    const tussenvoegsel = identificatie.voorvoegselGeslachtsnaam ?? "";
-    const achternaam = identificatie.geslachtsnaam ?? "";
-
-    return `${voornaam} ${tussenvoegsel} ${achternaam}`;
-  };
 
   return {
     identificatie: zaak.identificatie,
@@ -43,7 +52,7 @@ function parseZaak(zaak: any): Zaak {
     registratiedatum: startdatum,
     status: zaak.embedded.status.statustoelichting,
     fataleDatum,
-    behandelaar: getBehandelaarName(),
+    behandelaar: getNamePerRoltype(zaak, "behandelaar"),
     toelichting: zaak.toelichting,
   };
 }
@@ -90,23 +99,63 @@ export function useZaaksysteemService() {
         .then(throwIfNotOk)
         .then((x) => x.json())
         .then((zaak) => {
+          const fataleDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
+            .plus({
+              days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
+            })
+            .toJSDate();
+          const streefDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
+            .plus({
+              days: parseInt(zaak.embedded.zaaktype.servicenorm, 10),
+            })
+            .toJSDate();
+
           return {
             ...zaak,
             zaaktype: zaak.embedded.zaaktype.id,
+            zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
+            status: zaak.embedded.status.statustoelichting,
+            behandelaar: getNamePerRoltype(zaak, "behandelaar"),
+            aanvrager: getNamePerRoltype(zaak, "initiator"),
+            startdatum: zaak.startdatum,
+            fataleDatum: fataleDatum,
+            streefDatum: streefDatum,
+            indienDatum: zaak.publicatiedatum ?? "Onbekend",
+            registratieDatum: new Date(zaak.registratiedatum),
+            self: zaak["x-commongateway-metadata"].self,
+            documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
           } as ZaakDetails;
         });
     }
 
     return ServiceResult.fromFetcher(
-      `${zaaksysteemBaseUri}/${id}?extend[]=all`,
+      `${zaaksysteemBaseUri}/${id}?extend[]=all&extend[]=x-commongateway-metadata.self`,
       get
     );
+  };
+
+  const getContactmomentenByZaak = (
+    zaakUri: string
+  ): ServiceData<ContactmomentViewModel[]> => {
+    const url = `${window.gatewayBaseUri}/api/objectcontactmomenten?extend[]=all&object=${zaakUri}&objectType=zaak`;
+
+    function get(url: string): Promise<ContactmomentViewModel[]> {
+      return fetchLoggedIn(url)
+        .then(throwIfNotOk)
+        .then((x) => x.json())
+        .then((contactmoment) =>
+          contactmoment.results.map((c: any) => c.embedded.contactmoment)
+        );
+    }
+
+    return ServiceResult.fromFetcher(url, get);
   };
 
   return {
     findByZaak,
     findByBsn,
     getZaak,
+    getContactmomentenByZaak,
   };
 }
 
@@ -135,3 +184,18 @@ export async function updateToelichting(
 
   return res.json();
 }
+
+const mapDocumenten = (rawDocumenten: any[]) => {
+  if (!rawDocumenten) return [];
+
+  return rawDocumenten.map((document) => ({
+    id: document.embedded.informatieobject.id,
+    titel: document.embedded.informatieobject.titel,
+    bestandsomvang: document.embedded.informatieobject.bestandsomvang,
+    creatiedatum: new Date(document.embedded.informatieobject.creatiedatum),
+    vertrouwelijkheidaanduiding:
+      document.embedded.informatieobject.vertrouwelijkheidaanduiding,
+    formaat: document.embedded.informatieobject.formaat,
+    inhoud: document.embedded.informatieobject.inhoud,
+  }));
+};

@@ -6,7 +6,27 @@ export type ZaakDetails = {
   bronorganisatie: string;
   verantwoordelijkeOrganisatie: string;
   zaaktype: string;
+  zaaktypeLabel: string;
+  status: string;
+  behandelaar: string;
+  aanvrager: string;
+  fataleDatum: Date;
+  streefDatum: Date;
+  indienDatum: Date;
+  registratieDatum: Date;
+  self: string;
+  documenten?: Document[];
 };
+
+export interface Document {
+  id: string;
+  titel: string;
+  bestandsomvang: number;
+  creatiedatum: Date;
+  vertrouwelijkheidaanduiding: string;
+  formaat: string;
+  inhoud: string;
+}
 
 export interface Zaak {
   identificatie: string;

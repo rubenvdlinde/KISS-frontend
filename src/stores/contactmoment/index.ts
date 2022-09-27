@@ -153,10 +153,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addMedewerker(medewerker: any, url: string) {
-      this.huidigeVraag.medewerkers.forEach(
-        (m) => (m.shouldStore = m.medewerker.id === medewerker.id)
-      );
-
       const newMedewerkerIndex = this.huidigeVraag.medewerkers.findIndex(
         (m) => m.medewerker.id === medewerker.id
       );
@@ -168,7 +164,9 @@ export const useContactmomentStore = defineStore("contactmoment", {
             voornaam: medewerker.contact.voornaam,
             voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
             achternaam: medewerker.contact.achternaam,
-            emailadres: medewerker.contact.emailadres,
+            emailadres: medewerker.contact.emails
+              ? medewerker.contact.emails[0].email
+              : "",
             url,
           },
           shouldStore: true,
@@ -177,10 +175,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addKennisartikel(kennisartikel: any) {
-      this.huidigeVraag.kennisartikelen.forEach(
-        (k) => (k.shouldStore = k.kennisartikel.url === kennisartikel.url)
-      );
-
       const newKennisartikelIndex = this.huidigeVraag.kennisartikelen.findIndex(
         (k) => k.kennisartikel.url === kennisartikel.url
       );
@@ -199,10 +193,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
 
     addWebsite(website: Website) {
-      this.huidigeVraag.websites.forEach(
-        (w) => (w.shouldStore = w.website.url === website.url)
-      );
-
       const newWebsiteIndex = this.huidigeVraag.websites.findIndex(
         (w) => w.website.url === website.url
       );
