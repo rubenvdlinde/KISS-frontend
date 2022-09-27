@@ -84,8 +84,10 @@
                       .filter((x) => x)
                       .join(" ")
                   }}
-                  ({{ record.medewerker.emailadres }})</span
-                >
+                  <span v-if="record.medewerker.emailadres"
+                    >({{ record.medewerker.emailadres }})</span
+                  >
+                </span>
                 <input type="checkbox" v-model="record.shouldStore" />
               </label>
             </li>
@@ -258,7 +260,6 @@
 </template>
 
 <script setup lang="ts">
-import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
