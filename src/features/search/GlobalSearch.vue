@@ -293,8 +293,8 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-default);
+  margin-inline-start: var(--spacing-large);
   color: var(--color-white);
-  margin-inline: auto;
 }
 
 .search-results {
