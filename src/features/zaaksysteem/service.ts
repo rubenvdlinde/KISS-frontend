@@ -24,11 +24,15 @@ const getNamePerRoltype = (zaak: any, roltype: Roltype): string => {
 
   if (!identificatie) return "Onbekend";
 
-  const voornaam = identificatie.voornamen ?? "";
-  const tussenvoegsel = identificatie.voorvoegselGeslachtsnaam ?? "";
-  const achternaam = identificatie.geslachtsnaam ?? "";
+  const name = [
+    identificatie.voornamen,
+    identificatie.voorvoegselGeslachtsnaam,
+    identificatie.geslachtsnaam,
+  ]
+    .filter((item) => item)
+    .join(" ");
 
-  return `${voornaam} ${tussenvoegsel} ${achternaam}`;
+  return name;
 };
 
 function parseZaak(zaak: any): Zaak {
