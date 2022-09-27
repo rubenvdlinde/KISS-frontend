@@ -33,9 +33,9 @@ const route = useRoute();
 @import "@gemeente-denhaag/design-tokens-components/dist/index.css";
 @import "@/assets/design-tokens.scss";
 
-@import "@/assets/reset.css";
 @import "@/assets/fonts/fonts.css";
+@import "@/assets/reset.css";
+@import "@utrecht/component-library-css";
 @import "@/assets/main.scss";
 @import "@/assets/icons/icons.scss";
-@import "@utrecht/component-library-css";
 </style>
