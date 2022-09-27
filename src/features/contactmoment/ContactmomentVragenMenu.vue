@@ -58,7 +58,7 @@ async function waitForConfirmation() {
 .vragen-menu {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(1.5rem, 1fr));
-  gap: var(--spacing-default);
+  gap: var(--spacing-small);
   padding: var(--spacing-small);
 
   button {
