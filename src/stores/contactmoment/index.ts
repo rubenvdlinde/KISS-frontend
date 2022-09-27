@@ -1,4 +1,11 @@
 import type { Klant } from "@/features/klant/types";
+import type {
+  Medewerker,
+  Website,
+  Kennisartikel,
+  Nieuwsbericht,
+  Werkinstructie,
+} from "@/features/search/types";
 import type { Zaak } from "@/features/zaaksysteem/types";
 import { getFormattedUtcDate } from "@/services";
 import { defineStore } from "pinia";
@@ -21,6 +28,11 @@ export interface Vraag {
   kanaal: string;
   resultaat: string;
   klanten: { klant: Klant; shouldStore: boolean }[];
+  medewerkers: { medewerker: Medewerker; shouldStore: boolean }[];
+  websites: { website: Website; shouldStore: boolean }[];
+  kennisartikelen: { kennisartikel: Kennisartikel; shouldStore: boolean }[];
+  nieuwsberichten: { nieuwsbericht: Nieuwsbericht; shouldStore: boolean }[];
+  werkinstructies: { werkinstructie: Werkinstructie; shouldStore: boolean }[];
 }
 
 function initVraag(): Vraag {
@@ -37,6 +49,11 @@ function initVraag(): Vraag {
     kanaal: "",
     resultaat: "",
     klanten: [],
+    medewerkers: [],
+    websites: [],
+    kennisartikelen: [],
+    nieuwsberichten: [],
+    werkinstructies: [],
   };
 }
 
@@ -112,6 +129,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
         ({ zaak, shouldStore }) => shouldStore && zaak.id === id
       );
     },
+
     setKlant(klant: Klant) {
       if (!this.huidigeVraag) return;
       const match = this.huidigeVraag.klanten.find(
@@ -131,6 +149,99 @@ export const useContactmomentStore = defineStore("contactmoment", {
       this.huidigeVraag.klanten.push({
         shouldStore: true,
         klant,
+      });
+    },
+
+    addMedewerker(medewerker: any, url: string) {
+      this.huidigeVraag.medewerkers.forEach(
+        (m) => (m.shouldStore = m.medewerker.id === medewerker.id)
+      );
+
+      const newMedewerkerIndex = this.huidigeVraag.medewerkers.findIndex(
+        (m) => m.medewerker.id === medewerker.id
+      );
+
+      if (newMedewerkerIndex === -1) {
+        this.huidigeVraag.medewerkers.push({
+          medewerker: {
+            id: medewerker.id,
+            voornaam: medewerker.contact.voornaam,
+            voorvoegselAchternaam: medewerker.contact.voorvoegselAchternaam,
+            achternaam: medewerker.contact.achternaam,
+            emailadres: medewerker.contact.emailadres,
+            url,
+          },
+          shouldStore: true,
+        });
+      }
+    },
+
+    addKennisartikel(kennisartikel: any) {
+      this.huidigeVraag.kennisartikelen.forEach(
+        (k) => (k.shouldStore = k.kennisartikel.url === kennisartikel.url)
+      );
+
+      const newKennisartikelIndex = this.huidigeVraag.kennisartikelen.findIndex(
+        (k) => k.kennisartikel.url === kennisartikel.url
+      );
+
+      if (newKennisartikelIndex === -1) {
+        this.huidigeVraag.kennisartikelen.push({
+          kennisartikel: {
+            title:
+              kennisartikel.vertalingen[0]?.productTitelDecentraal ??
+              "Onbekende titel",
+            url: kennisartikel.url,
+          },
+          shouldStore: true,
+        });
+      }
+    },
+
+    addWebsite(website: Website) {
+      this.huidigeVraag.websites.forEach(
+        (w) => (w.shouldStore = w.website.url === website.url)
+      );
+
+      const newWebsiteIndex = this.huidigeVraag.websites.findIndex(
+        (w) => w.website.url === website.url
+      );
+
+      if (newWebsiteIndex === -1) {
+        this.huidigeVraag.websites.push({ website, shouldStore: true });
+      }
+    },
+
+    toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
+      const foundBerichtIndex = this.huidigeVraag.nieuwsberichten.findIndex(
+        (n) => n.nieuwsbericht.url === nieuwsbericht.url
+      );
+
+      if (foundBerichtIndex !== -1) {
+        this.huidigeVraag.nieuwsberichten.splice(foundBerichtIndex, 1);
+        return;
+      }
+
+      this.huidigeVraag.nieuwsberichten.push({
+        nieuwsbericht,
+        shouldStore: true,
+      });
+    },
+
+    toggleWerkinstructie(werkinstructie: Werkinstructie) {
+      const foundWerkinstructieIndex =
+        this.huidigeVraag.werkinstructies.findIndex(
+          (w) => w.werkinstructie.url === werkinstructie.url
+        );
+
+      if (foundWerkinstructieIndex !== -1) {
+        this.huidigeVraag.werkinstructies.splice(foundWerkinstructieIndex, 1);
+        return;
+      }
+
+      this.huidigeVraag.werkinstructies.push({
+        werkinstructie,
+        shouldStore: true,
       });
     },
   },

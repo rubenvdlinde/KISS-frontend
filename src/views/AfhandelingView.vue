@@ -62,6 +62,122 @@
             :vraag="vraag"
           />
         </section>
+        <section v-if="vraag.medewerkers.length" class="gerelateerde-resources">
+          <utrecht-heading :level="2" model-value>{{
+            vraag.medewerkers.length > 1
+              ? "Gerelateerde medewerkers"
+              : "Gerelateerde medewerker"
+          }}</utrecht-heading>
+          <ul>
+            <li v-for="record in vraag.medewerkers" :key="record.medewerker.id">
+              <label>
+                <span
+                  v-if="
+                    record.medewerker.voornaam || record.medewerker.achternaam
+                  "
+                  >{{
+                    [
+                      record.medewerker.voornaam,
+                      record.medewerker.voorvoegselAchternaam,
+                      record.medewerker.achternaam,
+                    ]
+                      .filter((x) => x)
+                      .join(" ")
+                  }}
+                  ({{ record.medewerker.emailadres }})</span
+                >
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
+        </section>
+
+        <section v-if="vraag.websites.length" class="gerelateerde-resources">
+          <utrecht-heading :level="2" model-value>{{
+            vraag.websites.length > 1
+              ? "Gerelateerde websites"
+              : "Gerelateerde website"
+          }}</utrecht-heading>
+          <ul>
+            <li v-for="record in vraag.websites" :key="record.website.url">
+              <label>
+                <a
+                  :href="record.website.url"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  >{{ record.website.title }}</a
+                >
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
+        </section>
+
+        <section
+          v-if="vraag.kennisartikelen.length"
+          class="gerelateerde-resources"
+        >
+          <utrecht-heading :level="2" model-value>{{
+            vraag.kennisartikelen.length > 1
+              ? "Gerelateerde kennisartikelen"
+              : "Gerelateerde kennisartikel"
+          }}</utrecht-heading>
+          <ul>
+            <li
+              v-for="record in vraag.kennisartikelen"
+              :key="record.kennisartikel.url"
+            >
+              <label>
+                {{ record.kennisartikel.title }}
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
+        </section>
+
+        <section
+          v-if="vraag.nieuwsberichten.length"
+          class="gerelateerde-resources"
+        >
+          <utrecht-heading :level="2" model-value>{{
+            vraag.nieuwsberichten.length > 1
+              ? "Gerelateerde nieuwsberichten"
+              : "Gerelateerde nieuwsbericht"
+          }}</utrecht-heading>
+          <ul>
+            <li
+              v-for="record in vraag.nieuwsberichten"
+              :key="record.nieuwsbericht.url"
+            >
+              <label>
+                {{ record.nieuwsbericht.title }}
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
+        </section>
+
+        <section
+          v-if="vraag.werkinstructies.length"
+          class="gerelateerde-resources"
+        >
+          <utrecht-heading :level="2" model-value>{{
+            vraag.werkinstructies.length > 1
+              ? "Gerelateerde werkinstructies"
+              : "Gerelateerde werkinstructie"
+          }}</utrecht-heading>
+          <ul>
+            <li
+              v-for="record in vraag.werkinstructies"
+              :key="record.werkinstructie.url"
+            >
+              <label>
+                {{ record.werkinstructie.title }}
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
+        </section>
         <section>
           <utrecht-heading :level="3" model-value> Details </utrecht-heading>
           <fieldset class="utrecht-form-fieldset">
@@ -160,6 +276,7 @@ import {
   saveContactmoment,
   koppelObject,
   useGespreksResultaten,
+  type Contactmoment,
 } from "@/features/contactmoment";
 
 import { ZakenOverzicht } from "@/features/zaaksysteem";
@@ -227,8 +344,7 @@ const koppelContactverzoek = (
   });
 
 const saveVraag = (vraag: Vraag, gespreksId?: string) => {
-  //de notitie wordt opgeslagen in het contactmoment ne niet als apart object
-  return saveContactmoment({
+  const contactmoment = {
     gespreksId,
     vorigContactmoment: undefined,
     voorkeurskanaal: "",
@@ -247,7 +363,15 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     registratiedatum: getFormattedUtcDate(),
     startdatum: vraag.startdatum,
     einddatum: getFormattedUtcDate(),
-  }).then((savedContactmoment) => {
+  };
+
+  addKennisartikelenToContactmoment(contactmoment, vraag);
+  addWebsitesToContactmoment(contactmoment, vraag);
+  addMedewerkersToContactmoment(contactmoment, vraag);
+  addNieuwsberichtToContactmoment(contactmoment, vraag);
+  addWerkinstructiesToContactmoment(contactmoment, vraag);
+
+  return saveContactmoment(contactmoment).then((savedContactmoment) => {
     const nextPromises: Promise<unknown>[] = [
       zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
       koppelKlanten(vraag, savedContactmoment.id),
@@ -286,6 +410,70 @@ async function submit() {
     saving.value = false;
   }
 }
+const addKennisartikelenToContactmoment = (
+  contactmoment: Contactmoment,
+  vraag: Vraag
+) => {
+  if (!vraag.kennisartikelen) return;
+
+  vraag.kennisartikelen.forEach((kennisartikel) => {
+    if (!kennisartikel.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(kennisartikel.kennisartikel.url);
+  });
+};
+
+const addWebsitesToContactmoment = (
+  contactmoment: Contactmoment,
+  vraag: Vraag
+) => {
+  if (!vraag.websites) return;
+
+  vraag.websites.forEach((website) => {
+    if (!website.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(website.website.url);
+  });
+};
+
+const addMedewerkersToContactmoment = (
+  contactmoment: Contactmoment,
+  vraag: Vraag
+) => {
+  if (!vraag.medewerkers) return;
+
+  vraag.medewerkers.forEach((medewerker) => {
+    if (!medewerker.shouldStore || !medewerker.medewerker.url) return;
+
+    contactmoment.onderwerpLinks.push(medewerker.medewerker.url);
+  });
+};
+
+const addNieuwsberichtToContactmoment = (
+  contactmoment: Contactmoment,
+  vraag: Vraag
+) => {
+  if (!vraag.nieuwsberichten) return;
+
+  vraag.nieuwsberichten.forEach((nieuwsbericht) => {
+    if (!nieuwsbericht.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(nieuwsbericht.nieuwsbericht.url);
+  });
+};
+
+const addWerkinstructiesToContactmoment = (
+  contactmoment: Contactmoment,
+  vraag: Vraag
+) => {
+  if (!vraag.werkinstructies) return;
+
+  vraag.werkinstructies.forEach((werkinstructie) => {
+    if (!werkinstructie.shouldStore) return;
+
+    contactmoment.onderwerpLinks.push(werkinstructie.werkinstructie.url);
+  });
+};
 
 const userStore = useUserStore();
 
@@ -317,7 +505,7 @@ cancelDialog.onConfirm(() => {
   margin-top: var(--spacing-default);
 }
 
-.gerelateerde-klanten {
+.gerelateerde-resources {
   li > label {
     display: grid;
     grid-auto-flow: column;
