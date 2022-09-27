@@ -101,12 +101,15 @@ export const useContactmomentStore = defineStore("contactmoment", {
     start() {
       const newMoment = initContactmoment();
       this.contactmomenten.unshift(newMoment);
-      this.huidigContactmoment = newMoment;
-      newMoment.session.enable();
+      this.switchContactmoment(newMoment);
       this.contactmomentLoopt = true;
     },
     switchContactmoment(contactmoment: ContactmomentState) {
       if (!this.contactmomenten.includes(contactmoment)) return;
+      if (this.huidigContactmoment) {
+        this.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
+          false;
+      }
       this.huidigContactmoment = contactmoment;
       contactmoment.session.enable();
     },

@@ -1,4 +1,8 @@
 <template>
+  <prompt-modal
+    :dialog="dialog"
+    message="Let op, je hebt het contactverzoek niet afgerond. Als je van contactmoment wisselt, wordt het contactverzoek niet verstuurd."
+  />
   <details ref="detailsEl" v-if="contactmomentStore.contactmomenten.length > 1">
     <summary class="utrecht-button">Contactmomenten</summary>
     <menu>
@@ -23,8 +27,9 @@
   </details>
 </template>
 <script lang="ts" setup>
+import PromptModal from "@/components/PromptModal.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, useConfirmDialog } from "@vueuse/core";
 import { computed, ref } from "vue";
 import { getKlantInfo } from "./helpers";
 
@@ -34,7 +39,11 @@ const moments = computed(() =>
     return {
       description: getKlantInfo(x),
       isCurrent: x === contactmomentStore.huidigContactmoment,
-      enable() {
+      async enable() {
+        if (contactmomentStore.wouldLoseProgress) {
+          const { isCanceled } = await dialog.reveal();
+          if (isCanceled) return;
+        }
         contactmomentStore.switchContactmoment(x);
       },
     };
@@ -42,6 +51,8 @@ const moments = computed(() =>
 );
 
 const detailsEl = ref();
+
+const dialog = useConfirmDialog();
 
 onClickOutside(detailsEl, () => {
   const el = detailsEl.value;

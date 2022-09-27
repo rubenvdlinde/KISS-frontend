@@ -10,7 +10,7 @@
 
   <prompt-modal
     :dialog="beforeStopDialog"
-    message="Let op, je hebt het contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd."
+    message="Let op, je hebt het contactverzoek niet afgerond. Als je een nieuw contactmoment start, wordt het contactverzoek niet verstuurd."
   />
 </template>
 
