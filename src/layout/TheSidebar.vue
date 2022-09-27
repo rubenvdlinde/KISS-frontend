@@ -110,10 +110,7 @@ const handleContactverzoekSubmit = ({
 
 <style lang="scss" scoped>
 aside {
-  --color-dark: #352b75;
-  --color-light: #c0c4fc;
-
-  background-color: var(--color-dark);
+  background-color: var(--sidebar-color-1);
   padding-inline: 2px;
   display: flex;
   flex-direction: column;
@@ -171,7 +168,7 @@ aside {
   display: flex;
   flex-direction: column;
   flex: 1;
-  background-color: var(--color-light);
+  background-color: var(--sidebar-color-2);
   border-start-start-radius: var(--radius-large);
   border-start-end-radius: var(--radius-large);
   color: var(--color-headings);

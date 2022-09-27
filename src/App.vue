@@ -47,6 +47,9 @@ const route = useRoute();
   --color-category-default: hsl(184, 54%, 70%);
   --color-category-website: hsl(285, 56%, 83%);
   --color-white: #fff;
+  //TODO discuss. these colors seem to clash.
+  --sidebar-color-1: #352b75;
+  --sidebar-color-2: #c0c4fc;
 
   // spacing
   --container-width: 80rem;
