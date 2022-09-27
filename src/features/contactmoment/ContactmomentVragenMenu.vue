@@ -56,8 +56,8 @@ async function waitForConfirmation() {
 
 <style lang="scss" scoped>
 .vragen-menu {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(1.5rem, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-small);
   padding: var(--spacing-small);
 
@@ -67,11 +67,11 @@ async function waitForConfirmation() {
     display: flex;
     align-items: center;
     justify-content: center;
-    inline-size: 100%;
-    aspect-ratio: 1;
+    inline-size: var(--spacing-large);
+    block-size: var(--spacing-large);
     border-radius: 50%;
 
-    :hover {
+    &:hover {
       cursor: pointer;
     }
 

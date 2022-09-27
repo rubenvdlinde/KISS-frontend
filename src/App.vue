@@ -93,7 +93,7 @@ body {
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
-  grid-template-columns: 20rem 1fr;
+  grid-template-columns: 20.75rem 1fr;
   grid-template-areas:
     "aside header"
     "nothing main";
