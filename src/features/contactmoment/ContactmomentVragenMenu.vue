@@ -13,12 +13,9 @@
       ></button>
     </li>
     <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
-      <span v-if="vraag === contactmomentStore.huidigeVraag">
-        {{ idx + 1 }}
-      </span>
       <button
-        v-else
         type="button"
+        :disabled="vraag === contactmomentStore.huidigeVraag"
         :title="`Ga naar vraag ${idx + 1}`"
         @click="switchVraag(vraag)"
       >
@@ -64,35 +61,24 @@ async function waitForConfirmation() {
   gap: var(--spacing-default);
   padding: var(--spacing-small);
 
-  button:hover {
-    cursor: pointer;
-  }
-
-  li {
-    display: flex;
-    align-items: stretch;
-    aspect-ratio: 1;
+  button {
+    all: unset;
     font-weight: bold;
-  }
-
-  button,
-  span {
     display: flex;
-    background: none;
-    padding: 0;
-    margin: 0;
-    border: none;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    font: inherit;
-    border-radius: 100%;
-    height: unset;
-    color: inherit;
-  }
+    inline-size: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
 
-  span {
-    background: var(--color-white);
+    :hover {
+      cursor: pointer;
+    }
+
+    &:disabled {
+      background: var(--color-white);
+      cursor: default;
+    }
   }
 }
 </style>
