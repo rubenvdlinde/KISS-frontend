@@ -1,6 +1,6 @@
 <template>
   <section>
-    <utrecht-heading :level="2" modelValue>Contactmomenten</utrecht-heading>
+    <utrecht-heading :level="2" modelValue>Documenten</utrecht-heading>
 
     <template v-if="zaak.documenten?.length">
       <table>
