@@ -37,6 +37,8 @@ export interface Contactmoment {
   startdatum: string;
   einddatum: string;
   gespreksId?: string;
+  primaireVraagVerwijzing?: string;
+  primaireVraagWeergave?: string;
 }
 
 export interface ContactmomentZaak {

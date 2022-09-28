@@ -136,11 +136,17 @@
                 {{ record.kennisartikel.title }}
               </span>
               <input
-                :title="`${record.kennis}`"
+                :title="`${record.kennisartikel.title} opslaan bij contactmoment`"
                 type="checkbox"
                 v-model="record.shouldStore"
               />
-              <input type="radio" name="hoofdvraag" />
+              <input
+                :title="`${record.kennisartikel.title} is de hoofdvraag`"
+                type="radio"
+                name="hoofdvraag"
+                :value="record.kennisartikel"
+                v-model="vraag.hoofdvraag"
+              />
             </li>
           </ul>
         </section>
@@ -159,11 +165,21 @@
               v-for="record in vraag.nieuwsberichten"
               :key="record.nieuwsbericht.url"
             >
-              <label>
+              <span>
                 {{ record.nieuwsbericht.title }}
-                <input type="checkbox" v-model="record.shouldStore" />
-              </label>
-              <label><input type="radio" name="hoofdvraag" /></label>
+              </span>
+              <input
+                :title="`${record.nieuwsbericht.title} opslaan bij contactmoment`"
+                type="checkbox"
+                v-model="record.shouldStore"
+              />
+              <input
+                :title="`${record.nieuwsbericht.title} is de hoofdvraag`"
+                type="radio"
+                name="hoofdvraag"
+                :value="record.nieuwsbericht"
+                v-model="vraag.hoofdvraag"
+              />
             </li>
           </ul>
         </section>
@@ -182,11 +198,21 @@
               v-for="record in vraag.werkinstructies"
               :key="record.werkinstructie.url"
             >
-              <label>
+              <span>
                 {{ record.werkinstructie.title }}
-                <input type="checkbox" v-model="record.shouldStore" />
-              </label>
-              <label><input type="radio" name="hoofdvraag" /></label>
+              </span>
+              <input
+                :title="`${record.werkinstructie.title} opslaan bij contactmoment`"
+                type="checkbox"
+                v-model="record.shouldStore"
+              />
+              <input
+                :title="`${record.werkinstructie.title} is de hoofdvraag`"
+                type="radio"
+                name="hoofdvraag"
+                :value="record.werkinstructie"
+                v-model="vraag.hoofdvraag"
+              />
             </li>
           </ul>
         </section>
@@ -356,7 +382,7 @@ const koppelContactverzoek = (
   });
 
 const saveVraag = (vraag: Vraag, gespreksId?: string) => {
-  const contactmoment = {
+  const contactmoment: Contactmoment = {
     gespreksId,
     vorigContactmoment: undefined,
     voorkeurskanaal: "",
@@ -375,6 +401,8 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     registratiedatum: getFormattedUtcDate(),
     startdatum: vraag.startdatum,
     einddatum: getFormattedUtcDate(),
+    primaireVraagVerwijzing: vraag.hoofdvraag?.url,
+    primaireVraagWeergave: vraag.hoofdvraag?.title,
   };
 
   addKennisartikelenToContactmoment(contactmoment, vraag);

@@ -30,9 +30,19 @@ export interface Vraag {
   klanten: { klant: Klant; shouldStore: boolean }[];
   medewerkers: { medewerker: Medewerker; shouldStore: boolean }[];
   websites: { website: Website; shouldStore: boolean }[];
-  kennisartikelen: { kennisartikel: Kennisartikel; shouldStore: boolean }[];
-  nieuwsberichten: { nieuwsbericht: Nieuwsbericht; shouldStore: boolean }[];
-  werkinstructies: { werkinstructie: Werkinstructie; shouldStore: boolean }[];
+  kennisartikelen: {
+    kennisartikel: Kennisartikel;
+    shouldStore: boolean;
+  }[];
+  nieuwsberichten: {
+    nieuwsbericht: Nieuwsbericht;
+    shouldStore: boolean;
+  }[];
+  werkinstructies: {
+    werkinstructie: Werkinstructie;
+    shouldStore: boolean;
+  }[];
+  hoofdvraag: { url: string; title: string } | undefined;
 }
 
 function initVraag(): Vraag {
@@ -54,6 +64,7 @@ function initVraag(): Vraag {
     kennisartikelen: [],
     nieuwsberichten: [],
     werkinstructies: [],
+    hoofdvraag: undefined,
   };
 }
 
