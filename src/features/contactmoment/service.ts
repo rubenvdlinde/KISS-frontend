@@ -67,7 +67,7 @@ export function useKlantContactmomenten(
     url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
     url.searchParams.append("extend[]", "contactmoment.medewerker");
     url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
-    url.searchParams.append("fields[]", "contactmoment");
+    url.searchParams.append("extend[]", "contactmoment.todo");
 
     return url.toString();
   };
@@ -111,38 +111,43 @@ const fetchObject = ({
       objectType,
     }));
 
-const fetchObjecten = (c: any) => {
-  const objectcontactmomenten = c?.embedded?.objectcontactmomenten;
-  return Array.isArray(objectcontactmomenten)
-    ? Promise.all(objectcontactmomenten.map(fetchObject))
-    : Promise.resolve([]);
-};
-
 function mapContactverzoek(obj: any) {
+  const url = (obj?.url as string) || "";
   const todo = obj?.embedded?.todo;
   const medewerkers = todo?.attendees ?? obj?.todo?.attendees ?? [];
   const completed = todo?.completed || "";
   return {
+    url,
     medewerkers,
     completed: completed ? new Date(completed) : undefined,
+    isContactverzoek: true as const,
   };
 }
 
-const mapContactmoment = async (r: any): Promise<ContactmomentViewModel> => {
+const mapContactmoment = async (r: any) => {
+  if (r.embedded.contactmoment?.embedded?.todo)
+    return mapContactverzoek(r.embedded.contactmoment);
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
   contactmoment.startdatum = new Date(contactmoment.startdatum);
   contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
 
-  const objecten = await fetchObjecten(contactmoment);
-  const zaken = objecten.filter((x) => x.objectType === "zaak").map(mapZaak);
-  const contactverzoeken = objecten
-    .filter((x) => x.objectType === "contactmomentobject")
-    .flatMap(mapContactverzoek);
+  const objectcontactmomenten: any[] =
+    r.embedded.contactmoment?.contactmoment?.embedded?.objectcontactmomenten ??
+    [];
+
+  const zakenPromises = objectcontactmomenten
+    .filter(({ objectType }: any) => objectType === "zaak")
+    .map((x) => fetchObject(x).then(mapZaak));
+
+  const contactverzoekenUrls = objectcontactmomenten
+    .filter(({ objectType }: any) => objectType === "contactmomentobject")
+    .map(({ url }) => url as string);
 
   return {
     ...contactmoment,
-    zaken,
-    contactverzoeken,
+    zaken: await Promise.all(zakenPromises),
+    contactverzoekenUrls,
+    isContactverzoek: false as const,
   };
 };
 
@@ -154,7 +159,14 @@ const fetchKlantContactmomenten = (
     .then((r) => r.json())
     .then((j) => parsePagination(j, mapContactmoment))
     .then((p) => {
-      const page = p.page.filter((x) => !(x as any)?.embedded?.todo);
+      const page = [] as ContactmomentViewModel[];
+      p.page.forEach((obj) => {
+        if (obj.isContactverzoek) return;
+        page.push({
+          ...obj,
+          contactverzoeken: p.page.filter((x) => x.isContactverzoek) as any,
+        });
+      });
       return {
         ...p,
         page,
