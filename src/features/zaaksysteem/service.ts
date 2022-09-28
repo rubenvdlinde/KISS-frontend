@@ -114,6 +114,7 @@ export function useZaaksysteemService() {
             ...zaak,
             zaaktype: zaak.embedded.zaaktype.id,
             zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
+            zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
             status: zaak.embedded.status.statustoelichting,
             behandelaar: getNamePerRoltype(zaak, "behandelaar"),
             aanvrager: getNamePerRoltype(zaak, "initiator"),
@@ -124,6 +125,7 @@ export function useZaaksysteemService() {
             registratieDatum: new Date(zaak.registratiedatum),
             self: zaak["x-commongateway-metadata"].self,
             documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
+            omschrijving: zaak.omschrijving,
           } as ZaakDetails;
         });
     }

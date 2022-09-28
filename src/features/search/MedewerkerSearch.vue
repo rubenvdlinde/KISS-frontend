@@ -93,16 +93,15 @@ const labelId = nanoid();
 const listboxId = nanoid();
 
 function mapDatalistItem(x: SearchResult): DatalistItem {
-  const { contact, department, function: functie } = x?.jsonObject ?? {};
-  const { voornaam, voorvoegselAchternaam, achternaam, emailadres } =
-    contact ?? {};
+  const { contact, department, function: functie, user } = x?.jsonObject ?? {};
+  const { voornaam, voorvoegselAchternaam, achternaam } = contact ?? {};
   const naam = [voornaam, voorvoegselAchternaam, achternaam]
     .filter(Boolean)
     .join(" ");
   const werk = [functie, department].filter(Boolean).join(" bij ");
   const description = [naam, werk].filter(Boolean).join(": ");
   return {
-    value: emailadres,
+    value: user,
     description,
   };
 }
