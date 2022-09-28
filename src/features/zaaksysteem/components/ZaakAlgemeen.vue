@@ -5,12 +5,12 @@
     <div class="content">
       <ul>
         <li>
-          <span class="label">Zaaknummer</span>
-          <span class="value">{{ zaak.identificatie }}</span>
+          <span class="label">Zaaktype</span>
+          <span class="value">{{ zaak.zaaktypeOmschrijving }}</span>
         </li>
         <li>
-          <span class="label">Zaaktype</span>
-          <span class="value">{{ zaak.zaaktypeLabel }}</span>
+          <span class="label">Zaaknummer</span>
+          <span class="value">{{ zaak.identificatie }}</span>
         </li>
         <li>
           <span class="label">Status</span>
@@ -27,6 +27,10 @@
       </ul>
 
       <ul>
+        <li>
+          <span class="label">Titel</span>
+          <span class="value">{{ zaak.omschrijving }}</span>
+        </li>
         <li>
           <span class="label">Indiendatum</span>
           <span class="value">{{ formatDateOnly(zaak.indienDatum) }}</span>
