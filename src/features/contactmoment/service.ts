@@ -94,6 +94,9 @@ const mapZaak = (json: any): ContactmomentZaak => ({
   zaaknummer: json?.identificatie,
 });
 
+const fixUrl = (object: string) =>
+  object.startsWith("/") ? window.gatewayBaseUri + object : object;
+
 const fetchObject = ({
   object,
   objectType,
@@ -101,9 +104,7 @@ const fetchObject = ({
   object: string;
   objectType: string;
 }) =>
-  fetchLoggedIn(
-    object.startsWith("/") ? window.gatewayBaseUri + object : object
-  )
+  fetchLoggedIn(fixUrl(object))
     .then(throwIfNotOk)
     .then((or) => or.json())
     .then((oj) => ({
@@ -117,7 +118,7 @@ function mapContactverzoek(obj: any) {
   const medewerkers = todo?.attendees ?? obj?.todo?.attendees ?? [];
   const completed = todo?.completed || "";
   return {
-    url,
+    url: url && fixUrl(url),
     medewerkers,
     completed: completed ? new Date(completed) : undefined,
     isContactverzoek: true as const,
@@ -132,8 +133,7 @@ const mapContactmoment = async (r: any) => {
   contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
 
   const objectcontactmomenten: any[] =
-    r.embedded.contactmoment?.contactmoment?.embedded?.objectcontactmomenten ??
-    [];
+    r.embedded.contactmoment?.embedded?.objectcontactmomenten ?? [];
 
   const zakenPromises = objectcontactmomenten
     .filter(({ objectType }: any) => objectType === "zaak")
@@ -141,7 +141,7 @@ const mapContactmoment = async (r: any) => {
 
   const contactverzoekenUrls = objectcontactmomenten
     .filter(({ objectType }: any) => objectType === "contactmomentobject")
-    .map(({ url }) => url as string);
+    .map(({ object }) => fixUrl(object));
 
   return {
     ...contactmoment,
@@ -164,7 +164,10 @@ const fetchKlantContactmomenten = (
         if (obj.isContactverzoek) return;
         page.push({
           ...obj,
-          contactverzoeken: p.page.filter((x) => x.isContactverzoek) as any,
+          contactverzoeken: p.page.filter(
+            (x) =>
+              x.isContactverzoek && obj.contactverzoekenUrls.includes(x.url)
+          ) as any,
         });
       });
       return {
