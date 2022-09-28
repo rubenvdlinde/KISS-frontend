@@ -149,16 +149,9 @@ dt {
 
 .header-row,
 summary {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 2fr 1.5rem;
   gap: var(--gap);
-
-  > * {
-    flex: 2;
-  }
-
-  .col-lg {
-    flex: 3;
-  }
 }
 
 dl {
