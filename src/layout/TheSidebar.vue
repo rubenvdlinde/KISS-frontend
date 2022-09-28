@@ -47,6 +47,7 @@
               {{ contactverzoekIsSentToMedewerker }}
             </p>
             <ContactverzoekFormulier
+              v-else
               :huidige-vraag="
                 contactmomentStore.huidigContactmoment.huidigeVraag
               "
