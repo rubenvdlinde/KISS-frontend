@@ -143,7 +143,7 @@
               <input
                 :title="`${record.kennisartikel.title} is de hoofdvraag`"
                 type="radio"
-                name="hoofdvraag"
+                :name="'hoofdvraag' + idx"
                 :value="record.kennisartikel"
                 v-model="vraag.hoofdvraag"
               />
@@ -176,7 +176,7 @@
               <input
                 :title="`${record.nieuwsbericht.title} is de hoofdvraag`"
                 type="radio"
-                name="hoofdvraag"
+                :name="'hoofdvraag' + idx"
                 :value="record.nieuwsbericht"
                 v-model="vraag.hoofdvraag"
               />
@@ -209,7 +209,7 @@
               <input
                 :title="`${record.werkinstructie.title} is de hoofdvraag`"
                 type="radio"
-                name="hoofdvraag"
+                :name="'hoofdvraag' + idx"
                 :value="record.werkinstructie"
                 v-model="vraag.hoofdvraag"
               />
