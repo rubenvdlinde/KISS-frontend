@@ -13,9 +13,11 @@
       <ul>
         <li class="header-row">
           <span id="datum-header">Datum</span>
-          <span id="medewerker-header">Medewerker</span>
+          <span id="medewerker-header" class="col-lg">Medewerker</span>
           <span id="kanaal-header">Kanaal</span>
-          <span id="gespreksresultaat-header">Gespreksresultaat</span>
+          <span id="gespreksresultaat-header" class="col-lg"
+            >Gespreksresultaat</span
+          >
         </li>
         <li
           v-for="contactmoment in contactmomenten.data.page"
@@ -26,13 +28,13 @@
               <span aria-labelledby="datum-header" class="first-column">{{
                 formatDateOnly(contactmoment.registratiedatum)
               }}</span>
-              <span aria-labelledby="medewerker-header">{{
-                contactmoment.medewerker
+              <span aria-labelledby="medewerker-header" class="col-lg">{{
+                contactmoment["x-commongateway-metadata"].owner
               }}</span>
               <span aria-labelledby="kanaal-header">{{
                 contactmoment.kanaal
               }}</span>
-              <span aria-labelledby="gespreksresultaat-header">{{
+              <span aria-labelledby="gespreksresultaat-header" class="col-lg">{{
                 contactmoment.resultaat
               }}</span>
             </summary>
@@ -102,6 +104,8 @@ const contactmomenten = useKlantContactmomenten(
   }))
 );
 
+console.log({ contactmomenten });
+
 const onNavigate = (p: number) => {
   page.value = p;
 };
@@ -116,12 +120,6 @@ const toggleDetails = (e: Event) => {
 </script>
 
 <style lang="scss" scoped>
-article {
-  display: grid;
-  margin-inline-start: var(--spacing-default);
-  margin-inline-end: var(--spacing-default);
-}
-
 .pagination {
   justify-self: center;
 }
@@ -151,9 +149,16 @@ dt {
 
 .header-row,
 summary {
-  display: grid;
+  display: flex;
   gap: var(--gap);
-  grid-template-columns: repeat(3, var(--column-width)) 1fr;
+
+  > * {
+    flex: 2;
+  }
+
+  .col-lg {
+    flex: 3;
+  }
 }
 
 dl {

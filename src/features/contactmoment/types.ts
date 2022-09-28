@@ -9,6 +9,9 @@ export interface ContactmomentViewModel {
   tekst: string;
   zaken: ContactmomentZaak[];
   contactverzoeken: { medewerkers: string[]; completed?: Date }[];
+  "x-commongateway-metadata": {
+    owner: string;
+  };
 }
 
 export interface MedewerkerIdentificatie {

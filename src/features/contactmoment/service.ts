@@ -66,6 +66,7 @@ export function useKlantContactmomenten(
     url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
     url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
     url.searchParams.append("extend[]", "contactmoment.medewerker");
+    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
     url.searchParams.append("fields[]", "contactmoment");
 
     return url.toString();
