@@ -132,10 +132,15 @@
               v-for="record in vraag.kennisartikelen"
               :key="record.kennisartikel.url"
             >
-              <label>
+              <span>
                 {{ record.kennisartikel.title }}
-                <input type="checkbox" v-model="record.shouldStore" />
-              </label>
+              </span>
+              <input
+                :title="`${record.kennis}`"
+                type="checkbox"
+                v-model="record.shouldStore"
+              />
+              <input type="radio" name="hoofdvraag" />
             </li>
           </ul>
         </section>
@@ -158,6 +163,7 @@
                 {{ record.nieuwsbericht.title }}
                 <input type="checkbox" v-model="record.shouldStore" />
               </label>
+              <label><input type="radio" name="hoofdvraag" /></label>
             </li>
           </ul>
         </section>
@@ -180,6 +186,7 @@
                 {{ record.werkinstructie.title }}
                 <input type="checkbox" v-model="record.shouldStore" />
               </label>
+              <label><input type="radio" name="hoofdvraag" /></label>
             </li>
           </ul>
         </section>
