@@ -401,7 +401,7 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     registratiedatum: getFormattedUtcDate(),
     startdatum: vraag.startdatum,
     einddatum: getFormattedUtcDate(),
-    primaireVraagVerwijzing: vraag.hoofdvraag?.url,
+    primaireVraag: vraag.hoofdvraag?.url,
     primaireVraagWeergave: vraag.hoofdvraag?.title,
   };
 
