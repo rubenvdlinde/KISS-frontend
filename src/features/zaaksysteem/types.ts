@@ -7,6 +7,7 @@ export type ZaakDetails = {
   verantwoordelijkeOrganisatie: string;
   zaaktype: string;
   zaaktypeLabel: string;
+  zaaktypeOmschrijving: string;
   status: string;
   behandelaar: string;
   aanvrager: string;
@@ -16,6 +17,7 @@ export type ZaakDetails = {
   registratieDatum: Date;
   self: string;
   documenten?: Document[];
+  omschrijving: string;
 };
 
 export interface Document {
