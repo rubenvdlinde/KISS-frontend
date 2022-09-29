@@ -10,8 +10,6 @@ import {
 import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
 import type { Ref } from "vue";
-import { resolveContactverzoekenPaginated } from "../shared/resolve-contactverzoeken";
-import type { ContactmomentViewModel } from "../shared/types";
 
 type Roltype = "behandelaar" | "initiator";
 
@@ -139,42 +137,10 @@ export function useZaaksysteemService() {
     );
   };
 
-  const getContactmomentenByZaak = (
-    zaakUri: Ref<string>,
-    page: Ref<number>
-  ): ServiceData<Paginated<ContactmomentViewModel>> => {
-    const getUrl = () => {
-      const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
-      url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
-      url.searchParams.append(
-        "extend[]",
-        "contactmoment.objectcontactmomenten"
-      );
-      url.searchParams.append("extend[]", "contactmoment.medewerker");
-      url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
-      url.searchParams.append("extend[]", "contactmoment.todo");
-      url.searchParams.append("limit", "10");
-      url.searchParams.append("objectType", "zaak");
-      url.searchParams.append("object", zaakUri.value);
-      url.searchParams.append("page", page.value.toString());
-      return url.toString();
-    };
-
-    function get(url: string) {
-      return fetchLoggedIn(url)
-        .then(throwIfNotOk)
-        .then((x) => x.json())
-        .then(resolveContactverzoekenPaginated);
-    }
-
-    return ServiceResult.fromFetcher(getUrl, get);
-  };
-
   return {
     findByZaak,
     findByBsn,
     getZaak,
-    getContactmomentenByZaak,
   };
 }
 

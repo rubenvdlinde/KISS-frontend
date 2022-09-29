@@ -21,10 +21,10 @@
 import { computed, ref } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import type { ZaakDetails } from "../types";
-import { useZaaksysteemService } from "../service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactmomentenOverzicht from "@/features/contactmoment/ContactmomentenOverzicht.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
+import { useContactmomentenByZaakUrl } from "@/features/shared/get-contactmomenten-service";
 
 const props = defineProps<{
   zaak: ZaakDetails;
@@ -37,8 +37,7 @@ const navigate = (val: number) => {
   page.value = val;
 };
 
-const zaaksysteemService = useZaaksysteemService();
-const contactmomenten = zaaksysteemService.getContactmomentenByZaak(self, page);
+const contactmomenten = useContactmomentenByZaakUrl(self, page);
 </script>
 
 <style scoped lang="scss">
