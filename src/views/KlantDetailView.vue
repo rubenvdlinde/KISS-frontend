@@ -19,6 +19,9 @@
       message="Er is geen klant gevonden"
       messageType="error"
     ></application-message>
+
+    <contactverzoeken-overzicht />
+
     <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
     <contactmomenten-overzicht :klant-id="klantId" />
   </section>
@@ -36,6 +39,7 @@ import { useRoute } from "vue-router";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 
 const loading = ref(false);
 
