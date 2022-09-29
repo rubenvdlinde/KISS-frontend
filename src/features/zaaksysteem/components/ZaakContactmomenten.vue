@@ -1,36 +1,15 @@
 <template>
-  <section>
+  <section class="container">
     <utrecht-heading :level="2" modelValue>Contactmomenten</utrecht-heading>
 
     <simple-spinner v-if="contactmomenten.loading" />
 
-    <template v-if="contactmomenten.success && contactmomenten.data.length">
-      <table>
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Medewerker</th>
-            <th>Kanaal</th>
-            <th>Gespreksresultaat</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="contactmoment in contactmomenten.data"
-            :key="contactmoment.id"
-          >
-            <td>{{ formatDateOnly(new Date(contactmoment.startdatum)) }}</td>
-            <td>{{ contactmoment["x-commongateway-metadata"].owner }}</td>
-            <td>{{ contactmoment.kanaal }}</td>
-            <td>{{ contactmoment.resultaat }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </template>
-
-    <span v-else-if="contactmomenten.success && !contactmomenten.data.length"
-      >Geen contactmomenten gevonden.</span
+    <template
+      v-if="contactmomenten.success && contactmomenten.data.page.length"
     >
+      <contactmomenten-overzicht :contactmomenten="contactmomenten.data.page" />
+      <pagination :pagination="contactmomenten.data" @navigate="navigate" />
+    </template>
 
     <span v-if="contactmomenten.error"
       >Er ging iets mis. Probeer het later nog eens.</span
@@ -39,56 +18,35 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { computed, ref } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { formatDateOnly } from "@/helpers/date";
 import type { ZaakDetails } from "../types";
 import { useZaaksysteemService } from "../service";
-import SimpleSpinner from "../../../components/SimpleSpinner.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ContactmomentenOverzicht from "@/features/contactmoment/ContactmomentenOverzicht.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 
 const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
+const self = computed(() => props.zaak.self);
+const page = ref(1);
+
+const navigate = (val: number) => {
+  page.value = val;
+};
+
 const zaaksysteemService = useZaaksysteemService();
-const contactmomenten = zaaksysteemService.getContactmomentenByZaak(
-  props.zaak.self
-);
+const contactmomenten = zaaksysteemService.getContactmomentenByZaak(self, page);
 </script>
 
 <style scoped lang="scss">
-section {
+.container {
   padding: var(--spacing-large);
 
   & > *:not(:last-child) {
     margin-block-end: var(--spacing-large);
-  }
-}
-
-table {
-  width: 100%;
-
-  thead {
-    color: var(--color-white);
-    background: var(--color-tertiary);
-
-    th {
-      font-weight: normal;
-    }
-  }
-
-  tr {
-    padding: var(--spacing-default);
-
-    & > * {
-      width: 25%;
-      padding: var(--spacing-default);
-    }
-  }
-
-  tbody > tr {
-    background: var(--color-white);
-    border-bottom: 2px solid var(--color-tertiary);
   }
 }
 </style>

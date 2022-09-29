@@ -18,7 +18,7 @@ const contactmomentStore = useContactmomentStore();
 
 const klantGevonden = (klant: Klant) => {
   contactmomentStore.setKlant(klant);
-  router.push({ name: "klantDetail", params: { id: klant.id } });
+  router.push({ name: "klantDetail", params: { klantId: klant.id } });
 };
 </script>
 
