@@ -70,20 +70,6 @@ const mapContactmoment = async (
   };
 };
 
-export const resolveContactverzoekenPaginated = async (
-  json: unknown
-): Promise<Paginated<ContactmomentViewModel>> => {
-  const paginated = await parsePagination(json, (x: any) =>
-    mapContactmoment(x.embedded.contactmoment)
-  );
-  const page = paginated.page.filter(Boolean) as ContactmomentViewModel[];
-
-  return {
-    ...paginated,
-    page,
-  };
-};
-
 function fetchContactmomenten(
   url: string
 ): Promise<Paginated<ContactmomentViewModel>> {

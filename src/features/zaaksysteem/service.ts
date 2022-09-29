@@ -10,8 +10,6 @@ import {
 import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
 import type { Ref } from "vue";
-import { resolveContactverzoekenPaginated } from "../shared/get-contactmomenten-service";
-import type { ContactmomentViewModel } from "../shared/types";
 
 type Roltype = "behandelaar" | "initiator";
 
