@@ -82,7 +82,7 @@ const klantBsn = computed(() => klant.value?.bsn);
 watch(
   klantId,
   (id) => {
-    if (!id) {
+    if (!id || !route.path.includes("klanten")) {
       klant.value = undefined;
       return;
     }
