@@ -39,6 +39,7 @@ export interface Contactmoment {
   gespreksId?: string;
   primaireVraag?: string;
   primaireVraagWeergave?: string;
+  afwijkendOnderwerp?: string;
 }
 
 export interface ContactmomentZaak {

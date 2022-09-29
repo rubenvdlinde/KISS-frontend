@@ -145,7 +145,8 @@
                 type="radio"
                 :name="'hoofdvraag' + idx"
                 :value="record.kennisartikel"
-                v-model="vraag.hoofdvraag"
+                v-model="vraag.primaireVraag"
+                @change="setAfwijkendOnderwerp(record.kennisartikel, vraag)"
               />
             </li>
           </ul>
@@ -178,7 +179,8 @@
                 type="radio"
                 :name="'hoofdvraag' + idx"
                 :value="record.nieuwsbericht"
-                v-model="vraag.hoofdvraag"
+                v-model="vraag.primaireVraag"
+                @change="setAfwijkendOnderwerp(record.nieuwsbericht, vraag)"
               />
             </li>
           </ul>
@@ -211,7 +213,8 @@
                 type="radio"
                 :name="'hoofdvraag' + idx"
                 :value="record.werkinstructie"
-                v-model="vraag.hoofdvraag"
+                v-model="vraag.primaireVraag"
+                @change="setAfwijkendOnderwerp(record.werkinstructie, vraag)"
               />
             </li>
           </ul>
@@ -259,6 +262,16 @@
                 {{ gespreksresultaat.definitie }}
               </option>
             </select>
+
+            <label class="utrecht-form-label" :for="'afwijkendOnderwerp' + idx">
+              Vraag van de klant
+            </label>
+            <input
+              type="text"
+              class="utrecht-textbox"
+              :id="'afwijkendOnderwerp' + idx"
+              v-model="vraag.afwijkendOnderwerp"
+            />
 
             <label class="utrecht-form-label" :for="'notitie' + idx"
               >Notitie</label
@@ -401,8 +414,9 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     registratiedatum: getFormattedUtcDate(),
     startdatum: vraag.startdatum,
     einddatum: getFormattedUtcDate(),
-    primaireVraag: vraag.hoofdvraag?.url,
-    primaireVraagWeergave: vraag.hoofdvraag?.title,
+    primaireVraag: vraag.primaireVraag?.url,
+    primaireVraagWeergave: vraag.primaireVraag?.title,
+    afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
   };
 
   addKennisartikelenToContactmoment(contactmoment, vraag);
@@ -530,6 +544,10 @@ cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
   router.push({ name: "home" });
 });
+
+function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
+  vraag.afwijkendOnderwerp = element.title;
+}
 </script>
 
 <style scoped lang="scss">

@@ -42,7 +42,8 @@ export interface Vraag {
     werkinstructie: Werkinstructie;
     shouldStore: boolean;
   }[];
-  hoofdvraag: { url: string; title: string } | undefined;
+  primaireVraag: { url: string; title: string } | undefined;
+  afwijkendOnderwerp: string;
 }
 
 function initVraag(): Vraag {
@@ -64,7 +65,8 @@ function initVraag(): Vraag {
     kennisartikelen: [],
     nieuwsberichten: [],
     werkinstructies: [],
-    hoofdvraag: undefined,
+    primaireVraag: undefined,
+    afwijkendOnderwerp: "",
   };
 }
 
