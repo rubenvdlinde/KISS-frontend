@@ -19,8 +19,30 @@
       message="Er is geen klant gevonden"
       messageType="error"
     ></application-message>
+
+    <!-- Zaken -->
     <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
-    <contactmomenten-overzicht :klant-id="klantId" />
+
+    <!-- Contactmomenten -->
+    <utrecht-heading class="contactmomenten-header" model-value :level="2">
+      Contactmomenten
+    </utrecht-heading>
+
+    <simple-spinner v-if="contactmomenten.loading" />
+
+    <span v-if="contactmomenten.error">
+      Er ging iets mis. Probeer het later nog eens.
+    </span>
+
+    <template v-if="contactmomenten.success">
+      <contactmomenten-overzicht :contactmomenten="contactmomenten.data.page" />
+
+      <pagination
+        class="pagination"
+        :pagination="contactmomenten.data"
+        @navigate="onContactmomentenNavigate"
+      />
+    </template>
   </section>
 </template>
 
@@ -28,7 +50,10 @@
 import { computed, ref, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { ContactmomentenOverzicht } from "@/features/contactmoment";
+import {
+  ContactmomentenOverzicht,
+  useKlantContactmomenten,
+} from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZakenOverzichtKlantbeeld from "@/features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
@@ -36,6 +61,7 @@ import { useRoute } from "vue-router";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import Pagination from "../nl-design-system/components/Pagination.vue";
 
 const loading = ref(false);
 
@@ -88,6 +114,18 @@ watch(klant, (k) => {
   if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
   contactmomentStore.setKlant(k);
 });
+
+const contactmomentenPage = ref(1);
+const contactmomenten = useKlantContactmomenten(
+  computed(() => ({
+    id: klantId.value,
+    page: contactmomentenPage.value,
+  }))
+);
+
+const onContactmomentenNavigate = (page: number) => {
+  contactmomentenPage.value = page;
+};
 </script>
 
 <style scoped lang="scss">

@@ -68,6 +68,7 @@ export function useKlantContactmomenten(
     url.searchParams.append("extend[]", "contactmoment.medewerker");
     url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
     url.searchParams.append("extend[]", "contactmoment.todo");
+    url.searchParams.append("limit", "10");
 
     return url.toString();
   };

@@ -2,14 +2,7 @@
   <!-- TODO this is semantically weird: a list pretending to be a table -->
   <!-- Unless the user group has a very good reason, I would rather just make it a list of <dl>s with no fake header row -->
   <section>
-    <utrecht-heading class="contactmomenten-header" model-value :level="level">
-      Contactmomenten
-    </utrecht-heading>
-    <simple-spinner v-if="contactmomenten.loading" />
-    <p v-else-if="contactmomenten.error">
-      Er ging iets mis. Probeer het later nog eens.
-    </p>
-    <template v-else-if="contactmomenten.data.page.length">
+    <template v-if="contactmomenten.length">
       <ul>
         <li class="header-row">
           <span id="datum-header">Datum</span>
@@ -19,10 +12,7 @@
             >Gespreksresultaat</span
           >
         </li>
-        <li
-          v-for="contactmoment in contactmomenten.data.page"
-          :key="contactmoment.id"
-        >
+        <li v-for="contactmoment in contactmomenten" :key="contactmoment.id">
           <details @click="toggleDetails">
             <summary>
               <span aria-labelledby="datum-header" class="first-column">{{
@@ -67,48 +57,19 @@
           </details>
         </li>
       </ul>
-      <pagination
-        class="pagination"
-        :pagination="contactmomenten.data"
-        @navigate="onNavigate"
-      />
     </template>
-    <p v-else>Geen contactmomenten gevonden.</p>
+
+    <span v-else>Geen contactmomenten gevonden.</span>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { computed, ref, type PropType } from "vue";
-import { useKlantContactmomenten } from "./service";
-import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import Pagination from "../../nl-design-system/components/Pagination.vue";
 import { formatDateOnly, formatTimeOnly } from "@/helpers/date";
+import type { ContactmomentViewModel } from "./types";
 
-const props = defineProps({
-  klantId: {
-    type: String,
-    required: true,
-  },
-  level: {
-    type: Number as PropType<1 | 2 | 3 | 4 | 5>,
-    default: 2,
-  },
-});
-
-const page = ref(1);
-const contactmomenten = useKlantContactmomenten(
-  computed(() => ({
-    id: props.klantId,
-    page: page.value,
-  }))
-);
-
-console.log({ contactmomenten });
-
-const onNavigate = (p: number) => {
-  page.value = p;
-};
+defineProps<{
+  contactmomenten: ContactmomentViewModel[];
+}>();
 
 // toggle <details> open status on click anywhere within <details>, not only on <summary>
 const toggleDetails = (e: Event) => {
