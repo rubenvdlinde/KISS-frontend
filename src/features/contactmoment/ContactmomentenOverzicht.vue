@@ -94,16 +94,20 @@ ul {
   padding: 0;
 }
 
+.header-row {
+  background: var(--color-tertiary);
+  color: var(--color-white);
+}
+
 summary,
 ul {
   list-style: none;
 }
 
 li:not(:first-child):not(:last-child) {
-  border-bottom: 1px solid var(--color-tertiary);
+  border-bottom: 2px solid var(--color-tertiary);
 }
 
-.header-row,
 dt {
   font-weight: bold;
 }
@@ -149,6 +153,7 @@ summary {
 details {
   display: grid;
   gap: var(--spacing-default);
+  background: var(--color-white);
 }
 
 details:hover {
