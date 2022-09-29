@@ -1,8 +1,6 @@
-import { throwIfNotOk, ServiceResult, type Paginated } from "@/services";
+import { throwIfNotOk, ServiceResult } from "@/services";
 import { fetchLoggedIn } from "@/services";
-import type { Ref } from "vue";
-import { resolveContactverzoekenPaginated } from "../shared/resolve-contactverzoeken";
-import type { ContactmomentViewModel } from "../shared/types";
+
 import type {
   Gespreksresultaat,
   ContactmomentObject,
@@ -47,30 +45,6 @@ export const useGespreksResultaten = () => {
   return ServiceResult.fromFetcher(gespreksResultatenBaseUri, fetchBerichten);
 };
 
-export function useKlantContactmomenten(
-  params: Ref<{ id: string; page?: number }>
-) {
-  const getUrl = () => {
-    const id = params.value.id;
-    const page = params.value.page || 1;
-    if (!id) return "";
-
-    const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
-    url.searchParams.set("klant.id", id);
-    url.searchParams.set("page", page.toString());
-    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
-    url.searchParams.append("extend[]", "contactmoment.objectcontactmomenten");
-    url.searchParams.append("extend[]", "contactmoment.medewerker");
-    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
-    url.searchParams.append("extend[]", "contactmoment.todo");
-    url.searchParams.append("limit", "10");
-
-    return url.toString();
-  };
-
-  return ServiceResult.fromFetcher(getUrl, fetchKlantContactmomenten);
-}
-
 const objectcontactmomentenUrl =
   window.gatewayBaseUri + "/api/objectcontactmomenten";
 
@@ -83,14 +57,6 @@ export const koppelObject = (data: ContactmomentObject) =>
     },
     body: JSON.stringify(data),
   }).then(throwIfNotOk);
-
-const fetchKlantContactmomenten = (
-  url: string
-): Promise<Paginated<ContactmomentViewModel>> =>
-  fetchLoggedIn(url)
-    .then(throwIfNotOk)
-    .then((r) => r.json())
-    .then(resolveContactverzoekenPaginated);
 
 export function koppelKlant({
   klantId,
