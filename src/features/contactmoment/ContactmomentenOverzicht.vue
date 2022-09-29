@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 import { formatDateOnly, formatTimeOnly } from "@/helpers/date";
-import type { ContactmomentViewModel } from "./types";
+import type { ContactmomentViewModel } from "../shared/types";
 
 defineProps<{
   contactmomenten: ContactmomentViewModel[];
