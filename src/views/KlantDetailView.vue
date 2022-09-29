@@ -57,32 +57,25 @@ import {
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZakenOverzichtKlantbeeld from "@/features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
-import { useRoute } from "vue-router";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
 
-const loading = ref(false);
+const props = defineProps<{ klantId: string }>();
 
-const route = useRoute();
+const loading = ref(false);
 
 const contactmomentStore = useContactmomentStore();
 
 const klant = ref<Klant>();
 
-const klantId = computed(
-  () =>
-    (Array.isArray(route.params.id) ? route.params.id[0] : route.params.id) ||
-    ""
-);
-
 const klantBsn = computed(() => klant.value?.bsn);
 
 watch(
-  klantId,
-  (id) => {
-    if (!id || !route.path.includes("klanten")) {
+  () => props.klantId,
+  (klantId) => {
+    if (!klantId) {
       klant.value = undefined;
       return;
     }
@@ -90,7 +83,7 @@ watch(
     const fromStore = contactmomentStore.vragen
       .flatMap(({ klanten }) => klanten)
       .map(({ klant }) => klant)
-      .find(({ id }) => id === klantId.value);
+      .find(({ id }) => id === klantId);
 
     if (fromStore) {
       klant.value = fromStore;
@@ -99,7 +92,7 @@ watch(
 
     loading.value = true;
 
-    fetchKlant(id)
+    fetchKlant(klantId)
       .then((newKlant) => {
         klant.value = newKlant;
       })
@@ -118,7 +111,7 @@ watch(klant, (k) => {
 const contactmomentenPage = ref(1);
 const contactmomenten = useKlantContactmomenten(
   computed(() => ({
-    id: klantId.value,
+    id: props.klantId,
     page: contactmomentenPage.value,
   }))
 );

@@ -4,10 +4,12 @@
 
     <simple-spinner v-if="contactmomenten.loading" />
 
-    <contactmomenten-overzicht
-      v-if="contactmomenten.success && contactmomenten.data.length"
-      :contactmomenten="contactmomenten.data"
-    />
+    <template
+      v-if="contactmomenten.success && contactmomenten.data.page.length"
+    >
+      <contactmomenten-overzicht :contactmomenten="contactmomenten.data.page" />
+      <pagination :pagination="contactmomenten.data" @navigate="navigate" />
+    </template>
 
     <span v-if="contactmomenten.error"
       >Er ging iets mis. Probeer het later nog eens.</span
@@ -16,21 +18,27 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { computed, ref } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import type { ZaakDetails } from "../types";
 import { useZaaksysteemService } from "../service";
-import SimpleSpinner from "../../../components/SimpleSpinner.vue";
-import ContactmomentenOverzicht from "../../contactmoment/ContactmomentenOverzicht.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ContactmomentenOverzicht from "@/features/contactmoment/ContactmomentenOverzicht.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 
 const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
+const self = computed(() => props.zaak.self);
+const page = ref(1);
+
+const navigate = (val: number) => {
+  page.value = val;
+};
+
 const zaaksysteemService = useZaaksysteemService();
-const contactmomenten = zaaksysteemService.getContactmomentenByZaak(
-  props.zaak.self
-);
+const contactmomenten = zaaksysteemService.getContactmomentenByZaak(self, page);
 </script>
 
 <style scoped lang="scss">
