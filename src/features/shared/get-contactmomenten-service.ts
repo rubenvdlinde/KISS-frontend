@@ -50,10 +50,7 @@ function mapContactverzoek(obj: any) {
 const mapContactmoment = async (
   r: any
 ): Promise<ContactmomentViewModel | undefined> => {
-  console.log({ r });
   if (r.embedded.contactmoment.todo) return undefined;
-
-  console.log("hier");
 
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
 
