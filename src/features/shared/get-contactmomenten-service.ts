@@ -48,8 +48,10 @@ function mapContactverzoek(obj: any) {
 const mapContactmoment = async (
   r: any
 ): Promise<ContactmomentViewModel | undefined> => {
-  if (r?.todo) return undefined;
-  const contactmoment = r as ContactmomentViewModel;
+  if (r.embedded.contactmoment.todo) return undefined;
+
+  const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
+
   contactmoment.startdatum = new Date(contactmoment.startdatum);
   contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
 
