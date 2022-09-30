@@ -9,7 +9,7 @@ import {
 } from "@/services";
 import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
-import type { ContactmomentViewModel } from "../contactmoment";
+import type { Ref } from "vue";
 
 type Roltype = "behandelaar" | "initiator";
 
@@ -93,7 +93,7 @@ export function useZaaksysteemService() {
     return { withoutFetcher, withFetcher };
   };
 
-  const getZaak = (id: string): ServiceData<ZaakDetails> => {
+  const getZaak = (id: Ref<string>): ServiceData<ZaakDetails> => {
     function get(url: string): Promise<ZaakDetails> {
       return fetchLoggedIn(url)
         .then(throwIfNotOk)
@@ -131,37 +131,16 @@ export function useZaaksysteemService() {
     }
 
     return ServiceResult.fromFetcher(
-      `${zaaksysteemBaseUri}/${id}?extend[]=all&extend[]=x-commongateway-metadata.self`,
+      () =>
+        `${zaaksysteemBaseUri}/${id.value}?extend[]=all&extend[]=x-commongateway-metadata.self`,
       get
     );
-  };
-
-  const getContactmomentenByZaak = (
-    zaakUri: string
-  ): ServiceData<ContactmomentViewModel[]> => {
-    const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
-    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
-    url.searchParams.append("extend[]", "all");
-    url.searchParams.append("objectType", "zaak");
-    url.searchParams.append("object", zaakUri);
-
-    function get(url: string): Promise<ContactmomentViewModel[]> {
-      return fetchLoggedIn(url)
-        .then(throwIfNotOk)
-        .then((x) => x.json())
-        .then((contactmoment) =>
-          contactmoment.results.map((c: any) => c.embedded.contactmoment)
-        );
-    }
-
-    return ServiceResult.fromFetcher(url.toString(), get);
   };
 
   return {
     findByZaak,
     findByBsn,
     getZaak,
-    getContactmomentenByZaak,
   };
 }
 

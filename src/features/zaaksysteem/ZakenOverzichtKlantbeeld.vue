@@ -63,7 +63,7 @@ const zaken = zaakService.findByBsn(props.klantBsn).withFetcher();
 
 const handleZaakSelected = (zaak: Zaak) => {
   contactmomentStore.upsertZaak(zaak, contactmomentStore.huidigeVraag);
-  router.push({ name: "zaakDetail", params: { id: zaak.id } });
+  router.push({ name: "zaakDetail", params: { zaakId: zaak.id } });
 };
 </script>
 

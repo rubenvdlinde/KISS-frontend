@@ -16,14 +16,14 @@
 import { useZaaksysteemService } from "@/features/zaaksysteem/service";
 import ApplicationMessage from "../components/ApplicationMessage.vue";
 import ZaakDetails from "../features/zaaksysteem/ZaakDetails.vue";
-import { useRoute } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import { computed } from "vue";
 
-const route = useRoute();
+const props = defineProps<{ zaakId: string }>();
 
 const zaaksysteemService = useZaaksysteemService();
 
-const zaak = zaaksysteemService.getZaak(route.params.id.toString());
+const zaak = zaaksysteemService.getZaak(computed(() => props.zaakId));
 </script>
 
 <style scoped lang="scss"></style>
