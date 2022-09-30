@@ -41,8 +41,6 @@ export interface ContactverzoekDetail {
   behandelaar: string;
   afgerond: string;
   starttijd: string;
-  zaaknummer: string;
-  zaaktype: string;
   aanmaker: string;
   vraag: string;
   notitie: string;

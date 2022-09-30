@@ -112,14 +112,13 @@ const fetchKlantContactverzoeken = (
     .then(throwIfNotOk)
     .then((r) => r.json())
     .then((j) => parsePagination(j, mapContactverzoekDetail))
-    .then((p) => {
-      return p;
-    });
+    .then((paginated) => paginated);
 };
 
 const mapContactverzoekDetail = (
   rawContactverzoek: any
 ): ContactverzoekDetail => {
+  console.log({ rawContactverzoek });
   const contactverzoek = rawContactverzoek.embedded.contactmoment;
 
   return {
@@ -129,8 +128,6 @@ const mapContactverzoekDetail = (
     behandelaar: "string",
     afgerond: "string",
     starttijd: "string",
-    zaaknummer: "string",
-    zaaktype: "string",
     aanmaker: "string",
     vraag: "string",
     notitie: "string",

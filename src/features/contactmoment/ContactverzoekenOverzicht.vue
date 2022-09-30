@@ -35,16 +35,6 @@
         </dl>
 
         <dl>
-          <dt>Zaaknummer</dt>
-          <dd>{{ contactverzoek.zaaknummer }}</dd>
-        </dl>
-
-        <dl>
-          <dt>Zaaktype</dt>
-          <dd>{{ contactverzoek.zaaktype }}</dd>
-        </dl>
-
-        <dl>
           <dt>Aanmaker</dt>
           <dd>{{ contactverzoek.aanmaker }}</dd>
         </dl>
