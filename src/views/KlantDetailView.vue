@@ -59,10 +59,7 @@
 import { computed, ref, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import {
-  ContactmomentenOverzicht,
-  useKlantContactverzoeken,
-} from "@/features/contactmoment";
+import { ContactmomentenOverzicht } from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZakenOverzichtKlantbeeld from "@/features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
@@ -71,7 +68,10 @@ import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
-import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
+import {
+  useContactmomentenByKlantId,
+  useContactverzoekenByKlantId,
+} from "@/features/shared/get-contactmomenten-service";
 
 const props = defineProps<{ klantId: string }>();
 
@@ -120,11 +120,9 @@ watch(klant, (k) => {
 });
 
 const contactverzoekenPage = ref(1);
-const contactverzoeken = useKlantContactverzoeken(
-  computed(() => ({
-    id: props.klantId,
-    page: contactverzoekenPage.value,
-  }))
+const contactverzoeken = useContactverzoekenByKlantId(
+  computed(() => props.klantId),
+  contactverzoekenPage
 );
 
 const contactmomentenPage = ref(1);

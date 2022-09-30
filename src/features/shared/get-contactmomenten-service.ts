@@ -1,3 +1,4 @@
+import { formatDateOnly, formatTimeOnly } from "@/helpers/date";
 import {
   fetchLoggedIn,
   parsePagination,
@@ -6,6 +7,7 @@ import {
   type Paginated,
 } from "@/services";
 import type { Ref } from "vue";
+import type { ContactverzoekDetail } from "../contactmoment/types";
 import type { ContactmomentZaak, ContactmomentViewModel } from "./types";
 
 const mapZaak = (json: any): ContactmomentZaak => ({
@@ -48,7 +50,10 @@ function mapContactverzoek(obj: any) {
 const mapContactmoment = async (
   r: any
 ): Promise<ContactmomentViewModel | undefined> => {
+  console.log({ r });
   if (r.embedded.contactmoment.todo) return undefined;
+
+  console.log("hier");
 
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
 
@@ -124,3 +129,49 @@ export function useContactmomentenByKlantId(
   }
   return ServiceResult.fromFetcher(getUrl, fetchContactmomenten);
 }
+
+export function useContactverzoekenByKlantId(
+  id: Ref<string>,
+  page: Ref<number>
+) {
+  function getUrl() {
+    const url = getAllContactmomentenUrl(page.value);
+    url.searchParams.set("klant.id", id.value);
+    return url.toString();
+  }
+
+  return ServiceResult.fromFetcher(getUrl, fetchContactverzoeken);
+}
+
+function fetchContactverzoeken(url: string): Promise<Paginated<any>> {
+  return fetchLoggedIn(url)
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then((x) => parsePagination(x, mapContactverzoekDetail))
+    .then((paginated) => {
+      const page = paginated.page.filter((p) => p !== undefined);
+
+      return { ...paginated, page };
+    });
+}
+
+const mapContactverzoekDetail = (
+  rawContactverzoek: any
+): ContactverzoekDetail | undefined => {
+  if (!rawContactverzoek.embedded.contactmoment.todo) return;
+
+  const contactmoment = rawContactverzoek.embedded.contactmoment;
+  const todo = rawContactverzoek.embedded.contactmoment.embedded.todo;
+
+  return {
+    id: contactmoment.id,
+    datum: formatDateOnly(new Date(contactmoment.registratiedatum)),
+    status: todo.completed ? "Open" : "Gesloten",
+    behandelaar: todo.attendees?.[0] ?? "-",
+    afgerond: todo.completed ? "Ja" : "Nee",
+    starttijd: formatTimeOnly(new Date(contactmoment.registratiedatum)),
+    aanmaker: contactmoment["x-commongateway-metadata"].owner,
+    vraag: "-",
+    notitie: todo.description,
+  };
+};

@@ -36,7 +36,7 @@ export interface ContactmomentObject {
 
 export interface ContactverzoekDetail {
   id: string;
-  datum: Date;
+  datum: string;
   status: string;
   behandelaar: string;
   afgerond: string;
