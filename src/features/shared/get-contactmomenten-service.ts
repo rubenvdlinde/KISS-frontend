@@ -48,12 +48,15 @@ function mapContactverzoek(obj: any) {
 const mapContactmoment = async (
   r: any
 ): Promise<ContactmomentViewModel | undefined> => {
-  if (r?.todo) return undefined;
-  const contactmoment = r as ContactmomentViewModel;
+  if (r.embedded.contactmoment.todo) return undefined;
+
+  const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
+
   contactmoment.startdatum = new Date(contactmoment.startdatum);
   contactmoment.registratiedatum = new Date(contactmoment.registratiedatum);
 
-  const objectcontactmomenten: any[] = r?.embedded?.objectcontactmomenten ?? [];
+  const objectcontactmomenten: any[] =
+    r.embedded?.contactmoment?.embedded?.objectcontactmomenten ?? [];
 
   const zakenPromises = objectcontactmomenten
     .filter(({ objectType }: any) => objectType === "zaak")
@@ -92,6 +95,7 @@ function getAllContactmomentenUrl(page: number) {
   url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
   url.searchParams.append("extend[]", "medewerker");
   url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
+  url.searchParams.append("extend[]", "contactmoment.todo");
   url.searchParams.set("limit", "10");
   url.searchParams.set("page", page.toString());
   return url;
