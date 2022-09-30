@@ -122,7 +122,7 @@ watch(klant, (k) => {
 const contactverzoekenPage = ref(1);
 const contactverzoeken = useKlantContactverzoeken(
   computed(() => ({
-    id: klantId.value,
+    id: props.klantId,
     page: contactverzoekenPage.value,
   }))
 );

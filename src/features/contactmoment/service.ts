@@ -1,5 +1,6 @@
-import { throwIfNotOk, ServiceResult } from "@/services";
-import { fetchLoggedIn } from "@/services";
+import { throwIfNotOk, ServiceResult, type Paginated } from "@/services";
+import { fetchLoggedIn, parsePagination } from "@/services";
+import type { Ref } from "vue";
 
 import type {
   Gespreksresultaat,
@@ -119,10 +120,7 @@ const fetchKlantContactverzoeken = (
 const mapContactverzoekDetail = (
   rawContactverzoek: any
 ): ContactverzoekDetail => {
-  console.log({ rawContactverzoek });
   const contactverzoek = rawContactverzoek.embedded.contactmoment;
-
-  console.log({ contactverzoek });
 
   return {
     id: contactverzoek.id,
