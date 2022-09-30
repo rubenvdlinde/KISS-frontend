@@ -72,25 +72,13 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import type { ContactverzoekDetail } from "./types";
 
-const contactverzoeken = ref([
-  {
-    id: "abc",
-    datum: "30-06-2022",
-    status: "Open",
-    behandelaar: "Setfan Buijs",
-    afgerond: "Nee",
-    starttijd: "16:31",
-    zaaknummer: "ZAAK-2",
-    zaaktype: "Toeslagen",
-    aanmaker: "Joost Baas",
-    vraag: "Heb ik recht op energietoeslag?",
-    notitie:
-      "Cras mattis consectetur purus sit amet fermentum. Maecenas faucibus mollis interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  },
-]);
+const props = defineProps<{
+  contactverzoeken: ContactverzoekDetail[];
+}>();
 
-const activeContactverzoeken = ref(contactverzoeken.value.map((_) => false));
+const activeContactverzoeken = ref(props.contactverzoeken.map((_) => false));
 
 const toggleItemContent = (idx: number) => {
   activeContactverzoeken.value[idx] = !activeContactverzoeken.value[idx];

@@ -55,3 +55,17 @@ export interface ContactmomentObject {
   object: string;
   objectType: string;
 }
+
+export interface ContactverzoekDetail {
+  id: string;
+  datum: Date;
+  status: string;
+  behandelaar: string;
+  afgerond: string;
+  starttijd: string;
+  zaaknummer: string;
+  zaaktype: string;
+  aanmaker: string;
+  vraag: string;
+  notitie: string;
+}

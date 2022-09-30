@@ -20,7 +20,14 @@
       messageType="error"
     ></application-message>
 
-    <contactverzoeken-overzicht />
+    <utrecht-heading :level="2" model-value
+      >Openstaande contactverzoeken</utrecht-heading
+    >
+    <simple-spinner v-if="contactverzoeken.loading" />
+    <contactverzoeken-overzicht
+      v-if="contactverzoeken.success"
+      :contactverzoeken="contactverzoeken.data.page"
+    />
 
     <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
     <contactmomenten-overzicht :klant-id="klantId" />
@@ -31,7 +38,10 @@
 import { computed, ref, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { ContactmomentenOverzicht } from "@/features/contactmoment";
+import {
+  ContactmomentenOverzicht,
+  useKlantContactverzoeken,
+} from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZakenOverzichtKlantbeeld from "@/features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
@@ -92,6 +102,14 @@ watch(klant, (k) => {
   if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
   contactmomentStore.setKlant(k);
 });
+
+const contactverzoekenPage = ref(1);
+const contactverzoeken = useKlantContactverzoeken(
+  computed(() => ({
+    id: klantId.value,
+    page: contactverzoekenPage.value,
+  }))
+);
 </script>
 
 <style scoped lang="scss">

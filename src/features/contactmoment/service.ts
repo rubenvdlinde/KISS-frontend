@@ -12,6 +12,7 @@ import type {
   ContactmomentZaak,
   ContactmomentObject,
   Contactmoment,
+  ContactverzoekDetail,
 } from "./types";
 
 export const saveContactmoment = (
@@ -195,3 +196,63 @@ export function koppelKlant({
     }),
   }).then(throwIfNotOk) as Promise<void>;
 }
+
+/**
+ * Contactverzoeken
+ */
+export const useKlantContactverzoeken = (
+  params: Ref<{ id: string; page?: number }>
+) => {
+  return ServiceResult.fromFetcher(
+    getContactverzoekenURL(params.value.id, params.value.page),
+    fetchKlantContactverzoeken
+  );
+};
+
+const getContactverzoekenURL = (id: string, page = 1): string => {
+  const url = new URL(`${window.gatewayBaseUri}/api/klantcontactmomenten`);
+  url.searchParams.set("klant.id", id);
+  url.searchParams.set("page", page.toString());
+  url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
+  url.searchParams.append("extend[]", "contactmoment.medewerker");
+  url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
+  url.searchParams.append("extend[]", "contactmoment.todo");
+  url.searchParams.append("extend[]", "all");
+
+  return url.toString();
+};
+
+const fetchKlantContactverzoeken = (
+  url: string
+): Promise<Paginated<ContactverzoekDetail>> => {
+  return fetchLoggedIn(url)
+    .then(throwIfNotOk)
+    .then((r) => r.json())
+    .then((j) => parsePagination(j, mapContactverzoekDetail))
+    .then((p) => {
+      return p;
+    });
+};
+
+const mapContactverzoekDetail = (
+  rawContactverzoek: any
+): ContactverzoekDetail => {
+  console.log({ rawContactverzoek });
+  const contactverzoek = rawContactverzoek.embedded.contactmoment;
+
+  console.log({ contactverzoek });
+
+  return {
+    id: contactverzoek.id,
+    datum: new Date(contactverzoek.startdatum),
+    status: "string",
+    behandelaar: "string",
+    afgerond: "string",
+    starttijd: "string",
+    zaaknummer: "string",
+    zaaktype: "string",
+    aanmaker: "string",
+    vraag: "string",
+    notitie: "string",
+  };
+};
