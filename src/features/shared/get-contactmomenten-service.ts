@@ -124,7 +124,11 @@ export function useContactmomentenByKlantId(
     url.searchParams.set("klant.id", id.value);
     return url.toString();
   }
-  return ServiceResult.fromFetcher(getUrl, fetchContactmomenten);
+  return ServiceResult.fromFetcher(getUrl, fetchContactmomenten, {
+    getUniqueId() {
+      return getUrl() + "contactmoment";
+    },
+  });
 }
 
 export function useContactverzoekenByKlantId(
@@ -137,7 +141,11 @@ export function useContactverzoekenByKlantId(
     return url.toString();
   }
 
-  return ServiceResult.fromFetcher(getUrl, fetchContactverzoeken);
+  return ServiceResult.fromFetcher(getUrl, fetchContactverzoeken, {
+    getUniqueId() {
+      return getUrl() + "contactverzoek";
+    },
+  });
 }
 
 function fetchContactverzoeken(url: string): Promise<Paginated<any>> {
