@@ -171,7 +171,7 @@ const mapContactverzoekDetail = (
   return {
     id: contactmoment.id,
     datum: formatDateOnly(new Date(contactmoment.registratiedatum)),
-    status: todo.completed ? "Open" : "Gesloten",
+    status: todo.completed ? "Gesloten" : "Open",
     behandelaar: todo.attendees?.[0] ?? "-",
     afgerond: todo.completed ? "Ja" : "Nee",
     starttijd: formatTimeOnly(new Date(contactmoment.registratiedatum)),
