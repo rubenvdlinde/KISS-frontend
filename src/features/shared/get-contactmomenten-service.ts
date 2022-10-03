@@ -106,7 +106,7 @@ export function useContactmomentenByZaakUrl(
   page: Ref<number>
 ) {
   function getUrl() {
-    const url = new URL(`${window.gatewayBaseUri}/objectcontactmomenten`);
+    const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
     url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
     url.searchParams.append("extend[]", "all");
     url.searchParams.append("objectType", "zaak");
