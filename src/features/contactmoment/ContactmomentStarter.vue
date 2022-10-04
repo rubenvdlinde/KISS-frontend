@@ -1,28 +1,16 @@
 <template>
   <utrecht-button
     model-value
-    v-if="contactmomentStore.contactmomentLoopt"
-    type="button"
-    class="contactmomentLoopt"
-    @click="onStopContactMoment"
-    v-bind="$attrs"
-  >
-    Einde contactmoment
-  </utrecht-button>
-
-  <utrecht-button
-    model-value
-    v-else
     type="button"
     @click="onStartContactMoment"
     v-bind="$attrs"
   >
-    Start contactmoment
+    Nieuw contactmoment
   </utrecht-button>
 
   <prompt-modal
     :dialog="beforeStopDialog"
-    message="Let op, je hebt het contactverzoek niet afgerond. Als je dit contactmoment afsluit, wordt het contactverzoek niet verstuurd."
+    message="Let op, je hebt het contactverzoek niet afgerond. Als je een nieuw contactmoment start, wordt het contactverzoek niet verstuurd."
   />
 </template>
 
@@ -47,18 +35,16 @@ const attrs = useAttrs();
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
 
-const onStartContactMoment = () => {
-  if (attrs.disabled) return;
-  contactmomentStore.start();
-  router.push({ name: "klanten" });
-};
-
-const onStopContactMoment = async () => {
+const onStartContactMoment = async () => {
   if (attrs.disabled) return;
   if (contactmomentStore.wouldLoseProgress) {
     await waitForConfirmation();
   }
-  router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
+  const isNew = contactmomentStore.contactmomentLoopt;
+  contactmomentStore.start();
+  if (isNew) {
+    router.push("/klanten");
+  }
 };
 
 async function waitForConfirmation() {
@@ -73,11 +59,5 @@ async function waitForConfirmation() {
 utrecht-button {
   --utrecht-button-min-inline-size: 15rem;
   --utrecht-button-background-color: var(--color-accent);
-}
-
-menu {
-  display: flex;
-  gap: var(--spacing-default);
-  justify-content: flex-end;
 }
 </style>

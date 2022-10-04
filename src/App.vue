@@ -37,5 +37,4 @@ const route = useRoute();
 @import "@/assets/reset.css";
 @import "@utrecht/component-library-css";
 @import "@/assets/main.scss";
-@import "@/assets/icons/icons.scss";
 </style>

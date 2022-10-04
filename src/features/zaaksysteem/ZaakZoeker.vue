@@ -31,7 +31,7 @@
 
       <zaken-overzicht
         :zaken="store.zaken"
-        :vraag="contactmomentStore.huidigeVraag"
+        :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
         @zaak-selected="zaakSelected"
       />
     </section>

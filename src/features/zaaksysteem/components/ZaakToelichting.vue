@@ -74,7 +74,11 @@ const submit = async () => {
   updateToelichting(props.zaak, toelichtingInputValue.value)
     .then((res) => {
       toast({ text: "De notitie is opgeslagen." });
-      contactmomentStore.upsertZaak(res, contactmomentStore.huidigeVraag);
+      if (!contactmomentStore.huidigContactmoment) return;
+      contactmomentStore.upsertZaak(
+        res,
+        contactmomentStore.huidigContactmoment.huidigeVraag
+      );
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;
