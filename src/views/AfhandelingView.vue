@@ -67,9 +67,7 @@
               <label>
                 <span
                   >{{ record.zaak.identificatie }}
-                  <div>
-                    (Aangevraagd door: {{ record.zaak.aanvrager }})
-                  </div></span
+                  <div>(Zaaktype: {{ record.zaak.zaaktype }})</div></span
                 >
                 <input type="checkbox" v-model="record.shouldStore" />
               </label>
