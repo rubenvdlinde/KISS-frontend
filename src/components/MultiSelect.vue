@@ -83,7 +83,7 @@ summary {
 }
 
 details {
-  --box-shadow: 0 0 0.2857142857em 0 rgb(0 0 0 / 20%);
+  --box-shadow: var(--shadow-default);
   --border-width: 2px;
   --border-style: var(--color-primary) var(--border-width) solid;
   --padding-inline: 1.5rem;

@@ -3,14 +3,25 @@
     :dialog="dialog"
     message="Let op, je hebt het contactverzoek niet afgerond. Als je van contactmoment wisselt, wordt het contactverzoek niet verstuurd."
   />
-  <details ref="detailsEl" v-if="contactmomentStore.contactmomenten.length > 1">
-    <summary class="utrecht-button">Contactmomenten</summary>
+  <details ref="detailsEl" v-if="contactmomentStore.contactmomenten.length">
+    <summary class="utrecht-button">
+      {{
+        moments.length > 1
+          ? `${moments.length} actieve contactmomenten`
+          : "1 actief contactmoment"
+      }}
+    </summary>
     <menu>
       <li v-for="(moment, idx) in moments" :key="idx">
         <button
           :disabled="moment.isCurrent"
           @click="moment.enable"
           :class="{ 'is-current': moment.isCurrent }"
+          :title="
+            moment.isCurrent
+              ? 'Huidig contactmoment'
+              : 'Wissel naar dit contactmoment'
+          "
         >
           <p v-if="moment.isCurrent" class="current-moment">
             Huidig contactmoment
@@ -35,16 +46,16 @@ import { getKlantInfo } from "./helpers";
 
 const contactmomentStore = useContactmomentStore();
 const moments = computed(() =>
-  contactmomentStore.contactmomenten.map((x) => {
+  contactmomentStore.contactmomenten.map((moment) => {
     return {
-      description: getKlantInfo(x),
-      isCurrent: x === contactmomentStore.huidigContactmoment,
+      description: getKlantInfo(moment),
+      isCurrent: moment === contactmomentStore.huidigContactmoment,
       async enable() {
         if (contactmomentStore.wouldLoseProgress) {
           const { isCanceled } = await dialog.reveal();
           if (isCanceled) return;
         }
-        contactmomentStore.switchContactmoment(x);
+        contactmomentStore.switchContactmoment(moment);
       },
     };
   })
@@ -81,12 +92,14 @@ details {
 
 menu {
   position: absolute;
+  z-index: 1;
   margin-block-start: var(--spacing-small);
   padding-inline: var(--spacing-default);
   padding-block-end: var(--spacing-default);
   background: var(--color-white);
   inline-size: 100%;
   border-radius: var(--radius-default);
+  box-shadow: var(--shadow-default);
 
   li {
     border-block-end: 1px solid black;
@@ -98,8 +111,12 @@ menu {
     border-inline-start: 4px solid transparent;
     padding-inline-start: var(--spacing-small);
 
-    &:not(:disabled):hover {
+    &:hover {
       cursor: pointer;
+    }
+
+    &:disabled:hover {
+      cursor: not-allowed;
     }
 
     &.is-current {
