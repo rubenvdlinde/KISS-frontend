@@ -9,9 +9,12 @@ export const useBedrijfService = () => {
       case "kvkNummer":
         // GET Handelsregister ?kvkNummer;
         break;
-      case "postcodeHuisnummer":
-        // GET Handelsregister ?postcode&huisnummer (optioneel: &huisnummerToevoeging)
+      case "postcodeHuisnummer": {
+        const postcode = searchQuery.replace(" ", "").slice(0, 6);
+        const huisnummer = searchQuery.replace(" ", "").slice(6);
+
         break;
+      }
       case "emailadres":
         // GET Klantregister
         break;

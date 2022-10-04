@@ -23,7 +23,7 @@
           :placeholder="
             currentSearchCategory === 'postcodeHuisnummer'
               ? '1234AB 56'
-              : 'Zoek naar een ondernemer'
+              : 'Zoek naar een bedrijf'
           "
           v-model="currentSearchQuery"
           @search="handleSearch"
