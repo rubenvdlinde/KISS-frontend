@@ -6,7 +6,7 @@
           type="search"
           placeholder="Zoek op zaaknummer"
           v-model="store.zaakSearchParams.zaaknummer"
-          title="0612345789 test@conduction.nl"
+          title="ZAAK-1"
         />
       </label>
       <button title="Zoeken">
