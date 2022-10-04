@@ -19,11 +19,15 @@
       :message="errorMessage"
     />
 
-    <template v-else-if="contactmomentStore.contactmomentLoopt">
-      <article v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
+    <template v-else-if="contactmomentStore.huidigContactmoment">
+      <article
+        v-for="(vraag, idx) in contactmomentStore.huidigContactmoment.vragen"
+        :key="idx"
+      >
         <utrecht-heading :level="2" model-value>
           Vraag {{ idx + 1 }}
         </utrecht-heading>
+
         <section v-if="vraag.klanten.length" class="gerelateerde-klanten">
           <utrecht-heading :level="3" model-value>{{
             vraag.klanten.length > 1 ? "Klanten" : "Klant"
@@ -53,15 +57,24 @@
             </li>
           </ul>
         </section>
-        <section v-if="vraag.zaken.length > 0">
-          <utrecht-heading :level="3" model-value>
-            {{ vraag.zaken.length > 1 ? "Zaken" : "Zaak" }}
-          </utrecht-heading>
-          <zaken-overzicht
-            :zaken="vraag.zaken.map(({ zaak }) => zaak)"
-            :vraag="vraag"
-          />
+
+        <section v-if="vraag.zaken.length" class="gerelateerde-resources">
+          <utrecht-heading :level="2" model-value>{{
+            vraag.zaken.length > 1 ? "Gerelateerde zaken" : "Gerelateerde zaak"
+          }}</utrecht-heading>
+          <ul>
+            <li v-for="record in vraag.zaken" :key="record.zaak.id">
+              <label>
+                <span
+                  >{{ record.zaak.identificatie }}
+                  <div>(Zaaktype: {{ record.zaak.zaaktype }})</div></span
+                >
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
         </section>
+
         <section v-if="vraag.medewerkers.length" class="gerelateerde-resources">
           <utrecht-heading :level="2" model-value>{{
             vraag.medewerkers.length > 1
@@ -280,7 +293,6 @@ import {
   type Contactmoment,
 } from "@/features/contactmoment";
 
-import { ZakenOverzicht } from "@/features/zaaksysteem";
 import { useUserStore } from "@/stores/user";
 import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
@@ -294,7 +306,8 @@ const errorMessage = ref("");
 const gespreksresultaten = useGespreksResultaten();
 
 onMounted(() => {
-  for (const vraag of contactmomentStore.vragen) {
+  if (!contactmomentStore.huidigContactmoment) return;
+  for (const vraag of contactmomentStore.huidigContactmoment.vragen) {
     if (vraag.contactverzoek.isSubmitted) {
       vraag.resultaat = "Terugbelnotitie gemaakt";
     }
@@ -390,8 +403,11 @@ async function submit() {
   try {
     saving.value = true;
     errorMessage.value = "";
-    const firstVraag = contactmomentStore.vragen[0];
-    const otherVragen = contactmomentStore.vragen.slice(1);
+    if (!contactmomentStore.huidigContactmoment) return;
+
+    const { vragen } = contactmomentStore.huidigContactmoment;
+    const firstVraag = vragen[0];
+    const otherVragen = vragen.slice(1);
 
     let { gespreksId } = await saveVraag(firstVraag);
     if (!gespreksId) {
@@ -538,6 +554,10 @@ article {
 
   section {
     padding-block: var(--spacing-default);
+  }
+
+  & > *:not(:last-child) {
+    margin-block-end: var(--spacing-default);
   }
 }
 

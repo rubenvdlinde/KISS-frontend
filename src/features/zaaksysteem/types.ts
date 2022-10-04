@@ -41,4 +41,6 @@ export interface Zaak {
   fataleDatum: Date;
   behandelaar: string;
   toelichting: string;
+  aanvrager: string;
+  indienDatum: Date;
 }

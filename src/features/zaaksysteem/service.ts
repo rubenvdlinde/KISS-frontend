@@ -54,6 +54,8 @@ function parseZaak(zaak: any): Zaak {
     fataleDatum,
     behandelaar: getNamePerRoltype(zaak, "behandelaar"),
     toelichting: zaak.toelichting,
+    aanvrager: getNamePerRoltype(zaak, "initiator"),
+    indienDatum: zaak.publicatiedatum ?? "Onbekend",
   };
 }
 

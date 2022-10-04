@@ -87,13 +87,17 @@ const props = defineProps({
 const contactmomentStore = useContactmomentStore();
 
 const berichtSelectedInContactmoment = computed(() => {
+  const { huidigContactmoment } = contactmomentStore;
+
+  if (!huidigContactmoment) return false;
+
   const foundInNieuwsberichten =
-    contactmomentStore.huidigeVraag.nieuwsberichten.findIndex(
+    huidigContactmoment.huidigeVraag.nieuwsberichten.findIndex(
       (n) => n.nieuwsbericht.url === props.bericht.url
     ) !== -1;
 
   const foundInWerkinstructies =
-    contactmomentStore.huidigeVraag.werkinstructies.findIndex(
+    huidigContactmoment.huidigeVraag.werkinstructies.findIndex(
       (w) => w.werkinstructie.url === props.bericht.url
     ) !== -1;
 

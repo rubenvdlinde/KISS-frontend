@@ -21,7 +21,7 @@ export type Store<T> = Ref<UnwrapRef<T>> & { reset: () => void };
 
 export type StoreImplementation = <T>(params: CreateStoreParams<T>) => Store<T>;
 
-function defaultStoreImplementation<T>({
+export function defaultStoreImplementation<T>({
   stateId,
   stateFactory,
   onExistingState,

@@ -1,56 +1,50 @@
 <template>
-  <section class="grid">
-    <section>
-      <form @submit.prevent="zoekOpZaak">
-        <fieldset class="utrecht-form-fieldset">
-          <label for="zaaknummer" class="utrecht-form-label">Zaaknummer</label>
-          <input
-            type="text"
-            id="zaaknummer"
-            v-model="store.zaakSearchParams.zaaknummer"
-            class="utrecht-textbox utrecht-textbox--html-input"
-            v-on:keydown.enter.prevent="zoekOpZaak"
-          />
-        </fieldset>
-        <menu>
-          <utrecht-button modelValue type="submit">Zoek</utrecht-button>
-        </menu>
-      </form>
+  <section>
+    <form class="search-bar" @submit.prevent="zoekOpZaak">
+      <label>
+        <input
+          type="search"
+          placeholder="Zoek op zaaknummer"
+          v-model="store.zaakSearchParams.zaaknummer"
+          title="ZAAK-1"
+        />
+      </label>
+      <button title="Zoeken">
+        <span>Zoeken</span><utrecht-icon-loupe model-value />
+      </button>
+    </form>
 
-      <form @submit.prevent="zoekOpBsn">
-        <fieldset class="utrecht-form-fieldset">
-          <label for="bsn" class="utrecht-form-label">Bsn</label>
-          <input
-            type="text"
-            id="bsn"
-            v-model="store.zaakSearchParams.bsn"
-            class="utrecht-textbox utrecht-textbox--html-input"
-            placeholder="205827123"
-          />
-        </fieldset>
-        <menu>
-          <utrecht-button modelValue type="submit">Zoek</utrecht-button>
-        </menu>
-      </form>
-    </section>
-    <section>
-      <application-message
-        v-if="error"
-        messageType="error"
-        message="Er is een probleem opgetreden."
-      ></application-message>
+    <section class="resultaten-container" v-if="store.zaken.length > 0">
+      <div class="resultaten-heading-container">
+        <utrecht-heading class="resultaten-heading" :level="2" model-value
+          >Zoekresultaten</utrecht-heading
+        >
+
+        <div class="resultaten-found">
+          {{
+            `${store.zaken.length} ${
+              store.zaken.length > 1 ? "resultaten" : "resultaat"
+            } gevonden`
+          }}
+        </div>
+      </div>
 
       <zaken-overzicht
-        v-else-if="store.zaken.length > 0"
         :zaken="store.zaken"
-        :vraag="contactmomentStore.huidigeVraag"
+        :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
         @zaak-selected="zaakSelected"
-      ></zaken-overzicht>
-
-      <simple-spinner v-else-if="busy"></simple-spinner>
-
-      <paragraph v-else-if="isDirty">Er zijn geen zaken gevonden.</paragraph>
+      />
     </section>
+
+    <application-message
+      v-if="error"
+      messageType="error"
+      message="Er is een probleem opgetreden."
+    ></application-message>
+
+    <simple-spinner v-else-if="busy"></simple-spinner>
+
+    <paragraph v-else-if="isDirty">Er zijn geen zaken gevonden.</paragraph>
   </section>
 </template>
 
@@ -61,14 +55,13 @@ import type { Zaak } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useContactmomentStore } from "@/stores/contactmoment";
-
-const props = defineProps({
-  populatedBsn: { type: String, default: null },
-});
+import {
+  UtrechtHeading,
+  UtrechtIconLoupe,
+} from "@utrecht/web-component-library-vue";
 
 const contactmomentStore = useContactmomentStore();
 
@@ -114,39 +107,6 @@ const zoekOpZaak = () => {
     });
 };
 
-const zoekOpBsn = () => {
-  busy.value = true;
-  error.value = false;
-  store.value.zaken = [];
-
-  service
-    .findByBsn(store.value.zaakSearchParams.bsn)
-    .withoutFetcher()
-    .then((data) => {
-      store.value.zaken = data.page;
-      isDirty.value = true;
-    })
-    .catch((e) => {
-      error.value = true;
-      console.error(e);
-    })
-    .finally(() => {
-      busy.value = false;
-    });
-};
-
-//als er een bsn meegegeven wordt dan initieren we direct een zoekopdracht daarop
-watch(
-  () => props.populatedBsn,
-  (populatedBsnValue) => {
-    if (populatedBsnValue) {
-      store.value.zaakSearchParams.bsn = populatedBsnValue;
-      zoekOpBsn();
-    }
-  },
-  { immediate: true }
-);
-
 const singleZaak = computed(() =>
   store.value.zaken && store.value.zaken.length === 1
     ? store.value.zaken[0]
@@ -161,27 +121,24 @@ watch(singleZaak, (n, o) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@utrecht/component-library-css";
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 4fr;
-  grid-gap: 2rem;
+.search-bar {
+  inline-size: min(100%, 20rem);
+  margin-block-end: var(--spacing-large);
 }
 
-label {
-  display: inline-block;
-  margin-top: var(--spacing-default);
-}
+.resultaten-container {
+  & > *:not(:last-child) {
+    margin-block-end: var(--spacing-large);
+  }
 
-input {
-  margin-top: var(--spacing-small);
-}
+  .resultaten-heading {
+    padding-block-end: var(--spacing-default);
+    border-bottom: 1px solid var(--color-tertiary);
+  }
 
-menu {
-  margin-top: var(--spacing-large);
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  .resultaten-found {
+    color: var(--color-primary);
+    padding-block-start: var(--spacing-small);
+  }
 }
 </style>

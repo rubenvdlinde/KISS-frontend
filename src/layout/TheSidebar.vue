@@ -4,11 +4,18 @@
       <li>
         <contactmoment-starter />
       </li>
+      <li>
+        <contactmoment-switcher />
+      </li>
     </menu>
     <template
       v-if="contactmomentStore.contactmomentLoopt && route.meta.showNotitie"
     >
-      <section class="within-moment">
+      <section
+        class="within-moment"
+        v-if="contactmomentStore.huidigContactmoment"
+      >
+        <current-contactmoment-info />
         <h2>Vragen</h2>
         <contactmoment-vragen-menu />
         <tabs-component v-model="state.currentNotitieTab" class="notitie-tabs">
@@ -29,7 +36,9 @@
               aria-labelledby="notitieblok"
               v-focus
               class="utrecht-textarea"
-              v-model="contactmomentStore.huidigeVraag.notitie"
+              v-model="
+                contactmomentStore.huidigContactmoment.huidigeVraag.notitie
+              "
             />
           </template>
           <template #[NotitieTabs.Terugbel]>
@@ -39,7 +48,9 @@
             </p>
             <ContactverzoekFormulier
               v-else
-              :huidige-vraag="contactmomentStore.huidigeVraag"
+              :huidige-vraag="
+                contactmomentStore.huidigContactmoment.huidigeVraag
+              "
               :huidige-klant="contactmomentStore.klantVoorHuidigeVraag"
               @start="handleContactverzoekStart"
               @submit="handleContactverzoekSubmit"
@@ -60,7 +71,11 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
 import { watch, computed } from "vue";
 import { useRoute } from "vue-router";
-import ContactmomentStarter from "../features/contactmoment/ContactmomentStarter.vue";
+import {
+  ContactmomentStarter,
+  CurrentContactmomentInfo,
+  ContactmomentSwitcher,
+} from "@/features/contactmoment";
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
@@ -80,18 +95,22 @@ const state = ensureState({
 });
 
 watch(
-  () => contactmomentStore.huidigeVraag,
+  () => contactmomentStore.huidigContactmoment?.huidigeVraag,
   () => {
     state.reset();
   }
 );
 
 const contactverzoekIsSentToMedewerker = computed(
-  () => contactmomentStore.huidigeVraag.contactverzoek.medewerker
+  () =>
+    contactmomentStore.huidigContactmoment?.huidigeVraag.contactverzoek
+      .medewerker
 );
 
 const handleContactverzoekStart = () => {
-  contactmomentStore.huidigeVraag.contactverzoek.isInProgress = true;
+  if (!contactmomentStore.huidigContactmoment) return;
+  contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
+    true;
 };
 
 const handleContactverzoekSubmit = ({
@@ -101,7 +120,9 @@ const handleContactverzoekSubmit = ({
   medewerker: string;
   url: string;
 }) => {
-  const { contactverzoek } = contactmomentStore.huidigeVraag;
+  if (!contactmomentStore.huidigContactmoment) return;
+  const { contactverzoek } =
+    contactmomentStore.huidigContactmoment.huidigeVraag;
   contactverzoek.url = url;
   contactverzoek.medewerker = medewerker;
   contactverzoek.isSubmitted = true;
@@ -141,6 +162,7 @@ aside {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
+    color: inherit;
   }
 
   :deep([role="tabpanel"]) {
@@ -155,7 +177,10 @@ aside {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: inherit;
+
+    &[aria-selected="true"] {
+      color: var(--color-headings);
+    }
   }
 }
 
@@ -163,6 +188,19 @@ aside {
   align-self: center;
   margin-block-start: 4rem;
   margin-block-end: var(--spacing-default);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-default);
+
+  li {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :deep(utrecht-button) {
+    --utrecht-button-min-inline-size: 17rem;
+  }
 }
 
 .within-moment {
@@ -172,13 +210,18 @@ aside {
   background-color: var(--sidebar-color-2);
   border-start-start-radius: var(--radius-large);
   border-start-end-radius: var(--radius-large);
-  color: var(--color-headings);
-  margin-block-start: var(--spacing-large);
+  color: var(--color-white);
+  margin-block-start: var(--spacing-default);
+  padding-block-start: var(--spacing-default);
 
   h2 {
     margin-block-start: var(--spacing-small);
     margin-inline: var(--spacing-default);
     color: inherit;
   }
+}
+
+:deep(h2) {
+  font-size: 1.25rem;
 }
 </style>

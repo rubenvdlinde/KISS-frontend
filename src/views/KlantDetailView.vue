@@ -91,7 +91,8 @@ watch(
       return;
     }
 
-    const fromStore = contactmomentStore.vragen
+    const fromStore = contactmomentStore.contactmomenten
+      .flatMap(({ vragen }) => vragen)
       .flatMap(({ klanten }) => klanten)
       .map(({ klant }) => klant)
       .find(({ id }) => id === klantId);
