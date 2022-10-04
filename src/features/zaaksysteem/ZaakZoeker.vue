@@ -43,7 +43,7 @@
       <zaken-overzicht
         v-else-if="store.zaken.length > 0"
         :zaken="store.zaken"
-        :vraag="contactmomentStore.huidigeVraag"
+        :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
         @zaak-selected="zaakSelected"
       ></zaken-overzicht>
 

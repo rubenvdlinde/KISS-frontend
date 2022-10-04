@@ -6,11 +6,9 @@
       <ul>
         <li class="header-row">
           <span id="datum-header">Datum</span>
-          <span id="medewerker-header" class="col-lg">Medewerker</span>
+          <span id="medewerker-header">Medewerker</span>
           <span id="kanaal-header">Kanaal</span>
-          <span id="gespreksresultaat-header" class="col-lg"
-            >Gespreksresultaat</span
-          >
+          <span id="gespreksresultaat-header">Gespreksresultaat</span>
         </li>
         <li v-for="contactmoment in contactmomenten" :key="contactmoment.id">
           <details @click="toggleDetails">
@@ -18,13 +16,13 @@
               <span aria-labelledby="datum-header" class="first-column">{{
                 formatDateOnly(contactmoment.registratiedatum)
               }}</span>
-              <span aria-labelledby="medewerker-header" class="col-lg">{{
+              <span aria-labelledby="medewerker-header">{{
                 contactmoment["x-commongateway-metadata"].owner
               }}</span>
               <span aria-labelledby="kanaal-header">{{
                 contactmoment.kanaal
               }}</span>
-              <span aria-labelledby="gespreksresultaat-header" class="col-lg">{{
+              <span aria-labelledby="gespreksresultaat-header">{{
                 contactmoment.resultaat
               }}</span>
             </summary>
@@ -87,7 +85,7 @@ const toggleDetails = (e: Event) => {
 
 ul {
   --column-width: 25ch;
-  --gap: var(--spacing-small);
+  --gap: var(--spacing-default);
 
   display: grid;
   list-style: none;
@@ -114,16 +112,14 @@ dt {
 
 .header-row,
 summary {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 2fr 1rem;
   gap: var(--gap);
+}
 
-  > * {
-    flex: 2;
-  }
-
-  .col-lg {
-    flex: 3;
-  }
+.header-row,
+details > * {
+  padding-inline: var(--gap);
 }
 
 dl {
@@ -133,12 +129,6 @@ dl {
   row-gap: 1rem;
   grid-template-columns: var(--column-width) 1fr;
   padding-block: var(--spacing-large);
-}
-
-summary {
-  span {
-    padding-inline-start: var(--spacing-default);
-  }
 }
 
 .tekst {
@@ -164,10 +154,6 @@ details,
 .header-row {
   padding-block-start: var(--spacing-default);
   padding-block-end: var(--spacing-default);
-
-  span {
-    padding-inline-start: var(--spacing-default);
-  }
 }
 
 details[open],

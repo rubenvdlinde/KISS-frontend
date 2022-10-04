@@ -38,7 +38,11 @@ const currentBsn = ref<string>();
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
 const handleZaakSelected = (zaak: Zaak) => {
-  contactmomentStore.upsertZaak(zaak, contactmomentStore.huidigeVraag);
+  if (!contactmomentStore.huidigContactmoment) return;
+  contactmomentStore.upsertZaak(
+    zaak,
+    contactmomentStore.huidigContactmoment.huidigeVraag
+  );
   router.push({ name: "zaakDetail", params: { zaakId: zaak.id } });
 };
 

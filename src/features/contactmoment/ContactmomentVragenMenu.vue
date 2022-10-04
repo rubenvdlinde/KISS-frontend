@@ -3,7 +3,7 @@
     :dialog="dialog"
     message="Let op, je hebt het contactverzoek niet afgerond. Als je deze vraag verlaat, wordt het contactverzoek niet verstuurd."
   />
-  <menu class="vragen-menu">
+  <menu class="vragen-menu" v-if="vragen">
     <li>
       <button
         class="icon-after plus new-question"
@@ -12,12 +12,12 @@
         @click="startNieuweVraag"
       ></button>
     </li>
-    <li v-for="(vraag, idx) in contactmomentStore.vragen" :key="idx">
+    <li v-for="(vraag, idx) in vragen" :key="idx">
       <button
         type="button"
-        :disabled="vraag === contactmomentStore.huidigeVraag"
-        :title="`Ga naar vraag ${idx + 1}`"
-        @click="switchVraag(vraag)"
+        :disabled="vraag.isCurrent"
+        :title="vraag.isCurrent ? 'Huidige vraag' : `Ga naar vraag ${idx + 1}`"
+        @click="vraag.switchVraag"
       >
         {{ idx + 1 }}
       </button>
@@ -25,25 +25,33 @@
   </menu>
 </template>
 <script lang="ts" setup>
-import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
+import { useContactmomentStore } from "@/stores/contactmoment";
 import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
+import { computed } from "@vue/reactivity";
 
 const contactmomentStore = useContactmomentStore();
 const dialog = useConfirmDialog();
+
+const vragen = computed(() =>
+  contactmomentStore.huidigContactmoment?.vragen.map((vraag) => {
+    return {
+      isCurrent: contactmomentStore.huidigContactmoment?.huidigeVraag === vraag,
+      async switchVraag() {
+        if (contactmomentStore.wouldLoseProgress) {
+          await waitForConfirmation();
+        }
+        contactmomentStore.switchVraag(vraag);
+      },
+    };
+  })
+);
 
 async function startNieuweVraag() {
   if (contactmomentStore.wouldLoseProgress) {
     await waitForConfirmation();
   }
   contactmomentStore.startNieuweVraag();
-}
-
-async function switchVraag(vraag: Vraag) {
-  if (contactmomentStore.wouldLoseProgress) {
-    await waitForConfirmation();
-  }
-  contactmomentStore.switchVraag(vraag);
 }
 
 async function waitForConfirmation() {
@@ -77,7 +85,7 @@ async function waitForConfirmation() {
 
     &:disabled {
       background: var(--color-white);
-      cursor: default;
+      cursor: not-allowed;
     }
   }
 }
