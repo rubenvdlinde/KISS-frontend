@@ -66,5 +66,9 @@ article {
   h2 {
     margin-block-start: 0;
   }
+
+  p {
+    color: inherit;
+  }
 }
 </style>

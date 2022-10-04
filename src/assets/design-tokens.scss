@@ -10,8 +10,8 @@
     --color-category-website: hsl(285, 56%, 83%);
     --color-white: #fff;
     //TODO discuss. these colors seem to clash.
-    --sidebar-color-1: #352b75;
-    --sidebar-color-2: #c0c4fc;
+    --sidebar-color-1: var(--color-headings);
+    --sidebar-color-2: var(--color-primary);
 
     // spacing
     --container-width: 80rem;

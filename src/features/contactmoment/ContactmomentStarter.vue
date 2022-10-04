@@ -40,11 +40,8 @@ const onStartContactMoment = async () => {
   if (contactmomentStore.wouldLoseProgress) {
     await waitForConfirmation();
   }
-  const isNew = contactmomentStore.contactmomentLoopt;
   contactmomentStore.start();
-  if (isNew) {
-    router.push("/klanten");
-  }
+  router.push("/klanten");
 };
 
 async function waitForConfirmation() {
