@@ -29,9 +29,10 @@
   </article>
 
   <content-feedback
+    v-if="currentFeedbackSection"
     :name="title"
     :url="kennisartikelRaw.url"
-    :current-section="getCurrentFeedbackSection"
+    :current-section="currentFeedbackSection"
   />
 </template>
 <script setup lang="ts">
@@ -44,7 +45,6 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
 import { ContentFeedback } from "../feedback/index";
-import type { CurrentFeedbackSection } from "../feedback/types";
 
 const knownSections = {
   specifiekeTekst: "Inleiding",
@@ -81,8 +81,9 @@ function processHtml(html: string) {
 
 const currentSectionIndex = ref(0);
 
-const getCurrentFeedbackSection = computed((): CurrentFeedbackSection => {
+const currentFeedbackSection = computed(() => {
   const currentSection = mappedSections.value[currentSectionIndex.value];
+  if (!currentSection) return undefined;
   return {
     label: currentSection.label,
     id: currentSection.key,
