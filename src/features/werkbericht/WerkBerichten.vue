@@ -43,7 +43,6 @@ import Paragraph from "@/nl-design-system/components/Paragraph.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
 import { useWerkberichten } from "./service";
 import WerkBericht from "./WerkBericht.vue";
-import { ensureState } from "@/stores/create-store";
 
 const props = defineProps({
   header: {
