@@ -34,27 +34,23 @@
           <ul>
             <li v-for="record in vraag.klanten" :key="record.klant.id">
               <label>
-                <span v-if="record.klant.voornaam || record.klant.achternaam">
-                  {{
-                    [
-                      record.klant.voornaam,
-                      record.klant.voorvoegselAchternaam,
-                      record.klant.achternaam,
-                    ]
-                      .filter((x) => x)
-                      .join(" ")
-                  }}
-                </span>
-                <span v-else>
-                  {{
-                    [
-                      record.klant.emails[0].email,
-                      record.klant.telefoonnummers[0].telefoonnummer,
-                    ]
-                      .filter((x) => x)
-                      .join(", ")
-                  }}
-                </span>
+                <span v-if="record.klant.voornaam || record.klant.achternaam">{{
+                  [
+                    record.klant.voornaam,
+                    record.klant.voorvoegselAchternaam,
+                    record.klant.achternaam,
+                  ]
+                    .filter((x) => x)
+                    .join(" ")
+                }}</span>
+                <span v-else>{{
+                  [
+                    record.klant.emails[0].email,
+                    record.klant.telefoonnummers[0].telefoonnummer,
+                  ]
+                    .filter((x) => x)
+                    .join(", ")
+                }}</span>
                 <input
                   title="Klant opslaan bij contactmoment"
                   type="checkbox"
