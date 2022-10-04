@@ -598,11 +598,13 @@ function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
     }
 
     > * {
+      --input-ratio: 1.5;
+      --input-size: calc(var(--input-ratio) * 1rem);
       all: unset;
       display: grid;
-      grid-template-columns: 1fr 1rem 1rem;
+      grid-template-columns: 1fr var(--input-size) var(--input-size);
       gap: var(--spacing-default);
-      align-items: baseline;
+      align-items: center;
     }
   }
   legend {
@@ -612,8 +614,7 @@ function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
 
   input[type="radio"],
   input[type="checkbox"] {
-    scale: 1.5;
-    translate: -25% 50%;
+    scale: var(--input-ratio);
     margin: 0;
   }
 }
