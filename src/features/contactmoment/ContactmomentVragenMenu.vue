@@ -85,6 +85,7 @@ async function waitForConfirmation() {
 
     &:disabled {
       background: var(--color-white);
+      color: var(--color-headings);
       cursor: not-allowed;
     }
   }
