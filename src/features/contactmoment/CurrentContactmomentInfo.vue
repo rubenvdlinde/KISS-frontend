@@ -8,8 +8,12 @@
       <h2>{{ klantInfo?.name || "onbekend" }}</h2>
       <p v-if="klantInfo?.contact">{{ klantInfo.contact }}</p>
     </header>
-    <utrecht-button model-value @click="onStopContactMoment" v-bind="$attrs">
-      Einde
+    <utrecht-button
+      model-value
+      @click="onStopContactMoment"
+      title="Contactmoment afronden"
+    >
+      Afronden
     </utrecht-button>
   </article>
 </template>
@@ -18,14 +22,12 @@
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useConfirmDialog } from "@vueuse/core";
-import { computed, useAttrs } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import PromptModal from "@/components/PromptModal.vue";
 import { getKlantInfo } from "./helpers";
 
 const beforeStopDialog = useConfirmDialog();
-
-const attrs = useAttrs();
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -37,19 +39,14 @@ const klantInfo = computed(() =>
 );
 
 const onStopContactMoment = async () => {
-  if (attrs.disabled) return;
   if (contactmomentStore.wouldLoseProgress) {
-    await waitForConfirmation();
+    const { isCanceled } = await beforeStopDialog.reveal();
+    if (isCanceled) {
+      return;
+    }
   }
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
-
-async function waitForConfirmation() {
-  const { isCanceled } = await beforeStopDialog.reveal();
-  if (isCanceled) {
-    throw new Error("canceled");
-  }
-}
 </script>
 
 <style lang="scss" scoped>
@@ -59,7 +56,7 @@ article {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-small);
+  gap: var(--spacing-default);
 
   utrecht-button {
     --utrecht-button-background-color: var(--color-error);
