@@ -85,7 +85,7 @@ const toggleDetails = (e: Event) => {
 
 ul {
   --column-width: 25ch;
-  --gap: var(--spacing-small);
+  --gap: var(--spacing-default);
 
   display: grid;
   list-style: none;
@@ -113,8 +113,13 @@ dt {
 .header-row,
 summary {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 2fr 1.5rem;
+  grid-template-columns: 1fr 2fr 1fr 2fr 1rem;
   gap: var(--gap);
+}
+
+.header-row,
+details > * {
+  padding-inline: var(--gap);
 }
 
 dl {
@@ -124,12 +129,6 @@ dl {
   row-gap: 1rem;
   grid-template-columns: var(--column-width) 1fr;
   padding-block: var(--spacing-large);
-}
-
-summary {
-  span {
-    padding-inline-start: var(--spacing-default);
-  }
 }
 
 .tekst {
@@ -155,10 +154,6 @@ details,
 .header-row {
   padding-block-start: var(--spacing-default);
   padding-block-end: var(--spacing-default);
-
-  span {
-    padding-inline-start: var(--spacing-default);
-  }
 }
 
 details[open],
