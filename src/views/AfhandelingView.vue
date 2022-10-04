@@ -66,7 +66,7 @@
           />
         </section>
         <section v-if="vraag.medewerkers.length" class="gerelateerde-resources">
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.medewerkers.length > 1
               ? "Gerelateerde medewerkers"
               : "Gerelateerde medewerker"
@@ -98,7 +98,7 @@
         </section>
 
         <section v-if="vraag.websites.length" class="gerelateerde-resources">
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.websites.length > 1
               ? "Gerelateerde websites"
               : "Gerelateerde website"
@@ -122,7 +122,7 @@
           v-if="vraag.kennisartikelen.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.kennisartikelen.length > 1
               ? "Gerelateerde kennisartikelen"
               : "Gerelateerde kennisartikel"
@@ -132,22 +132,24 @@
               v-for="record in vraag.kennisartikelen"
               :key="record.kennisartikel.url"
             >
-              <span>
-                {{ record.kennisartikel.title }}
-              </span>
-              <input
-                :title="`${record.kennisartikel.title} opslaan bij contactmoment`"
-                type="checkbox"
-                v-model="record.shouldStore"
-              />
-              <input
-                :title="`${record.kennisartikel.title} is de hoofdvraag`"
-                type="radio"
-                :name="'hoofdvraag' + idx"
-                :value="record.kennisartikel"
-                v-model="vraag.primaireVraag"
-                @change="setAfwijkendOnderwerp(record.kennisartikel, vraag)"
-              />
+              <fieldset>
+                <legend>
+                  {{ record.kennisartikel.title }}
+                </legend>
+                <input
+                  :title="`Dit kennisartikel opslaan bij contactmoment`"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
+                <input
+                  :title="`Dit kennisartikel beantwoordt de hoofdvraag`"
+                  type="radio"
+                  :name="'hoofdvraag' + idx"
+                  :value="record.kennisartikel"
+                  v-model="vraag.primaireVraag"
+                  @change="setAfwijkendOnderwerp(record.kennisartikel, vraag)"
+                />
+              </fieldset>
             </li>
           </ul>
         </section>
@@ -156,7 +158,7 @@
           v-if="vraag.nieuwsberichten.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.nieuwsberichten.length > 1
               ? "Gerelateerde nieuwsberichten"
               : "Gerelateerde nieuwsbericht"
@@ -166,22 +168,24 @@
               v-for="record in vraag.nieuwsberichten"
               :key="record.nieuwsbericht.url"
             >
-              <span>
-                {{ record.nieuwsbericht.title }}
-              </span>
-              <input
-                :title="`${record.nieuwsbericht.title} opslaan bij contactmoment`"
-                type="checkbox"
-                v-model="record.shouldStore"
-              />
-              <input
-                :title="`${record.nieuwsbericht.title} is de hoofdvraag`"
-                type="radio"
-                :name="'hoofdvraag' + idx"
-                :value="record.nieuwsbericht"
-                v-model="vraag.primaireVraag"
-                @change="setAfwijkendOnderwerp(record.nieuwsbericht, vraag)"
-              />
+              <fieldset>
+                <legend>
+                  {{ record.nieuwsbericht.title }}
+                </legend>
+                <input
+                  :title="`Dit nieuwsbericht opslaan bij contactmoment`"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
+                <input
+                  :title="`Dit nieuwsbericht beantwoordt de hoofdvraag`"
+                  type="radio"
+                  :name="'hoofdvraag' + idx"
+                  :value="record.nieuwsbericht"
+                  v-model="vraag.primaireVraag"
+                  @change="setAfwijkendOnderwerp(record.nieuwsbericht, vraag)"
+                />
+              </fieldset>
             </li>
           </ul>
         </section>
@@ -190,7 +194,7 @@
           v-if="vraag.werkinstructies.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.werkinstructies.length > 1
               ? "Gerelateerde werkinstructies"
               : "Gerelateerde werkinstructie"
@@ -200,22 +204,24 @@
               v-for="record in vraag.werkinstructies"
               :key="record.werkinstructie.url"
             >
-              <span>
-                {{ record.werkinstructie.title }}
-              </span>
-              <input
-                :title="`${record.werkinstructie.title} opslaan bij contactmoment`"
-                type="checkbox"
-                v-model="record.shouldStore"
-              />
-              <input
-                :title="`${record.werkinstructie.title} is de hoofdvraag`"
-                type="radio"
-                :name="'hoofdvraag' + idx"
-                :value="record.werkinstructie"
-                v-model="vraag.primaireVraag"
-                @change="setAfwijkendOnderwerp(record.werkinstructie, vraag)"
-              />
+              <fieldset>
+                <span>
+                  {{ record.werkinstructie.title }}
+                </span>
+                <input
+                  :title="`Deze werkinstructie opslaan bij contactmoment`"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
+                <input
+                  :title="`Deze werkinstructie beantwoordt de hoofdvraag`"
+                  type="radio"
+                  :name="'hoofdvraag' + idx"
+                  :value="record.werkinstructie"
+                  v-model="vraag.primaireVraag"
+                  @change="setAfwijkendOnderwerp(record.werkinstructie, vraag)"
+                />
+              </fieldset>
             </li>
           </ul>
         </section>
@@ -271,6 +277,7 @@
               class="utrecht-textbox"
               :id="'afwijkendOnderwerp' + idx"
               v-model="vraag.afwijkendOnderwerp"
+              @input="vraag.primaireVraag = undefined"
             />
 
             <label class="utrecht-form-label" :for="'notitie' + idx"
@@ -567,23 +574,26 @@ function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
 }
 
 .gerelateerde-resources {
-  li > label {
-    display: grid;
-    grid-auto-flow: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-default);
-    width: 20rem;
-    padding-block: var(--spacing-small);
+  ul {
+    margin-top: var(--spacing-small);
+  }
+  li {
+    padding: var(--spacing-small);
+    border: 1px solid var(--color-tertiary);
 
-    &:hover {
-      cursor: pointer;
+    &:not(:first-of-type) {
+      border-top: none;
     }
-
-    input[type="checkbox"] {
-      transform: scale(1.25);
-      accent-color: var(--color-primary);
-    }
+  }
+  fieldset {
+    all: unset;
+    display: flex;
+    gap: var(--spacing-small);
+    align-items: baseline;
+  }
+  legend {
+    float: left;
+    padding: 0;
   }
 }
 
@@ -601,16 +611,20 @@ article {
   }
 }
 
-section,
-article {
-  &:not(:last-of-type) {
-    border-block-end: 1px solid var(--color-primary);
-  }
-}
-
 menu {
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-large);
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  scale: 1.5;
+  translate: 0 15%;
+  accent-color: var(--color-primary);
+
+  &:first-of-type {
+    margin-inline-start: auto;
+  }
 }
 </style>
