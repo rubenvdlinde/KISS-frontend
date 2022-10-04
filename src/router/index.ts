@@ -50,8 +50,9 @@ const router = createRouter({
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     {
-      path: "/klanten/:id",
+      path: "/klanten/:klantId",
       name: "klantDetail",
+      props: true,
       component: KlantDetailView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },
@@ -64,8 +65,9 @@ const router = createRouter({
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     {
-      path: "/contactmoment/zaken/:id",
+      path: "/contactmoment/zaken/:zaakId",
       name: "zaakDetail",
+      props: true,
       component: ZaakDetailView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },

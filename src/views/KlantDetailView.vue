@@ -19,8 +19,30 @@
       message="Er is geen klant gevonden"
       messageType="error"
     ></application-message>
+
+    <!-- Zaken -->
     <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
-    <contactmomenten-overzicht :klant-id="klantId" />
+
+    <!-- Contactmomenten -->
+    <utrecht-heading class="contactmomenten-header" model-value :level="2">
+      Contactmomenten
+    </utrecht-heading>
+
+    <simple-spinner v-if="contactmomenten.loading" />
+
+    <span v-if="contactmomenten.error">
+      Er ging iets mis. Probeer het later nog eens.
+    </span>
+
+    <template v-if="contactmomenten.success">
+      <contactmomenten-overzicht :contactmomenten="contactmomenten.data.page" />
+
+      <pagination
+        class="pagination"
+        :pagination="contactmomenten.data"
+        @navigate="onContactmomentenNavigate"
+      />
+    </template>
   </section>
 </template>
 
@@ -32,31 +54,26 @@ import { ContactmomentenOverzicht } from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZakenOverzichtKlantbeeld from "@/features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
-import { useRoute } from "vue-router";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import Pagination from "../nl-design-system/components/Pagination.vue";
+import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
+
+const props = defineProps<{ klantId: string }>();
 
 const loading = ref(false);
-
-const route = useRoute();
 
 const contactmomentStore = useContactmomentStore();
 
 const klant = ref<Klant>();
 
-const klantId = computed(
-  () =>
-    (Array.isArray(route.params.id) ? route.params.id[0] : route.params.id) ||
-    ""
-);
-
 const klantBsn = computed(() => klant.value?.bsn);
 
 watch(
-  klantId,
-  (id) => {
-    if (!id) {
+  () => props.klantId,
+  (klantId) => {
+    if (!klantId) {
       klant.value = undefined;
       return;
     }
@@ -65,7 +82,7 @@ watch(
       .flatMap(({ vragen }) => vragen)
       .flatMap(({ klanten }) => klanten)
       .map(({ klant }) => klant)
-      .find(({ id }) => id === klantId.value);
+      .find(({ id }) => id === klantId);
 
     if (fromStore) {
       klant.value = fromStore;
@@ -74,7 +91,7 @@ watch(
 
     loading.value = true;
 
-    fetchKlant(id)
+    fetchKlant(klantId)
       .then((newKlant) => {
         klant.value = newKlant;
       })
@@ -89,6 +106,16 @@ watch(klant, (k) => {
   if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
   contactmomentStore.setKlant(k);
 });
+
+const contactmomentenPage = ref(1);
+const contactmomenten = useContactmomentenByKlantId(
+  computed(() => props.klantId),
+  contactmomentenPage
+);
+
+const onContactmomentenNavigate = (page: number) => {
+  contactmomentenPage.value = page;
+};
 </script>
 
 <style scoped lang="scss">

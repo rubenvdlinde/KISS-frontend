@@ -43,7 +43,7 @@ const handleZaakSelected = (zaak: Zaak) => {
     zaak,
     contactmomentStore.huidigContactmoment.huidigeVraag
   );
-  router.push({ name: "zaakDetail", params: { id: zaak.id } });
+  router.push({ name: "zaakDetail", params: { zaakId: zaak.id } });
 };
 
 // er kan direct vanaf de personen tab gezocht worden naar de bijbehorende zaken.
