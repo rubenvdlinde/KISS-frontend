@@ -24,6 +24,7 @@
         <utrecht-heading :level="2" model-value>
           Vraag {{ idx + 1 }}
         </utrecht-heading>
+
         <section v-if="vraag.klanten.length" class="gerelateerde-klanten">
           <utrecht-heading :level="3" model-value>{{
             vraag.klanten.length > 1 ? "Klanten" : "Klant"
@@ -53,15 +54,26 @@
             </li>
           </ul>
         </section>
-        <section v-if="vraag.zaken.length > 0">
-          <utrecht-heading :level="3" model-value>
-            {{ vraag.zaken.length > 1 ? "Zaken" : "Zaak" }}
-          </utrecht-heading>
-          <zaken-overzicht
-            :zaken="vraag.zaken.map(({ zaak }) => zaak)"
-            :vraag="vraag"
-          />
+
+        <section v-if="vraag.zaken.length" class="gerelateerde-resources">
+          <utrecht-heading :level="2" model-value>{{
+            vraag.zaken.length > 1 ? "Gerelateerde zaken" : "Gerelateerde zaak"
+          }}</utrecht-heading>
+          <ul>
+            <li v-for="record in vraag.zaken" :key="record.zaak.id">
+              <label>
+                <span
+                  >{{ record.zaak.identificatie }}
+                  <div>
+                    (Aangevraagd door: {{ record.zaak.aanvrager }})
+                  </div></span
+                >
+                <input type="checkbox" v-model="record.shouldStore" />
+              </label>
+            </li>
+          </ul>
         </section>
+
         <section v-if="vraag.medewerkers.length" class="gerelateerde-resources">
           <utrecht-heading :level="2" model-value>{{
             vraag.medewerkers.length > 1
@@ -280,7 +292,6 @@ import {
   type Contactmoment,
 } from "@/features/contactmoment";
 
-import { ZakenOverzicht } from "@/features/zaaksysteem";
 import { useUserStore } from "@/stores/user";
 import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
@@ -538,6 +549,10 @@ article {
 
   section {
     padding-block: var(--spacing-default);
+  }
+
+  & > *:not(:last-child) {
+    margin-block-end: var(--spacing-default);
   }
 }
 
