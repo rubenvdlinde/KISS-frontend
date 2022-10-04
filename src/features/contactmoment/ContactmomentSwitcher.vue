@@ -46,16 +46,16 @@ import { getKlantInfo } from "./helpers";
 
 const contactmomentStore = useContactmomentStore();
 const moments = computed(() =>
-  contactmomentStore.contactmomenten.map((x) => {
+  contactmomentStore.contactmomenten.map((moment) => {
     return {
-      description: getKlantInfo(x),
-      isCurrent: x === contactmomentStore.huidigContactmoment,
+      description: getKlantInfo(moment),
+      isCurrent: moment === contactmomentStore.huidigContactmoment,
       async enable() {
         if (contactmomentStore.wouldLoseProgress) {
           const { isCanceled } = await dialog.reveal();
           if (isCanceled) return;
         }
-        contactmomentStore.switchContactmoment(x);
+        contactmomentStore.switchContactmoment(moment);
       },
     };
   })
