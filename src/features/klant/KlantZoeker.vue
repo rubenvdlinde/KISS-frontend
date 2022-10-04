@@ -116,14 +116,6 @@ watch(singleKlant, (n, o) => {
   }
 });
 
-watch(
-  () => contactmomentStore.klantVoorHuidigeVraag,
-  () => {
-    klanten.refresh();
-  },
-  { deep: true }
-);
-
 const handleSearch = () => {
   store.value.searchQuery = store.value.currentSearch;
   store.value.page = 1;

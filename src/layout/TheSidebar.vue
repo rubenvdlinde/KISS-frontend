@@ -162,6 +162,7 @@ aside {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
+    color: inherit;
   }
 
   :deep([role="tabpanel"]) {
@@ -176,7 +177,10 @@ aside {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: inherit;
+
+    &[aria-selected="true"] {
+      color: var(--color-headings);
+    }
   }
 }
 
@@ -206,7 +210,7 @@ aside {
   background-color: var(--sidebar-color-2);
   border-start-start-radius: var(--radius-large);
   border-start-end-radius: var(--radius-large);
-  color: var(--color-headings);
+  color: var(--color-white);
   margin-block-start: var(--spacing-default);
   padding-block-start: var(--spacing-default);
 

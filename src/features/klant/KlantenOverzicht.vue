@@ -16,8 +16,8 @@
         </thead>
         <tbody>
           <tr
-            v-for="klant in klanten"
-            :key="klant.klantnummer"
+            v-for="(klant, idx) in klanten"
+            :key="idx"
             @click="emit('KlantSelected', klant)"
           >
             <td>{{ klant.klantnummer }}</td>
