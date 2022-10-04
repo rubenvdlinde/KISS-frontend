@@ -9,8 +9,8 @@
           <span class="value">{{ zaak.zaaktypeOmschrijving }}</span>
         </li>
         <li>
-          <span class="label">Zaaknummer</span>
-          <span class="value">{{ zaak.identificatie }}</span>
+          <span class="label">Aanvrager</span>
+          <span class="value">{{ zaak.aanvrager }}</span>
         </li>
         <li>
           <span class="label">Status</span>
@@ -21,8 +21,8 @@
           <span class="value">{{ zaak.behandelaar }}</span>
         </li>
         <li>
-          <span class="label">Aanvrager</span>
-          <span class="value">{{ zaak.aanvrager }}</span>
+          <span class="label">Zaaknummer</span>
+          <span class="value">{{ zaak.identificatie }}</span>
         </li>
       </ul>
 
