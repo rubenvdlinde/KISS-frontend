@@ -20,8 +20,12 @@
 
         <input
           type="search"
-          placeholder="Zoek naar een ondernemer"
-          v-model="currentSearch"
+          :placeholder="
+            currentSearchCategory === 'postcodeHuisnummer'
+              ? '1234AB 56'
+              : 'Zoek naar een ondernemer'
+          "
+          v-model="currentSearchQuery"
           @search="handleSearch"
         />
       </label>
@@ -30,26 +34,46 @@
         <span>Zoeken</span><utrecht-icon-loupe model-value />
       </button>
     </form>
+
+    <section class="resultaten-container">
+      <div class="resultaten-heading-container">
+        <utrecht-heading class="resultaten-heading" :level="2" model-value
+          >Zoekresultaten</utrecht-heading
+        >
+
+        <div class="resultaten-found">0 resultaten gevonden</div>
+      </div>
+    </section>
   </section>
 </template>
 
 <script setup lang="ts">
-import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
+import {
+  UtrechtIconLoupe,
+  UtrechtHeading,
+} from "@utrecht/web-component-library-vue";
 import { ref } from "vue";
+import { useBedrijfService } from "./service";
+import type { SearchCategory } from "./types";
 
-const searchCategories = [
-  { label: "Bedrijfsnaam", key: "bedrijfsnaam" },
+const bedrijfService = useBedrijfService();
+
+const searchCategories: { label: string; key: SearchCategory }[] = [
+  { label: "Bedrijfsnaam", key: "handelsnaam" },
   { label: "KVK-nummer ", key: "kvkNummer" },
   { label: "Postcode + Huisnummer", key: "postcodeHuisnummer" },
-  { label: "E-mailadres", key: "eMailadres" },
+  { label: "E-mailadres", key: "emailadres" },
   { label: "Telefoonnummer", key: "telefoonnummer" },
 ];
 
-const currentSearchCategory = ref<string>(searchCategories[0].key);
-const currentSearch = ref<string>("");
+const currentSearchCategory = ref<SearchCategory>(searchCategories[0].key);
+const currentSearchQuery = ref<string>("");
 
 const handleSearch = () => {
-  console.log("search");
+  bedrijfService.findBedrijf(
+    currentSearchQuery.value,
+    currentSearchCategory.value
+  );
 };
 </script>
 
@@ -78,5 +102,21 @@ fieldset {
 .search-bar {
   margin-bottom: var(--spacing-large);
   width: min(100%, 20rem);
+}
+
+.resultaten-container {
+  margin-block-start: var(--spacing-large);
+
+  & > *:not(:last-child) {
+    margin-block-end: var(--spacing-large);
+  }
+  .resultaten-heading {
+    padding-block-end: var(--spacing-default);
+    border-bottom: 1px solid var(--color-tertiary);
+  }
+  .resultaten-found {
+    color: var(--color-primary);
+    padding-block-start: var(--spacing-small);
+  }
 }
 </style>
