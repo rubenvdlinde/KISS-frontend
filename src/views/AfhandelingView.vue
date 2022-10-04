@@ -27,31 +27,39 @@
         <utrecht-heading :level="2" model-value>
           Vraag {{ idx + 1 }}
         </utrecht-heading>
-        <section v-if="vraag.klanten.length" class="gerelateerde-klanten">
+        <section v-if="vraag.klanten.length" class="gerelateerde-resources">
           <utrecht-heading :level="3" model-value>{{
             vraag.klanten.length > 1 ? "Klanten" : "Klant"
           }}</utrecht-heading>
           <ul>
             <li v-for="record in vraag.klanten" :key="record.klant.id">
               <label>
-                <span v-if="record.klant.voornaam || record.klant.achternaam">{{
-                  [
-                    record.klant.voornaam,
-                    record.klant.voorvoegselAchternaam,
-                    record.klant.achternaam,
-                  ]
-                    .filter((x) => x)
-                    .join(" ")
-                }}</span>
-                <span v-else>{{
-                  [
-                    record.klant.emails[0].email,
-                    record.klant.telefoonnummers[0].telefoonnummer,
-                  ]
-                    .filter((x) => x)
-                    .join(", ")
-                }}</span>
-                <input type="checkbox" v-model="record.shouldStore" />
+                <span v-if="record.klant.voornaam || record.klant.achternaam">
+                  {{
+                    [
+                      record.klant.voornaam,
+                      record.klant.voorvoegselAchternaam,
+                      record.klant.achternaam,
+                    ]
+                      .filter((x) => x)
+                      .join(" ")
+                  }}
+                </span>
+                <span v-else>
+                  {{
+                    [
+                      record.klant.emails[0].email,
+                      record.klant.telefoonnummers[0].telefoonnummer,
+                    ]
+                      .filter((x) => x)
+                      .join(", ")
+                  }}
+                </span>
+                <input
+                  title="Klant opslaan bij contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -584,16 +592,25 @@ function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
     &:not(:first-of-type) {
       border-top: none;
     }
-  }
-  fieldset {
-    all: unset;
-    display: flex;
-    gap: var(--spacing-small);
-    align-items: baseline;
+
+    > * {
+      all: unset;
+      display: grid;
+      grid-template-columns: 1fr 1rem 1rem;
+      gap: var(--spacing-default);
+      align-items: baseline;
+    }
   }
   legend {
     float: left;
     padding: 0;
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    scale: 1.5;
+    translate: -25% 50%;
+    margin: 0;
   }
 }
 
@@ -617,14 +634,8 @@ menu {
   gap: var(--spacing-large);
 }
 
-input[type="radio"],
-input[type="checkbox"] {
-  scale: 1.5;
-  translate: 0 15%;
+input,
+select {
   accent-color: var(--color-primary);
-
-  &:first-of-type {
-    margin-inline-start: auto;
-  }
 }
 </style>
