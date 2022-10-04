@@ -187,6 +187,16 @@ aside {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-default);
+
+  li {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :deep(utrecht-button) {
+    --utrecht-button-min-inline-size: 17rem;
+  }
 }
 
 .within-moment {
