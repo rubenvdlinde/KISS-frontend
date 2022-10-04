@@ -81,12 +81,14 @@ details {
 
 menu {
   position: absolute;
+  z-index: 1;
   margin-block-start: var(--spacing-small);
   padding-inline: var(--spacing-default);
   padding-block-end: var(--spacing-default);
   background: var(--color-white);
   inline-size: 100%;
   border-radius: var(--radius-default);
+  box-shadow: var(--shadow-default);
 
   li {
     border-block-end: 1px solid black;
