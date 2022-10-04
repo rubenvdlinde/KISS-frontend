@@ -52,7 +52,7 @@
                     .join(", ")
                 }}</span>
                 <input
-                  title="Klant opslaan bij contactmoment"
+                  title="Deze klant opslaan bij het contactmoment"
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
@@ -72,7 +72,11 @@
                   >{{ record.zaak.identificatie }}
                   <div>(Zaaktype: {{ record.zaak.zaaktype }})</div></span
                 >
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze zaak opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -104,7 +108,11 @@
                     >({{ record.medewerker.emailadres }})</span
                   >
                 </span>
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze medewerker opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -125,7 +133,11 @@
                   target="_blank"
                   >{{ record.website.title }}</a
                 >
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze website opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -150,7 +162,7 @@
                   {{ record.kennisartikel.title }}
                 </legend>
                 <input
-                  :title="`Dit kennisartikel opslaan bij contactmoment`"
+                  title="Dit kennisartikel opslaan bij het contactmoment"
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
@@ -186,7 +198,7 @@
                   {{ record.nieuwsbericht.title }}
                 </legend>
                 <input
-                  :title="`Dit nieuwsbericht opslaan bij contactmoment`"
+                  title="Dit nieuwsbericht opslaan bij het contactmoment"
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
@@ -222,7 +234,7 @@
                   {{ record.werkinstructie.title }}
                 </span>
                 <input
-                  :title="`Deze werkinstructie opslaan bij contactmoment`"
+                  title="Deze werkinstructie opslaan bij het contactmoment"
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
