@@ -1,5 +1,18 @@
-<template>Bedrijven</template>
+<template>
+  <section>
+    <utrecht-heading :level="1" model-value>Bedrijven</utrecht-heading>
 
-<script setup lang="ts"></script>
+    <bedrijf-zoeker />
+  </section>
+</template>
 
-<style scoped lang="scss"></style>
+<script setup lang="ts">
+import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import BedrijfZoeker from "../features/bedrijf/BedrijfZoeker.vue";
+</script>
+
+<style scoped lang="scss">
+section > *:not(:last-child) {
+  margin-block-end: var(--spacing-large);
+}
+</style>
