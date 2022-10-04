@@ -6,11 +6,9 @@
       <ul>
         <li class="header-row">
           <span id="datum-header">Datum</span>
-          <span id="medewerker-header" class="col-lg">Medewerker</span>
+          <span id="medewerker-header">Medewerker</span>
           <span id="kanaal-header">Kanaal</span>
-          <span id="gespreksresultaat-header" class="col-lg"
-            >Gespreksresultaat</span
-          >
+          <span id="gespreksresultaat-header">Gespreksresultaat</span>
         </li>
         <li v-for="contactmoment in contactmomenten" :key="contactmoment.id">
           <details @click="toggleDetails">
@@ -18,13 +16,13 @@
               <span aria-labelledby="datum-header" class="first-column">{{
                 formatDateOnly(contactmoment.registratiedatum)
               }}</span>
-              <span aria-labelledby="medewerker-header" class="col-lg">{{
+              <span aria-labelledby="medewerker-header">{{
                 contactmoment["x-commongateway-metadata"].owner
               }}</span>
               <span aria-labelledby="kanaal-header">{{
                 contactmoment.kanaal
               }}</span>
-              <span aria-labelledby="gespreksresultaat-header" class="col-lg">{{
+              <span aria-labelledby="gespreksresultaat-header">{{
                 contactmoment.resultaat
               }}</span>
             </summary>
