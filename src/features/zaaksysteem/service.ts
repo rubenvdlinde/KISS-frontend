@@ -66,12 +66,19 @@ export function useZaaksysteemService() {
 
   const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
-  const findByZaak = (zaaknummer: string) => {
-    const url = `${zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=all`;
-    return fetchLoggedIn(url)
-      .then(throwIfNotOk)
-      .then((x) => x.json())
-      .then((json) => parsePagination(json, parseZaak));
+  const findByZaak = (zaaknummer: Ref<string>) => {
+    const getUrl = () =>
+      !zaaknummer.value
+        ? ""
+        : `${zaaksysteemBaseUri}?identificatie=${zaaknummer.value}&extend[]=all`;
+
+    const fetcher = (url: string) =>
+      fetchLoggedIn(url)
+        .then(throwIfNotOk)
+        .then((x) => x.json())
+        .then((json) => parsePagination(json, parseZaak));
+
+    return ServiceResult.fromFetcher(getUrl, fetcher);
   };
 
   const findByBsn = (bsn: string) => {

@@ -24,8 +24,12 @@
             v-if="berichtTypes.state === 'success'"
           >
             Naar welk type bericht ben je op zoek?
-            <select name="type" id="werkberichtTypeInput">
-              <option value="">Alle</option>
+            <select
+              name="type"
+              id="werkberichtTypeInput"
+              v-model="state.typeIdField"
+            >
+              <option :value="undefined">Alle</option>
               <option
                 v-for="[key, label] in berichtTypes.data.entries"
                 :key="`berichtTypes_${key}`"
@@ -43,6 +47,7 @@
               id="searchInput"
               placeholder="Zoek een werkinstructie of nieuwsbericht"
               @search="handleSearch"
+              v-model="state.searchField"
           /></label>
           <button title="Zoeken">
             <span>Zoeken</span><utrecht-icon-loupe model-value />
@@ -82,12 +87,14 @@
       </li>
     </menu>
     <werk-berichten
-      v-if="currentSearch"
+      v-if="state.currentSearch"
       :level="2"
       page-param-name="werkberichtsearchpage"
-      :search="currentSearch"
+      :search="state.currentSearch"
       :skill-ids="userStore.preferences.skills"
-      :type-id="currentTypeId"
+      :type-id="state.currentTypeId"
+      :current-page="state.searchPage"
+      @navigate="state.searchPage = $event"
       header="Zoekresultaten"
     />
     <template v-else>
@@ -98,6 +105,8 @@
         page-param-name="nieuwspage"
         :typeId="nieuwsId"
         :skill-ids="userStore.preferences.skills"
+        :current-page="state.nieuwsPage"
+        @navigate="state.nieuwsPage = $event"
       />
       <werk-berichten
         :level="2"
@@ -106,6 +115,8 @@
         page-param-name="werkinstructiepage"
         :typeId="werkInstructieId"
         :skill-ids="userStore.preferences.skills"
+        :current-page="state.werkinstructiesPage"
+        @navigate="state.werkinstructiesPage = $event"
       />
     </template>
   </div>
@@ -125,14 +136,27 @@ import {
 import { parseValidInt } from "@/services";
 import MultiSelect from "@/components/MultiSelect.vue";
 import { useUserStore } from "@/stores/user";
+import { ensureState } from "@/stores/create-store";
 
 const { pubBeheerUrl } = window;
 
 const werkinstructie = "werkinstructie";
 const nieuws = "nieuws";
 
-const currentSearch = ref("");
-const currentTypeId = ref<number>();
+const state = ensureState({
+  stateId: "HomeView",
+  stateFactory() {
+    return {
+      searchField: "",
+      typeIdField: undefined as number | undefined,
+      currentSearch: "",
+      currentTypeId: undefined as number | undefined,
+      searchPage: 1,
+      nieuwsPage: 1,
+      werkinstructiesPage: 1,
+    };
+  },
+});
 
 const userStore = useUserStore();
 
@@ -167,15 +191,15 @@ function handleSubmit(e: Event) {
   e.preventDefault();
   const formData = new FormData(currentTarget);
   const obj = Object.fromEntries(formData);
-  currentSearch.value = obj?.search?.toString() || "";
-  currentTypeId.value = parseValidInt(obj?.type?.toString());
+  state.value.currentSearch = obj?.search?.toString() || "";
+  state.value.currentTypeId = parseValidInt(obj?.type?.toString());
 }
 
 function handleSearch(e: Event) {
   const { currentTarget } = e;
   if (!(currentTarget instanceof HTMLInputElement)) return;
   e.preventDefault();
-  currentSearch.value = currentTarget.value;
+  state.value.currentSearch = currentTarget.value;
 }
 </script>
 
