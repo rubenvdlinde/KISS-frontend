@@ -17,7 +17,12 @@ erbij voor het vrij invullen.
   <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
   <SimpleSpinner v-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
-  <non-blocking-form @submit.prevent="submit" class="form" v-else>
+  <non-blocking-form
+    @submit.prevent="submit"
+    class="form"
+    v-else
+    v-bind="$attrs"
+  >
     <fieldset class="utrecht-form-fieldset">
       <medewerker-search
         class="utrecht-textbox utrecht-textbox--html-input"
@@ -161,6 +166,12 @@ erbij voor het vrij invullen.
     </utrecht-button>
   </non-blocking-form>
 </template>
+
+<script lang="ts">
+export default {
+  inheritAttrs: false,
+};
+</script>
 
 <script lang="ts" setup>
 import { ref, watch, computed } from "vue";
