@@ -282,7 +282,6 @@ td {
   .heading {
     display: flex;
     align-items: center;
-    gap: var(--spacing-default);
   }
 
   .buttons-container {
@@ -291,7 +290,6 @@ td {
     gap: var(--spacing-default);
 
     .annuleren {
-      all: unset;
       text-decoration: underline;
     }
   }

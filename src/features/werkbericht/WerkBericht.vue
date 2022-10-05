@@ -202,7 +202,6 @@ article {
         }
 
         .toggle-read {
-          all: unset;
           color: var(--color-headings);
           position: relative;
           top: 4px;

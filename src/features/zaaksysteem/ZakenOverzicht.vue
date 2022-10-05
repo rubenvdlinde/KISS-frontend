@@ -77,7 +77,6 @@ table {
     }
 
     td button {
-      all: unset;
       white-space: nowrap;
       text-decoration: underline;
     }

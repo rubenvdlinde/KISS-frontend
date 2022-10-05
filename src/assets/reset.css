@@ -171,3 +171,14 @@ input,
 select {
   vertical-align: middle;
 }
+
+/* we don't use all:unset, because this removes the outline on :focus:visible */
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}

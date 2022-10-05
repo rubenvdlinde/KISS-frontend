@@ -114,7 +114,6 @@ const submit = async () => {
   display: flex;
 
   button {
-    all: unset;
     margin-inline-start: var(--spacing-default);
 
     &:hover {
