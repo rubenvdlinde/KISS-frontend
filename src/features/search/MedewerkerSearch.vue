@@ -118,6 +118,7 @@ function nextIndex() {
   } else {
     activeIndex.value = 0;
   }
+  handleArrowKey();
 }
 
 function previousIndex() {
@@ -128,6 +129,7 @@ function previousIndex() {
   } else {
     activeIndex.value = listItems.value.length - 1;
   }
+  handleArrowKey();
 }
 
 function selectItem() {
@@ -223,6 +225,26 @@ watch([inputRef, shouldSetValidity, searchText], ([r, s, v]) => {
     s ? (!v ? "Zoek een medewerker" : "Kies een optie uit de lijst") : ""
   );
 });
+
+function isInViewport(el: HTMLElement) {
+  const rect = el.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
+
+function handleArrowKey() {
+  const el = divRef.value;
+  if (!(el instanceof HTMLElement)) return;
+  const matchingLi = el.getElementsByTagName("li").item(activeIndex.value);
+  if (matchingLi && !isInViewport(matchingLi)) {
+    matchingLi.scrollIntoView(false);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
