@@ -282,6 +282,7 @@ td {
   .heading {
     display: flex;
     align-items: center;
+    gap: var(--spacing-default);
   }
 
   .buttons-container {
