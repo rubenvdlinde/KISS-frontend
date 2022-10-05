@@ -13,7 +13,7 @@
         } in entries"
         :key="tabId"
         role="tab"
-        :aria-selected="isActive"
+        :aria-selected="isActive ? 'true' : 'false'"
         :aria-controls="panelId"
         :href="href"
         :id="tabId"
@@ -40,12 +40,8 @@
   </section>
 </template>
 
-<script lang="ts">
-let counter = 0;
-const getCounter = () => (counter += 1);
-</script>
-
 <script lang="ts" setup>
+import { nanoid } from "nanoid";
 import { watch, computed, useSlots } from "vue";
 
 const props = defineProps({
@@ -58,23 +54,23 @@ const props = defineProps({
 const slots = useSlots();
 const emit = defineEmits(["update:modelValue"]);
 
-const currentCounter = getCounter();
 const slotKeys = Object.keys(slots);
 const entries = computed(() =>
   slotKeys
     .filter((name) => name.toLowerCase() !== "tab")
     .map((name) => {
-      const id = currentCounter + "_" + name;
+      const id = nanoid();
       const isActive = props.modelValue === name;
+      const panelId = id + "_panel";
 
       return {
         isActive,
         name,
         label: name,
-        href: isActive ? undefined : "#" + encodeURIComponent(name),
+        href: isActive ? undefined : "#" + panelId,
         tag: isActive ? "span" : "a",
         tabId: id + "_tab",
-        panelId: id + "_panel",
+        panelId,
         enable() {
           emit("update:modelValue", name);
         },
