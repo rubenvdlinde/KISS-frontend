@@ -41,6 +41,7 @@
         @mouseover="activeIndex = i"
         @mousedown="selectItem"
         :class="{ active: i === activeIndex }"
+        role="option"
       >
         <article>
           <header>{{ r.value }}</header>
