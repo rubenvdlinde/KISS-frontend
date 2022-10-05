@@ -16,6 +16,7 @@
         <th>Behandelaar</th>
         <th>Indien datum</th>
         <th>Fatale datum</th>
+        <th></th>
       </thead>
 
       <tbody>
@@ -30,6 +31,13 @@
           <td>{{ zaak.behandelaar }}</td>
           <td>{{ formatDateOnly(zaak.startdatum) }}</td>
           <td>{{ formatDateOnly(zaak.fataleDatum) }}</td>
+          <th>
+            <router-link
+              :to="`/zaken/${zaak.id}`"
+              @click.prevent.stop="handleZaakSelected(zaak)"
+              >{{ "> Ga naar" }}</router-link
+            >
+          </th>
         </tr>
       </tbody>
     </table>
@@ -94,5 +102,9 @@ tbody tr {
     background-color: var(--color-secondary);
     cursor: pointer;
   }
+}
+
+a {
+  color: var(--color-primary);
 }
 </style>

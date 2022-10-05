@@ -85,4 +85,8 @@ table {
     }
   }
 }
+
+a {
+  color: var(--color-primary);
+}
 </style>

@@ -93,4 +93,8 @@ tbody tr {
     cursor: pointer;
   }
 }
+
+a {
+  color: var(--color-primary);
+}
 </style>
