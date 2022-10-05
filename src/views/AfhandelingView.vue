@@ -331,7 +331,6 @@
                 class="utrecht-textbox"
                 :id="'afwijkendOnderwerp' + idx"
                 v-model="vraag.afwijkendOnderwerp"
-                @input="vraag.primaireVraag = undefined"
               />
             </template>
 
