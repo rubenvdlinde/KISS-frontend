@@ -7,7 +7,7 @@
   >
     <fieldset class="bronnen" v-if="sources.success">
       <label v-for="bron in sources.data" :key="bron.name + bron.type">
-        <input type="checkbox" v-model="selectedSources" :value="bron" />
+        <input type="checkbox" v-model="state.selectedSources" :value="bron" />
         {{ bron.name.replace(/(^\w+:|^)\/\//, "").replace("www.", "") }}
       </label>
     </fieldset>
@@ -15,7 +15,7 @@
       <label
         ><input
           type="search"
-          v-model="searchInput"
+          v-model="state.searchInput"
           placeholder="Zoeken"
           @search.prevent="applySearch"
           id="global-search-input"
@@ -24,12 +24,12 @@
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </div>
   </form>
-  <template v-if="currentSearch">
-    <section :class="['search-results', { isExpanded }]">
+  <template v-if="state.currentSearch">
+    <section :class="['search-results', { isExpanded: state.isExpanded }]">
       <template v-if="searchResults.success">
         <p v-if="!hasResults" class="no-results">Geen resultaten gevonden</p>
         <template v-else>
-          <nav v-show="!currentId">
+          <nav v-show="!state.currentId">
             <ul>
               <li
                 v-for="{
@@ -78,9 +78,9 @@
             class="pagination"
             :pagination="searchResults.data"
             @navigate="handlePaginationNavigation"
-            v-show="!currentId"
+            v-show="!state.currentId"
           />
-          <ul v-show="!!currentId">
+          <ul v-show="!!state.currentId">
             <li
               v-for="{
                 id,
@@ -91,9 +91,9 @@
                 jsonObject,
               } in searchResults.data.page"
               :key="'searchResult_' + id"
-              v-show="id === currentId"
+              v-show="id === state.currentId"
             >
-              <a class="back-to-results" href="#" @click="currentId = ''"
+              <a class="back-to-results" href="#" @click="state.currentId = ''"
                 >Alle zoekresultaten</a
               >
               <medewerker-detail
@@ -138,8 +138,13 @@
     </section>
     <button
       type="button"
-      :class="['icon-after', 'chevron-down', 'expand-button', { isExpanded }]"
-      @click="isExpanded = !isExpanded"
+      :class="[
+        'icon-after',
+        'chevron-down',
+        'expand-button',
+        { isExpanded: state.isExpanded },
+      ]"
+      @click="state.isExpanded = !state.isExpanded"
       v-if="searchResults.success && searchResults.data.page.length"
     >
       {{ buttonText }}
@@ -172,6 +177,7 @@ import type {
   Website,
 } from "@/features/search/types";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import { ensureState } from "@/stores/create-store";
 
 const emit = defineEmits<{
   (
@@ -187,32 +193,39 @@ const emit = defineEmits<{
 
 const contactmomentStore = useContactmomentStore();
 
-const searchInput = ref("");
-const currentSearch = ref("");
-const currentId = ref("");
-const isExpanded = ref(true);
-const currentPage = ref(1);
+const state = ensureState({
+  stateId: "GlobalSearch",
+  stateFactory() {
+    return {
+      searchInput: "",
+      currentSearch: "",
+      currentId: "",
+      currentPage: 1,
+      isExpanded: true,
+      selectedSources: [] as Source[],
+    };
+  },
+});
+
 const searchBarRef = ref();
 
 const searchParameters = computed(() => ({
-  search: currentSearch.value,
-  page: currentPage.value,
-  filters: selectedSources.value,
+  search: state.value.currentSearch,
+  page: state.value.currentPage,
+  filters: state.value.selectedSources,
 }));
-
-const selectedSources = ref<Source[]>([]);
 
 const searchResults = useGlobalSearch(searchParameters);
 const sources = useSources();
 
 function applySearch() {
-  currentSearch.value = searchInput.value;
-  currentId.value = "";
-  currentPage.value = 1;
+  state.value.currentSearch = state.value.searchInput;
+  state.value.currentId = "";
+  state.value.currentPage = 1;
 }
 
 function handlePaginationNavigation(page: number) {
-  currentPage.value = page;
+  state.value.currentPage = page;
   const el = searchBarRef.value;
   if (el instanceof Element) {
     el.scrollIntoView();
@@ -220,7 +233,7 @@ function handlePaginationNavigation(page: number) {
 }
 
 const buttonText = computed(() =>
-  isExpanded.value ? "Inklappen" : "Uitklappen"
+  state.value.isExpanded ? "Inklappen" : "Uitklappen"
 );
 
 const hasResults = computed(
@@ -229,7 +242,7 @@ const hasResults = computed(
 
 watch(hasResults, (x) => {
   if (!x) {
-    isExpanded.value = true;
+    state.value.isExpanded = true;
   }
 });
 
@@ -240,7 +253,7 @@ const selectSearchResult = (
   title: string,
   self: string | undefined
 ) => {
-  currentId.value = id;
+  state.value.currentId = id;
 
   if (contactmomentStore.contactmomentLoopt) {
     if (source === "Smoelenboek")

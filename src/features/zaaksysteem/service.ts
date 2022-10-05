@@ -59,92 +59,82 @@ function parseZaak(zaak: any): Zaak {
   };
 }
 
-export function useZaaksysteemService() {
-  if (!window.gatewayBaseUri) {
-    console.error("gatewayBaseUri missing");
-  }
+const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
-  const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
+export const useZakenByBsn = (bsn: Ref<string>) => {
+  const getUrl = () => {
+    if (!bsn.value) return "";
+    return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn.value}&extend[]=zaaktype&extend[]=status&extend[]=rollen`;
+  };
 
-  const findByZaak = (zaaknummer: string) => {
-    const url = `${zaaksysteemBaseUri}?identificatie=${zaaknummer}&extend[]=all`;
-    return fetchLoggedIn(url)
+  const fetcher = (url: string): Promise<Paginated<Zaak>> =>
+    fetchLoggedIn(url)
       .then(throwIfNotOk)
       .then((x) => x.json())
       .then((json) => parsePagination(json, parseZaak));
-  };
 
-  const findByBsn = (bsn: string) => {
-    const getFindByBsnURL = () => {
-      if (!bsn) return "";
+  return ServiceResult.fromFetcher(getUrl, fetcher);
+};
 
-      return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn}&extend[]=zaaktype&extend[]=status&extend[]=rollen`;
-    };
+export const useZakenByZaaknummer = (zaaknummer: Ref<string>) => {
+  const getUrl = () =>
+    !zaaknummer.value
+      ? ""
+      : `${zaaksysteemBaseUri}?identificatie=${zaaknummer.value}&extend[]=all`;
 
-    const getZaakByBsn = (url: string): Promise<Paginated<Zaak>> =>
-      fetchLoggedIn(url)
-        .then(throwIfNotOk)
-        .then((x) => x.json())
-        .then((json) => parsePagination(json, parseZaak));
+  const fetcher = (url: string) =>
+    fetchLoggedIn(url)
+      .then(throwIfNotOk)
+      .then((x) => x.json())
+      .then((json) => parsePagination(json, parseZaak));
 
-    const withoutFetcher = () => getZaakByBsn(getFindByBsnURL());
+  return ServiceResult.fromFetcher(getUrl, fetcher);
+};
 
-    const withFetcher = () =>
-      ServiceResult.fromFetcher(getFindByBsnURL, getZaakByBsn);
+export const useZaakById = (id: Ref<string>): ServiceData<ZaakDetails> => {
+  const getUrl = () =>
+    !id.value
+      ? ""
+      : `${zaaksysteemBaseUri}/${id.value}?extend[]=all&extend[]=x-commongateway-metadata.self`;
 
-    return { withoutFetcher, withFetcher };
-  };
+  function fetcher(url: string): Promise<ZaakDetails> {
+    return fetchLoggedIn(url)
+      .then(throwIfNotOk)
+      .then((x) => x.json())
+      .then((zaak) => {
+        const fataleDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
+          .plus({
+            days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
+          })
+          .toJSDate();
+        const streefDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
+          .plus({
+            days: parseInt(zaak.embedded.zaaktype.servicenorm, 10),
+          })
+          .toJSDate();
 
-  const getZaak = (id: Ref<string>): ServiceData<ZaakDetails> => {
-    function get(url: string): Promise<ZaakDetails> {
-      return fetchLoggedIn(url)
-        .then(throwIfNotOk)
-        .then((x) => x.json())
-        .then((zaak) => {
-          const fataleDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
-            .plus({
-              days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
-            })
-            .toJSDate();
-          const streefDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
-            .plus({
-              days: parseInt(zaak.embedded.zaaktype.servicenorm, 10),
-            })
-            .toJSDate();
+        return {
+          ...zaak,
+          zaaktype: zaak.embedded.zaaktype.id,
+          zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
+          zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
+          status: zaak.embedded.status.statustoelichting,
+          behandelaar: getNamePerRoltype(zaak, "behandelaar"),
+          aanvrager: getNamePerRoltype(zaak, "initiator"),
+          startdatum: zaak.startdatum,
+          fataleDatum: fataleDatum,
+          streefDatum: streefDatum,
+          indienDatum: zaak.publicatiedatum ?? "Onbekend",
+          registratieDatum: new Date(zaak.registratiedatum),
+          self: zaak["x-commongateway-metadata"].self,
+          documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
+          omschrijving: zaak.omschrijving,
+        } as ZaakDetails;
+      });
+  }
 
-          return {
-            ...zaak,
-            zaaktype: zaak.embedded.zaaktype.id,
-            zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
-            zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
-            status: zaak.embedded.status.statustoelichting,
-            behandelaar: getNamePerRoltype(zaak, "behandelaar"),
-            aanvrager: getNamePerRoltype(zaak, "initiator"),
-            startdatum: zaak.startdatum,
-            fataleDatum: fataleDatum,
-            streefDatum: streefDatum,
-            indienDatum: zaak.publicatiedatum ?? "Onbekend",
-            registratieDatum: new Date(zaak.registratiedatum),
-            self: zaak["x-commongateway-metadata"].self,
-            documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
-            omschrijving: zaak.omschrijving,
-          } as ZaakDetails;
-        });
-    }
-
-    return ServiceResult.fromFetcher(
-      () =>
-        `${zaaksysteemBaseUri}/${id.value}?extend[]=all&extend[]=x-commongateway-metadata.self`,
-      get
-    );
-  };
-
-  return {
-    findByZaak,
-    findByBsn,
-    getZaak,
-  };
-}
+  return ServiceResult.fromFetcher(getUrl, fetcher);
+};
 
 export async function updateToelichting(
   zaak: ZaakDetails,
