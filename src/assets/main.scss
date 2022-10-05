@@ -229,4 +229,9 @@ details {
     &[open] > summary::after {
         transform: rotate(180deg);
     }
+
+    summary:focus-visible {
+        outline: auto currentColor;
+        outline-offset: var(--spacing-small);
+    }
 }
