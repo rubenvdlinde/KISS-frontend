@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue";
-import { useZaaksysteemService } from "./service";
+import { watch, computed } from "vue";
+import { useZakenByZaaknummer } from "./service";
 import type { Zaak } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
@@ -83,9 +83,7 @@ const zaakSelected = (zaak: Zaak) => {
   emit("zaakSelected", zaak);
 };
 
-const service = useZaaksysteemService();
-
-const zaken = service.findByZaak(computed(() => store.value.currentSearch));
+const zaken = useZakenByZaaknummer(computed(() => store.value.currentSearch));
 
 const zoekOpZaak = () => {
   store.value.currentSearch = store.value.searchField;
