@@ -13,17 +13,15 @@
 </template>
 
 <script setup lang="ts">
-import { useZaaksysteemService } from "@/features/zaaksysteem/service";
-import ApplicationMessage from "../components/ApplicationMessage.vue";
-import ZaakDetails from "../features/zaaksysteem/ZaakDetails.vue";
+import { useZaakById } from "@/features/zaaksysteem/service";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
+import ZaakDetails from "@/features/zaaksysteem/ZaakDetails.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { computed } from "vue";
 
 const props = defineProps<{ zaakId: string }>();
 
-const zaaksysteemService = useZaaksysteemService();
-
-const zaak = zaaksysteemService.getZaak(computed(() => props.zaakId));
+const zaak = useZaakById(computed(() => props.zaakId));
 </script>
 
 <style scoped lang="scss"></style>

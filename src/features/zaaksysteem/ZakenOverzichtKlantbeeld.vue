@@ -41,11 +41,12 @@
 <script setup lang="ts">
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { useZaaksysteemService } from "./service";
+import { useZakenByBsn } from "./service";
 import { formatDateOnly } from "@/helpers/date";
 import type { Zaak } from "./types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
+import { computed } from "vue";
 
 const contactmomentStore = useContactmomentStore();
 const router = useRouter();
@@ -57,9 +58,7 @@ const props = defineProps({
   },
 });
 
-const zaakService = useZaaksysteemService();
-
-const zaken = zaakService.findByBsn(props.klantBsn).withFetcher();
+const zaken = useZakenByBsn(computed(() => props.klantBsn));
 
 const handleZaakSelected = (zaak: Zaak) => {
   if (!contactmomentStore.huidigContactmoment) return;
