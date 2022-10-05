@@ -257,7 +257,6 @@
               :id="'gespreksresultaat' + idx"
               v-model="vraag.resultaat"
               class="utrecht-select utrecht-select--html-select"
-              v-focus
               required
               v-if="gespreksresultaten.success"
               :disabled="vraag.contactverzoek.isSubmitted"
@@ -270,13 +269,15 @@
               </option>
             </select>
 
-            <fieldset class="utrecht-form-field-radio-group">
-              <legend
-                class="utrecht-form-field-radio-group__label utrecht-form-label"
-              >
-                Hoofdvraag
-              </legend>
-              <label
+            <label :for="'hoofdvraag' + idx" class="utrecht-form-label">
+              Hoofdvraag
+            </label>
+            <select
+              v-model="vraag.primaireVraag"
+              :id="'hoofdvraag' + idx"
+              class="utrecht-select utrecht-select--html-select"
+            >
+              <option
                 v-for="(item, itemIdx) in vraag.kennisartikelen
                   .map(({ kennisartikel }) => kennisartikel)
                   .concat(vraag.websites.map(({ website }) => website))
@@ -291,48 +292,23 @@
                     )
                   )"
                 :key="itemIdx + '|' + idx"
+                :value="item"
               >
-                <input
-                  type="radio"
-                  :name="'hoofdvraag' + idx"
-                  :value="item"
-                  v-model="vraag.primaireVraag"
-                />
-                <a
-                  v-if="item.url?.startsWith('http')"
-                  :href="item.url"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  >{{ item.title }}</a
-                >
-                <span v-else>{{ item.title }}</span>
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  :name="'hoofdvraag' + idx"
-                  :value="undefined"
-                  v-model="vraag.primaireVraag"
-                />
-                <span>Anders</span>
-              </label>
-            </fieldset>
+                {{ item.title }}
+              </option>
+              <option :value="undefined">Anders</option>
+            </select>
 
-            <template v-if="!vraag.primaireVraag">
-              <label
-                class="utrecht-form-label"
-                :for="'afwijkendOnderwerp' + idx"
-              >
-                Vraag van de klant
-              </label>
-              <input
-                required
-                type="text"
-                class="utrecht-textbox"
-                :id="'afwijkendOnderwerp' + idx"
-                v-model="vraag.afwijkendOnderwerp"
-              />
-            </template>
+            <label class="utrecht-form-label" :for="'afwijkendOnderwerp' + idx">
+              Vraag van de klant
+            </label>
+            <input
+              :required="!vraag.primaireVraag"
+              type="text"
+              class="utrecht-textbox"
+              :id="'afwijkendOnderwerp' + idx"
+              v-model="vraag.afwijkendOnderwerp"
+            />
 
             <label class="utrecht-form-label" :for="'notitie' + idx"
               >Notitie</label
@@ -476,10 +452,7 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     einddatum: getFormattedUtcDate(),
     primaireVraag: vraag.primaireVraag?.url,
     primaireVraagWeergave: vraag.primaireVraag?.title,
-    afwijkendOnderwerp:
-      !vraag.primaireVraag && vraag.afwijkendOnderwerp
-        ? vraag.afwijkendOnderwerp
-        : undefined,
+    afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
   };
 
   addKennisartikelenToContactmoment(contactmoment, vraag);
@@ -661,20 +634,6 @@ fieldset {
   display: grid;
   grid-template-columns: 15rem auto;
   gap: var(--spacing-default);
-}
-
-.utrecht-form-field-radio-group {
-  grid-column: span 2;
-  gap: var(--spacing-small);
-
-  > legend {
-    float: left;
-  }
-  > label {
-    grid-column-start: 2;
-    display: flex;
-    gap: var(--spacing-small);
-  }
 }
 
 article {
