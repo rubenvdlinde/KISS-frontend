@@ -157,24 +157,16 @@
               v-for="record in vraag.kennisartikelen"
               :key="record.kennisartikel.url"
             >
-              <fieldset>
-                <legend>
+              <label>
+                <span>
                   {{ record.kennisartikel.title }}
-                </legend>
+                </span>
                 <input
                   title="Dit kennisartikel opslaan bij het contactmoment"
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
-                <input
-                  :title="`Dit kennisartikel beantwoordt de hoofdvraag`"
-                  type="radio"
-                  :name="'hoofdvraag' + idx"
-                  :value="record.kennisartikel"
-                  v-model="vraag.primaireVraag"
-                  @change="setAfwijkendOnderwerp(record.kennisartikel, vraag)"
-                />
-              </fieldset>
+              </label>
             </li>
           </ul>
         </section>
@@ -193,24 +185,16 @@
               v-for="record in vraag.nieuwsberichten"
               :key="record.nieuwsbericht.url"
             >
-              <fieldset>
-                <legend>
+              <label>
+                <span>
                   {{ record.nieuwsbericht.title }}
-                </legend>
+                </span>
                 <input
                   title="Dit nieuwsbericht opslaan bij het contactmoment"
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
-                <input
-                  :title="`Dit nieuwsbericht beantwoordt de hoofdvraag`"
-                  type="radio"
-                  :name="'hoofdvraag' + idx"
-                  :value="record.nieuwsbericht"
-                  v-model="vraag.primaireVraag"
-                  @change="setAfwijkendOnderwerp(record.nieuwsbericht, vraag)"
-                />
-              </fieldset>
+              </label>
             </li>
           </ul>
         </section>
@@ -229,7 +213,7 @@
               v-for="record in vraag.werkinstructies"
               :key="record.werkinstructie.url"
             >
-              <fieldset>
+              <label>
                 <span>
                   {{ record.werkinstructie.title }}
                 </span>
@@ -238,19 +222,11 @@
                   type="checkbox"
                   v-model="record.shouldStore"
                 />
-                <input
-                  :title="`Deze werkinstructie beantwoordt de hoofdvraag`"
-                  type="radio"
-                  :name="'hoofdvraag' + idx"
-                  :value="record.werkinstructie"
-                  v-model="vraag.primaireVraag"
-                  @change="setAfwijkendOnderwerp(record.werkinstructie, vraag)"
-                />
-              </fieldset>
+              </label>
             </li>
           </ul>
         </section>
-        <section>
+        <section class="details">
           <utrecht-heading :level="3" model-value> Details </utrecht-heading>
           <fieldset class="utrecht-form-fieldset">
             <label :for="'kanaal' + idx" class="utrecht-form-label"
@@ -294,16 +270,70 @@
               </option>
             </select>
 
-            <label class="utrecht-form-label" :for="'afwijkendOnderwerp' + idx">
-              Vraag van de klant
-            </label>
-            <input
-              type="text"
-              class="utrecht-textbox"
-              :id="'afwijkendOnderwerp' + idx"
-              v-model="vraag.afwijkendOnderwerp"
-              @input="vraag.primaireVraag = undefined"
-            />
+            <fieldset class="utrecht-form-field-radio-group">
+              <legend
+                class="utrecht-form-field-radio-group__label utrecht-form-label"
+              >
+                Hoofdvraag
+              </legend>
+              <label
+                v-for="(item, itemIdx) in vraag.kennisartikelen
+                  .map(({ kennisartikel }) => kennisartikel)
+                  .concat(vraag.websites.map(({ website }) => website))
+                  .concat(
+                    vraag.nieuwsberichten.map(
+                      ({ nieuwsbericht }) => nieuwsbericht
+                    )
+                  )
+                  .concat(
+                    vraag.werkinstructies.map(
+                      ({ werkinstructie }) => werkinstructie
+                    )
+                  )"
+                :key="itemIdx + '|' + idx"
+              >
+                <input
+                  type="radio"
+                  :name="'hoofdvraag' + idx"
+                  :value="item"
+                  v-model="vraag.primaireVraag"
+                />
+                <a
+                  v-if="item.url?.startsWith('http')"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  >{{ item.title }}</a
+                >
+                <span v-else>{{ item.title }}</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  :name="'hoofdvraag' + idx"
+                  :value="undefined"
+                  v-model="vraag.primaireVraag"
+                />
+                <span>Anders</span>
+              </label>
+            </fieldset>
+
+            <template v-if="!vraag.primaireVraag">
+              <label
+                class="utrecht-form-label"
+                :for="'afwijkendOnderwerp' + idx"
+              >
+                Vraag van de klant
+              </label>
+              <input
+                required
+                type="text"
+                class="utrecht-textbox"
+                :id="'afwijkendOnderwerp' + idx"
+                v-model="vraag.afwijkendOnderwerp"
+                @input="vraag.primaireVraag = undefined"
+              />
+            </template>
 
             <label class="utrecht-form-label" :for="'notitie' + idx"
               >Notitie</label
@@ -447,7 +477,10 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     einddatum: getFormattedUtcDate(),
     primaireVraag: vraag.primaireVraag?.url,
     primaireVraagWeergave: vraag.primaireVraag?.title,
-    afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
+    afwijkendOnderwerp:
+      !vraag.primaireVraag && vraag.afwijkendOnderwerp
+        ? vraag.afwijkendOnderwerp
+        : undefined,
   };
 
   addKennisartikelenToContactmoment(contactmoment, vraag);
@@ -575,10 +608,6 @@ cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
   router.push({ name: "home" });
 });
-
-function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
-  vraag.afwijkendOnderwerp = element.title;
-}
 </script>
 
 <style scoped lang="scss">
@@ -609,16 +638,11 @@ function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
       border-top: none;
     }
 
-    > * {
-      --input-size: 1.25rem;
+    > label {
       all: unset;
-      display: grid;
-      grid-template-columns: 1fr var(--input-size) var(--input-size);
+      display: flex;
       gap: var(--spacing-default);
-
-      a {
-        justify-self: baseline;
-      }
+      justify-content: space-between;
     }
   }
   legend {
@@ -629,13 +653,29 @@ function setAfwijkendOnderwerp(element: { title: string }, vraag: Vraag) {
   input[type="radio"],
   input[type="checkbox"] {
     margin: 0;
+    scale: 1.5;
+    translate: -25% 0;
   }
 }
 
 fieldset {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 15rem auto;
   gap: var(--spacing-default);
+}
+
+.utrecht-form-field-radio-group {
+  grid-column: span 2;
+  gap: var(--spacing-small);
+
+  > legend {
+    float: left;
+  }
+  > label {
+    grid-column-start: 2;
+    display: flex;
+    gap: var(--spacing-small);
+  }
 }
 
 article {
