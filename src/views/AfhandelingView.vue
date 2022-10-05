@@ -611,22 +611,15 @@ cancelDialog.onConfirm(() => {
     }
 
     > label {
-      all: unset;
       display: flex;
       gap: var(--spacing-default);
       justify-content: space-between;
     }
   }
-  legend {
-    float: left;
-    padding: 0;
-  }
 
-  input[type="radio"],
   input[type="checkbox"] {
-    margin: 0;
+    margin: 0.25rem;
     scale: 1.5;
-    translate: -25% 0;
   }
 }
 
