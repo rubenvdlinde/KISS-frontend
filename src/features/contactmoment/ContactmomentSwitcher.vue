@@ -110,6 +110,7 @@ menu {
     border-inline-start: 4px solid transparent;
     padding-inline-start: var(--spacing-small);
     inline-size: 100%;
+    text-align: inherit;
 
     &:hover {
       cursor: pointer;
