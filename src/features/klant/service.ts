@@ -9,19 +9,36 @@ import {
 import type { Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant } from "./types";
 
-const searchFields = {
-  email: "emails.email",
-  telefoonnummer: "telefoonnummers.telefoonnummer",
-  bsn: "subjectIdentificatie.inpBsn",
-  geboortedatum: "subjectIdentificatie.geboortedatum",
-  achternaam: "achternaam",
-  postcodeHuisnummer: [
-    "subjectIdentificatie.verblijfsadres.aoaPostcode",
-    "subjectIdentificatie.verblijfsadres.aoaHuisnummer",
-  ],
-} as const;
+export type SearchFields =
+  | "email"
+  | "telefoonnummer"
+  | "bsn"
+  | "geboortedatum"
+  | "achternaam"
+  | "postcodeHuisnummer";
 
-export type SearchFields = keyof typeof searchFields;
+const searchFields: {
+  [K in SearchFields]: (search: string) => [string, string][];
+} = {
+  email: (search) => [["emails.email", `%${search}%`]],
+  telefoonnummer: (search) => [
+    ["telefoonnummers.telefoonnummer", `%${search}%`],
+  ],
+  bsn: (search) => [["subjectIdentificatie.inpBsn", search]],
+  geboortedatum: (search) => [["subjectIdentificatie.geboortedatum", search]],
+  achternaam: (search) => [["achternaam", `%${search}%`]],
+  postcodeHuisnummer(search) {
+    const matches = search.match(/([A-Z|0-9])+/g);
+    if (matches?.length != 2) {
+      throw new Error();
+    }
+    const [postcode, huisnummer] = matches;
+    return [
+      ["subjectIdentificatie.verblijfsadres.aoaPostcode", postcode],
+      ["subjectIdentificatie.verblijfsadres.aoaHuisnummer", huisnummer],
+    ];
+  },
+};
 
 type KlantSearchParameters = {
   search: Ref<string>;
@@ -44,18 +61,11 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
-    if (params.field.value === "postcodeHuisnummer") {
-      const regex = /([A-Z|0-9])+/g;
-      const matches = search.match(regex);
-      if (matches?.length != 2) return "";
-      matches.forEach((val, idx) => {
-        url.searchParams.set(searchFields.postcodeHuisnummer[idx], `%${val}%`);
-      });
-    } else {
-      const wildcardSearch = `%${search}%`;
-      const field = searchFields[params.field.value];
-      url.searchParams.set(field, wildcardSearch);
-    }
+    const searchParams = searchFields[params.field.value](search);
+
+    searchParams.forEach((param) => {
+      url.searchParams.set(...param);
+    });
 
     return url.toString();
   }
