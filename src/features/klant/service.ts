@@ -30,7 +30,7 @@ const searchFields: {
   postcodeHuisnummer(search) {
     const matches = search.match(/([A-Z|0-9])+/g);
     if (matches?.length != 2) {
-      throw new Error();
+      return [];
     }
     const [postcode, huisnummer] = matches;
     return [
@@ -54,15 +54,17 @@ export function useKlanten(params: KlantSearchParameters) {
 
     if (!search) return "";
 
+    const getSearchParams = searchFields[params.field.value];
+    const searchParams = getSearchParams(search);
+
+    if (!searchParams.length) return "";
+
     const page = params.page?.value || 1;
 
     const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
-
-    const getSearchParams = searchFields[params.field.value];
-    const searchParams = getSearchParams(search);
 
     searchParams.forEach((param) => {
       url.searchParams.set(...param);
