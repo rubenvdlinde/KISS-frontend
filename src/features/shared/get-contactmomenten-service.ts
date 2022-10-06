@@ -60,7 +60,7 @@ const mapContactmoment = async (
 
   const zakenPromises = objectcontactmomenten
     .filter(({ objectType }: any) => objectType === "zaak")
-    .map((x) => fetchObject(x).then(mapZaak));
+    .map((x) => fetchObject(x, ["status", "zaaktype"]).then(mapZaak));
 
   const contactverzoekPromises = objectcontactmomenten
     .filter(({ objectType }: any) => objectType === "contactmomentobject")
