@@ -61,7 +61,8 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
-    const searchParams = searchFields[params.field.value](search);
+    const getSearchParams = searchFields[params.field.value];
+    const searchParams = getSearchParams(search);
 
     searchParams.forEach((param) => {
       url.searchParams.set(...param);
