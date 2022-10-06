@@ -13,16 +13,16 @@
         <li v-for="contactmoment in contactmomenten" :key="contactmoment.id">
           <details @click="toggleDetails">
             <summary>
-              <span aria-labelledby="datum-header" class="first-column">{{
+              <span aria-describedby="datum-header" class="first-column">{{
                 formatDateOnly(contactmoment.registratiedatum)
               }}</span>
-              <span aria-labelledby="medewerker-header">{{
+              <span aria-describedby="medewerker-header">{{
                 contactmoment["x-commongateway-metadata"].owner
               }}</span>
-              <span aria-labelledby="kanaal-header">{{
+              <span aria-describedby="kanaal-header">{{
                 contactmoment.kanaal
               }}</span>
-              <span aria-labelledby="gespreksresultaat-header">{{
+              <span aria-describedby="gespreksresultaat-header">{{
                 contactmoment.resultaat
               }}</span>
             </summary>
