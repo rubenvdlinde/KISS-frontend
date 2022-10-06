@@ -186,7 +186,7 @@ h2 {
 
 //forms
 form {
-    span.required::after {
+    .required::after {
         content: "*";
         color: var(--color-error);
         padding-left: 1ch;
