@@ -25,7 +25,10 @@
     </div>
   </form>
   <template v-if="state.currentSearch">
-    <section :class="['search-results', { isExpanded: state.isExpanded }]">
+    <section
+      :class="['search-results', { isExpanded: state.isExpanded }]"
+      :inert="!state.isExpanded"
+    >
       <template v-if="searchResults.success">
         <p v-if="!hasResults" class="no-results">Geen resultaten gevonden</p>
         <template v-else>
@@ -355,15 +358,20 @@ fieldset {
 
 .expand-button {
   grid-area: expand;
-  width: 100%;
   padding-inline-end: var(--container-padding);
-  height: fit-content;
+  padding-inline-start: var(--spacing-large);
+  inline-size: 100%;
+  block-size: 1rem;
   padding-block: 0.25rem;
-  border: none;
   white-space: nowrap;
   display: flex;
   justify-content: center;
-  margin-block-start: calc(var(--spacing-default) * -0.5);
+  background: var(--color-secondary);
+
+  &:not(.isExpanded) {
+    margin-block-start: -1rem;
+    background: none;
+  }
 
   &.isExpanded::after {
     transform: rotate(180deg);
