@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div>
     <nav role="tablist">
       <component
         v-for="{
@@ -25,19 +25,17 @@
         </slot>
       </component>
     </nav>
-    <ul>
-      <li
-        v-for="{ name, isActive, panelId, tabId } in entries"
-        :key="panelId"
-        :id="panelId"
-        role="tabpanel"
-        :aria-labelledby="tabId"
-        v-show="isActive"
-      >
-        <slot :name="name"></slot>
-      </li>
-    </ul>
-  </section>
+    <section
+      v-for="{ name, isActive, panelId, tabId } in entries"
+      :key="panelId"
+      :id="panelId"
+      role="tabpanel"
+      :aria-labelledby="tabId"
+      v-show="isActive"
+    >
+      <slot :name="name"></slot>
+    </section>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -113,13 +111,6 @@ watch(
 }
 
 [role="tabpanel"] {
-  flex: 1;
-}
-
-section,
-ul {
-  display: flex;
-  flex-direction: column;
   flex: 1;
 }
 </style>

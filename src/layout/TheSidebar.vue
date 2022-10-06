@@ -158,6 +158,9 @@ aside {
 
 .notitie-tabs {
   margin-block-start: var(--spacing-small);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
   --tab-bg: var(--color-white);
 
