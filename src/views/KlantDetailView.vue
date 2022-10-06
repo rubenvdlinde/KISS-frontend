@@ -31,9 +31,7 @@
 
     <!-- Zaken -->
     <template v-if="klantBsn">
-      <utrecht-heading class="contactmomenten-header" model-value :level="2">
-        Zaken
-      </utrecht-heading>
+      <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
 
       <simple-spinner v-if="zaken.loading" />
 
@@ -49,9 +47,7 @@
     </template>
 
     <!-- Contactmomenten -->
-    <utrecht-heading class="contactmomenten-header" model-value :level="2">
-      Contactmomenten
-    </utrecht-heading>
+    <utrecht-heading model-value :level="2"> Contactmomenten </utrecht-heading>
 
     <simple-spinner v-if="contactmomenten.loading" />
 
@@ -75,7 +71,10 @@
 import { computed, ref, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { ContactmomentenOverzicht } from "@/features/contactmoment";
+import {
+  ContactmomentenOverzicht,
+  useContactverzoekenByKlantId,
+} from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { Klant } from "@/features/klant/types";
@@ -83,10 +82,7 @@ import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
-import {
-  useContactmomentenByKlantId,
-  useContactverzoekenByKlantId,
-} from "@/features/shared/get-contactmomenten-service";
+import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
 
