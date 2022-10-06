@@ -17,7 +17,7 @@
             <router-link :to="{ name: 'home' }">Start</router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
+            <router-link :to="{ name: 'klanten' }">Personen</router-link>
           </li>
           <li>
             <router-link :to="{ name: 'zaken' }">Zaken</router-link>

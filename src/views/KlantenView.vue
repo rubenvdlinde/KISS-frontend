@@ -1,6 +1,6 @@
 <template>
   <article class="klant-panel">
-    <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
+    <utrecht-heading :level="1" model-value>Personen</utrecht-heading>
     <klant-zoeker @klant-selected="klantGevonden" />
   </article>
 </template>
