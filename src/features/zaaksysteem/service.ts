@@ -91,7 +91,7 @@ export const useZakenByZaaknummer = (zaaknummer: Ref<string>) => {
   return ServiceResult.fromFetcher(getUrl, fetcher);
 };
 
-export const useZaakById = (id: Ref<string>): ServiceData<ZaakDetails> => {
+export const useZaakById = (id: Ref<string>) => {
   const getUrl = () =>
     !id.value
       ? ""
