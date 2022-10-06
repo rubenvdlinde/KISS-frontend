@@ -70,7 +70,6 @@ async function waitForConfirmation() {
   padding: var(--spacing-small);
 
   button {
-    all: unset;
     font-weight: bold;
     display: flex;
     align-items: center;

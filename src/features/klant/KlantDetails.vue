@@ -291,7 +291,6 @@ td {
     gap: var(--spacing-default);
 
     .annuleren {
-      all: unset;
       text-decoration: underline;
     }
   }
