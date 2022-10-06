@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div>
     <nav role="tablist">
       <component
         v-for="{
@@ -13,7 +13,7 @@
         } in entries"
         :key="tabId"
         role="tab"
-        :aria-selected="isActive"
+        :aria-selected="isActive ? 'true' : 'false'"
         :aria-controls="panelId"
         :href="href"
         :id="tabId"
@@ -25,27 +25,21 @@
         </slot>
       </component>
     </nav>
-    <ul>
-      <li
-        v-for="{ name, isActive, panelId, tabId } in entries"
-        :key="panelId"
-        :id="panelId"
-        role="tabpanel"
-        :aria-labelledby="tabId"
-        v-show="isActive"
-      >
-        <slot :name="name"></slot>
-      </li>
-    </ul>
-  </section>
+    <section
+      v-for="{ name, isActive, panelId, tabId } in entries"
+      :key="panelId"
+      :id="panelId"
+      role="tabpanel"
+      :aria-labelledby="tabId"
+      v-show="isActive"
+    >
+      <slot :name="name"></slot>
+    </section>
+  </div>
 </template>
 
-<script lang="ts">
-let counter = 0;
-const getCounter = () => (counter += 1);
-</script>
-
 <script lang="ts" setup>
+import { nanoid } from "nanoid";
 import { watch, computed, useSlots } from "vue";
 
 const props = defineProps({
@@ -55,26 +49,27 @@ const props = defineProps({
   },
 });
 
+const instanceId = nanoid();
 const slots = useSlots();
 const emit = defineEmits(["update:modelValue"]);
 
-const currentCounter = getCounter();
 const slotKeys = Object.keys(slots);
 const entries = computed(() =>
   slotKeys
     .filter((name) => name.toLowerCase() !== "tab")
-    .map((name) => {
-      const id = currentCounter + "_" + name;
+    .map((name, idx) => {
+      const id = instanceId + idx;
       const isActive = props.modelValue === name;
+      const panelId = id + "_panel";
 
       return {
         isActive,
         name,
         label: name,
-        href: isActive ? undefined : "#" + encodeURIComponent(name),
+        href: isActive ? undefined : "#" + panelId,
         tag: isActive ? "span" : "a",
         tabId: id + "_tab",
-        panelId: id + "_panel",
+        panelId,
         enable() {
           emit("update:modelValue", name);
         },
@@ -116,13 +111,6 @@ watch(
 }
 
 [role="tabpanel"] {
-  flex: 1;
-}
-
-section,
-ul {
-  display: flex;
-  flex-direction: column;
   flex: 1;
 }
 </style>

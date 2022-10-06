@@ -24,9 +24,12 @@
         <td>{{ zaak.behandelaar }}</td>
         <td>{{ formatDateOnly(zaak.indienDatum) }}</td>
         <td>
-          <button @click.prevent="handleZaakSelected(zaak)">
+          <router-link
+            :to="`/zaken/${zaak.id}`"
+            @click.prevent.stop="handleZaakSelected(zaak)"
+          >
             {{ "> Ga naar" }}
-          </button>
+          </router-link>
         </td>
       </tr>
     </tbody>
@@ -86,10 +89,13 @@ table {
     }
 
     td button {
-      all: unset;
       white-space: nowrap;
       text-decoration: underline;
     }
   }
+}
+
+a {
+  color: var(--color-primary);
 }
 </style>

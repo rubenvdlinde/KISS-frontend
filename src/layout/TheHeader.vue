@@ -13,15 +13,17 @@
           >Uitloggen</a
         >
         <nav v-if="contactmomentStore.contactmomentLoopt && route.meta.showNav">
-          <li>
-            <router-link :to="{ name: 'home' }">Start</router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'klanten' }">Klanten</router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'zaken' }">Zaken</router-link>
-          </li>
+          <ul>
+            <li>
+              <router-link :to="{ name: 'home' }">Start</router-link>
+            </li>
+            <li>
+              <router-link :to="{ name: 'klanten' }">Klanten</router-link>
+            </li>
+            <li>
+              <router-link :to="{ name: 'zaken' }">Zaken</router-link>
+            </li>
+          </ul>
         </nav>
       </header>
     </template>
@@ -59,7 +61,7 @@ header {
   }
 }
 
-nav {
+nav ul {
   width: 100%;
   background-color: var(--color-primary);
   display: flex;
