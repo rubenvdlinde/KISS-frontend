@@ -5,7 +5,7 @@
         <input
           type="search"
           placeholder="Zoek op zaaknummer"
-          v-model="store.zaakSearchParams.zaaknummer"
+          v-model="store.searchField"
           title="ZAAK-1"
         />
       </label>
@@ -14,43 +14,45 @@
       </button>
     </form>
 
-    <section class="resultaten-container" v-if="store.zaken.length > 0">
-      <div class="resultaten-heading-container">
-        <utrecht-heading class="resultaten-heading" :level="2" model-value
-          >Zoekresultaten</utrecht-heading
-        >
-
-        <div class="resultaten-found">
-          {{
-            `${store.zaken.length} ${
-              store.zaken.length > 1 ? "resultaten" : "resultaat"
-            } gevonden`
-          }}
+    <template v-if="store.currentSearch">
+      <application-message
+        v-if="zaken.error"
+        messageType="error"
+        message="Er is een probleem opgetreden."
+      ></application-message>
+      <simple-spinner v-else-if="zaken.loading"></simple-spinner>
+      <section
+        class="resultaten-container"
+        v-if="zaken.success && zaken.data.page.length > 0"
+      >
+        <div class="resultaten-heading-container">
+          <utrecht-heading class="resultaten-heading" :level="2" model-value
+            >Zoekresultaten</utrecht-heading
+          >
+          <div class="resultaten-found">
+            {{
+              `${zaken.data.page.length} ${
+                zaken.data.page.length > 1 ? "resultaten" : "resultaat"
+              } gevonden`
+            }}
+          </div>
         </div>
-      </div>
-
-      <zaken-overzicht
-        :zaken="store.zaken"
-        :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
-        @zaak-selected="zaakSelected"
-      />
-    </section>
-
-    <application-message
-      v-if="error"
-      messageType="error"
-      message="Er is een probleem opgetreden."
-    ></application-message>
-
-    <simple-spinner v-else-if="busy"></simple-spinner>
-
-    <paragraph v-else-if="isDirty">Er zijn geen zaken gevonden.</paragraph>
+        <zaken-overzicht
+          :zaken="zaken.data.page"
+          :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
+          @zaak-selected="zaakSelected"
+        />
+      </section>
+      <paragraph v-if="zaken.success && !zaken.data.page.length"
+        >Er zijn geen zaken gevonden.</paragraph
+      >
+    </template>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue";
-import { useZaaksysteemService } from "./service";
+import { watch, computed } from "vue";
+import { useZakenByZaaknummer } from "./service";
 import type { Zaak } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
@@ -69,8 +71,8 @@ const store = ensureState({
   stateId: "zaak-zoeker",
   stateFactory() {
     return {
-      zaakSearchParams: { zaaknummer: "", bsn: "" },
-      zaken: [] as Zaak[],
+      searchField: "",
+      currentSearch: "",
     };
   },
 });
@@ -81,36 +83,14 @@ const zaakSelected = (zaak: Zaak) => {
   emit("zaakSelected", zaak);
 };
 
-const service = useZaaksysteemService();
-
-const error = ref(false);
-const busy = ref(false);
-const isDirty = ref(false);
+const zaken = useZakenByZaaknummer(computed(() => store.value.currentSearch));
 
 const zoekOpZaak = () => {
-  busy.value = true;
-  error.value = false;
-  store.value.zaken = [];
-
-  service
-    .findByZaak(store.value.zaakSearchParams.zaaknummer)
-    .then((data) => {
-      store.value.zaken = data.page;
-      isDirty.value = true;
-    })
-    .catch((e) => {
-      error.value = true;
-      console.error(e);
-    })
-    .finally(() => {
-      busy.value = false;
-    });
+  store.value.currentSearch = store.value.searchField;
 };
 
 const singleZaak = computed(() =>
-  store.value.zaken && store.value.zaken.length === 1
-    ? store.value.zaken[0]
-    : undefined
+  zaken.success && zaken.data.page.length === 1 ? zaken.data.page[0] : undefined
 );
 
 watch(singleZaak, (n, o) => {

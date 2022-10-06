@@ -22,7 +22,7 @@
     </tabs-component>
 
     <div class="toelichting">
-      <zaak-toelichting :zaak="zaak" />
+      <zaak-toelichting :zaak="zaak" @zaak-updated="bubbleZaakUpdated" />
     </div>
   </section>
 </template>
@@ -40,6 +40,11 @@ import ZaakContactmomenten from "./components/ZaakContactmomenten.vue";
 defineProps<{
   zaak: ZaakDetails;
 }>();
+
+const emit = defineEmits(["zaakUpdated"]);
+const bubbleZaakUpdated = () => {
+  emit("zaakUpdated");
+};
 
 const Tabs = computed(() => ({
   algemeen: "Algemeen",

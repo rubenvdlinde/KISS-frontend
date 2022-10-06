@@ -73,13 +73,18 @@ const props = defineProps({
     type: String,
     default: "page",
   },
+  currentPage: {
+    type: Number,
+    required: true,
+  },
 });
 
-const currentPage = ref(1);
 const listEl = ref<Element>();
 
+const emit = defineEmits<{ (e: "navigate", page: number): void }>();
+
 const onNavigate = (pageNum: number) => {
-  currentPage.value = pageNum;
+  emit("navigate", pageNum);
   const list = listEl.value;
   if (list) {
     list.scrollIntoView();
@@ -90,13 +95,13 @@ const parameters = computed(() => ({
   search: props.search,
   skillIds: props.skillIds,
   typeId: props.typeId,
-  page: currentPage.value,
+  page: props.currentPage,
 }));
 
 const berichten = useWerkberichten(parameters);
 
 watch([() => props.search, () => props.skillIds, () => props.typeId], () => {
-  currentPage.value = 1;
+  emit("navigate", 1);
 });
 </script>
 
