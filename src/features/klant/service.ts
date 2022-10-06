@@ -15,7 +15,10 @@ const searchFields = {
   bsn: "subjectIdentificatie.inpBsn",
   geboortedatum: "subjectIdentificatie.geboortedatum",
   achternaam: "achternaam",
-  postcodeHuisnummer: ["adressen.postcode", "adressen.huisnummer"],
+  postcodeHuisnummer: [
+    "subjectIdentificatie.verblijfsadres.aoaPostcode",
+    "subjectIdentificatie.verblijfsadres.aoaHuisnummer",
+  ],
 } as const;
 
 export type SearchFields = keyof typeof searchFields;
@@ -42,12 +45,12 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("page", page.toString());
 
     if (params.field.value === "postcodeHuisnummer") {
-      const split = /([A-Z|0-9])+/g;
-      const matches = search.match(split);
+      const regex = /([A-Z|0-9])+/g;
+      const matches = search.match(regex);
       if (matches?.length != 2) return "";
-      const [postcode, huisnummer] = matches;
-      url.searchParams.set("adressen.postcode", `%${postcode}%`);
-      url.searchParams.set("adressen.huisnummer", `%${huisnummer}%`);
+      matches.forEach((val, idx) => {
+        url.searchParams.set(searchFields.postcodeHuisnummer[idx], `%${val}%`);
+      });
     } else {
       const wildcardSearch = `%${search}%`;
       const field = searchFields[params.field.value];
