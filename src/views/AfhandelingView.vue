@@ -278,19 +278,12 @@
               class="utrecht-select utrecht-select--html-select"
             >
               <option
-                v-for="(item, itemIdx) in vraag.kennisartikelen
-                  .map(({ kennisartikel }) => kennisartikel)
-                  .concat(vraag.websites.map(({ website }) => website))
-                  .concat(
-                    vraag.nieuwsberichten.map(
-                      ({ nieuwsbericht }) => nieuwsbericht
-                    )
-                  )
-                  .concat(
-                    vraag.werkinstructies.map(
-                      ({ werkinstructie }) => werkinstructie
-                    )
-                  )"
+                v-for="(item, itemIdx) in [
+                  ...vraag.websites.map((item) => item.website),
+                  ...vraag.kennisartikelen.map((item) => item.kennisartikel),
+                  ...vraag.nieuwsberichten.map((item) => item.nieuwsbericht),
+                  ...vraag.werkinstructies.map((item) => item.werkinstructie),
+                ]"
                 :key="itemIdx + '|' + idx"
                 :value="item"
               >
