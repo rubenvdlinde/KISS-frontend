@@ -292,7 +292,13 @@
               <option :value="undefined">Anders</option>
             </select>
 
-            <label class="utrecht-form-label" :for="'afwijkendOnderwerp' + idx">
+            <label
+              :class="[
+                'utrecht-form-label',
+                { required: !vraag.primaireVraag },
+              ]"
+              :for="'afwijkendOnderwerp' + idx"
+            >
               Vraag van de klant
             </label>
             <input
