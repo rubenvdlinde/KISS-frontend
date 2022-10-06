@@ -33,6 +33,8 @@ export interface Vraag {
   kennisartikelen: { kennisartikel: Kennisartikel; shouldStore: boolean }[];
   nieuwsberichten: { nieuwsbericht: Nieuwsbericht; shouldStore: boolean }[];
   werkinstructies: { werkinstructie: Werkinstructie; shouldStore: boolean }[];
+  primaireVraag: { url: string; title: string } | undefined;
+  afwijkendOnderwerp: string;
 }
 
 function initVraag(): Vraag {
@@ -54,6 +56,8 @@ function initVraag(): Vraag {
     kennisartikelen: [],
     nieuwsberichten: [],
     werkinstructies: [],
+    primaireVraag: undefined,
+    afwijkendOnderwerp: "",
   };
 }
 

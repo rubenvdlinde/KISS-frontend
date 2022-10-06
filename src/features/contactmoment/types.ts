@@ -21,6 +21,9 @@ export interface Contactmoment {
   startdatum: string;
   einddatum: string;
   gespreksId?: string;
+  primaireVraag?: string;
+  primaireVraagWeergave?: string;
+  afwijkendOnderwerp?: string;
 }
 
 export interface Gespreksresultaat {
