@@ -15,7 +15,7 @@ erbij voor het vrij invullen.
 -->
 <template>
   <utrecht-heading model-value :level="2">Contactverzoek maken</utrecht-heading>
-  <SimpleSpinner v-if="loading" />
+  <SimpleSpinner class="spinner" v-if="loading" />
   <p v-else-if="error">Er ging iets mis. Probeer het later nog eens.</p>
   <non-blocking-form
     @submit.prevent="submit"
@@ -442,5 +442,9 @@ utrecht-button {
   padding: var(--spacing-small);
   margin-block-start: 0;
   min-height: 20rem;
+}
+
+.spinner {
+  color: var(--color-primary);
 }
 </style>
