@@ -27,8 +27,7 @@
         <utrecht-heading :level="2" model-value>
           Vraag {{ idx + 1 }}
         </utrecht-heading>
-
-        <section v-if="vraag.klanten.length" class="gerelateerde-klanten">
+        <section v-if="vraag.klanten.length" class="gerelateerde-resources">
           <utrecht-heading :level="3" model-value>{{
             vraag.klanten.length > 1 ? "Klanten" : "Klant"
           }}</utrecht-heading>
@@ -52,14 +51,18 @@
                     .filter((x) => x)
                     .join(", ")
                 }}</span>
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze klant opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
         </section>
 
         <section v-if="vraag.zaken.length" class="gerelateerde-resources">
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.zaken.length > 1 ? "Gerelateerde zaken" : "Gerelateerde zaak"
           }}</utrecht-heading>
           <ul>
@@ -69,14 +72,18 @@
                   >{{ record.zaak.identificatie }}
                   <div>(Zaaktype: {{ record.zaak.zaaktype }})</div></span
                 >
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze zaak opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
         </section>
 
         <section v-if="vraag.medewerkers.length" class="gerelateerde-resources">
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.medewerkers.length > 1
               ? "Gerelateerde medewerkers"
               : "Gerelateerde medewerker"
@@ -101,14 +108,18 @@
                     >({{ record.medewerker.emailadres }})</span
                   >
                 </span>
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze medewerker opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
         </section>
 
         <section v-if="vraag.websites.length" class="gerelateerde-resources">
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.websites.length > 1
               ? "Gerelateerde websites"
               : "Gerelateerde website"
@@ -122,7 +133,11 @@
                   target="_blank"
                   >{{ record.website.title }}</a
                 >
-                <input type="checkbox" v-model="record.shouldStore" />
+                <input
+                  title="Deze website opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -132,7 +147,7 @@
           v-if="vraag.kennisartikelen.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.kennisartikelen.length > 1
               ? "Gerelateerde kennisartikelen"
               : "Gerelateerde kennisartikel"
@@ -143,8 +158,14 @@
               :key="record.kennisartikel.url"
             >
               <label>
-                {{ record.kennisartikel.title }}
-                <input type="checkbox" v-model="record.shouldStore" />
+                <span>
+                  {{ record.kennisartikel.title }}
+                </span>
+                <input
+                  title="Dit kennisartikel opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -154,7 +175,7 @@
           v-if="vraag.nieuwsberichten.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.nieuwsberichten.length > 1
               ? "Gerelateerde nieuwsberichten"
               : "Gerelateerde nieuwsbericht"
@@ -165,8 +186,14 @@
               :key="record.nieuwsbericht.url"
             >
               <label>
-                {{ record.nieuwsbericht.title }}
-                <input type="checkbox" v-model="record.shouldStore" />
+                <span>
+                  {{ record.nieuwsbericht.title }}
+                </span>
+                <input
+                  title="Dit nieuwsbericht opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
@@ -176,7 +203,7 @@
           v-if="vraag.werkinstructies.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="2" model-value>{{
+          <utrecht-heading :level="3" model-value>{{
             vraag.werkinstructies.length > 1
               ? "Gerelateerde werkinstructies"
               : "Gerelateerde werkinstructie"
@@ -187,13 +214,19 @@
               :key="record.werkinstructie.url"
             >
               <label>
-                {{ record.werkinstructie.title }}
-                <input type="checkbox" v-model="record.shouldStore" />
+                <span>
+                  {{ record.werkinstructie.title }}
+                </span>
+                <input
+                  title="Deze werkinstructie opslaan bij het contactmoment"
+                  type="checkbox"
+                  v-model="record.shouldStore"
+                />
               </label>
             </li>
           </ul>
         </section>
-        <section>
+        <section class="details">
           <utrecht-heading :level="3" model-value> Details </utrecht-heading>
           <fieldset class="utrecht-form-fieldset">
             <label :for="'kanaal' + idx" class="utrecht-form-label"
@@ -224,7 +257,6 @@
               :id="'gespreksresultaat' + idx"
               v-model="vraag.resultaat"
               class="utrecht-select utrecht-select--html-select"
-              v-focus
               required
               v-if="gespreksresultaten.success"
               :disabled="vraag.contactverzoek.isSubmitted"
@@ -236,6 +268,46 @@
                 {{ gespreksresultaat.definitie }}
               </option>
             </select>
+
+            <label :for="'hoofdvraag' + idx" class="utrecht-form-label">
+              Vraag
+            </label>
+            <select
+              v-model="vraag.primaireVraag"
+              :id="'hoofdvraag' + idx"
+              class="utrecht-select utrecht-select--html-select"
+            >
+              <option
+                v-for="(item, itemIdx) in [
+                  ...vraag.websites.map((item) => item.website),
+                  ...vraag.kennisartikelen.map((item) => item.kennisartikel),
+                  ...vraag.nieuwsberichten.map((item) => item.nieuwsbericht),
+                  ...vraag.werkinstructies.map((item) => item.werkinstructie),
+                ]"
+                :key="itemIdx + '|' + idx"
+                :value="item"
+              >
+                {{ item.title }}
+              </option>
+              <option :value="undefined">Anders</option>
+            </select>
+
+            <label
+              :class="[
+                'utrecht-form-label',
+                { required: !vraag.primaireVraag },
+              ]"
+              :for="'afwijkendOnderwerp' + idx"
+            >
+              Specificatie
+            </label>
+            <input
+              :required="!vraag.primaireVraag"
+              type="text"
+              class="utrecht-textbox"
+              :id="'afwijkendOnderwerp' + idx"
+              v-model="vraag.afwijkendOnderwerp"
+            />
 
             <label class="utrecht-form-label" :for="'notitie' + idx"
               >Notitie</label
@@ -358,7 +430,7 @@ const koppelContactverzoek = (
   });
 
 const saveVraag = (vraag: Vraag, gespreksId?: string) => {
-  const contactmoment = {
+  const contactmoment: Contactmoment = {
     gespreksId,
     vorigContactmoment: undefined,
     voorkeurskanaal: "",
@@ -377,6 +449,9 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
     registratiedatum: getFormattedUtcDate(),
     startdatum: vraag.startdatum,
     einddatum: getFormattedUtcDate(),
+    primaireVraag: vraag.primaireVraag?.url,
+    primaireVraagWeergave: vraag.primaireVraag?.title,
+    afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
   };
 
   addKennisartikelenToContactmoment(contactmoment, vraag);
@@ -523,29 +598,33 @@ cancelDialog.onConfirm(() => {
 }
 
 .gerelateerde-resources {
-  li > label {
-    display: grid;
-    grid-auto-flow: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-default);
-    width: 20rem;
-    padding-block: var(--spacing-small);
+  ul {
+    margin-top: var(--spacing-small);
+  }
+  li {
+    padding: var(--spacing-small);
+    border: 1px solid var(--color-tertiary);
 
-    &:hover {
-      cursor: pointer;
+    &:not(:first-of-type) {
+      border-top: none;
     }
 
-    input[type="checkbox"] {
-      transform: scale(1.25);
-      accent-color: var(--color-primary);
+    > label {
+      display: flex;
+      gap: var(--spacing-default);
+      justify-content: space-between;
     }
+  }
+
+  input[type="checkbox"] {
+    margin: 0.25rem;
+    scale: 1.5;
   }
 }
 
 fieldset {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 15rem auto;
   gap: var(--spacing-default);
 }
 
@@ -555,22 +634,16 @@ article {
   section {
     padding-block: var(--spacing-default);
   }
-
-  & > *:not(:last-child) {
-    margin-block-end: var(--spacing-default);
-  }
-}
-
-section,
-article {
-  &:not(:last-of-type) {
-    border-block-end: 1px solid var(--color-primary);
-  }
 }
 
 menu {
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-large);
+}
+
+input,
+select {
+  accent-color: var(--color-primary);
 }
 </style>
