@@ -7,7 +7,7 @@
         <th>Zaaktype</th>
         <th>Status</th>
         <th>Behandelaar</th>
-        <th>Indien datum</th>
+        <th>Indiendatum</th>
         <th></th>
       </tr>
     </thead>
