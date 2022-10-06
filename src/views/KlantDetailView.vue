@@ -21,7 +21,23 @@
     ></application-message>
 
     <!-- Zaken -->
-    <zaken-overzicht-klantbeeld v-if="klantBsn" :klant-bsn="klantBsn" />
+    <template v-if="klantBsn">
+      <utrecht-heading class="contactmomenten-header" model-value :level="2">
+        Zaken
+      </utrecht-heading>
+
+      <simple-spinner v-if="zaken.loading" />
+
+      <span v-if="zaken.error">
+        Er ging iets mis. Probeer het later nog eens.
+      </span>
+
+      <zaken-overzicht
+        v-if="zaken.success"
+        :zaken="zaken.data.page"
+        :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
+      />
+    </template>
 
     <!-- Contactmomenten -->
     <utrecht-heading class="contactmomenten-header" model-value :level="2">
@@ -53,12 +69,13 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import { ContactmomentenOverzicht } from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import ZakenOverzichtKlantbeeld from "@/features/zaaksysteem/ZakenOverzichtKlantbeeld.vue";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
+import { useZakenByBsn } from "@/features/zaaksysteem";
+import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
 
 const props = defineProps<{ klantId: string }>();
 
@@ -67,8 +84,6 @@ const loading = ref(false);
 const contactmomentStore = useContactmomentStore();
 
 const klant = ref<Klant>();
-
-const klantBsn = computed(() => klant.value?.bsn);
 
 watch(
   () => props.klantId,
@@ -116,6 +131,9 @@ const contactmomenten = useContactmomentenByKlantId(
 const onContactmomentenNavigate = (page: number) => {
   contactmomentenPage.value = page;
 };
+
+const klantBsn = computed(() => klant.value?.bsn);
+const zaken = useZakenByBsn(computed(() => klantBsn.value ?? ""));
 </script>
 
 <style scoped lang="scss">
