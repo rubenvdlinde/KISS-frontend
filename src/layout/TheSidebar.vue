@@ -108,7 +108,12 @@ const contactverzoekIsSentToMedewerker = computed(
 );
 
 const handleContactverzoekStart = () => {
-  if (!contactmomentStore.huidigContactmoment) return;
+  if (
+    !contactmomentStore.huidigContactmoment ||
+    contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek
+      .isSubmitted
+  )
+    return;
   contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
     true;
 };
