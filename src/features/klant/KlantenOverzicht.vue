@@ -12,6 +12,7 @@
             <th>Naam</th>
             <th>Telefoonnummer(s)</th>
             <th>E-mailadres(sen)</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -38,6 +39,13 @@
               }}
             </td>
             <td>{{ klant.emails.map(({ email }) => email).join(", ") }}</td>
+            <td>
+              <router-link
+                :to="`/klanten/${klant.id}`"
+                @click.prevent.stop="emit('KlantSelected', klant)"
+                >{{ "> Ga naar" }}</router-link
+              >
+            </td>
           </tr>
         </tbody>
       </table>
@@ -84,5 +92,9 @@ tbody tr {
     background-color: var(--color-secondary);
     cursor: pointer;
   }
+}
+
+a {
+  color: var(--color-primary);
 }
 </style>
