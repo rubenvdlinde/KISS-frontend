@@ -99,6 +99,7 @@ export function useContactverzoekenByKlantId(
     url.searchParams.set("limit", "10");
     url.searchParams.set("page", page.value.toString());
     url.searchParams.set("klant.id", id.value);
+    url.searchParams.set("contactmoment.todo", "IS NOT NULL");
     return url.toString();
   }
 
@@ -124,8 +125,6 @@ function fetchContactverzoeken(url: string): Promise<Paginated<any>> {
 const mapContactverzoekDetail = (
   rawContactverzoek: any
 ): ContactverzoekDetail | undefined => {
-  if (!rawContactverzoek.embedded.contactmoment.todo) return;
-
   const contactmoment = rawContactverzoek.embedded.contactmoment;
   const todo = rawContactverzoek.embedded.contactmoment.embedded.todo;
 
