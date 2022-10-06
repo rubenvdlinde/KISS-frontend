@@ -96,6 +96,7 @@ export function useContactmomentenByZaakUrl(
 ) {
   function getUrl() {
     const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
+    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
     url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
     url.searchParams.append("extend[]", "all");
     url.searchParams.append("objectType", "zaak");
