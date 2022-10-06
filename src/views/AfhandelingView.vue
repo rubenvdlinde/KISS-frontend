@@ -270,7 +270,7 @@
             </select>
 
             <label :for="'hoofdvraag' + idx" class="utrecht-form-label">
-              Hoofdvraag
+              Vraag
             </label>
             <select
               v-model="vraag.primaireVraag"
@@ -299,7 +299,7 @@
               ]"
               :for="'afwijkendOnderwerp' + idx"
             >
-              Vraag van de klant
+              Specificatie
             </label>
             <input
               :required="!vraag.primaireVraag"
