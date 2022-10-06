@@ -4,7 +4,7 @@
     :handle-cancel="handleCancelKlantAanmaken"
   />
 
-  <nav v-else>
+  <section v-else class="actions">
     <form @submit.prevent="handleSearch">
       <fieldset class="radio-group">
         <legend>Waar wil je op zoeken?</legend>
@@ -37,7 +37,7 @@
     >
       <span>Klant aanmaken</span>
     </button>
-  </nav>
+  </section>
 
   <section
     v-if="store.searchQuery && !showKlantAanmaken"
@@ -92,8 +92,12 @@ const store = ensureState({
 const fieldOptions: {
   [K in SearchFields]: string;
 } = {
+  achternaam: "Achternaam",
   email: "E-mailadres",
   telefoonnummer: "Telefoonnummer",
+  postcodeHuisnummer: "Postcode + huisnummer",
+  geboortedatum: "Geboortedatum",
+  bsn: "BSN",
 };
 
 const klanten = useKlanten({
@@ -138,17 +142,11 @@ const handleSearch = () => {
 </script>
 
 <style lang="scss" scoped>
-nav {
+.klant-aanmaken {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
 
-  .klant-aanmaken {
-    display: flex;
-
-    span {
-      margin-inline-start: var(--spacing-extrasmall);
-    }
+  span {
+    margin-inline-start: var(--spacing-extrasmall);
   }
 }
 
@@ -177,14 +175,25 @@ input[type="radio"] {
 .radio-group {
   display: grid;
   grid-template-columns: repeat(3, auto);
-  max-width: 40rem;
   justify-content: flex-start;
-  gap: var(--spacing-large);
+  column-gap: var(--spacing-default);
+  row-gap: var(--spacing-extrasmall);
+
+  > legend {
+    font-size: 0;
+  }
 
   label {
     display: flex;
     gap: var(--spacing-small);
     align-items: center;
   }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 </style>

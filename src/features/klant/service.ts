@@ -12,6 +12,10 @@ import type { UpdateContactgegevensParams, Klant } from "./types";
 const searchFields = {
   email: "emails.email",
   telefoonnummer: "telefoonnummers.telefoonnummer",
+  bsn: "subjectIdentificatie.inpBsn",
+  geboortedatum: "subjectIdentificatie.geboortedatum",
+  achternaam: "achternaam",
+  postcodeHuisnummer: ["adressen.postcode", "adressen.huisnummer"],
 } as const;
 
 export type SearchFields = keyof typeof searchFields;
@@ -30,15 +34,25 @@ export function useKlanten(params: KlantSearchParameters) {
 
     if (!search) return "";
 
-    const wildcardSearch = `%${search}%`;
     const page = params.page?.value || 1;
-    const field = searchFields[params.field.value];
 
     const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
-    url.searchParams.set(field, wildcardSearch);
+
+    if (params.field.value === "postcodeHuisnummer") {
+      const split = /([A-Z|0-9])+/g;
+      const matches = search.match(split);
+      if (matches?.length != 2) return "";
+      const [postcode, huisnummer] = matches;
+      url.searchParams.set("adressen.postcode", `%${postcode}%`);
+      url.searchParams.set("adressen.huisnummer", `%${huisnummer}%`);
+    } else {
+      const wildcardSearch = `%${search}%`;
+      const field = searchFields[params.field.value];
+      url.searchParams.set(field, wildcardSearch);
+    }
 
     return url.toString();
   }
