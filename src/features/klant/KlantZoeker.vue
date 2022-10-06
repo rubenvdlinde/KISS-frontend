@@ -5,20 +5,29 @@
   />
 
   <nav v-else>
-    <form class="search-bar" @submit.prevent="handleSearch">
-      <label>
-        <span>Klanten zoeken</span>
-        <input
-          type="search"
-          placeholder="Zoek op e-mailadres of telefoonnummer"
-          v-model="store.currentSearch"
-          @search="handleSearch"
-          title="0612345789 test@conduction.nl"
-        />
-      </label>
-      <button title="Zoeken">
-        <span>Zoeken</span><utrecht-icon-loupe model-value />
-      </button>
+    <form @submit.prevent="handleSearch">
+      <fieldset class="radio-group">
+        <legend>Waar wil je op zoeken?</legend>
+        <label v-for="(label, value) in fieldOptions" :key="value">
+          <input type="radio" :value="value" v-model="store.searchField" />
+          {{ label }}
+        </label>
+      </fieldset>
+      <fieldset class="search-bar">
+        <label>
+          <span>Zoek naar een persoon</span>
+          <input
+            type="search"
+            placeholder="Zoek naar een persoon"
+            v-model="store.currentSearch"
+            @search="handleSearch"
+            title="0612345789 test@conduction.nl"
+          />
+        </label>
+        <button title="Zoeken">
+          <span>Zoeken</span><utrecht-icon-loupe model-value />
+        </button>
+      </fieldset>
     </form>
 
     <button
@@ -57,7 +66,7 @@
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref } from "vue";
-import { useKlanten } from "./service";
+import { useKlanten, type SearchFields } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -67,9 +76,6 @@ import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
 import KlantAanmaken from "./KlantAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
-import { useContactmomentStore } from "@/stores/contactmoment";
-
-const contactmomentStore = useContactmomentStore();
 
 const store = ensureState({
   stateId: "klant-zoeker",
@@ -77,14 +83,23 @@ const store = ensureState({
     return {
       currentSearch: "",
       searchQuery: "",
+      searchField: "email" as SearchFields,
       page: 1,
     };
   },
 });
 
+const fieldOptions: {
+  [K in SearchFields]: string;
+} = {
+  email: "E-mailadres",
+  telefoonnummer: "Telefoonnummer",
+};
+
 const klanten = useKlanten({
   search: computed(() => store.value.searchQuery),
   page: computed(() => store.value.page),
+  field: computed(() => store.value.searchField),
 });
 
 const navigate = (val: number) => {
@@ -137,7 +152,7 @@ nav {
   }
 }
 
-input {
+input[type="search"] {
   width: var(--section-width);
 }
 .search-bar {
@@ -152,5 +167,24 @@ input {
 .search-section {
   display: grid;
   gap: var(--spacing-small);
+}
+
+input[type="radio"] {
+  accent-color: var(--color-primary);
+  margin: 0;
+}
+
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  max-width: 40rem;
+  justify-content: flex-start;
+  gap: var(--spacing-large);
+
+  label {
+    display: flex;
+    gap: var(--spacing-small);
+    align-items: center;
+  }
 }
 </style>

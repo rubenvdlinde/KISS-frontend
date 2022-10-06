@@ -9,10 +9,16 @@ import {
 import type { Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant } from "./types";
 
-const isEmail = (val: string) => val.match(/[A-Z][a-z]/i);
+const searchFields = {
+  email: "emails.email",
+  telefoonnummer: "telefoonnummers.telefoonnummer",
+} as const;
+
+export type SearchFields = keyof typeof searchFields;
 
 type KlantSearchParameters = {
   search: Ref<string>;
+  field: Ref<SearchFields>;
   page: Ref<number | undefined>;
 };
 
@@ -26,17 +32,14 @@ export function useKlanten(params: KlantSearchParameters) {
 
     const wildcardSearch = `%${search}%`;
     const page = params.page?.value || 1;
+    const field = searchFields[params.field.value];
 
     const url = new URL(rootUrl);
     url.searchParams.set("extend[]", "all");
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
+    url.searchParams.set(field, wildcardSearch);
 
-    if (isEmail(search)) {
-      url.searchParams.set("emails.email", wildcardSearch);
-    } else {
-      url.searchParams.set("telefoonnummers.telefoonnummer", wildcardSearch);
-    }
     return url.toString();
   }
 
