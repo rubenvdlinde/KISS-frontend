@@ -51,6 +51,7 @@ const props = defineProps({
   },
 });
 
+const instanceId = nanoid();
 const slots = useSlots();
 const emit = defineEmits(["update:modelValue"]);
 
@@ -58,8 +59,8 @@ const slotKeys = Object.keys(slots);
 const entries = computed(() =>
   slotKeys
     .filter((name) => name.toLowerCase() !== "tab")
-    .map((name) => {
-      const id = nanoid();
+    .map((name, idx) => {
+      const id = instanceId + idx;
       const isActive = props.modelValue === name;
       const panelId = id + "_panel";
 
