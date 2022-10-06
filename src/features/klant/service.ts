@@ -29,14 +29,14 @@ const searchFields: {
   achternaam: (search) => [["achternaam", `%${search}%`]],
   postcodeHuisnummer(search) {
     const matches = search.match(/([A-Z|0-9])+/g);
-    if (matches?.length != 2) {
-      return [];
-    }
-    const [postcode, huisnummer] = matches;
-    return [
-      ["subjectIdentificatie.verblijfsadres.aoaPostcode", postcode],
+    const [postcode, huisnummer] = matches ?? [];
+
+    const tuples = [
+      ["subjectIdentificatie.verblijfsadres.aoaPostcode", postcode || search],
       ["subjectIdentificatie.verblijfsadres.aoaHuisnummer", huisnummer],
     ];
+
+    return tuples.filter((x) => x[1]) as [string, string][];
   },
 };
 
