@@ -65,7 +65,7 @@ const router = createRouter({
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     {
-      path: "/contactmoment/zaken/:zaakId",
+      path: "/zaken/:zaakId",
       name: "zaakDetail",
       props: true,
       component: ZaakDetailView,

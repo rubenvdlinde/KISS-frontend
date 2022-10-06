@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { defineProps, ref, watch } from "vue";
 import type { ZaakDetails } from "./../types";
 import {
   UtrechtHeading,
@@ -58,11 +58,20 @@ const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
+const emit = defineEmits(["zaakUpdated"]);
+
 const contactmomentStore = useContactmomentStore();
 
 const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
 const toelichtingInputValue = ref<string>(props.zaak.toelichting);
+
+watch(
+  () => props.zaak.toelichting,
+  (toelichting) => {
+    toelichtingInputValue.value = toelichting;
+  }
+);
 
 const toggleEditingToelichting = () => {
   isEditingToelichting.value = !isEditingToelichting.value;
@@ -79,6 +88,8 @@ const submit = async () => {
         res,
         contactmomentStore.huidigContactmoment.huidigeVraag
       );
+
+      emit("zaakUpdated");
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;

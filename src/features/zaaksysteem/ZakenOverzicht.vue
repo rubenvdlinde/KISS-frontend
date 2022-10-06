@@ -7,7 +7,7 @@
         <th>Zaaktype</th>
         <th>Status</th>
         <th>Behandelaar</th>
-        <th>Indien datum</th>
+        <th>Indiendatum</th>
         <th></th>
       </tr>
     </thead>
@@ -37,12 +37,21 @@
 import { formatDateOnly } from "@/helpers/date";
 import type { PropType } from "vue";
 import type { Zaak } from "./types";
-import type { Vraag } from "@/stores/contactmoment";
+import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
+import { useRouter } from "vue-router";
 
-const emit = defineEmits(["zaakSelected"]);
+const router = useRouter();
+const contactmomentStore = useContactmomentStore();
 
 const handleZaakSelected = (zaak: Zaak) => {
-  emit("zaakSelected", zaak);
+  if (!contactmomentStore.huidigContactmoment) return;
+
+  contactmomentStore.upsertZaak(
+    zaak,
+    contactmomentStore.huidigContactmoment.huidigeVraag
+  );
+
+  router.push({ name: "zaakDetail", params: { zaakId: zaak.id } });
 };
 
 defineProps({
