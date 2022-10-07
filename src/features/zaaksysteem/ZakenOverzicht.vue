@@ -23,7 +23,7 @@
         <td>{{ zaak.status }}</td>
         <td>{{ zaak.behandelaar }}</td>
         <td>{{ formatDateOnly(zaak.indienDatum) }}</td>
-        <td>
+        <td class="link">
           <router-link
             :to="`/zaken/${zaak.id}`"
             @click.prevent.stop="handleZaakSelected(zaak)"
@@ -88,9 +88,19 @@ table {
       padding-block: var(--spacing-default);
     }
 
-    td button {
+    td.link {
+      padding: 0;
+    }
+
+    td.link a {
       white-space: nowrap;
       text-decoration: underline;
+      padding-inline: var(--spacing-small);
+      padding-block: var(--spacing-small);
+
+      &:focus-visible {
+        outline: auto currentColor;
+      }
     }
   }
 }
