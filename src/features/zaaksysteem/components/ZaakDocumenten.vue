@@ -61,7 +61,6 @@ section {
 
 table {
   width: 100%;
-  padding-inline: var(--spacing-default);
 
   thead {
     color: var(--color-white);
