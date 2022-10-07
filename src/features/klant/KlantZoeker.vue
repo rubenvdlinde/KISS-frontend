@@ -8,9 +8,14 @@
     <form @submit.prevent="handleSearch">
       <fieldset class="radio-group">
         <legend>Waar wil je op zoeken?</legend>
-        <label v-for="(label, value) in fieldOptions" :key="value">
-          <input type="radio" :value="value" v-model="store.searchField" />
-          {{ label }}
+        <label v-for="(item, value) in searchFields" :key="value">
+          <input
+            type="radio"
+            :value="value"
+            v-model="store.searchField"
+            required
+          />
+          {{ item.label }}
         </label>
       </fieldset>
       <fieldset class="search-bar">
@@ -19,6 +24,7 @@
           <input
             type="search"
             placeholder="Zoek naar een persoon"
+            ref="inputRef"
             v-model="store.currentSearch"
             @search="handleSearch"
             title="0612345789 test@conduction.nl"
@@ -40,7 +46,7 @@
   </section>
 
   <section
-    v-if="store.searchQuery && !showKlantAanmaken"
+    v-if="store.searchQuery?.valid && !showKlantAanmaken"
     class="search-section"
   >
     <simple-spinner v-if="klanten.loading" />
@@ -66,7 +72,7 @@
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref } from "vue";
-import { useKlanten, type SearchFields } from "./service";
+import { searchFields, useKlanten, type ValidatedSearch } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -82,28 +88,33 @@ const store = ensureState({
   stateFactory() {
     return {
       currentSearch: "",
-      searchQuery: "",
-      searchField: "email" as SearchFields,
+      searchField: "",
+      searchQuery: undefined as ValidatedSearch | undefined,
       page: 1,
     };
   },
 });
 
-const fieldOptions: {
-  [K in SearchFields]: string;
-} = {
-  achternaam: "Achternaam",
-  email: "E-mailadres",
-  telefoonnummer: "Telefoonnummer",
-  postcodeHuisnummer: "Postcode + huisnummer",
-  geboortedatum: "Geboortedatum",
-  bsn: "BSN",
-};
+const currentQuery = computed(() => {
+  const { currentSearch, searchField } = store.value;
+  if (!currentSearch || !searchField) return undefined;
+  return searchFields[searchField].validate(currentSearch);
+});
+
+const inputRef = ref();
+
+watch(
+  [currentQuery, inputRef],
+  ([query, input]) => {
+    if (!(input instanceof HTMLInputElement)) return;
+    input.setCustomValidity(!query || query.valid ? "" : query.error);
+  },
+  { immediate: true }
+);
 
 const klanten = useKlanten({
   search: computed(() => store.value.searchQuery),
   page: computed(() => store.value.page),
-  field: computed(() => store.value.searchField),
 });
 
 const navigate = (val: number) => {
@@ -136,7 +147,7 @@ watch(singleKlant, (n, o) => {
 });
 
 const handleSearch = () => {
-  store.value.searchQuery = store.value.currentSearch;
+  store.value.searchQuery = currentQuery.value;
   store.value.page = 1;
 };
 </script>

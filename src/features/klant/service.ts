@@ -9,40 +9,117 @@ import {
 import type { Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant } from "./types";
 
-export type SearchFields =
-  | "email"
-  | "telefoonnummer"
-  | "bsn"
-  | "geboortedatum"
-  | "achternaam"
-  | "postcodeHuisnummer";
+type Valid<T> = {
+  valid: true;
+  result: T;
+};
 
-const searchFields: {
-  [K in SearchFields]: (search: string) => [string, string][];
-} = {
-  email: (search) => [["emails.email", `%${search}%`]],
-  telefoonnummer: (search) => [
-    ["telefoonnummers.telefoonnummer", `%${search}%`],
-  ],
-  bsn: (search) => [["subjectIdentificatie.inpBsn", search]],
-  geboortedatum: (search) => [["subjectIdentificatie.geboortedatum", search]],
-  achternaam: (search) => [["achternaam", `%${search}%`]],
-  postcodeHuisnummer(search) {
-    const matches = search.match(/([A-Z|0-9])+/g);
-    const [postcode, huisnummer] = matches ?? [];
+type Invalid = {
+  valid: false;
+  error: string;
+};
 
-    const tuples = [
-      ["subjectIdentificatie.verblijfsadres.aoaPostcode", postcode || search],
-      ["subjectIdentificatie.verblijfsadres.aoaHuisnummer", huisnummer],
-    ];
+type QueryParam = [string, string][];
 
-    return tuples.filter((x) => x[1]) as [string, string][];
+type Validated<T> = Valid<T> | Invalid;
+
+export type ValidatedSearch = Validated<QueryParam>;
+
+type FieldConfig = {
+  label: string;
+  validate: (search: string) => ValidatedSearch;
+};
+
+export const searchFields: Readonly<Record<string, FieldConfig>> = {
+  email: {
+    label: "E-mailadres",
+    validate: (search) => ({
+      valid: true,
+      result: [["emails.email", `%${search}%`]],
+    }),
+  },
+  telefoonnummer: {
+    label: "Telefoonnummer",
+    validate: (search) => ({
+      valid: true,
+      result: [["telefoonnummers.telefoonnummer", `%${search}%`]],
+    }),
+  },
+  bsn: {
+    label: "BSN",
+    validate(search) {
+      if (/[0-9]{9}/.test(search)) {
+        return {
+          valid: true,
+          result: [["subjectIdentificatie.inpBsn", `%${search}%`]],
+        };
+      }
+      return {
+        valid: false,
+        error: "Voer een valide BSN in met negen cijfers",
+      };
+    },
+  },
+  geboortedatum: {
+    label: "Geboortedatum",
+    validate(search) {
+      const matches =
+        search
+          .match(/([0-9][0-9]?)[-|/]([0-9][0-9]?)[-|/]([0-9]{4})$/)
+          ?.filter(Boolean) ?? [];
+      if (matches.length === 4) {
+        return {
+          valid: true,
+          result: [
+            [
+              "subjectIdentificatie.geboortedatum",
+              `${matches[3]}-${matches[2].padStart(
+                2,
+                "0"
+              )}-${matches[1].padStart(2, "0")}`,
+            ],
+          ],
+        };
+      }
+      return {
+        valid: false,
+        error:
+          "Voer een valide geboortedatum in volgens het patroon 23-12-1900",
+      };
+    },
+  },
+  postcodeHuisnummer: {
+    label: "Postcode + huisnummer",
+    validate(search) {
+      // TODO FIX regex
+      const matches =
+        search
+          .match(/([1-9][0-9]{3}).*([A-Z]{2}).*([0-9]+)/)
+          ?.filter(Boolean) ?? [];
+      if (matches.length === 4) {
+        return {
+          valid: true,
+          result: [
+            [
+              "subjectIdentificatie.verblijfsadres.aoaPostcode",
+              matches[1] + matches[2],
+            ],
+            ["subjectIdentificatie.verblijfsadres.aoaHuisnummer", matches[3]],
+          ],
+        };
+      }
+      return {
+        valid: false,
+        error: "Voer een valide postcode en huisnummer in",
+      };
+    },
   },
 };
 
+export type SearchFieldKey = keyof typeof searchFields;
+
 type KlantSearchParameters = {
-  search: Ref<string>;
-  field: Ref<SearchFields>;
+  search: Ref<ValidatedSearch | undefined>;
   page: Ref<number | undefined>;
 };
 
@@ -52,12 +129,7 @@ export function useKlanten(params: KlantSearchParameters) {
   function getUrl() {
     const search = params.search.value;
 
-    if (!search) return "";
-
-    const getSearchParams = searchFields[params.field.value];
-    const searchParams = getSearchParams(search);
-
-    if (!searchParams.length) return "";
+    if (!search?.valid) return "";
 
     const page = params.page?.value || 1;
 
@@ -66,7 +138,7 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
-    searchParams.forEach((param) => {
+    search.result.forEach((param) => {
       url.searchParams.set(...param);
     });
 
