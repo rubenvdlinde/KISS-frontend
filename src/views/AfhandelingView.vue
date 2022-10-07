@@ -229,7 +229,7 @@
         <section class="details">
           <utrecht-heading :level="3" model-value> Details </utrecht-heading>
           <fieldset class="utrecht-form-fieldset">
-            <label :for="'kanaal' + idx" class="utrecht-form-label"
+            <label :for="'kanaal' + idx" class="utrecht-form-label required"
               >Kanaal</label
             >
             <select
@@ -250,7 +250,10 @@
               <option>WhatsApp</option>
             </select>
 
-            <label :for="'gespreksresultaat' + idx" class="utrecht-form-label">
+            <label
+              :for="'gespreksresultaat' + idx"
+              class="utrecht-form-label required"
+            >
               Afhandeling
             </label>
             <select
@@ -269,13 +272,17 @@
               </option>
             </select>
 
-            <label :for="'hoofdvraag' + idx" class="utrecht-form-label">
+            <label
+              :for="'hoofdvraag' + idx"
+              class="utrecht-form-label required"
+            >
               Vraag
             </label>
             <select
               v-model="vraag.primaireVraag"
               :id="'hoofdvraag' + idx"
               class="utrecht-select utrecht-select--html-select"
+              required
             >
               <option
                 v-for="(item, itemIdx) in [
@@ -289,7 +296,7 @@
               >
                 {{ item.title }}
               </option>
-              <option :value="undefined">Anders</option>
+              <option :value="null">Anders</option>
             </select>
 
             <label
