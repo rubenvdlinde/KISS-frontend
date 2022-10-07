@@ -4,7 +4,7 @@
       <span>Datum</span>
       <span>Status</span>
       <span>Behandelaar</span>
-      <span>Afgerond</span>
+      <span>Afgerond op</span>
       <span class="chevron"></span>
     </div>
 
@@ -80,7 +80,6 @@ const toggleItemContent = (idx: number) => {
 <style lang="scss" scoped>
 .header {
   display: flex;
-  font-weight: bold;
   background-color: var(--color-tertiary);
   color: var(--color-white);
 }
