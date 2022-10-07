@@ -30,7 +30,7 @@ erbij voor het vrij invullen.
         required
       >
         <template #label
-          ><span class="required utrecht-form-label"
+          ><span class="utrecht-form-label"
             >Contactverzoek versturen naar</span
           ></template
         >
