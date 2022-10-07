@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <section v-if="contactverzoeken.length">
     <div class="header">
       <span>Datum</span>
       <span>Status</span>
@@ -57,7 +57,9 @@
         </dl>
       </div>
     </div>
-  </div>
+  </section>
+
+  <div v-else>Geen contactverzoeken gevonden.</div>
 </template>
 
 <script lang="ts" setup>
