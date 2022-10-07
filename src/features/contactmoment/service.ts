@@ -133,7 +133,7 @@ const mapContactverzoekDetail = (
     datum: formatDateOnly(new Date(contactmoment.registratiedatum)),
     status: todo.completed ? "Gesloten" : "Open",
     behandelaar: todo.attendees?.[0] ?? "-",
-    afgerond: todo.completed ? "Ja" : "Nee",
+    afgerond: todo.completed ? formatDateOnly(new Date(todo.completed)) : "-",
     starttijd: formatTimeOnly(new Date(contactmoment.registratiedatum)),
     aanmaker: contactmoment["x-commongateway-metadata"].owner,
     vraag: "-",
