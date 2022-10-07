@@ -15,7 +15,7 @@
         </thead>
         <tbody>
           <tr v-for="document in zaak.documenten" :key="document.id">
-            <td>{{ document.titel }}</td>
+            <td class="wrap">{{ document.titel }}</td>
             <td>{{ formatBytes(document.bestandsomvang) }}</td>
             <td>{{ formatDateOnly(document.creatiedatum) }}</td>
             <td class="vertrouwelijkheid-label">
@@ -68,15 +68,21 @@ table {
 
     th {
       font-weight: normal;
+      text-align: start;
     }
   }
 
-  tr {
-    display: flex;
-    padding: var(--spacing-default);
+  th,
+  td {
+    padding-block: var(--spacing-default);
+    padding-inline-start: var(--spacing-default);
 
-    & > * {
-      flex: 1;
+    &:not(.wrap) {
+      white-space: nowrap;
+    }
+
+    &:last-child {
+      padding-inline-end: var(--spacing-default);
     }
   }
 

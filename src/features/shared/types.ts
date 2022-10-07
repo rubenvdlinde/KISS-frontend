@@ -12,6 +12,9 @@ export interface ContactmomentViewModel {
   "x-commongateway-metadata": {
     owner: string;
   };
+  primaireVraag?: string;
+  primaireVraagWeergave?: string;
+  afwijkendOnderwerp?: string;
 }
 
 export interface ContactmomentZaak {
@@ -21,6 +24,6 @@ export interface ContactmomentZaak {
 }
 
 export interface ContactmomentContactverzoek {
-  medewerkers: string[];
+  medewerker: string;
   completed?: Date;
 }

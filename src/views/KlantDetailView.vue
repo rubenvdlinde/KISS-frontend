@@ -4,11 +4,9 @@
     <nav>
       <ul>
         <li>
-          <router-link
-            :to="{ name: 'klanten' }"
-            class="utrecht-button utrecht-button--secondary-action"
-            >Klanten zoeken</router-link
-          >
+          <router-link :to="{ name: 'klanten' }">{{
+            "< Klanten zoeken"
+          }}</router-link>
         </li>
       </ul>
     </nav>
@@ -20,11 +18,18 @@
       messageType="error"
     ></application-message>
 
+    <utrecht-heading :level="2" model-value
+      >Openstaande contactverzoeken</utrecht-heading
+    >
+    <simple-spinner v-if="contactverzoeken.loading" />
+    <contactverzoeken-overzicht
+      v-if="contactverzoeken.success"
+      :contactverzoeken="contactverzoeken.data.page"
+    />
+
     <!-- Zaken -->
     <template v-if="klantBsn">
-      <utrecht-heading class="contactmomenten-header" model-value :level="2">
-        Zaken
-      </utrecht-heading>
+      <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
 
       <simple-spinner v-if="zaken.loading" />
 
@@ -40,9 +45,7 @@
     </template>
 
     <!-- Contactmomenten -->
-    <utrecht-heading class="contactmomenten-header" model-value :level="2">
-      Contactmomenten
-    </utrecht-heading>
+    <utrecht-heading model-value :level="2"> Contactmomenten </utrecht-heading>
 
     <simple-spinner v-if="contactmomenten.loading" />
 
@@ -66,12 +69,16 @@
 import { computed, ref, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { ContactmomentenOverzicht } from "@/features/contactmoment";
+import {
+  ContactmomentenOverzicht,
+  useContactverzoekenByKlantId,
+} from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
@@ -122,6 +129,12 @@ watch(klant, (k) => {
   contactmomentStore.setKlant(k);
 });
 
+const contactverzoekenPage = ref(1);
+const contactverzoeken = useContactverzoekenByKlantId(
+  computed(() => props.klantId),
+  contactverzoekenPage
+);
+
 const contactmomentenPage = ref(1);
 const contactmomenten = useContactmomentenByKlantId(
   computed(() => props.klantId),
@@ -139,12 +152,13 @@ const zaken = useZakenByBsn(klantBsn);
 <style scoped lang="scss">
 nav {
   list-style: none;
-  a {
-    text-decoration: none;
-  }
 }
 
 section > * {
   margin-block-end: var(--spacing-large);
+}
+
+utrecht-heading {
+  margin-block-end: 0;
 }
 </style>

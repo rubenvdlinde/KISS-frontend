@@ -47,8 +47,9 @@
               >
                 <a
                   v-if="!url"
-                  href="#"
-                  @click="
+                  :id="'nav_' + id"
+                  :href="`#searchResult_${id}`"
+                  @click.prevent="
                     selectSearchResult(id, source, jsonObject, title, self)
                   "
                   class="icon-after chevron-down"
@@ -96,7 +97,11 @@
               :key="'searchResult_' + id"
               v-show="id === state.currentId"
             >
-              <a class="back-to-results" href="#" @click="state.currentId = ''"
+              <a
+                class="back-to-results"
+                :href="'#nav_' + id"
+                :id="'searchResult_' + id"
+                @click.prevent="backToResults"
                 >Alle zoekresultaten</a
               >
               <medewerker-detail
@@ -221,11 +226,22 @@ const searchParameters = computed(() => ({
 const searchResults = useGlobalSearch(searchParameters);
 const sources = useSources();
 
+const automaticSearchTimeout = ref<number | null>(null);
+
 function applySearch() {
   state.value.currentSearch = state.value.searchInput;
   state.value.currentId = "";
   state.value.currentPage = 1;
 }
+
+watch(
+  () => state.value.searchInput,
+  () => {
+    automaticSearchTimeout.value && clearTimeout(automaticSearchTimeout.value);
+
+    automaticSearchTimeout.value = setTimeout(applySearch, 300);
+  }
+);
 
 function handlePaginationNavigation(page: number) {
   state.value.currentPage = page;
@@ -269,6 +285,18 @@ const selectSearchResult = (
     title,
     source,
     jsonObject,
+  });
+
+  setTimeout(() => {
+    document.getElementById("searchResult_" + id)?.focus();
+  });
+};
+
+const backToResults = () => {
+  const id = state.value.currentId;
+  state.value.currentId = "";
+  setTimeout(() => {
+    document.getElementById("nav_" + id)?.focus();
   });
 };
 

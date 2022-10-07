@@ -34,7 +34,7 @@
             >
             <textarea
               aria-labelledby="notitieblok"
-              v-focus
+              id="cm-notitieblok"
               class="utrecht-textarea"
               v-model="
                 contactmomentStore.huidigContactmoment.huidigeVraag.notitie
@@ -79,7 +79,7 @@ import {
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
-  Terugbel = "Contactverzoek",
+  Terugbel = "Contactverzoek maken",
 }
 
 const contactmomentStore = useContactmomentStore();

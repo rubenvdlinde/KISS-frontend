@@ -29,6 +29,14 @@
             <dl>
               <dt>Starttijd</dt>
               <dd>{{ formatTimeOnly(contactmoment.registratiedatum) }}</dd>
+              <template v-if="contactmoment.primaireVraagWeergave">
+                <dt>Vraag</dt>
+                <dd>{{ contactmoment.primaireVraagWeergave }}</dd>
+              </template>
+              <template v-if="contactmoment.afwijkendOnderwerp">
+                <dt>Specificatie</dt>
+                <dd>{{ contactmoment.afwijkendOnderwerp }}</dd>
+              </template>
               <template
                 v-for="zaak in contactmoment.zaken"
                 :key="zaak.zaaknummer"
@@ -40,17 +48,17 @@
                 <dt>Status</dt>
                 <dd>{{ zaak.status }}</dd>
               </template>
-              <dt>Tekst</dt>
+              <dt>Notitie</dt>
               <dd class="tekst">{{ contactmoment.tekst }}</dd>
             </dl>
             <p
               v-for="(
-                { medewerkers, completed }, i
+                { medewerker, completed }, i
               ) in contactmoment.contactverzoeken"
               :key="i"
             >
-              Contactverzoek verstuurd aan {{ medewerkers.join(", ") }}. Dit
-              verzoek {{ completed ? "is afgerond" : "staat open" }}.
+              Contactverzoek verstuurd aan {{ medewerker }}. Dit verzoek
+              {{ completed ? "is afgerond" : "staat open" }}.
             </p>
           </details>
         </li>
@@ -144,13 +152,17 @@ details {
   display: grid;
   gap: var(--spacing-default);
   background: var(--color-white);
+
+  summary {
+    padding-block-start: var(--spacing-default);
+    padding-block-end: var(--spacing-default);
+  }
 }
 
 details:hover {
   cursor: pointer;
 }
 
-details,
 .header-row {
   padding-block-start: var(--spacing-default);
   padding-block-end: var(--spacing-default);

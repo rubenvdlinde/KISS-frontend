@@ -45,8 +45,8 @@
                 }}</span>
                 <span v-else>{{
                   [
-                    record.klant.emails[0].email,
-                    record.klant.telefoonnummers[0].telefoonnummer,
+                    record.klant.emails[0]?.email,
+                    record.klant.telefoonnummers[0]?.telefoonnummer,
                   ]
                     .filter((x) => x)
                     .join(", ")
@@ -178,7 +178,7 @@
           <utrecht-heading :level="3" model-value>{{
             vraag.nieuwsberichten.length > 1
               ? "Gerelateerde nieuwsberichten"
-              : "Gerelateerde nieuwsbericht"
+              : "Gerelateerd nieuwsbericht"
           }}</utrecht-heading>
           <ul>
             <li
@@ -229,7 +229,7 @@
         <section class="details">
           <utrecht-heading :level="3" model-value> Details </utrecht-heading>
           <fieldset class="utrecht-form-fieldset">
-            <label :for="'kanaal' + idx" class="utrecht-form-label"
+            <label :for="'kanaal' + idx" class="utrecht-form-label required"
               >Kanaal</label
             >
             <select
@@ -250,7 +250,10 @@
               <option>WhatsApp</option>
             </select>
 
-            <label :for="'gespreksresultaat' + idx" class="utrecht-form-label">
+            <label
+              :for="'gespreksresultaat' + idx"
+              class="utrecht-form-label required"
+            >
               Afhandeling
             </label>
             <select
@@ -269,13 +272,17 @@
               </option>
             </select>
 
-            <label :for="'hoofdvraag' + idx" class="utrecht-form-label">
+            <label
+              :for="'hoofdvraag' + idx"
+              class="utrecht-form-label required"
+            >
               Vraag
             </label>
             <select
               v-model="vraag.primaireVraag"
               :id="'hoofdvraag' + idx"
               class="utrecht-select utrecht-select--html-select"
+              required
             >
               <option
                 v-for="(item, itemIdx) in [
@@ -289,7 +296,7 @@
               >
                 {{ item.title }}
               </option>
-              <option :value="undefined">Anders</option>
+              <option :value="null">Anders</option>
             </select>
 
             <label
@@ -304,7 +311,7 @@
             <input
               :required="!vraag.primaireVraag"
               type="text"
-              class="utrecht-textbox"
+              class="utrecht-textbox utrecht-textbox--html-input"
               :id="'afwijkendOnderwerp' + idx"
               v-model="vraag.afwijkendOnderwerp"
             />
@@ -474,6 +481,8 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
   });
 };
 
+const navigateAway = () => router.push({ name: "klanten" });
+
 async function submit() {
   try {
     saving.value = true;
@@ -494,7 +503,7 @@ async function submit() {
     //klaar
     contactmomentStore.stop();
     toast({ text: "Het contactmoment is opgeslagen" });
-    router.push("/");
+    navigateAway();
   } catch (error) {
     errorMessage.value =
       "Er is een fout opgetreden bij opslaan van het contactmoment";
@@ -577,7 +586,7 @@ function setUserChannel(e: Event) {
 const cancelDialog = useConfirmDialog();
 cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
-  router.push({ name: "home" });
+  navigateAway();
 });
 </script>
 

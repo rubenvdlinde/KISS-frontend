@@ -40,8 +40,15 @@ const onStartContactMoment = async () => {
   if (contactmomentStore.wouldLoseProgress) {
     await waitForConfirmation();
   }
+  if (contactmomentStore.huidigContactmoment) {
+    contactmomentStore.huidigContactmoment.route =
+      router.currentRoute.value.fullPath;
+  }
   contactmomentStore.start();
   router.push("/klanten");
+  setTimeout(() => {
+    document.getElementById("cm-notitieblok")?.focus();
+  });
 };
 
 async function waitForConfirmation() {
