@@ -36,11 +36,10 @@ const fetchObject = (
 
 function mapContactverzoek(obj: any) {
   const todo = obj?.embedded?.todo;
-  const medewerkers = todo?.attendees ?? obj?.todo?.attendees ?? [];
   const completed = todo?.completed || "";
 
   return {
-    medewerkers,
+    medewerker: todo?.attendees[0] ?? "onbekend",
     completed: completed ? new Date(completed) : undefined,
   };
 }
@@ -48,8 +47,6 @@ function mapContactverzoek(obj: any) {
 const mapContactmoment = async (
   r: any
 ): Promise<ContactmomentViewModel | undefined> => {
-  if (r.embedded.contactmoment.todo) return undefined;
-
   const contactmoment = r.embedded.contactmoment as ContactmomentViewModel;
 
   contactmoment.startdatum = new Date(contactmoment.startdatum);
@@ -120,7 +117,12 @@ export function useContactmomentenByKlantId(
     url.searchParams.set("limit", "10");
     url.searchParams.set("page", page.value.toString());
     url.searchParams.set("klant.id", id.value);
+    url.searchParams.set("contactmoment.todo", "IS NULL");
     return url.toString();
   }
-  return ServiceResult.fromFetcher(getUrl, fetchContactmomenten);
+  return ServiceResult.fromFetcher(getUrl, fetchContactmomenten, {
+    getUniqueId() {
+      return getUrl() + "contactmoment";
+    },
+  });
 }
