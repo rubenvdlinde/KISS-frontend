@@ -4,11 +4,9 @@
     <nav>
       <ul>
         <li>
-          <router-link
-            :to="{ name: 'klanten' }"
-            class="utrecht-button utrecht-button--secondary-action"
-            >Klanten zoeken</router-link
-          >
+          <router-link :to="{ name: 'klanten' }">{{
+            "< Klanten zoeken"
+          }}</router-link>
         </li>
       </ul>
     </nav>
@@ -154,12 +152,13 @@ const zaken = useZakenByBsn(klantBsn);
 <style scoped lang="scss">
 nav {
   list-style: none;
-  a {
-    text-decoration: none;
-  }
 }
 
 section > * {
   margin-block-end: var(--spacing-large);
+}
+
+utrecht-heading {
+  margin-block-end: 0;
 }
 </style>
