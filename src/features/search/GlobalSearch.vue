@@ -221,11 +221,22 @@ const searchParameters = computed(() => ({
 const searchResults = useGlobalSearch(searchParameters);
 const sources = useSources();
 
+const automaticSearchTimeout = ref<number | null>(null);
+
 function applySearch() {
   state.value.currentSearch = state.value.searchInput;
   state.value.currentId = "";
   state.value.currentPage = 1;
 }
+
+watch(
+  () => state.value.searchInput,
+  () => {
+    automaticSearchTimeout.value && clearTimeout(automaticSearchTimeout.value);
+
+    automaticSearchTimeout.value = setTimeout(applySearch, 300);
+  }
+);
 
 function handlePaginationNavigation(page: number) {
   state.value.currentPage = page;
