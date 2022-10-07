@@ -21,6 +21,6 @@ export interface ContactmomentZaak {
 }
 
 export interface ContactmomentContactverzoek {
-  medewerkers: string[];
+  medewerker: string;
   completed?: Date;
 }

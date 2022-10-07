@@ -45,12 +45,12 @@
             </dl>
             <p
               v-for="(
-                { medewerkers, completed }, i
+                { medewerker, completed }, i
               ) in contactmoment.contactverzoeken"
               :key="i"
             >
-              Contactverzoek verstuurd aan {{ medewerkers.join(", ") }}. Dit
-              verzoek {{ completed ? "is afgerond" : "staat open" }}.
+              Contactverzoek verstuurd aan {{ medewerker }}. Dit verzoek
+              {{ completed ? "is afgerond" : "staat open" }}.
             </p>
           </details>
         </li>
