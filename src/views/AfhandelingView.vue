@@ -311,7 +311,7 @@
             <input
               :required="!vraag.primaireVraag"
               type="text"
-              class="utrecht-textbox"
+              class="utrecht-textbox utrecht-textbox--html-input"
               :id="'afwijkendOnderwerp' + idx"
               v-model="vraag.afwijkendOnderwerp"
             />
