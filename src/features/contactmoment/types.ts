@@ -36,3 +36,15 @@ export interface ContactmomentObject {
   object: string;
   objectType: string;
 }
+
+export interface ContactverzoekDetail {
+  id: string;
+  datum: string;
+  status: string;
+  behandelaar: string;
+  afgerond: string;
+  starttijd: string;
+  aanmaker: string;
+  vraag: string;
+  notitie: string;
+}

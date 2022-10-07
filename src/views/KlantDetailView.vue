@@ -20,11 +20,18 @@
       messageType="error"
     ></application-message>
 
+    <utrecht-heading :level="2" model-value
+      >Openstaande contactverzoeken</utrecht-heading
+    >
+    <simple-spinner v-if="contactverzoeken.loading" />
+    <contactverzoeken-overzicht
+      v-if="contactverzoeken.success"
+      :contactverzoeken="contactverzoeken.data.page"
+    />
+
     <!-- Zaken -->
     <template v-if="klantBsn">
-      <utrecht-heading class="contactmomenten-header" model-value :level="2">
-        Zaken
-      </utrecht-heading>
+      <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
 
       <simple-spinner v-if="zaken.loading" />
 
@@ -40,9 +47,7 @@
     </template>
 
     <!-- Contactmomenten -->
-    <utrecht-heading class="contactmomenten-header" model-value :level="2">
-      Contactmomenten
-    </utrecht-heading>
+    <utrecht-heading model-value :level="2"> Contactmomenten </utrecht-heading>
 
     <simple-spinner v-if="contactmomenten.loading" />
 
@@ -66,12 +71,16 @@
 import { computed, ref, watch } from "vue";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { ContactmomentenOverzicht } from "@/features/contactmoment";
+import {
+  ContactmomentenOverzicht,
+  useContactverzoekenByKlantId,
+} from "@/features/contactmoment";
 import { KlantDetails } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { Klant } from "@/features/klant/types";
 import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
@@ -121,6 +130,12 @@ watch(klant, (k) => {
   if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
   contactmomentStore.setKlant(k);
 });
+
+const contactverzoekenPage = ref(1);
+const contactverzoeken = useContactverzoekenByKlantId(
+  computed(() => props.klantId),
+  contactverzoekenPage
+);
 
 const contactmomentenPage = ref(1);
 const contactmomenten = useContactmomentenByKlantId(
