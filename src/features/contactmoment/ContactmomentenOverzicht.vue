@@ -29,6 +29,14 @@
             <dl>
               <dt>Starttijd</dt>
               <dd>{{ formatTimeOnly(contactmoment.registratiedatum) }}</dd>
+              <template v-if="contactmoment.primaireVraagWeergave">
+                <dt>Vraag</dt>
+                <dd>{{ contactmoment.primaireVraagWeergave }}</dd>
+              </template>
+              <template v-if="contactmoment.afwijkendOnderwerp">
+                <dt>Specificatie</dt>
+                <dd>{{ contactmoment.afwijkendOnderwerp }}</dd>
+              </template>
               <template
                 v-for="zaak in contactmoment.zaken"
                 :key="zaak.zaaknummer"
@@ -40,7 +48,7 @@
                 <dt>Status</dt>
                 <dd>{{ zaak.status }}</dd>
               </template>
-              <dt>Tekst</dt>
+              <dt>Notitie</dt>
               <dd class="tekst">{{ contactmoment.tekst }}</dd>
             </dl>
             <p
