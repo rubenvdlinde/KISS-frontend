@@ -289,7 +289,7 @@ const selectSearchResult = (
 
   setTimeout(() => {
     document.getElementById("searchResult_" + id)?.focus();
-  }, 100);
+  });
 };
 
 const backToResults = () => {
@@ -297,7 +297,7 @@ const backToResults = () => {
   state.value.currentId = "";
   setTimeout(() => {
     document.getElementById("nav_" + id)?.focus();
-  }, 100);
+  });
 };
 
 const handleSmoelenboekSelected = (
