@@ -4,7 +4,7 @@
       <span>Datum</span>
       <span>Status</span>
       <span>Behandelaar</span>
-      <span>Afgerond</span>
+      <span>Afgerond op</span>
       <span class="chevron"></span>
     </div>
 
@@ -80,7 +80,6 @@ const toggleItemContent = (idx: number) => {
 <style lang="scss" scoped>
 .header {
   display: flex;
-  font-weight: bold;
   background-color: var(--color-tertiary);
   color: var(--color-white);
 }
@@ -98,10 +97,14 @@ const toggleItemContent = (idx: number) => {
   display: flex;
   border-bottom: 1px solid var(--color-tertiary);
 
+  &:focus-visible {
+    outline: auto currentColor;
+  }
+
   &.is-active {
     background-color: var(--color-secondary);
 
-    .chevron {
+    .chevron::after {
       transform: rotate(180deg);
     }
   }
@@ -137,6 +140,9 @@ const toggleItemContent = (idx: number) => {
   max-width: 50px;
   align-items: center;
   margin-inline-start: auto;
-  transition: transform 250ms;
+
+  &::after {
+    transition: transform 250ms;
+  }
 }
 </style>
