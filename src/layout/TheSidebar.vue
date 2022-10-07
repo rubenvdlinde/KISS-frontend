@@ -79,7 +79,7 @@ import {
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
-  Terugbel = "Contactverzoek",
+  Terugbel = "Contactverzoek maken",
 }
 
 const contactmomentStore = useContactmomentStore();
