@@ -144,13 +144,17 @@ details {
   display: grid;
   gap: var(--spacing-default);
   background: var(--color-white);
+
+  summary {
+    padding-block-start: var(--spacing-default);
+    padding-block-end: var(--spacing-default);
+  }
 }
 
 details:hover {
   cursor: pointer;
 }
 
-details,
 .header-row {
   padding-block-start: var(--spacing-default);
   padding-block-end: var(--spacing-default);

@@ -98,10 +98,14 @@ const toggleItemContent = (idx: number) => {
   display: flex;
   border-bottom: 1px solid var(--color-tertiary);
 
+  &:focus-visible {
+    outline: auto currentColor;
+  }
+
   &.is-active {
     background-color: var(--color-secondary);
 
-    .chevron {
+    .chevron::after {
       transform: rotate(180deg);
     }
   }
@@ -137,6 +141,9 @@ const toggleItemContent = (idx: number) => {
   max-width: 50px;
   align-items: center;
   margin-inline-start: auto;
-  transition: transform 250ms;
+
+  &::after {
+    transition: transform 250ms;
+  }
 }
 </style>
