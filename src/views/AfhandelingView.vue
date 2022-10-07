@@ -178,7 +178,7 @@
           <utrecht-heading :level="3" model-value>{{
             vraag.nieuwsberichten.length > 1
               ? "Gerelateerde nieuwsberichten"
-              : "Gerelateerde nieuwsbericht"
+              : "Gerelateerd nieuwsbericht"
           }}</utrecht-heading>
           <ul>
             <li
