@@ -171,7 +171,7 @@ import {
   UtrechtIconLoupe,
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useGlobalSearch, useSources } from "./service";
 
 import Pagination from "../../nl-design-system/components/Pagination.vue";
@@ -287,7 +287,7 @@ const selectSearchResult = (
     jsonObject,
   });
 
-  setTimeout(() => {
+  nextTick(() => {
     document.getElementById("searchResult_" + id)?.focus();
   });
 };
@@ -295,7 +295,7 @@ const selectSearchResult = (
 const backToResults = () => {
   const id = state.value.currentId;
   state.value.currentId = "";
-  setTimeout(() => {
+  nextTick(() => {
     document.getElementById("nav_" + id)?.focus();
   });
 };
