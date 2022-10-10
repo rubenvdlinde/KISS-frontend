@@ -4,7 +4,7 @@
       <utrecht-heading :level="1" model-value
         >Zaak {{ zaak.identificatie }}
       </utrecht-heading>
-      <router-link :to="{ name: 'zaken' }">{{ "< Ga terug" }}</router-link>
+      <router-link :to="{ name: 'zaken' }">{{ "< Zaken zoeken" }}</router-link>
     </div>
 
     <tabs-component v-model="activeTab">

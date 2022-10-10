@@ -47,8 +47,9 @@
               >
                 <a
                   v-if="!url"
-                  href="#"
-                  @click="
+                  :id="'nav_' + id"
+                  :href="`#searchResult_${id}`"
+                  @click.prevent="
                     selectSearchResult(id, source, jsonObject, title, self)
                   "
                   class="icon-after chevron-down"
@@ -96,7 +97,11 @@
               :key="'searchResult_' + id"
               v-show="id === state.currentId"
             >
-              <a class="back-to-results" href="#" @click="state.currentId = ''"
+              <a
+                class="back-to-results"
+                :href="'#nav_' + id"
+                :id="'searchResult_' + id"
+                @click.prevent="backToResults"
                 >Alle zoekresultaten</a
               >
               <medewerker-detail
@@ -280,6 +285,18 @@ const selectSearchResult = (
     title,
     source,
     jsonObject,
+  });
+
+  setTimeout(() => {
+    document.getElementById("searchResult_" + id)?.focus();
+  });
+};
+
+const backToResults = () => {
+  const id = state.value.currentId;
+  state.value.currentId = "";
+  setTimeout(() => {
+    document.getElementById("nav_" + id)?.focus();
   });
 };
 
