@@ -388,7 +388,7 @@ onMounted(() => {
   if (!contactmomentStore.huidigContactmoment) return;
   for (const vraag of contactmomentStore.huidigContactmoment.vragen) {
     if (vraag.contactverzoek.isSubmitted) {
-      vraag.resultaat = "Terugbelnotitie gemaakt";
+      vraag.resultaat = "Contactverzoek gemaakt";
     }
     if (!vraag.kanaal) {
       vraag.kanaal = userStore.preferences.kanaal;
