@@ -25,7 +25,7 @@ type Validated<T> = Valid<T> | Invalid;
 
 export type ValidatedSearch = Validated<QueryParam>;
 
-type FieldConfig = {
+export type FieldConfig = {
   label: string;
   validate: (search: string) => ValidatedSearch;
 };
@@ -51,7 +51,7 @@ export const searchFields: Readonly<Record<string, FieldConfig>> = {
       if (/[0-9]{9}/.test(search)) {
         return {
           valid: true,
-          result: [["subjectIdentificatie.inpBsn", `%${search}%`]],
+          result: [["subjectIdentificatie.inpBsn", search]],
         };
       }
       return {
@@ -91,7 +91,6 @@ export const searchFields: Readonly<Record<string, FieldConfig>> = {
   postcodeHuisnummer: {
     label: "Postcode + huisnummer",
     validate(search) {
-      // TODO FIX regex
       const matches =
         search
           .match(/([1-9][0-9]{3}).*([A-Z]{2}).*([0-9]+)/)

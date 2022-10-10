@@ -8,10 +8,10 @@
     <form @submit.prevent="handleSearch">
       <fieldset class="radio-group">
         <legend>Waar wil je op zoeken?</legend>
-        <label v-for="(item, value) in searchFields" :key="value">
+        <label v-for="(item, key) in searchFields" :key="key">
           <input
             type="radio"
-            :value="value"
+            :value="item"
             v-model="store.searchField"
             required
           />
@@ -72,7 +72,12 @@
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref } from "vue";
-import { searchFields, useKlanten, type ValidatedSearch } from "./service";
+import {
+  searchFields,
+  useKlanten,
+  type FieldConfig,
+  type ValidatedSearch,
+} from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
@@ -88,7 +93,7 @@ const store = ensureState({
   stateFactory() {
     return {
       currentSearch: "",
-      searchField: "",
+      searchField: undefined as FieldConfig | undefined,
       searchQuery: undefined as ValidatedSearch | undefined,
       page: 1,
     };
@@ -98,7 +103,7 @@ const store = ensureState({
 const currentQuery = computed(() => {
   const { currentSearch, searchField } = store.value;
   if (!currentSearch || !searchField) return undefined;
-  return searchFields[searchField].validate(currentSearch);
+  return searchField.validate(currentSearch);
 });
 
 const inputRef = ref();
