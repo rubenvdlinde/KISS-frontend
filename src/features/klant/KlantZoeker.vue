@@ -27,7 +27,6 @@
             ref="inputRef"
             v-model="store.currentSearch"
             @search="handleSearch"
-            title="0612345789 test@conduction.nl"
           />
         </label>
         <button title="Zoeken">
