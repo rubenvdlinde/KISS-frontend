@@ -28,7 +28,7 @@
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
-import { computed } from "@vue/reactivity";
+import { nextTick, computed } from "vue";
 
 const contactmomentStore = useContactmomentStore();
 const dialog = useConfirmDialog();
@@ -52,7 +52,7 @@ async function startNieuweVraag() {
     await waitForConfirmation();
   }
   contactmomentStore.startNieuweVraag();
-  setTimeout(() => {
+  nextTick(() => {
     document.getElementById("cm-notitieblok")?.focus();
   });
 }
