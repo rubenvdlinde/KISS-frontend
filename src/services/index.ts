@@ -261,28 +261,6 @@ export function parseValidUrl(input: unknown): URL | undefined {
   }
 }
 
-export function parseDutchDate(dateTimeStr: string): Date {
-  const [dateStr, timeStr] = dateTimeStr.split(" ");
-  const [year, day, month] = dateStr.split("-");
-  const [hour, minute, second] = timeStr.split(":");
-
-  const dateInput = [year, month, day, hour, minute, second].map(
-    parseValidInt
-  ) as [
-    number,
-    number,
-    number,
-    number | undefined,
-    number | undefined,
-    number | undefined
-  ];
-
-  //correct 0-based month
-  dateInput[1] = dateInput[1] - 1;
-
-  return new Date(...dateInput);
-}
-
 export interface LookupList<K, V> {
   fromKeyToValue: (key: K) => V | undefined;
   fromValueToKey: (value: V) => K | undefined;

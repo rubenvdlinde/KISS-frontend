@@ -8,14 +8,14 @@
     <form @submit.prevent="handleSearch">
       <fieldset class="radio-group">
         <legend>Waar wil je op zoeken?</legend>
-        <label v-for="(item, key) in searchFields" :key="key">
+        <label v-for="(label, field) in labels" :key="field">
           <input
             type="radio"
-            :value="item"
+            :value="field"
             v-model="store.searchField"
             required
           />
-          {{ item.label }}
+          {{ label }}
         </label>
       </fieldset>
       <fieldset class="search-bar">
@@ -45,7 +45,7 @@
   </section>
 
   <section
-    v-if="store.searchQuery?.valid && !showKlantAanmaken"
+    v-if="store.searchQuery?.query && !showKlantAanmaken"
     class="search-section"
   >
     <simple-spinner v-if="klanten.loading" />
@@ -72,10 +72,10 @@
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref } from "vue";
 import {
-  searchFields,
+  klantSearch,
   useKlanten,
-  type FieldConfig,
-  type ValidatedSearch,
+  type KlantSearch,
+  type KlantSearchField,
 } from "./service";
 import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
@@ -86,32 +86,66 @@ import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
 import KlantAanmaken from "./KlantAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
+import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
+
+const labels: {
+  readonly [K in KlantSearchField]: string;
+} = {
+  email: "E-mailadres",
+  telefoonnummer: "Telefoonnummer",
+  bsn: "BSN",
+  geboortedatum: "Geboortedatum",
+  postcodeHuisnummer: "Postcode + huisnummer",
+};
 
 const store = ensureState({
   stateId: "klant-zoeker",
   stateFactory() {
     return {
       currentSearch: "",
-      searchField: undefined as FieldConfig | undefined,
-      searchQuery: undefined as ValidatedSearch | undefined,
+      searchField: "email" as KlantSearchField,
+      searchQuery: undefined as KlantSearch<KlantSearchField> | undefined,
       page: 1,
     };
   },
 });
 
+const inputRef = ref();
+
 const currentQuery = computed(() => {
   const { currentSearch, searchField } = store.value;
-  if (!currentSearch || !searchField) return undefined;
-  return searchField.validate(currentSearch);
-});
 
-const inputRef = ref();
+  if (searchField === "geboortedatum") {
+    const parsed = parseDutchDate(currentSearch);
+    return parsed instanceof Error
+      ? parsed
+      : klantSearch({
+          searchField,
+          query: parsed,
+        });
+  }
+
+  if (searchField === "postcodeHuisnummer") {
+    const parsed = parsePostcodeHuisnummer(currentSearch);
+    return parsed instanceof Error
+      ? parsed
+      : klantSearch({
+          searchField,
+          query: parsed,
+        });
+  }
+
+  return klantSearch({
+    searchField,
+    query: currentSearch,
+  });
+});
 
 watch(
   [currentQuery, inputRef],
   ([query, input]) => {
     if (!(input instanceof HTMLInputElement)) return;
-    input.setCustomValidity(!query || query.valid ? "" : query.error);
+    input.setCustomValidity(query instanceof Error ? query.message : "");
   },
   { immediate: true }
 );
@@ -151,6 +185,7 @@ watch(singleKlant, (n, o) => {
 });
 
 const handleSearch = () => {
+  if (currentQuery.value instanceof Error) return;
   store.value.searchQuery = currentQuery.value;
   store.value.page = 1;
 };

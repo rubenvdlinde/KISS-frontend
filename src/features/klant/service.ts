@@ -1,3 +1,4 @@
+import type { PostcodeHuisnummer } from "@/helpers/validation";
 import {
   ServiceResult,
   fetchLoggedIn,
@@ -9,126 +10,75 @@ import {
 import type { Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant } from "./types";
 
-type Valid<T> = {
-  valid: true;
-  result: T;
-};
-
-type Invalid = {
-  valid: false;
-  error: string;
-};
-
 type QueryParam = [string, string][];
 
-type Validated<T> = Valid<T> | Invalid;
-
-export type ValidatedSearch = Validated<QueryParam>;
-
-export type FieldConfig = {
-  label: string;
-  validate: (search: string) => ValidatedSearch;
+type FieldParams = {
+  email: string;
+  telefoonnummer: string;
+  bsn: string;
+  geboortedatum: Date;
+  postcodeHuisnummer: PostcodeHuisnummer;
 };
 
-export const searchFields: Readonly<Record<string, FieldConfig>> = {
-  email: {
-    label: "E-mailadres",
-    validate: (search) => ({
-      valid: true,
-      result: [["emails.email", `%${search}%`]],
-    }),
-  },
-  telefoonnummer: {
-    label: "Telefoonnummer",
-    validate: (search) => ({
-      valid: true,
-      result: [["telefoonnummers.telefoonnummer", `%${search}%`]],
-    }),
-  },
-  bsn: {
-    label: "BSN",
-    validate(search) {
-      if (/[0-9]{9}/.test(search)) {
-        return {
-          valid: true,
-          result: [["subjectIdentificatie.inpBsn", search]],
-        };
-      }
-      return {
-        valid: false,
-        error: "Voer een valide BSN in met negen cijfers",
-      };
-    },
-  },
-  geboortedatum: {
-    label: "Geboortedatum",
-    validate(search) {
-      const matches =
-        search
-          .match(/([0-9][0-9]?)[-|/]([0-9][0-9]?)[-|/]([0-9]{4})$/)
-          ?.filter(Boolean) ?? [];
-      if (matches.length === 4) {
-        return {
-          valid: true,
-          result: [
-            [
-              "subjectIdentificatie.geboortedatum",
-              `${matches[3]}-${matches[2].padStart(
-                2,
-                "0"
-              )}-${matches[1].padStart(2, "0")}`,
-            ],
-          ],
-        };
-      }
-      return {
-        valid: false,
-        error:
-          "Voer een valide geboortedatum in volgens het patroon 23-12-1900",
-      };
-    },
-  },
-  postcodeHuisnummer: {
-    label: "Postcode + huisnummer",
-    validate(search) {
-      const matches =
-        search
-          .match(/([1-9][0-9]{3}).*([A-Z]{2}).*([0-9]+)/)
-          ?.filter(Boolean) ?? [];
-      if (matches.length === 4) {
-        return {
-          valid: true,
-          result: [
-            [
-              "subjectIdentificatie.verblijfsadres.aoaPostcode",
-              matches[1] + matches[2],
-            ],
-            ["subjectIdentificatie.verblijfsadres.aoaHuisnummer", matches[3]],
-          ],
-        };
-      }
-      return {
-        valid: false,
-        error: "Voer een valide postcode en huisnummer in",
-      };
-    },
-  },
+export function klantSearch<K extends KlantSearchField>(
+  args: KlantSearch<K>
+): KlantSearch<K> {
+  return args;
+}
+
+export type KlantSearchField = keyof FieldParams;
+
+type QueryDictionary = {
+  [K in KlantSearchField]: (search: FieldParams[K]) => QueryParam;
 };
 
-export type SearchFieldKey = keyof typeof searchFields;
+const queryDictionary: QueryDictionary = {
+  email: (search) => [["emails.email", `%${search}%`]],
+  telefoonnummer: (search) => [
+    ["telefoonnummers.telefoonnummer", `%${search}%`],
+  ],
+  bsn: (search) => [["subjectIdentificatie.inpBsn", search]],
+  geboortedatum: (search) => [
+    [
+      "subjectIdentificatie.geboortedatum",
+      search.toISOString().substring(0, 10),
+    ],
+  ],
+  postcodeHuisnummer: ({ postcode, huisnummer }) => [
+    [
+      "subjectIdentificatie.verblijfsadres.aoaPostcode",
+      postcode.numbers + postcode.digits,
+    ],
 
-type KlantSearchParameters = {
-  search: Ref<ValidatedSearch | undefined>;
+    ["subjectIdentificatie.verblijfsadres.aoaHuisnummer", huisnummer],
+  ],
+};
+
+export type KlantSearch<K extends KlantSearchField> = {
+  searchField: K;
+  query: FieldParams[K];
+};
+
+function getQueryParams<K extends KlantSearchField>(params: KlantSearch<K>) {
+  return queryDictionary[params.searchField](params.query as any) as ReturnType<
+    QueryDictionary[K]
+  >;
+}
+
+type KlantSearchParameters<K extends KlantSearchField = KlantSearchField> = {
+  search: Ref<KlantSearch<K> | undefined>;
   page: Ref<number | undefined>;
 };
 
 const rootUrl = `${window.gatewayBaseUri}/api/klanten`;
 
-export function useKlanten(params: KlantSearchParameters) {
+export function useKlanten<K extends KlantSearchField>(
+  params: KlantSearchParameters<K>
+) {
   function getUrl() {
     const search = params.search.value;
 
-    if (!search?.valid) return "";
+    if (!search?.query) return "";
 
     const page = params.page?.value || 1;
 
@@ -137,8 +87,8 @@ export function useKlanten(params: KlantSearchParameters) {
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
-    search.result.forEach((param) => {
-      url.searchParams.set(...param);
+    getQueryParams(search).forEach((tuple) => {
+      url.searchParams.set(...tuple);
     });
 
     return url.toString();
