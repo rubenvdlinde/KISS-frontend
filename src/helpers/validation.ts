@@ -27,7 +27,9 @@ export function parsePostcodeHuisnummer(
     input.match(/([1-9][0-9]{3}).*([A-Z]{2}).*([0-9]+)/)?.filter(Boolean) ?? [];
 
   if (matches.length !== 4) {
-    return new Error("Voer een valide postcode en huisnummer in");
+    return new Error(
+      "Voer een valide postcode en huisnummer in, bijvoorbeeld 1234 AZ 12"
+    );
   }
 
   return {
@@ -46,7 +48,7 @@ export function parseDutchDate(input: string): Date | Error {
       ?.filter(Boolean) ?? [];
 
   if (matches.length !== 4) {
-    return new Error("Voer een valide datum in volgens het patroon 23-12-1900");
+    return new Error("Voer een valide datum in, bijvoorbeeld 23-12-1900");
   }
 
   const year = +matches[3];
