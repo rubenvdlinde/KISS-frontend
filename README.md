@@ -6,6 +6,8 @@ This template should help get you started developing with Vue 3 in Vite.
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
+You will need [Docker desktop](https://www.docker.com/get-started/) if you want to run the frontend and the gateway in docker.
+
 ## Type Support for `.vue` Imports in TS
 
 TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
@@ -27,11 +29,29 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 npm install
 ```
 
+To run the frontend and gateway with docker you need a cmd opened in the root of this project.
+Then you will need to pull its image:
+```sh
+docker-compose pull
+```
+After that you can run its the image with: 
+```sh
+docker-compose up
+```
+If the php container says "Ready to handle connections" you are good to go.
+
+The frontend is run on port: 8080.
+The API is run on port :80 and the gateway's admin ui on :8000
+More ports that will be used are: :82, :5342
+
 ### Compile and Hot-Reload for Development
 
 ```sh
 npm run dev
 ```
+The front-end is run on https in this scenario, on port 3000 (if available).
+If you have issues logging in from an incognito window, [have a look at this url](https://stackoverflow.com/a/63587751)
+Logging out currently doesn't work on localhost, you can log out by manually deleting the cookie. There's a task on the backlog to fix this.
 
 ### Type-Check, Compile and Minify for Production
 

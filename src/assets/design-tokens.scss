@@ -1,0 +1,122 @@
+:root {
+    // colors
+    --color-primary: #415a77;
+    --color-secondary: #eceff1;
+    --color-tertiary: #778da9;
+    --color-headings: #1b263b;
+    --color-accent: #58af23;
+    --color-error: #d44;
+    --color-category-default: hsl(184, 54%, 70%);
+    --color-category-website: hsl(285, 56%, 83%);
+    --color-white: #fff;
+    //TODO discuss. these colors seem to clash.
+    --sidebar-color-1: var(--color-headings);
+    --sidebar-color-2: var(--color-primary);
+
+    // spacing
+    --container-width: 80rem;
+    --container-padding: max(var(--spacing-large), calc(50vw - var(--container-width) / 2));
+    --section-width: 30.75rem;
+    --section-width-small: 20rem;
+    --section-width-large: 60rem;
+
+    --spacing-extrasmall: 0.25rem;
+    --spacing-small: 0.5rem;
+    --spacing-default: 1rem;
+    --spacing-large: 2rem;
+    --spacing-extralarge: 6rem;
+
+    --header-height: 6rem;
+    --text-margin: 1.5rem;
+
+    --line-height-default: 1.5;
+
+    // other
+    --radius-default: 0.5rem;
+    --radius-medium: 1rem;
+    --radius-large: 1.5rem;
+
+    --height-body: 100vh;
+
+    --shadow-default: 0 0 0.2857142857em 0 rgb(0 0 0 / 20%);
+}
+
+.kiss-theme {
+    --font-family: "Open Sans", sans-serif;
+    --utrecht-paragraph-font-family: var(--font-family);
+    --utrecht-paragraph-color: black;
+    --utrecht-heading-font-family: var(--font-family);
+    --utrecht-document-font-family: var(--font-family);
+    --utrecht-document-font-size: 1rem;
+    --utrecht-document-color: black;
+    --utrecht-heading-color: var(--color-headings);
+    --utrecht-paragraph-font-size: 1rem;
+    --utrecht-heading-font-weight: 600;
+    --denhaag-pagination-color: var(--color-primary);
+    --denhaag-pagination-link-current-color: var(--color-headings);
+    --utrecht-border-width-sm: 1px;
+    --utrecht-color-grey-90: var(--color-tertiary);
+
+    /* h1 */
+    --utrecht-heading-1-line-height: 4.25rem;
+    --utrecht-heading-1-font-size: 2.5rem;
+
+    /* h2 */
+    --utrecht-heading-2-line-height: 2rem;
+    --utrecht-heading-2-font-size: 1.5rem;
+
+    /* h3 */
+    --utrecht-heading-3-line-height: 2rem;
+    --utrecht-heading-3-font-size: var(--utrecht-typography-scale-lg);
+
+    --utrecht-typography-scale-lg: 1.25rem;
+
+    /* button */
+    --utrecht-button-background-color: var(--color-primary);
+    --utrecht-button-border-color: var(--color-primary);
+    --utrecht-button-secondary-action-border-color: var(--utrecht-button-border-color);
+    --utrecht-button-secondary-action-color: var(--color-primary);
+
+    /* forms */
+    --utrecht-form-fieldset-legend-font-size: 1.5rem;
+    --utrecht-form-fieldset-legend-font-weight: 600;
+    --utrecht-form-fieldset-legend-line-height: 2rem;
+
+    --utrecht-form-label-font-weight: 600;
+    --utrecht-form-label-font-size: 1rem;
+
+    --utrecht-form-input-border-color: var(--color-primary);
+    --utrecht-form-input-border-radius: var(--radius-default);
+
+    --utrecht-form-input-padding-block-end: var(--spacing-small);
+    --utrecht-form-input-padding-block-start: var(--spacing-small);
+
+    --utrecht-form-input-placeholder-color: #999;
+
+    --utrecht-form-input-disabled-border-color: #999;
+    --utrecht-form-input-disabled-color: #999;
+}
+
+utrecht-button,
+.utrecht-button {
+    --utrecht-button-border-radius: 100px;
+    --utrecht-button-min-inline-size: 150px;
+
+    --utrecht-button-padding-inline-start: 1rem;
+    --utrecht-button-padding-inline-end: 1rem;
+    --utrecht-button-min-block-size: 1rem;
+
+    --utrecht-button-padding-block-start: 0.6rem;
+    --utrecht-button-padding-block-end: 0.6rem;
+
+    --utrecht-button-secondary-action-background-color: transparent;
+}
+
+utrecht-button.button-small {
+    --utrecht-button-padding-inline-start: 1rem;
+    --utrecht-button-padding-inline-end: 1rem;
+    --utrecht-button-min-block-size: 1rem;
+    --utrecht-button-min-inline-size: 1rem;
+    --utrecht-button-padding-block-start: 0.6rem;
+    --utrecht-button-padding-block-end: 0.6rem;
+}
