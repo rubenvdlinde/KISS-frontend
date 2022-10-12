@@ -70,7 +70,9 @@
               <label>
                 <span
                   >{{ record.zaak.identificatie }}
-                  <div>(Zaaktype: {{ record.zaak.zaaktype }})</div></span
+                  <div>
+                    (Zaaktype: {{ record.zaak.zaaktypeOmschrijving }})
+                  </div></span
                 >
                 <input
                   title="Deze zaak opslaan bij het contactmoment"
@@ -406,7 +408,7 @@ const zakenToevoegenAanContactmoment = (
       .map(({ zaak }) =>
         koppelObject({
           contactmoment: contactmomentId,
-          object: zaak.url,
+          object: zaak.self,
           objectType: "zaak",
         })
       ) ?? [];

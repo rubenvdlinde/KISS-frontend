@@ -124,10 +124,14 @@ watch(
   { immediate: true }
 );
 
-watch(klant, (k) => {
-  if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
-  contactmomentStore.setKlant(k);
-});
+watch(
+  klant,
+  (k) => {
+    if (!k) return;
+    contactmomentStore.setKlant(k);
+  },
+  { immediate: true }
+);
 
 const contactverzoekenPage = ref(1);
 const contactverzoeken = useContactverzoekenByKlantId(

@@ -6,13 +6,13 @@ import type {
   Nieuwsbericht,
   Werkinstructie,
 } from "@/features/search/types";
-import type { Zaak } from "@/features/zaaksysteem/types";
+import type { ZaakDetails } from "@/features/zaaksysteem/types";
 import { getFormattedUtcDate } from "@/services";
 import { defineStore } from "pinia";
 import { createSession, type Session } from "../switchable-store";
 export * from "./types";
 
-export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
+export type ContactmomentZaak = { zaak: ZaakDetails; shouldStore: boolean };
 export type ContactmomentContactVerzoek = {
   url: string;
   medewerker: string;
@@ -160,7 +160,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       // start with an empty session. this is equivalent to resetting all state.
       createSession().enable();
     },
-    upsertZaak(zaak: Zaak, vraag: Vraag, shouldStore = true) {
+    upsertZaak(zaak: ZaakDetails, vraag: Vraag, shouldStore = true) {
       const existingZaak = vraag.zaken.find(
         (contacmomentZaak) => contacmomentZaak.zaak.id === zaak.id
       );

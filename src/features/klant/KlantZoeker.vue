@@ -50,10 +50,11 @@
   >
     <simple-spinner v-if="klanten.loading" />
     <template v-if="klanten.success">
-      <klanten-overzicht
-        :klanten="klanten.data.page"
-        @klant-selected="emitKlantSelected"
-      />
+      <klanten-overzicht :klanten="klanten.data.page">
+        <template #caption>
+          <SearchResultsCaption :results="klanten.data" />
+        </template>
+      </klanten-overzicht>
       <pagination
         class="pagination"
         :pagination="klanten.data"
@@ -77,15 +78,15 @@ import {
   type KlantSearch,
   type KlantSearchField,
 } from "./service";
-import type { Klant } from "./types";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
 import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?
-import { KLANT_SELECTED } from "./config";
 import { computed } from "@vue/reactivity";
 import KlantAanmaken from "./KlantAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
+import { useRouter } from "vue-router";
+import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
 import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
 
 const labels: {
@@ -167,20 +168,17 @@ const handleCancelKlantAanmaken = () => {
   showKlantAanmaken.value = false;
 };
 
-const emit = defineEmits([KLANT_SELECTED]);
-const emitKlantSelected = (klant: Klant) => {
-  emit(KLANT_SELECTED, klant);
-};
-
-const singleKlant = computed(() =>
+const singleKlantId = computed(() =>
   klanten.success && klanten.data.page.length === 1
-    ? klanten.data.page[0]
+    ? klanten.data.page[0].id
     : undefined
 );
 
-watch(singleKlant, (n, o) => {
-  if (n && n.id !== o?.id) {
-    emitKlantSelected(n);
+const router = useRouter();
+
+watch(singleKlantId, (newId, oldId) => {
+  if (newId && newId !== oldId) {
+    router.push(`/klanten/${newId}`);
   }
 });
 
