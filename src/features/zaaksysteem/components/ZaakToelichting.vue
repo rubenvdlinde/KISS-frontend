@@ -52,15 +52,12 @@ import {
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./../service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
 const emit = defineEmits(["zaakUpdated"]);
-
-const contactmomentStore = useContactmomentStore();
 
 const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
@@ -81,14 +78,8 @@ const submit = async () => {
   formIsLoading.value = true;
 
   updateToelichting(props.zaak, toelichtingInputValue.value)
-    .then((res) => {
+    .then(() => {
       toast({ text: "De notitie is opgeslagen." });
-      if (!contactmomentStore.huidigContactmoment) return;
-      contactmomentStore.upsertZaak(
-        res,
-        contactmomentStore.huidigContactmoment.huidigeVraag
-      );
-
       emit("zaakUpdated");
     })
     .catch(() => {
