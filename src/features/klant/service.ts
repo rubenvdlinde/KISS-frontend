@@ -5,6 +5,7 @@ import {
   parsePagination,
   throwIfNotOk,
 } from "@/services";
+import { mutate } from "swrv";
 
 import type { Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant } from "./types";
@@ -18,6 +19,10 @@ type KlantSearchParameters = {
 
 const rootUrl = `${window.gatewayBaseUri}/api/klanten`;
 
+function setExtend(url: URL) {
+  url.searchParams.set("extend[]", "all");
+}
+
 export function useKlanten(params: KlantSearchParameters) {
   function getUrl() {
     const search = params.search.value;
@@ -28,7 +33,7 @@ export function useKlanten(params: KlantSearchParameters) {
     const page = params.page?.value || 1;
 
     const url = new URL(rootUrl);
-    url.searchParams.set("extend[]", "all");
+    setExtend(url);
     url.searchParams.set("order[achternaam]", "asc");
     url.searchParams.set("page", page.toString());
 
@@ -60,39 +65,53 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
     .then((r) => r.json())
-    .then((j) => parsePagination(j, mapKlant));
+    .then((j) => parsePagination(j, mapKlant))
+    .then((p) => {
+      p.page.forEach((klant) => {
+        mutate(getKlantUrl(klant.id), klant);
+      });
+      return p;
+    });
 }
 
-export function fetchKlant(id: string) {
-  return fetchLoggedIn(`${rootUrl}/${id}`)
+function getKlantUrl(id: string) {
+  const url = new URL(`${rootUrl}/${id}`);
+  setExtend(url);
+  return url.toString();
+}
+
+function fetchKlant(url: string) {
+  return fetchLoggedIn(url)
     .then(throwIfNotOk)
     .then((r) => r.json())
     .then(mapKlant);
 }
 
-export function updateContactgegevens({
+export function useKlant(id: Ref<string>) {
+  return ServiceResult.fromFetcher(() => getKlantUrl(id.value), fetchKlant);
+}
+
+function updateContactgegevens({
   id,
   telefoonnummers,
   emails,
 }: UpdateContactgegevensParams): Promise<UpdateContactgegevensParams> {
   const url = rootUrl + "/" + id;
-  return fetchLoggedIn(url)
+  return fetchLoggedIn(url + "?fields[]=klantnummer&fields[]=bronorganisatie")
     .then(throwIfNotOk)
     .then((r) => r.json())
-    .then((klant) => {
-      delete klant.url;
-      return Object.assign(klant, {
-        telefoonnummers,
-        emails,
-      });
-    })
-    .then((klant) =>
+    .then(({ klantnummer, bronorganisatie }) =>
       fetchLoggedIn(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(klant),
+        body: JSON.stringify({
+          telefoonnummers,
+          emails,
+          klantnummer,
+          bronorganisatie,
+        }),
       })
     )
     .then(throwIfNotOk)
