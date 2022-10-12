@@ -1,28 +1,30 @@
 <template>
-  <table v-if="klanten.length" class="overview">
+  <table class="overview">
     <slot name="caption" />
-    <thead>
-      <tr>
-        <th>Naam</th>
-        <th>E-mailadres</th>
-        <th>Tel. nummer</th>
-        <th class="row-link-header">Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="klant in klanten" :key="klant.key" class="row-link">
-        <th scope="row" class="wrap">
-          {{ klant.naam }}
-        </th>
-        <td class="wrap">
-          {{ klant.emails }}
-        </td>
-        <td class="wrap">
-          {{ klant.telefoonnummers }}
-        </td>
-        <td><router-link v-bind="klant.link" /></td>
-      </tr>
-    </tbody>
+    <template v-if="klanten.length">
+      <thead>
+        <tr>
+          <th>Naam</th>
+          <th>E-mailadres</th>
+          <th>Tel. nummer</th>
+          <th class="row-link-header">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="klant in klanten" :key="klant.key" class="row-link">
+          <th scope="row" class="wrap">
+            {{ klant.naam }}
+          </th>
+          <td class="wrap">
+            {{ klant.emails }}
+          </td>
+          <td class="wrap">
+            {{ klant.telefoonnummers }}
+          </td>
+          <td><router-link v-bind="klant.link" /></td>
+        </tr>
+      </tbody>
+    </template>
   </table>
 </template>
 
