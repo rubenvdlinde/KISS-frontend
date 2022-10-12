@@ -10,7 +10,15 @@
         </li>
       </ul>
     </nav>
+    <template v-if="klantBsn">
+      <utrecht-heading model-value :level="2"> BRP gegevens</utrecht-heading>
+      <simple-spinner v-if="persoon.loading" />
+      <p v-if="persoon.success && persoon.data">
+        {{ persoon.data }}
+      </p>
+    </template>
     <simple-spinner v-if="klant.loading" />
+
     <klant-details v-else-if="klant.success" :klant="klant.data" />
     <application-message
       v-else
@@ -73,7 +81,7 @@ import {
   ContactmomentenOverzicht,
   useContactverzoekenByKlantId,
 } from "@/features/contactmoment";
-import { KlantDetails, useKlant } from "@/features/klant";
+import { KlantDetails, useKlant, usePersoonByBsn } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
@@ -115,7 +123,9 @@ const onContactmomentenNavigate = (page: number) => {
 const klantBsn = computed(() =>
   !klant.success || !klant.data.bsn ? "" : klant.data.bsn
 );
+
 const zaken = useZakenByBsn(klantBsn);
+const persoon = usePersoonByBsn(klantBsn);
 </script>
 
 <style scoped lang="scss">

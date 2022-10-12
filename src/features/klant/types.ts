@@ -12,7 +12,14 @@ export interface Klant {
   telefoonnummers: { telefoonnummer: string }[];
   emails: { email: string }[];
   bsn?: string;
+}
+
+export interface Persoon {
+  bsn: string;
   postcode?: string;
   huisnummer?: string;
   geboortedatum?: Date;
+  voornaam: string;
+  voorvoegselAchternaam?: string;
+  achternaam: string;
 }

@@ -9,7 +9,7 @@ import {
 import { mutate } from "swrv";
 
 import type { Ref } from "vue";
-import type { UpdateContactgegevensParams, Klant } from "./types";
+import type { UpdateContactgegevensParams, Klant, Persoon } from "./types";
 
 type QueryParam = [string, string][];
 
@@ -182,4 +182,46 @@ function updateContactgegevens({
 
 export function useUpdateContactGegevens() {
   return ServiceResult.fromSubmitter(updateContactgegevens);
+}
+
+export function usePersoonByBsn(bsn: Ref<string>) {
+  const getUrl = () => {
+    if (!bsn.value) return "";
+    const url = new URL(window.gatewayBaseUri + "/api/ingeschrevenpersonen");
+    url.searchParams.set("burgerservicenummer", bsn.value);
+    url.searchParams.set("extend[]", "all");
+    return url.toString();
+  };
+
+  const fetcher = (url: string) => {
+    return fetchLoggedIn(url)
+      .then(throwIfNotOk)
+      .then((r) => r.json())
+      .then((p) =>
+        parsePagination(p, (u: any) => {
+          const { verblijfplaats, naam, geboorte } = u?.embedded ?? {};
+          const { datum } = geboorte?.embedded ?? {};
+          const geboortedatum =
+            datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
+          return {
+            postcode: verblijfplaats?.postcode,
+            huisnummer: verblijfplaats?.huisnummer?.toString(),
+            bsn: u?.burgerservicenummer,
+            geboortedatum,
+            voornaam: naam?.voornamen,
+            voorvoegselAchternaam: naam?.voorvoegsel,
+            achternaam: naam?.geslachtsnaam,
+          } as Persoon | undefined;
+        })
+      )
+      .then((p) => {
+        const result = p.page.filter(Boolean);
+        if (result.length > 1) {
+          throw new Error();
+        }
+        return result[0];
+      });
+  };
+
+  return ServiceResult.fromFetcher(getUrl, fetcher);
 }
