@@ -25,11 +25,11 @@
             <td class="wrap">
               {{ record.klant.telefoonnummers }}
             </td>
-            <td>
-              {{ record.bsn }}
-            </td>
           </template>
-          <td v-else colspan="4"></td>
+          <td v-else colspan="3"></td>
+          <td>
+            {{ record.bsn }}
+          </td>
           <template v-if="record.persoon">
             <td>
               <time
