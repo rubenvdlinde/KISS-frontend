@@ -103,15 +103,18 @@ export function useKlanten<K extends KlantSearchField>(
 }
 
 function mapKlant(obj: any): Klant {
-  const emails = obj?.embedded?.emails ?? [];
-  const telefoonnummers = obj?.embedded?.telefoonnummers ?? [];
-  const bsn = obj?.embedded?.subjectIdentificatie?.inpBsn;
+  const { subjectIdentificatie, emails, telefoonnummers } = obj?.embedded ?? {};
+  const { inpBsn, verblijfsadres, geboortedatum } = subjectIdentificatie ?? {};
+  const { aoaHuisnummer, aoaPostcode } = verblijfsadres ?? {};
 
   return {
     ...obj,
-    emails,
-    telefoonnummers,
-    bsn,
+    emails: emails ?? [],
+    telefoonnummers: telefoonnummers ?? [],
+    bsn: inpBsn,
+    postcode: aoaPostcode,
+    huisnummer: aoaHuisnummer,
+    geboortedatum: geboortedatum && new Date(geboortedatum),
   };
 }
 
