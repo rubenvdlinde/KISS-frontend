@@ -21,10 +21,7 @@
         message="Er is een probleem opgetreden."
       ></application-message>
       <simple-spinner v-else-if="zaken.loading"></simple-spinner>
-      <section
-        class="resultaten-container"
-        v-if="zaken.success && zaken.data.page.length > 0"
-      >
+      <section class="resultaten-container" v-if="zaken.success">
         <zaken-overzicht
           :zaken="zaken.data.page"
           :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
