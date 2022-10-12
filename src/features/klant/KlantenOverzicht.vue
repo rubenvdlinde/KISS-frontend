@@ -1,100 +1,60 @@
 <template>
-  <div class="utrecht-html">
-    <p v-if="!klanten.length">Er zijn geen klanten gevonden</p>
-    <template v-else>
-      <table>
-        <caption>
-          Zoekresultaten
-        </caption>
-        <thead>
-          <tr>
-            <th>Klantnummer</th>
-            <th>Naam</th>
-            <th>Telefoonnummer(s)</th>
-            <th>E-mailadres(sen)</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(klant, idx) in klanten"
-            :key="idx"
-            @click="emit('KlantSelected', klant)"
-          >
-            <td>{{ klant.klantnummer }}</td>
-            <td>
-              {{
-                [
-                  klant.voornaam,
-                  klant.voorvoegselAchternaam,
-                  klant.achternaam,
-                ].join(" ")
-              }}
-            </td>
-            <td>
-              {{
-                klant.telefoonnummers
-                  .map(({ telefoonnummer }) => telefoonnummer)
-                  .join(", ")
-              }}
-            </td>
-            <td>{{ klant.emails.map(({ email }) => email).join(", ") }}</td>
-            <td>
-              <router-link
-                :to="`/klanten/${klant.id}`"
-                @click.prevent.stop="emit('KlantSelected', klant)"
-                >{{ "> Ga naar" }}</router-link
-              >
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </template>
-  </div>
+  <table v-if="klanten.length" class="overview">
+    <slot name="caption" />
+    <thead>
+      <tr>
+        <th>Naam</th>
+        <th>E-mailadres</th>
+        <th>Tel. nummer</th>
+        <th class="row-link-header">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="klant in klanten" :key="klant.key" class="row-link">
+        <th scope="row" class="wrap">
+          {{ klant.naam }}
+        </th>
+        <td class="wrap">
+          {{ klant.emails }}
+        </td>
+        <td class="wrap">
+          {{ klant.telefoonnummers }}
+        </td>
+        <td><router-link v-bind="klant.link" /></td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script lang="ts" setup>
 import type { Klant } from "./types";
-import type { PropType } from "vue";
+import { computed } from "vue";
 
-defineProps({
-  klanten: { type: Array as PropType<Klant[]>, default: () => [] },
-});
+const props = defineProps<{ klanten: Klant[] }>();
 
-const emit = defineEmits(["KlantSelected"]);
+const klanten = computed(() =>
+  props.klanten.map((klant, idx) => {
+    const naam = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
+      .filter(Boolean)
+      .join(" ");
+
+    return {
+      ...klant,
+      naam,
+      telefoonnummers: klant.telefoonnummers
+        .map(({ telefoonnummer }) => telefoonnummer)
+        .filter(Boolean)
+        .join(", "),
+      emails: klant.emails
+        .map(({ email }) => email)
+        .filter(Boolean)
+        .join(", "),
+      link: {
+        to: `/klanten/${klant.id}`,
+        title: `Details ${naam}`,
+      },
+      key: idx,
+    };
+  })
+);
 </script>
-
-<style lang="scss" scoped>
-table {
-  width: 100%;
-}
-
-caption {
-  padding-left: var(--spacing-default);
-  padding-block: var(--spacing-small);
-  margin-block: var(--spacing-small);
-  text-align: left;
-  font-size: var(--utrecht-typography-scale-lg);
-  border-bottom: 1px solid var(--color-tertiary);
-}
-th,
-td {
-  padding-left: var(--spacing-default);
-
-  padding-block: var(--spacing-default);
-  text-align: left;
-}
-
-tbody tr {
-  border-bottom: 1px solid var(--color-primary);
-
-  &:hover {
-    background-color: var(--color-secondary);
-    cursor: pointer;
-  }
-}
-
-a {
-  color: var(--color-primary);
-}
-</style>
