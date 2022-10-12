@@ -5,10 +5,12 @@ import {
   type Paginated,
   parsePagination,
   throwIfNotOk,
+  type ServiceData,
 } from "@/services";
-import { mutate } from "swrv";
+import { computed } from "@vue/reactivity";
+import useSWRV, { mutate } from "swrv";
 
-import type { Ref } from "vue";
+import { watch, watchEffect, type ComputedRef, type Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant, Persoon } from "./types";
 
 type QueryParam = [string, string][];
@@ -81,29 +83,31 @@ function setExtend(url: URL) {
   url.searchParams.set("extend[]", "all");
 }
 
+function getKlantSearchUrl<K extends KlantSearchField>(
+  search: KlantSearch<K> | undefined,
+  page: number | undefined
+) {
+  if (!search?.query) return "";
+
+  const url = new URL(klantRootUrl);
+  setExtend(url);
+  url.searchParams.set("order[achternaam]", "asc");
+  url.searchParams.set("page", page?.toString() ?? "1");
+
+  getQueryParams(search).forEach((tuple) => {
+    url.searchParams.set(...tuple);
+  });
+
+  return url.toString();
+}
+
 export function useKlanten<K extends KlantSearchField>(
   params: KlantSearchParameters<K>
 ) {
-  function getUrl() {
-    const search = params.search.value;
-
-    if (!search?.query) return "";
-
-    const page = params.page?.value || 1;
-
-    const url = new URL(klantRootUrl);
-    setExtend(url);
-    url.searchParams.set("order[achternaam]", "asc");
-    url.searchParams.set("page", page.toString());
-
-    getQueryParams(search).forEach((tuple) => {
-      url.searchParams.set(...tuple);
-    });
-
-    return url.toString();
-  }
-
-  return ServiceResult.fromFetcher(getUrl, searchKlanten);
+  return ServiceResult.fromFetcher(
+    () => getKlantSearchUrl(params.search.value, params.page.value),
+    searchKlanten
+  );
 }
 
 function mapKlant(obj: any): Klant {
@@ -125,7 +129,7 @@ function mapKlant(obj: any): Klant {
 function searchKlanten(url: string): Promise<Paginated<Klant>> {
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
-    .then((r) => r.json())
+    .then(parseJson)
     .then((j) => parsePagination(j, mapKlant))
     .then((p) => {
       p.page.forEach((klant) => {
@@ -158,15 +162,32 @@ function getKlantBsnUrl(bsn?: string) {
   return url.toString();
 }
 
-function fetchKlant(url: string) {
-  return fetchLoggedIn(url)
-    .then(throwIfNotOk)
-    .then((r) => r.json())
-    .then(mapKlant);
+function fetchKlantById(url: string) {
+  return fetchLoggedIn(url).then(throwIfNotOk).then(parseJson).then(mapKlant);
 }
 
+function forceOne<T>(paginated: Paginated<T>) {
+  if (paginated.page.length === 0) return undefined;
+  if (paginated.page.length === 1) return paginated.page[0];
+  throw new Error();
+}
+
+const fetchKlantByBsn = (url: string) => searchKlanten(url).then(forceOne);
+
 export function useKlant(id: Ref<string>) {
-  return ServiceResult.fromFetcher(() => getKlantIdUrl(id.value), fetchKlant);
+  return ServiceResult.fromFetcher(
+    () => getKlantIdUrl(id.value),
+    fetchKlantById
+  );
+}
+
+async function parseJson(r: Response) {
+  try {
+    return await r.json();
+  } catch (error) {
+    console.error("json error: " + r.url);
+    throw error;
+  }
 }
 
 function updateContactgegevens({
@@ -177,7 +198,7 @@ function updateContactgegevens({
   const url = klantRootUrl + "/" + id;
   return fetchLoggedIn(url + "?fields[]=klantnummer&fields[]=bronorganisatie")
     .then(throwIfNotOk)
-    .then((r) => r.json())
+    .then(parseJson)
     .then(({ klantnummer, bronorganisatie }) =>
       fetchLoggedIn(url, {
         method: "PUT",
@@ -193,7 +214,7 @@ function updateContactgegevens({
       })
     )
     .then(throwIfNotOk)
-    .then((x) => x.json())
+    .then(parseJson)
     .then(({ embedded }) => ({
       id,
       telefoonnummers: embedded?.telefoonnummers ?? [],
@@ -229,21 +250,19 @@ function mapPersoon(json: any): Persoon {
   };
 }
 
+function fetchPersoonByBsn(url: string) {
+  return fetchPersonen(url).then(forceOne);
+}
+
 export function usePersoonByBsn(bsn: Ref<string>) {
   const getUrl = () => getPersoonUrl(bsn.value);
-  const fetcher = (url: string) =>
-    fetchPersonen(url).then((paginated) => {
-      if (paginated.page.length === 0) return undefined;
-      if (paginated.page.length === 1) return paginated.page[0];
-      throw new Error();
-    });
-  return ServiceResult.fromFetcher(getUrl, fetcher);
+  return ServiceResult.fromFetcher(getUrl, fetchPersoonByBsn);
 }
 
 const fetchPersonen = (url: string) => {
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
-    .then((r) => r.json())
+    .then(parseJson)
     .then((p) => parsePagination(p, mapPersoon))
     .then((p) => {
       p.page.forEach((persoon) => {
@@ -253,17 +272,69 @@ const fetchPersonen = (url: string) => {
     });
 };
 
-export function useSearchPersonen<K extends PersoonSearchField>(
-  search: KlantSearch<K>
+const personenRootUrl = window.gatewayBaseUri + "/api/ingeschrevenpersonen";
+
+function getPersoonSearchUrl<K extends PersoonSearchField>(
+  search: KlantSearch<K> | undefined,
+  page: number | undefined
 ) {
-  const getUrl = () => {
-    const url = new URL(window.gatewayBaseUri + "/api/ingeschrevenpersonen");
-    getQueryParams<K>(search).forEach((tuple) => {
-      url.searchParams.set(...tuple);
-    });
-    url.searchParams.set("extend[]", "all");
-    return url.toString();
+  if (!search) return "";
+  const url = new URL(personenRootUrl);
+  getQueryParams<K>(search).forEach((tuple) => {
+    url.searchParams.set(...tuple);
+  });
+  url.searchParams.set("extend[]", "all");
+  url.searchParams.set("page", page?.toString() ?? "1");
+  return url.toString();
+}
+export type CombinedPersoonSearchResult = {
+  bsn: string | undefined;
+  persoon: Persoon | undefined;
+  klant: Klant | undefined;
+};
+
+export type UberReturnType = ServiceData<
+  Paginated<CombinedPersoonSearchResult>
+>;
+
+export function useUberSearch<K extends KlantSearchField>(
+  params: KlantSearchParameters<K>
+): UberReturnType {
+  const initialUrl = () => {
+    const search = params.search.value;
+    const page = params.page.value || 1;
+
+    if (!search) return "";
+
+    if (
+      search.searchField === "telefoonnummer" ||
+      search.searchField === "email"
+    )
+      return getKlantSearchUrl(search, page);
+
+    return getPersoonSearchUrl(search as any, page);
   };
 
-  return ServiceResult.fromFetcher(getUrl, fetchPersonen);
+  const initalSearcher = () => {
+    const url = initialUrl();
+    return url.includes(personenRootUrl)
+      ? fetchPersonen(url).then((paginated) => ({
+          ...paginated,
+          page: paginated.page.map<CombinedPersoonSearchResult>((persoon) => ({
+            persoon,
+            bsn: persoon.bsn,
+            klant: undefined,
+          })),
+        }))
+      : searchKlanten(url).then((paginated) => ({
+          ...paginated,
+          page: paginated.page.map<CombinedPersoonSearchResult>((klant) => ({
+            klant,
+            bsn: klant.bsn,
+            persoon: undefined,
+          })),
+        }));
+  };
+
+  return ServiceResult.fromFetcher(initialUrl, initalSearcher);
 }

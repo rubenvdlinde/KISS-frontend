@@ -74,7 +74,7 @@ import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref } from "vue";
 import {
   klantSearch,
-  useKlanten,
+  useUberSearch,
   type KlantSearch,
   type KlantSearchField,
 } from "./service";
@@ -151,7 +151,7 @@ watch(
   { immediate: true }
 );
 
-const klanten = useKlanten({
+const klanten = useUberSearch({
   search: computed(() => store.value.searchQuery),
   page: computed(() => store.value.page),
 });
@@ -168,11 +168,15 @@ const handleCancelKlantAanmaken = () => {
   showKlantAanmaken.value = false;
 };
 
-const singleKlantId = computed(() =>
-  klanten.success && klanten.data.page.length === 1
-    ? klanten.data.page[0].id
-    : undefined
-);
+const singleKlantId = computed(() => {
+  if (klanten.success && klanten.data.page.length === 1) {
+    const first = klanten.data.page[0].klant;
+    if (first.success) {
+      return first.data?.id;
+    }
+  }
+  return undefined;
+});
 
 const router = useRouter();
 
