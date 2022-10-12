@@ -33,25 +33,23 @@
         </li>
         <li>
           <span class="label">Indiendatum</span>
-          <span class="value">{{ formatDateOnly(zaak.indienDatum) }}</span>
+          <time-or-onbekend class="value" :date="zaak.indienDatum" />
         </li>
         <li>
           <span class="label">Registratiedatum</span>
-          <span class="value">{{ formatDateOnly(zaak.registratieDatum) }}</span>
+          <time-or-onbekend class="value" :date="zaak.registratieDatum" />
         </li>
         <li>
           <span class="label">Startdatum</span>
-          <span class="value">{{
-            formatDateOnly(new Date(zaak.startdatum))
-          }}</span>
+          <time-or-onbekend class="value" :date="zaak.startdatum" />
         </li>
         <li>
           <span class="label">Streefdatum</span>
-          <span class="value">{{ formatDateOnly(zaak.streefDatum) }}</span>
+          <time-or-onbekend class="value" :date="zaak.streefDatum" />
         </li>
         <li>
           <span class="label">Fatale datum</span>
-          <span class="value">{{ formatDateOnly(zaak.fataleDatum) }}</span>
+          <time-or-onbekend class="value" :date="zaak.fataleDatum" />
         </li>
       </ul>
     </div>
@@ -62,7 +60,7 @@
 import { defineProps } from "vue";
 import type { ZaakDetails } from "./../types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { formatDateOnly } from "@/helpers/date";
+import TimeOrOnbekend from "./TimeOrOnbekend.vue";
 
 defineProps<{
   zaak: ZaakDetails;

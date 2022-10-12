@@ -5,11 +5,10 @@ import {
   ServiceResult,
   throwIfNotOk,
   type Paginated,
-  type ServiceData,
 } from "@/services";
-import type { Zaak } from "./types";
 import type { ZaakDetails } from "./types";
 import type { Ref } from "vue";
+import { mutate } from "swrv";
 
 type Roltype = "behandelaar" | "initiator";
 
@@ -35,102 +34,102 @@ const getNamePerRoltype = (zaak: any, roltype: Roltype): string => {
   return name;
 };
 
-function parseZaak(zaak: any): Zaak {
-  const startdatum = new Date(zaak.startdatum);
-  const fataleDatum = DateTime.fromJSDate(startdatum)
-    .plus({
-      days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
-    })
-    .toJSDate();
+const mapZaakDetails = (zaak: any) => {
+  const startdatum = zaak.startdatum ? new Date(zaak.startdatum) : undefined;
+
+  const fataleDatum =
+    startdatum &&
+    DateTime.fromJSDate(startdatum)
+      .plus({
+        days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
+      })
+      .toJSDate();
+
+  const streefDatum =
+    startdatum &&
+    DateTime.fromJSDate(startdatum)
+      .plus({
+        days: parseInt(zaak.embedded.zaaktype.servicenorm, 10),
+      })
+      .toJSDate();
 
   return {
-    identificatie: zaak.identificatie,
-    id: zaak.id,
-    startdatum,
-    url: zaak.url,
-    zaaktype: zaak.embedded.zaaktype.omschrijving,
-    registratiedatum: startdatum,
+    ...zaak,
+    zaaktype: zaak.embedded.zaaktype.id,
+    zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
+    zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
     status: zaak.embedded.status.statustoelichting,
-    fataleDatum,
     behandelaar: getNamePerRoltype(zaak, "behandelaar"),
-    toelichting: zaak.toelichting,
     aanvrager: getNamePerRoltype(zaak, "initiator"),
-    indienDatum: zaak.publicatiedatum ?? "Onbekend",
-  };
-}
+    startdatum,
+    fataleDatum: fataleDatum,
+    streefDatum: streefDatum,
+    indienDatum: zaak.publicatiedatum && new Date(zaak.publicatiedatum),
+    registratieDatum: zaak.registratiedatum && new Date(zaak.registratiedatum),
+    self: zaak["x-commongateway-metadata"].self,
+    documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
+    omschrijving: zaak.omschrijving,
+  } as ZaakDetails;
+};
 
 const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
+
+function addExtends(url: URL) {
+  url.searchParams.set("extend[]", "all");
+  url.searchParams.append("extend[]", "x-commongateway-metadata.self");
+}
+
+const overviewFetcher = (url: string): Promise<Paginated<ZaakDetails>> =>
+  fetchLoggedIn(url)
+    .then(throwIfNotOk)
+    .then((x) => x.json())
+    .then((json) => parsePagination(json, mapZaakDetails))
+    .then((zaken) => {
+      zaken.page.forEach((zaak) => {
+        mutate(getZaakUrl(zaak.id), zaak);
+      });
+      return zaken;
+    });
 
 export const useZakenByBsn = (bsn: Ref<string>) => {
   const getUrl = () => {
     if (!bsn.value) return "";
-    return `${zaaksysteemBaseUri}?rollen.betrokkeneIdentificatie.inpBsn=${bsn.value}&extend[]=zaaktype&extend[]=status&extend[]=rollen`;
+    const url = new URL(zaaksysteemBaseUri);
+    addExtends(url);
+    url.searchParams.set("rollen.betrokkeneIdentificatie.inpBsn", bsn.value);
+    return url.toString();
   };
 
-  const fetcher = (url: string): Promise<Paginated<Zaak>> =>
-    fetchLoggedIn(url)
-      .then(throwIfNotOk)
-      .then((x) => x.json())
-      .then((json) => parsePagination(json, parseZaak));
-
-  return ServiceResult.fromFetcher(getUrl, fetcher);
+  return ServiceResult.fromFetcher(getUrl, overviewFetcher);
 };
 
 export const useZakenByZaaknummer = (zaaknummer: Ref<string>) => {
-  const getUrl = () =>
-    !zaaknummer.value
-      ? ""
-      : `${zaaksysteemBaseUri}?identificatie=${zaaknummer.value}&extend[]=all`;
+  const getUrl = () => {
+    if (!zaaknummer.value) return "";
+    const url = new URL(zaaksysteemBaseUri);
+    addExtends(url);
+    url.searchParams.set("identificatie", zaaknummer.value);
+    return url.toString();
+  };
 
-  const fetcher = (url: string) =>
-    fetchLoggedIn(url)
-      .then(throwIfNotOk)
-      .then((x) => x.json())
-      .then((json) => parsePagination(json, parseZaak));
+  return ServiceResult.fromFetcher(getUrl, overviewFetcher);
+};
 
-  return ServiceResult.fromFetcher(getUrl, fetcher);
+const getZaakUrl = (id: string) => {
+  if (!id) return "";
+  const url = new URL(`${zaaksysteemBaseUri}/${id}`);
+  addExtends(url);
+  return url.toString();
 };
 
 export const useZaakById = (id: Ref<string>) => {
-  const getUrl = () =>
-    !id.value
-      ? ""
-      : `${zaaksysteemBaseUri}/${id.value}?extend[]=all&extend[]=x-commongateway-metadata.self`;
+  const getUrl = () => getZaakUrl(id.value);
 
   function fetcher(url: string): Promise<ZaakDetails> {
     return fetchLoggedIn(url)
       .then(throwIfNotOk)
       .then((x) => x.json())
-      .then((zaak) => {
-        const fataleDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
-          .plus({
-            days: parseInt(zaak.embedded.zaaktype.doorlooptijd, 10),
-          })
-          .toJSDate();
-        const streefDatum = DateTime.fromJSDate(new Date(zaak.startdatum))
-          .plus({
-            days: parseInt(zaak.embedded.zaaktype.servicenorm, 10),
-          })
-          .toJSDate();
-
-        return {
-          ...zaak,
-          zaaktype: zaak.embedded.zaaktype.id,
-          zaaktypeLabel: zaak.embedded.zaaktype.onderwerp,
-          zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
-          status: zaak.embedded.status.statustoelichting,
-          behandelaar: getNamePerRoltype(zaak, "behandelaar"),
-          aanvrager: getNamePerRoltype(zaak, "initiator"),
-          startdatum: zaak.startdatum,
-          fataleDatum: fataleDatum,
-          streefDatum: streefDatum,
-          indienDatum: zaak.publicatiedatum ?? "Onbekend",
-          registratieDatum: new Date(zaak.registratiedatum),
-          self: zaak["x-commongateway-metadata"].self,
-          documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
-          omschrijving: zaak.omschrijving,
-        } as ZaakDetails;
-      });
+      .then(mapZaakDetails);
   }
 
   return ServiceResult.fromFetcher(getUrl, fetcher);
@@ -139,7 +138,7 @@ export const useZaakById = (id: Ref<string>) => {
 export async function updateToelichting(
   zaak: ZaakDetails,
   toelichting: string
-): Promise<Zaak> {
+): Promise<ZaakDetails> {
   const url = `${window.gatewayBaseUri}/api/zaken/${zaak.id}`;
   const res = await fetchLoggedIn(url, {
     method: "PUT",
