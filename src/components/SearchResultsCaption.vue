@@ -2,7 +2,7 @@
   <caption>
     <p>Zoekresultaten</p>
     <p v-if="resultCount === 0">Geen resultaten gevonden</p>
-    <p v-if="resultCount === 1">1 resultaat gevonden</p>
+    <p v-else-if="resultCount === 1">1 resultaat gevonden</p>
     <p v-else>{{ resultCount }} resultaten gevonden</p>
   </caption>
 </template>
