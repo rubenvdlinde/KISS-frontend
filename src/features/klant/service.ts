@@ -8,9 +8,8 @@ import {
   type ServiceData,
   coerceToSingle,
 } from "@/services";
-import { computed } from "@vue/reactivity";
 import { mutate } from "swrv";
-import { type Ref, reactive } from "vue";
+import type { Ref } from "vue";
 import {
   getPersoonSearchUrl,
   getPersoonUrlByBsn,
