@@ -24,7 +24,7 @@ export default {
 import { UtrechtButton } from "@utrecht/web-component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
-import { useAttrs } from "vue";
+import { nextTick, useAttrs } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
 
@@ -40,8 +40,15 @@ const onStartContactMoment = async () => {
   if (contactmomentStore.wouldLoseProgress) {
     await waitForConfirmation();
   }
+  if (contactmomentStore.huidigContactmoment) {
+    contactmomentStore.huidigContactmoment.route =
+      router.currentRoute.value.fullPath;
+  }
   contactmomentStore.start();
   router.push("/klanten");
+  nextTick(() => {
+    document.getElementById("cm-notitieblok")?.focus();
+  });
 };
 
 async function waitForConfirmation() {

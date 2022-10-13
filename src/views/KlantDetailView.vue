@@ -10,8 +10,8 @@
         </li>
       </ul>
     </nav>
-    <simple-spinner v-if="loading" />
-    <klant-details v-else-if="klant" :klant="klant" />
+    <simple-spinner v-if="klant.loading" />
+    <klant-details v-else-if="klant.success" :klant="klant.data" />
     <application-message
       v-else
       message="Er is geen klant gevonden"
@@ -73,10 +73,8 @@ import {
   ContactmomentenOverzicht,
   useContactverzoekenByKlantId,
 } from "@/features/contactmoment";
-import { KlantDetails } from "@/features/klant";
+import { KlantDetails, useKlant } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import type { Klant } from "@/features/klant/types";
-import { fetchKlant } from "@/features/klant/service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
 import Pagination from "../nl-design-system/components/Pagination.vue";
@@ -85,59 +83,28 @@ import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
 
 const props = defineProps<{ klantId: string }>();
-
-const loading = ref(false);
-
+const klantId = computed(() => props.klantId);
 const contactmomentStore = useContactmomentStore();
-
-const klant = ref<Klant>();
+const klant = useKlant(klantId);
 
 watch(
-  () => props.klantId,
-  (klantId) => {
-    if (!klantId) {
-      klant.value = undefined;
-      return;
-    }
-
-    const fromStore = contactmomentStore.contactmomenten
-      .flatMap(({ vragen }) => vragen)
-      .flatMap(({ klanten }) => klanten)
-      .map(({ klant }) => klant)
-      .find(({ id }) => id === klantId);
-
-    if (fromStore) {
-      klant.value = fromStore;
-      return;
-    }
-
-    loading.value = true;
-
-    fetchKlant(klantId)
-      .then((newKlant) => {
-        klant.value = newKlant;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
+  () => klant.success && klant.data,
+  (k) => {
+    if (!k) return;
+    contactmomentStore.setKlant(k);
   },
   { immediate: true }
 );
 
-watch(klant, (k) => {
-  if (!k || k === contactmomentStore.klantVoorHuidigeVraag) return;
-  contactmomentStore.setKlant(k);
-});
-
 const contactverzoekenPage = ref(1);
 const contactverzoeken = useContactverzoekenByKlantId(
-  computed(() => props.klantId),
+  klantId,
   contactverzoekenPage
 );
 
 const contactmomentenPage = ref(1);
 const contactmomenten = useContactmomentenByKlantId(
-  computed(() => props.klantId),
+  klantId,
   contactmomentenPage
 );
 
@@ -145,7 +112,9 @@ const onContactmomentenNavigate = (page: number) => {
   contactmomentenPage.value = page;
 };
 
-const klantBsn = computed(() => klant.value?.bsn ?? "");
+const klantBsn = computed(() =>
+  !klant.success || !klant.data.bsn ? "" : klant.data.bsn
+);
 const zaken = useZakenByBsn(klantBsn);
 </script>
 

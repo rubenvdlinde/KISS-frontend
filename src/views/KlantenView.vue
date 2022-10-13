@@ -1,25 +1,13 @@
 <template>
   <article class="klant-panel">
-    <utrecht-heading :level="1" model-value>Klanten</utrecht-heading>
-    <klant-zoeker @klant-selected="klantGevonden" />
+    <utrecht-heading :level="1" model-value>Personen</utrecht-heading>
+    <klant-zoeker />
   </article>
 </template>
 
 <script setup lang="ts">
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-
-import { useContactmomentStore } from "@/stores/contactmoment";
 import { KlantZoeker } from "@/features/klant";
-import { useRouter } from "vue-router";
-import type { Klant } from "@/features/klant/types";
-const router = useRouter();
-//klant functies
-const contactmomentStore = useContactmomentStore();
-
-const klantGevonden = (klant: Klant) => {
-  contactmomentStore.setKlant(klant);
-  router.push({ name: "klantDetail", params: { klantId: klant.id } });
-};
 </script>
 
 <style scoped lang="scss">
