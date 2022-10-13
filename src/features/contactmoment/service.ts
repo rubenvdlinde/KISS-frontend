@@ -47,7 +47,6 @@ export const useGespreksResultaten = () => {
         const results = json?.results;
         if (!Array.isArray(results))
           throw new Error("unexpected json result: " + JSON.stringify(json));
-
         return results as Array<Gespreksresultaat>;
       });
 
