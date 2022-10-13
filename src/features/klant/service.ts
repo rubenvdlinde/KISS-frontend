@@ -1,13 +1,22 @@
-import type { PostcodeHuisnummer } from "@/helpers/validation";
 import {
   ServiceResult,
   fetchLoggedIn,
   type Paginated,
   parsePagination,
   throwIfNotOk,
+  parseJson,
+  type ServiceData,
+  coerceToSingle,
 } from "@/services";
+import { computed } from "@vue/reactivity";
 import { mutate } from "swrv";
-import type { Ref } from "vue";
+import { type Ref, reactive } from "vue";
+import {
+  getPersoonSearchUrl,
+  getPersoonUrlByBsn,
+  personenRootUrl,
+  searchPersonen,
+} from "./brp/service";
 
 import type { UpdateContactgegevensParams, Klant, Persoon } from "./types";
 
@@ -16,9 +25,6 @@ type QueryParam = [string, string][];
 type FieldParams = {
   email: string;
   telefoonnummer: string;
-  bsn: string;
-  geboortedatum: Date;
-  postcodeHuisnummer: PostcodeHuisnummer;
 };
 
 export function klantSearch<K extends KlantSearchField>(
@@ -29,16 +35,6 @@ export function klantSearch<K extends KlantSearchField>(
 
 export type KlantSearchField = keyof FieldParams;
 
-type PersoonSearchField = Extract<
-  KlantSearchField,
-  "bsn" | "geboortedatum" | "postcodeHuisnummer"
->;
-
-type ContactSearchField = Extract<
-  KlantSearchField,
-  "bsn" | "geboortedatum" | "postcodeHuisnummer"
->;
-
 type QueryDictionary = {
   [K in KlantSearchField]: (search: FieldParams[K]) => QueryParam;
 };
@@ -47,15 +43,6 @@ const queryDictionary: QueryDictionary = {
   email: (search) => [["emails.email", `%${search}%`]],
   telefoonnummer: (search) => [
     ["telefoonnummers.telefoonnummer", `%${search}%`],
-  ],
-  bsn: (search) => [["burgerservicenummer", search]],
-  geboortedatum: (search) => [
-    ["geboorte.datum.datum", search.toISOString().substring(0, 10)],
-  ],
-  postcodeHuisnummer: ({ postcode, huisnummer }) => [
-    ["verblijfplaats.postcode", postcode.numbers + postcode.digits],
-
-    ["verblijfplaats.huisnummer", huisnummer],
   ],
 };
 
@@ -156,28 +143,11 @@ function fetchKlantById(url: string) {
   return fetchLoggedIn(url).then(throwIfNotOk).then(parseJson).then(mapKlant);
 }
 
-function forceOne<T>(paginated: Paginated<T>) {
-  if (paginated.page.length === 0) return undefined;
-  if (paginated.page.length === 1) return paginated.page[0];
-  throw new Error();
-}
-
-const fetchKlantByBsn = (url: string) => searchKlanten(url).then(forceOne);
-
 export function useKlant(id: Ref<string>) {
   return ServiceResult.fromFetcher(
     () => getKlantIdUrl(id.value),
     fetchKlantById
   );
-}
-
-async function parseJson(r: Response) {
-  try {
-    return await r.json();
-  } catch (error) {
-    console.error("json error: " + r.url);
-    throw error;
-  }
 }
 
 function updateContactgegevens({
@@ -216,70 +186,10 @@ export function useUpdateContactGegevens() {
   return ServiceResult.fromSubmitter(updateContactgegevens);
 }
 
-function getPersoonUrl(bsn: string) {
-  if (!bsn) return "";
-  const url = new URL(window.gatewayBaseUri + "/api/ingeschrevenpersonen");
-  url.searchParams.set("burgerservicenummer", bsn);
-  url.searchParams.set("extend[]", "all");
-  return url.toString();
-}
-
-function mapPersoon(json: any): Persoon {
-  const { verblijfplaats, naam, geboorte } = json?.embedded ?? {};
-  const { datum, plaats, land } = geboorte?.embedded ?? {};
-  const geboortedatum =
-    datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
-  return {
-    _brand: "persoon",
-    postcode: verblijfplaats?.postcode,
-    huisnummer: verblijfplaats?.huisnummer?.toString(),
-    bsn: json?.burgerservicenummer,
-    geboortedatum,
-    voornaam: naam?.voornamen,
-    voorvoegselAchternaam: naam?.voorvoegsel,
-    achternaam: naam?.geslachtsnaam,
-    geboorteplaats: plaats,
-    geboorteland: land,
-  };
-}
-
-function fetchPersoonByBsn(url: string) {
-  return fetchPersonen(url).then(forceOne);
-}
-
-export function usePersoonByBsn(bsn: Ref<string>) {
-  const getUrl = () => getPersoonUrl(bsn.value);
-  return ServiceResult.fromFetcher(getUrl, fetchPersoonByBsn);
-}
-
-const fetchPersonen = (url: string) => {
-  return fetchLoggedIn(url)
-    .then(throwIfNotOk)
-    .then(parseJson)
-    .then((p) => parsePagination(p, mapPersoon))
-    .then((p) => {
-      p.page.forEach((persoon) => {
-        mutate(getPersoonUrl(persoon.bsn), persoon);
-      });
-      return p;
-    });
-};
-
-const personenRootUrl = window.gatewayBaseUri + "/api/ingeschrevenpersonen";
-
-function getPersoonSearchUrl<K extends PersoonSearchField>(
-  search: KlantSearch<K> | undefined,
-  page: number | undefined
-) {
-  if (!search) return "";
-  const url = new URL(personenRootUrl);
-  getQueryParams<K>(search).forEach((tuple) => {
-    url.searchParams.set(...tuple);
-  });
-  url.searchParams.set("extend[]", "all");
-  url.searchParams.set("page", page?.toString() ?? "1");
-  return url.toString();
-}
+const searchKlantenOrPersonen = (
+  url: string
+): Promise<Paginated<Klant> | Paginated<Persoon>> =>
+  url.includes(personenRootUrl) ? searchPersonen(url) : searchKlanten(url);
 
 export function useUberSearch<K extends KlantSearchField>(
   params: KlantSearchParameters<K>
@@ -299,39 +209,38 @@ export function useUberSearch<K extends KlantSearchField>(
     return getPersoonSearchUrl(search as any, page);
   };
 
-  const fetcher = (
-    url: string
-  ): Promise<Paginated<Persoon> | Paginated<Klant>> => {
-    return url.includes(personenRootUrl)
-      ? fetchPersonen(url)
-      : searchKlanten(url);
-  };
-
-  return ServiceResult.fromFetcher(getUrl, fetcher);
+  return ServiceResult.fromFetcher(getUrl, searchKlantenOrPersonen);
 }
 
-export function useEnrichPersoon(input: Ref<Persoon | Klant>) {
+export function useEnrichPersoon(
+  input: Ref<Persoon | Klant>
+): ServiceData<Persoon | Klant | undefined> {
   const getUrl = () => {
     const { bsn, _brand } = input.value;
     if (!bsn) return "";
     if (_brand === "persoon") return getKlantBsnUrl(bsn);
-    return getPersoonUrl(bsn);
+    return getPersoonUrlByBsn(bsn);
   };
 
-  const fetcher = (url: string): Promise<Persoon | Klant | undefined> =>
-    url.includes(personenRootUrl)
-      ? fetchPersoonByBsn(url)
-      : fetchKlantByBsn(url);
-
-  return ServiceResult.fromFetcher(getUrl, fetcher);
+  const paginated = ServiceResult.fromFetcher(getUrl, searchKlantenOrPersonen);
+  return coerceToSingle(paginated);
 }
 
-export async function initializeKlant(bsn: string) {
+export async function ensureKlant(bsn: string) {
   const bsnUrl = getKlantBsnUrl(bsn);
   if (!bsnUrl) throw new Error();
 
-  const existing = await fetchKlantByBsn(bsnUrl);
-  if (existing) return existing;
+  const existing = await searchKlanten(bsnUrl);
+
+  if (existing.page.length) {
+    const first = existing.page[0];
+    if (first) {
+      mutate(bsnUrl, existing);
+      const idUrl = getKlantIdUrl(first.id);
+      mutate(idUrl, first);
+      return first;
+    }
+  }
 
   const response = await fetchLoggedIn(klantRootUrl, {
     method: "POST",
@@ -350,7 +259,6 @@ export async function initializeKlant(bsn: string) {
   const idUrl = getKlantIdUrl(newKlant.id);
 
   mutate(idUrl, newKlant);
-  mutate(bsnUrl, newKlant);
 
   return newKlant;
 }

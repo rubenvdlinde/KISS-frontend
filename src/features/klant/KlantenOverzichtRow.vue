@@ -50,7 +50,7 @@
 import { formatDateOnly } from "@/helpers/date";
 import { ServiceResult } from "@/services";
 import { computed } from "vue";
-import { initializeKlant, useEnrichPersoon } from "./service";
+import { ensureKlant, useEnrichPersoon } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useRouter } from "vue-router";
@@ -127,7 +127,7 @@ const result = computed(() => {
   const klant = getKlant();
   const create = async () => {
     if (!bsn || !klant.success || !!klant.data?.id) return;
-    const newKlant = await initializeKlant(bsn);
+    const newKlant = await ensureKlant(bsn);
     const url = getKlantUrl(newKlant);
     router.push(url);
   };

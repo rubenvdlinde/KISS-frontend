@@ -1,5 +1,12 @@
-import { onUnmounted, reactive, watch, type UnwrapNestedRefs } from "vue";
+import {
+  onUnmounted,
+  reactive,
+  watch,
+  computed,
+  type UnwrapNestedRefs,
+} from "vue";
 import useSWRV from "swrv";
+import type { Paginated } from "./pagination";
 
 export * from "./fetch-logged-in";
 export * from "./pagination";
@@ -284,4 +291,15 @@ export function createLookupList<K, V>(entries: [K, V][]): LookupList<K, V> {
 export function throwIfNotOk(response: Response) {
   if (!response.ok) throw new Error(response.statusText);
   return response as Response & { ok: true };
+}
+
+export function parseJson(response: Response) {
+  return response.json();
+}
+
+export function coerceToSingle<T>(paginated: ServiceData<Paginated<T>>) {
+  const data = computed(() =>
+    paginated.success ? paginated.data.page[0] : undefined
+  );
+  return reactive({ ...paginated, data }) as ServiceData<T | undefined>;
 }

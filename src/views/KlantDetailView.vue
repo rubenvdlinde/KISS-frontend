@@ -92,7 +92,7 @@ import Pagination from "../nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
-import KlantBrpGegevens from "../features/klant/KlantBrpGegevens.vue";
+import KlantBrpGegevens from "../features/klant/brp/KlantBrpGegevens.vue";
 
 const props = defineProps<{ klantId: string }>();
 const klantId = computed(() => props.klantId);

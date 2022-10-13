@@ -15,3 +15,11 @@ export function defaultPagination<T>(page: T[]): Paginated<T> {
     pageSize: page.length,
   };
 }
+
+export function enforceOneOrZero<T>(paginated: Paginated<T>): T | undefined {
+  if (paginated.page.length === 0) return undefined;
+  if (paginated.page.length === 1) return paginated.page[0];
+  throw new Error(
+    "expected a single result, instead found " + paginated.page.length
+  );
+}
