@@ -18,13 +18,13 @@
       messageType="error"
     ></application-message>
 
-    <simple-spinner v-if="persoon.loading" />
+    <simple-spinner v-if="klantBsn && persoon.loading" />
     <klant-brp-gegevens
       v-if="persoon.success && persoon.data"
       :persoon="persoon.data"
     />
     <application-message
-      v-else
+      v-if="persoon.error"
       message="Er ging iets mis bij het ophalen van de BRP gegevens"
       messageType="error"
     />
