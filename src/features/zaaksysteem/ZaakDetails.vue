@@ -22,7 +22,7 @@
     </tabs-component>
 
     <div class="toelichting">
-      <zaak-toelichting :zaak="zaak" @zaak-updated="onZaakUpdated" />
+      <zaak-toelichting :zaak="zaak" />
     </div>
   </section>
 </template>
@@ -40,8 +40,6 @@ import ZaakContactmomenten from "./components/ZaakContactmomenten.vue";
 defineProps<{
   zaak: ZaakDetails;
 }>();
-
-defineEmits(["zaakUpdated"]);
 
 const Tabs = {
   algemeen: "Algemeen",

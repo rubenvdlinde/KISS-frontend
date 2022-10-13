@@ -138,8 +138,8 @@ export const useZaakById = (id: Ref<string>) => {
 export async function updateToelichting(
   zaak: ZaakDetails,
   toelichting: string
-): Promise<ZaakDetails> {
-  const url = `${window.gatewayBaseUri}/api/zaken/${zaak.id}`;
+): Promise<void> {
+  const url = getZaakUrl(zaak.id);
   const res = await fetchLoggedIn(url, {
     method: "PUT",
     headers: {
@@ -148,7 +148,7 @@ export async function updateToelichting(
     },
     body: JSON.stringify({
       bronorganisatie: zaak.bronorganisatie,
-      startdatum: zaak.startdatum,
+      startdatum: zaak.startdatum?.toISOString()?.substring(0, 10),
       verantwoordelijkeOrganisatie: zaak.verantwoordelijkeOrganisatie,
       zaaktype: zaak.zaaktype,
       toelichting: toelichting,
@@ -158,7 +158,9 @@ export async function updateToelichting(
   if (!res.ok)
     throw new Error(`Expected to update toelichting: ${res.status.toString()}`);
 
-  return res.json();
+  const json = await res.json();
+  const updatedZaak = mapZaakDetails(json);
+  mutate(url, updatedZaak);
 }
 
 const mapDocumenten = (rawDocumenten: any[]) => {

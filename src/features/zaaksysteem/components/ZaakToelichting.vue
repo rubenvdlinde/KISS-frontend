@@ -26,8 +26,8 @@
       <utrecht-button
         :disabled="formIsLoading"
         modelValue
-        @click="toggleEditingToelichting"
-        type="button"
+        @click="cancel"
+        type="reset"
         appearance="secondary-action-button"
         >Annuleren</utrecht-button
       >
@@ -57,8 +57,6 @@ const props = defineProps<{
   zaak: ZaakDetails;
 }>();
 
-const emit = defineEmits(["zaakUpdated"]);
-
 const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
 const toelichtingInputValue = ref<string>(props.zaak.toelichting);
@@ -74,13 +72,17 @@ const toggleEditingToelichting = () => {
   isEditingToelichting.value = !isEditingToelichting.value;
 };
 
+const cancel = () => {
+  isEditingToelichting.value = false;
+  toelichtingInputValue.value = props.zaak.toelichting;
+};
+
 const submit = async () => {
   formIsLoading.value = true;
 
   updateToelichting(props.zaak, toelichtingInputValue.value)
     .then(() => {
       toast({ text: "De notitie is opgeslagen." });
-      emit("zaakUpdated");
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;
