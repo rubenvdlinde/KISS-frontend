@@ -24,7 +24,7 @@
               :title="tabName"
               :class="[
                 'icon-after',
-                tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
+                tabName === NotitieTabs.Contactverzoek ? 'phone-flip' : 'note',
               ]"
             ></span>
           </template>
@@ -41,7 +41,7 @@
               "
             />
           </template>
-          <template #[NotitieTabs.Terugbel]>
+          <template #[NotitieTabs.Contactverzoek]>
             <p v-if="contactverzoekIsSentToMedewerker">
               Contactverzoek verstuurd naar
               {{ contactverzoekIsSentToMedewerker }}
@@ -79,7 +79,7 @@ import {
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
-  Terugbel = "Contactverzoek maken",
+  Contactverzoek = "Contactverzoek maken",
 }
 
 const contactmomentStore = useContactmomentStore();
