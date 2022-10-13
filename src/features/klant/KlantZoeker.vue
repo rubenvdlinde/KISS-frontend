@@ -83,7 +83,7 @@
 
 <script lang="ts" setup>
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
-import { watch, ref } from "vue";
+import { watch, ref, computed } from "vue";
 import {
   createKlantSearch,
   type KlantSearch,
@@ -94,7 +94,6 @@ import KlantenOverzicht from "./KlantenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
 import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?
-import { computed } from "@vue/reactivity";
 import KlantAanmaken from "./KlantAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useRouter } from "vue-router";
