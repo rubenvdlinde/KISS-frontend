@@ -48,7 +48,7 @@ const queryDictionary: QueryDictionary = {
     ["geboorte.datum.datum", search.toISOString().substring(0, 10)],
   ],
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
-    ["verblijfplaats.postcode", postcode.numbers + postcode.digits],
+    ["verblijfplaats.postcode", `${postcode.numbers}${postcode.digits}`],
 
     ["verblijfplaats.huisnummer", huisnummer],
   ],
@@ -81,7 +81,7 @@ function mapPersoon(json: any): Persoon {
   };
 }
 
-export function getPersoonSearchUrl<K extends PersoonSearchField>(
+function getPersoonSearchUrl<K extends PersoonSearchField>(
   search: PersoonSearch<K> | undefined,
   page: number | undefined
 ) {
@@ -91,7 +91,10 @@ export function getPersoonSearchUrl<K extends PersoonSearchField>(
     url.searchParams.set(...tuple);
   });
   url.searchParams.set("extend[]", "all");
-  url.searchParams.set("page", page?.toString() ?? "1");
+  if (page !== undefined && page !== 1) {
+    url.searchParams.set("page", page.toString());
+  }
+
   return url.toString();
 }
 
@@ -107,19 +110,27 @@ export const searchPersonen = (url: string) => {
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
     .then(parseJson)
-    .then((p) => parsePagination(p, mapPersoon))
-    .then((p) => {
-      p.page.forEach((persoon) => {
-        mutate(getPersoonUrlByBsn(persoon.bsn), persoon);
-      });
-      return p;
-    });
+    .then((p) => parsePagination(p, mapPersoon));
 };
 
 export function usePersoonByBsn(
-  bsn: Ref<string>
+  bsn: Ref<string | undefined>
 ): ServiceData<Persoon | undefined> {
-  const getUrl = () => getPersoonUrlByBsn(bsn.value);
+  const getUrl = () => getPersoonUrlByBsn(bsn.value ?? "");
   const paginated = ServiceResult.fromFetcher(getUrl, searchPersonen);
   return coerceToSingle(paginated);
+}
+
+type UseSearchParams<K extends PersoonSearchField> = {
+  query: Ref<PersoonSearch<K> | undefined>;
+  page: Ref<number | undefined>;
+};
+
+export function useSearchPersonen<K extends PersoonSearchField>({
+  query: query,
+  page,
+}: UseSearchParams<K>) {
+  const getUrl = () => getPersoonSearchUrl(query.value, page.value);
+
+  return ServiceResult.fromFetcher(getUrl, searchPersonen);
 }

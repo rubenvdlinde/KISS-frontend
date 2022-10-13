@@ -23,10 +23,11 @@ export interface PostcodeHuisnummer {
 export function parsePostcodeHuisnummer(
   input: string
 ): PostcodeHuisnummer | Error {
-  const matches =
-    input.match(/([1-9][0-9]{3}).*([A-Z]{2}).*([0-9]+)/)?.filter(Boolean) ?? [];
+  const matches = input
+    .match(/ *([1-9]\d{3}) *([A-Za-z]{2}) *(\d*) */)
+    ?.filter(Boolean);
 
-  if (matches.length !== 4) {
+  if (matches?.length !== 4) {
     return new Error(
       "Voer een valide postcode en huisnummer in, bijvoorbeeld 1234 AZ 12"
     );
@@ -42,12 +43,11 @@ export function parsePostcodeHuisnummer(
 }
 
 export function parseDutchDate(input: string): Date | Error {
-  const matches =
-    input
-      .match(/([0-9][0-9]?)[-|/]([0-9][0-9]?)[-|/]([0-9]{4})$/)
-      ?.filter(Boolean) ?? [];
+  const matches = input
+    .match(/([0-9][0-9]?)[-|/]([0-9][0-9]?)[-|/]([0-9]{4})$/)
+    ?.filter(Boolean);
 
-  if (matches.length !== 4) {
+  if (matches?.length !== 4) {
     return new Error("Voer een valide datum in, bijvoorbeeld 23-12-1900");
   }
 

@@ -45,33 +45,41 @@
   </section>
 
   <section
-    v-if="store.klantSearchQuery?.query && !showKlantAanmaken"
+    v-if="
+      (store.klantSearchQuery?.query || store.persoonSearchQuery?.query) &&
+      !showKlantAanmaken
+    "
     class="search-section"
   >
-    <simple-spinner v-if="klanten.loading || personen.loading" />
-    <template v-else-if="klanten.success">
-      <klanten-overzicht :records="klanten.data.page">
-        <template #caption>
-          <SearchResultsCaption :results="klanten.data" />
-        </template>
-      </klanten-overzicht>
-      <pagination
-        class="pagination"
-        :pagination="klanten.data"
-        @navigate="navigate"
-      />
+    <template v-if="store.klantSearchQuery?.query">
+      <simple-spinner v-if="klanten.loading" />
+      <template v-if="klanten.success">
+        <klanten-overzicht :records="klanten.data.page">
+          <template #caption>
+            <SearchResultsCaption :results="klanten.data" />
+          </template>
+        </klanten-overzicht>
+        <pagination
+          class="pagination"
+          :pagination="klanten.data"
+          @navigate="navigate"
+        />
+      </template>
     </template>
-    <template v-else-if="personen.success">
-      <klanten-overzicht :records="personen.data.page">
-        <template #caption>
-          <SearchResultsCaption :results="personen.data" />
-        </template>
-      </klanten-overzicht>
-      <pagination
-        class="pagination"
-        :pagination="personen.data"
-        @navigate="navigate"
-      />
+    <template v-if="store.persoonSearchQuery?.query">
+      <simple-spinner v-if="personen.loading" />
+      <template v-if="personen.success">
+        <klanten-overzicht :records="personen.data.page">
+          <template #caption>
+            <SearchResultsCaption :results="personen.data" />
+          </template>
+        </klanten-overzicht>
+        <pagination
+          class="pagination"
+          :pagination="personen.data"
+          @navigate="navigate"
+        />
+      </template>
     </template>
     <application-message
       v-if="klanten.error"
@@ -101,6 +109,7 @@ import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
 import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
 import {
   createPersoonSearch,
+  useSearchPersonen,
   type PersoonSearch,
   type PersoonSearchField,
 } from "./brp/service";
@@ -189,12 +198,12 @@ watch(
 );
 
 const klanten = useSearchKlanten({
-  search: computed(() => store.value.klantSearchQuery),
+  query: computed(() => store.value.klantSearchQuery),
   page: computed(() => store.value.page),
 });
 
-const personen = useSearchKlanten({
-  search: computed(() => store.value.klantSearchQuery),
+const personen = useSearchPersonen({
+  query: computed(() => store.value.persoonSearchQuery),
   page: computed(() => store.value.page),
 });
 

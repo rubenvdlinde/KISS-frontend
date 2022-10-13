@@ -5,6 +5,7 @@ import {
   computed,
   type UnwrapNestedRefs,
   toRefs,
+  type UnwrapRef,
 } from "vue";
 import useSWRV from "swrv";
 import type { Paginated } from "./pagination";
@@ -299,9 +300,15 @@ export function parseJson(response: Response) {
 }
 
 export function coerceToSingle<T>(paginated: ServiceData<Paginated<T>>) {
-  const data = computed(() =>
-    paginated.success ? paginated.data.page?.[0] : undefined
-  );
+  return mapServiceData(paginated, (p) => p.page?.[0]) as ServiceData<
+    T | undefined
+  >;
+}
 
-  return reactive({ ...toRefs(paginated), data }) as ServiceData<T | undefined>;
+export function mapServiceData<TIn, TOut>(
+  input: ServiceData<TIn>,
+  mapper: (i: UnwrapRef<TIn>) => TOut
+): ServiceData<TOut> {
+  const data = computed(() => (input.success ? mapper(input.data) : undefined));
+  return reactive({ ...toRefs(input), data }) as ServiceData<TOut>;
 }

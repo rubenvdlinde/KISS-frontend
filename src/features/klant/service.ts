@@ -51,7 +51,7 @@ function getQueryParams<K extends KlantSearchField>(params: KlantSearch<K>) {
 }
 
 type KlantSearchParameters<K extends KlantSearchField = KlantSearchField> = {
-  search: Ref<KlantSearch<K> | undefined>;
+  query: Ref<KlantSearch<K> | undefined>;
   page: Ref<number | undefined>;
 };
 
@@ -118,7 +118,7 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
 }
 
 export function useSearchKlanten<K extends KlantSearchField>({
-  search,
+  query: search,
   page,
 }: KlantSearchParameters<K>) {
   const getUrl = () => getKlantSearchUrl(search.value, page.value);
@@ -141,7 +141,7 @@ function getKlantBsnUrl(bsn?: string) {
 }
 
 export function useKlantByBsn(
-  bsn: Ref<string>
+  bsn: Ref<string | undefined>
 ): ServiceData<Klant | undefined> {
   const getUrl = () => getKlantBsnUrl(bsn.value);
   const paginated = ServiceResult.fromFetcher(getUrl, searchKlanten);
