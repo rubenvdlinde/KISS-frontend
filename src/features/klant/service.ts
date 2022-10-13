@@ -226,7 +226,7 @@ function getPersoonUrl(bsn: string) {
 
 function mapPersoon(json: any): Persoon {
   const { verblijfplaats, naam, geboorte } = json?.embedded ?? {};
-  const { datum } = geboorte?.embedded ?? {};
+  const { datum, plaats, land } = geboorte?.embedded ?? {};
   const geboortedatum =
     datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
   return {
@@ -238,6 +238,8 @@ function mapPersoon(json: any): Persoon {
     voornaam: naam?.voornamen,
     voorvoegselAchternaam: naam?.voorvoegsel,
     achternaam: naam?.geslachtsnaam,
+    geboorteplaats: plaats,
+    geboorteland: land,
   };
 }
 

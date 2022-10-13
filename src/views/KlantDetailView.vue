@@ -10,21 +10,24 @@
         </li>
       </ul>
     </nav>
-    <template v-if="klantBsn">
-      <utrecht-heading model-value :level="2"> BRP gegevens</utrecht-heading>
-      <simple-spinner v-if="persoon.loading" />
-      <p v-if="persoon.success && persoon.data">
-        {{ persoon.data }}
-      </p>
-    </template>
     <simple-spinner v-if="klant.loading" />
-
     <klant-details v-else-if="klant.success" :klant="klant.data" />
     <application-message
       v-else
       message="Er is geen klant gevonden"
       messageType="error"
     ></application-message>
+
+    <simple-spinner v-if="persoon.loading" />
+    <klant-brp-gegevens
+      v-if="persoon.success && persoon.data"
+      :persoon="persoon.data"
+    />
+    <application-message
+      v-else
+      message="Er ging iets mis bij het ophalen van de BRP gegevens"
+      messageType="error"
+    />
 
     <utrecht-heading :level="2" model-value
       >Openstaande contactverzoeken</utrecht-heading
@@ -89,6 +92,7 @@ import Pagination from "../nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
+import KlantBrpGegevens from "../features/klant/KlantBrpGegevens.vue";
 
 const props = defineProps<{ klantId: string }>();
 const klantId = computed(() => props.klantId);

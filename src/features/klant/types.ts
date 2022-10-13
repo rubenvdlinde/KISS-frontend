@@ -24,4 +24,6 @@ export interface Persoon {
   voornaam: string;
   voorvoegselAchternaam?: string;
   achternaam: string;
+  geboorteplaats: string;
+  geboorteland: string;
 }
