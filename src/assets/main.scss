@@ -299,3 +299,28 @@ tr.row-link {
 th.row-link-header {
     font-size: 0;
 }
+
+.details-block {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-default);
+
+    dl {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(50, min-content);
+        column-gap: var(--spacing-default);
+
+        &:not(:first-child) {
+            margin-block-start: var(--spacing-default);
+        }
+    }
+
+    dt {
+        font-weight: 600;
+        grid-row-start: 1;
+    }
+
+    dd {
+        margin-block-start: var(--spacing-extrasmall);
+    }
+}
