@@ -101,15 +101,6 @@ function getKlantSearchUrl<K extends KlantSearchField>(
   return url.toString();
 }
 
-export function useKlanten<K extends KlantSearchField>(
-  params: KlantSearchParameters<K>
-) {
-  return ServiceResult.fromFetcher(
-    () => getKlantSearchUrl(params.search.value, params.page.value),
-    searchKlanten
-  );
-}
-
 function mapKlant(obj: any): Klant {
   const { subjectIdentificatie, emails, telefoonnummers } = obj?.embedded ?? {};
   const { inpBsn, verblijfsadres, geboortedatum } = subjectIdentificatie ?? {};
@@ -300,7 +291,7 @@ export type UberReturnType = ServiceData<
 export function useUberSearch<K extends KlantSearchField>(
   params: KlantSearchParameters<K>
 ): UberReturnType {
-  const initialUrl = () => {
+  const getUrl = () => {
     const search = params.search.value;
     const page = params.page.value || 1;
 
@@ -315,8 +306,7 @@ export function useUberSearch<K extends KlantSearchField>(
     return getPersoonSearchUrl(search as any, page);
   };
 
-  const initalSearcher = () => {
-    const url = initialUrl();
+  const fetcher = (url: string) => {
     return url.includes(personenRootUrl)
       ? fetchPersonen(url).then((paginated) => ({
           ...paginated,
@@ -336,5 +326,32 @@ export function useUberSearch<K extends KlantSearchField>(
         }));
   };
 
-  return ServiceResult.fromFetcher(initialUrl, initalSearcher);
+  return ServiceResult.fromFetcher(getUrl, fetcher);
+}
+
+export function useEnrichPersoon(input: Ref<CombinedPersoonSearchResult>) {
+  const getUrl = () => {
+    const { bsn, persoon, klant } = input.value;
+    if (!bsn || (persoon && klant)) return "";
+    if (persoon) return getKlantBsnUrl(bsn);
+    return getPersoonUrl(bsn);
+  };
+
+  const fetcher = (
+    url: string
+  ): Promise<{
+    persoon: Persoon | undefined;
+    klant: Klant | undefined;
+  }> =>
+    url.includes(personenRootUrl)
+      ? fetchPersoonByBsn(url).then((persoon) => ({
+          persoon,
+          klant: undefined,
+        }))
+      : fetchKlantByBsn(url).then((klant) => ({
+          klant,
+          persoon: undefined,
+        }));
+
+  return ServiceResult.fromFetcher(getUrl, fetcher);
 }
