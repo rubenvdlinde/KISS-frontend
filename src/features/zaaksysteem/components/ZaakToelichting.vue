@@ -26,8 +26,8 @@
       <utrecht-button
         :disabled="formIsLoading"
         modelValue
-        @click="toggleEditingToelichting"
-        type="button"
+        @click="cancel"
+        type="reset"
         appearance="secondary-action-button"
         >Annuleren</utrecht-button
       >
@@ -52,15 +52,10 @@ import {
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./../service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{
   zaak: ZaakDetails;
 }>();
-
-const emit = defineEmits(["zaakUpdated"]);
-
-const contactmomentStore = useContactmomentStore();
 
 const formIsLoading = ref<boolean>(false);
 const isEditingToelichting = ref<boolean>(false);
@@ -77,19 +72,17 @@ const toggleEditingToelichting = () => {
   isEditingToelichting.value = !isEditingToelichting.value;
 };
 
+const cancel = () => {
+  isEditingToelichting.value = false;
+  toelichtingInputValue.value = props.zaak.toelichting;
+};
+
 const submit = async () => {
   formIsLoading.value = true;
 
   updateToelichting(props.zaak, toelichtingInputValue.value)
-    .then((res) => {
+    .then(() => {
       toast({ text: "De notitie is opgeslagen." });
-      if (!contactmomentStore.huidigContactmoment) return;
-      contactmomentStore.upsertZaak(
-        res,
-        contactmomentStore.huidigContactmoment.huidigeVraag
-      );
-
-      emit("zaakUpdated");
     })
     .catch(() => {
       toelichtingInputValue.value = props.zaak.toelichting;

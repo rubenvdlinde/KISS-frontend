@@ -17,18 +17,18 @@
       </template>
 
       <template #[Tabs.contactmomenten]>
-        <zaak-contactmomenten :zaak="zaak" />
+        <zaak-contactmomenten :self="zaak.self" />
       </template>
     </tabs-component>
 
     <div class="toelichting">
-      <zaak-toelichting :zaak="zaak" @zaak-updated="bubbleZaakUpdated" />
+      <zaak-toelichting :zaak="zaak" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, ref } from "vue";
+import { ref } from "vue";
 import type { ZaakDetails } from "./types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ZaakToelichting from "./components/ZaakToelichting.vue";
@@ -41,18 +41,13 @@ defineProps<{
   zaak: ZaakDetails;
 }>();
 
-const emit = defineEmits(["zaakUpdated"]);
-const bubbleZaakUpdated = () => {
-  emit("zaakUpdated");
-};
-
-const Tabs = computed(() => ({
+const Tabs = {
   algemeen: "Algemeen",
   documenten: "Documenten",
   contactmomenten: "Contactmomenten",
-}));
+} as const;
 
-const activeTab = ref(Tabs.value.algemeen);
+const activeTab = ref(Tabs.algemeen);
 </script>
 
 <style scoped lang="scss">
