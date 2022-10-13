@@ -45,12 +45,12 @@
   </section>
 
   <section
-    v-if="store.searchQuery?.query && !showKlantAanmaken"
+    v-if="store.klantSearchQuery?.query && !showKlantAanmaken"
     class="search-section"
   >
-    <simple-spinner v-if="klanten.loading" />
-    <template v-if="klanten.success">
-      <klanten-overzicht :klanten="klanten.data.page">
+    <simple-spinner v-if="klanten.loading || personen.loading" />
+    <template v-else-if="klanten.success">
+      <klanten-overzicht :records="klanten.data.page">
         <template #caption>
           <SearchResultsCaption :results="klanten.data" />
         </template>
@@ -58,6 +58,18 @@
       <pagination
         class="pagination"
         :pagination="klanten.data"
+        @navigate="navigate"
+      />
+    </template>
+    <template v-else-if="personen.success">
+      <klanten-overzicht :records="personen.data.page">
+        <template #caption>
+          <SearchResultsCaption :results="personen.data" />
+        </template>
+      </klanten-overzicht>
+      <pagination
+        class="pagination"
+        :pagination="personen.data"
         @navigate="navigate"
       />
     </template>
@@ -73,9 +85,9 @@
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref } from "vue";
 import {
-  klantSearch,
-  useUberSearch,
+  createKlantSearch,
   type KlantSearch,
+  useSearchKlanten,
   type KlantSearchField,
 } from "./service";
 import KlantenOverzicht from "./KlantenOverzicht.vue";
@@ -88,9 +100,16 @@ import { ensureState } from "@/stores/create-store"; //todo: niet in de stores m
 import { useRouter } from "vue-router";
 import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
 import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
+import {
+  createPersoonSearch,
+  type PersoonSearch,
+  type PersoonSearchField,
+} from "./brp/service";
+
+type SearchFields = KlantSearchField | PersoonSearchField;
 
 const labels: {
-  readonly [K in KlantSearchField]: string;
+  readonly [K in SearchFields]: string;
 } = {
   email: "E-mailadres",
   telefoonnummer: "Telefoonnummer",
@@ -104,8 +123,11 @@ const store = ensureState({
   stateFactory() {
     return {
       currentSearch: "",
-      searchField: "email" as KlantSearchField,
-      searchQuery: undefined as KlantSearch<KlantSearchField> | undefined,
+      searchField: "email" as SearchFields,
+      klantSearchQuery: undefined as KlantSearch<KlantSearchField> | undefined,
+      persoonSearchQuery: undefined as
+        | PersoonSearch<PersoonSearchField>
+        | undefined,
       page: 1,
     };
   },
@@ -113,14 +135,23 @@ const store = ensureState({
 
 const inputRef = ref();
 
-const currentQuery = computed(() => {
+const currentKlantQuery = computed(() => {
+  const { currentSearch, searchField } = store.value;
+  if (searchField === "telefoonnummer" || searchField === "email")
+    return createKlantSearch({
+      searchField,
+      query: currentSearch,
+    });
+});
+
+const currentPersoonQuery = computed(() => {
   const { currentSearch, searchField } = store.value;
 
   if (searchField === "geboortedatum") {
     const parsed = parseDutchDate(currentSearch);
     return parsed instanceof Error
       ? parsed
-      : klantSearch({
+      : createPersoonSearch({
           searchField,
           query: parsed,
         });
@@ -130,20 +161,22 @@ const currentQuery = computed(() => {
     const parsed = parsePostcodeHuisnummer(currentSearch);
     return parsed instanceof Error
       ? parsed
-      : klantSearch({
+      : createPersoonSearch({
           searchField,
           query: parsed,
         });
   }
 
-  return klantSearch({
-    searchField,
-    query: currentSearch,
-  });
+  if (searchField === "bsn") {
+    return createPersoonSearch({
+      searchField,
+      query: currentSearch,
+    });
+  }
 });
 
 watch(
-  [currentQuery, inputRef],
+  [currentPersoonQuery, inputRef],
   ([query, input]) => {
     if (!(input instanceof HTMLInputElement)) return;
     input.setCustomValidity(query instanceof Error ? query.message : "");
@@ -151,8 +184,13 @@ watch(
   { immediate: true }
 );
 
-const klanten = useUberSearch({
-  search: computed(() => store.value.searchQuery),
+const klanten = useSearchKlanten({
+  search: computed(() => store.value.klantSearchQuery),
+  page: computed(() => store.value.page),
+});
+
+const personen = useSearchKlanten({
+  search: computed(() => store.value.klantSearchQuery),
   page: computed(() => store.value.page),
 });
 
@@ -187,8 +225,10 @@ watch(singleKlantId, (newId, oldId) => {
 });
 
 const handleSearch = () => {
-  if (currentQuery.value instanceof Error) return;
-  store.value.searchQuery = currentQuery.value;
+  store.value.klantSearchQuery = currentKlantQuery.value;
+  if (!(currentPersoonQuery.value instanceof Error)) {
+    store.value.persoonSearchQuery = currentPersoonQuery.value;
+  }
   store.value.page = 1;
 };
 </script>

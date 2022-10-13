@@ -5,17 +5,11 @@ import {
   parsePagination,
   throwIfNotOk,
   parseJson,
-  type ServiceData,
   coerceToSingle,
+  type ServiceData,
 } from "@/services";
 import { mutate } from "swrv";
 import type { Ref } from "vue";
-import {
-  getPersoonSearchUrl,
-  getPersoonUrlByBsn,
-  personenRootUrl,
-  searchPersonen,
-} from "./brp/service";
 
 import type { UpdateContactgegevensParams, Klant, Persoon } from "./types";
 
@@ -26,7 +20,7 @@ type FieldParams = {
   telefoonnummer: string;
 };
 
-export function klantSearch<K extends KlantSearchField>(
+export function createKlantSearch<K extends KlantSearchField>(
   args: KlantSearch<K>
 ): KlantSearch<K> {
   return args;
@@ -51,7 +45,7 @@ export type KlantSearch<K extends KlantSearchField> = {
 };
 
 function getQueryParams<K extends KlantSearchField>(params: KlantSearch<K>) {
-  return queryDictionary[params.searchField](params.query as any) as ReturnType<
+  return queryDictionary[params.searchField](params.query) as ReturnType<
     QueryDictionary[K]
   >;
 }
@@ -123,6 +117,14 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
     });
 }
 
+export function useSearchKlanten<K extends KlantSearchField>({
+  search,
+  page,
+}: KlantSearchParameters<K>) {
+  const getUrl = () => getKlantSearchUrl(search.value, page.value);
+  return ServiceResult.fromFetcher(getUrl, searchKlanten);
+}
+
 function getKlantIdUrl(id?: string) {
   if (!id) return "";
   const url = new URL(`${klantRootUrl}/${id}`);
@@ -138,11 +140,19 @@ function getKlantBsnUrl(bsn?: string) {
   return url.toString();
 }
 
+export function useKlantByBsn(
+  bsn: Ref<string>
+): ServiceData<Klant | undefined> {
+  const getUrl = () => getKlantBsnUrl(bsn.value);
+  const paginated = ServiceResult.fromFetcher(getUrl, searchKlanten);
+  return coerceToSingle(paginated);
+}
+
 function fetchKlantById(url: string) {
   return fetchLoggedIn(url).then(throwIfNotOk).then(parseJson).then(mapKlant);
 }
 
-export function useKlant(id: Ref<string>) {
+export function useKlantById(id: Ref<string>) {
   return ServiceResult.fromFetcher(
     () => getKlantIdUrl(id.value),
     fetchKlantById
@@ -183,46 +193,6 @@ function updateContactgegevens({
 
 export function useUpdateContactGegevens() {
   return ServiceResult.fromSubmitter(updateContactgegevens);
-}
-
-const searchKlantenOrPersonen = (
-  url: string
-): Promise<Paginated<Klant> | Paginated<Persoon>> =>
-  url.includes(personenRootUrl) ? searchPersonen(url) : searchKlanten(url);
-
-export function useUberSearch<K extends KlantSearchField>(
-  params: KlantSearchParameters<K>
-) {
-  const getUrl = () => {
-    const search = params.search.value;
-    const page = params.page.value || 1;
-
-    if (!search) return "";
-
-    if (
-      search.searchField === "telefoonnummer" ||
-      search.searchField === "email"
-    )
-      return getKlantSearchUrl(search, page);
-
-    return getPersoonSearchUrl(search as any, page);
-  };
-
-  return ServiceResult.fromFetcher(getUrl, searchKlantenOrPersonen);
-}
-
-export function useEnrichPersoon(
-  input: Ref<Persoon | Klant>
-): ServiceData<Persoon | Klant | undefined> {
-  const getUrl = () => {
-    const { bsn, _brand } = input.value;
-    if (!bsn) return "";
-    if (_brand === "persoon") return getKlantBsnUrl(bsn);
-    return getPersoonUrlByBsn(bsn);
-  };
-
-  const paginated = ServiceResult.fromFetcher(getUrl, searchKlantenOrPersonen);
-  return coerceToSingle(paginated);
 }
 
 export async function ensureKlant(bsn: string) {

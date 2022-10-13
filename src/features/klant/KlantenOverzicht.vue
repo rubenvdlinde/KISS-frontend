@@ -1,7 +1,7 @@
 <template>
   <table class="overview">
     <slot name="caption" />
-    <template v-if="klanten.length">
+    <template v-if="records.length">
       <thead>
         <tr>
           <th>Naam</th>
@@ -15,7 +15,7 @@
       </thead>
       <tbody>
         <klanten-overzicht-row
-          v-for="(record, idx) in klanten"
+          v-for="(record, idx) in records"
           :key="idx"
           :record="record"
           class="row-link"
@@ -29,5 +29,5 @@
 <script lang="ts" setup>
 import KlantenOverzichtRow from "./KlantenOverzichtRow.vue";
 import type { Klant, Persoon } from "./types";
-defineProps<{ klanten: Klant[] | Persoon[] }>();
+defineProps<{ records: Klant[] | Persoon[] }>();
 </script>

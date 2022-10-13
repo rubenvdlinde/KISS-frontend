@@ -4,6 +4,7 @@ import {
   watch,
   computed,
   type UnwrapNestedRefs,
+  toRefs,
 } from "vue";
 import useSWRV from "swrv";
 import type { Paginated } from "./pagination";
@@ -299,7 +300,8 @@ export function parseJson(response: Response) {
 
 export function coerceToSingle<T>(paginated: ServiceData<Paginated<T>>) {
   const data = computed(() =>
-    paginated.success ? paginated.data.page[0] : undefined
+    paginated.success ? paginated.data.page?.[0] : undefined
   );
-  return reactive({ ...paginated, data }) as ServiceData<T | undefined>;
+
+  return reactive({ ...toRefs(paginated), data }) as ServiceData<T | undefined>;
 }

@@ -6,6 +6,7 @@ import {
   parsePagination,
   ServiceResult,
   coerceToSingle,
+  type ServiceData,
 } from "@/services";
 import { mutate } from "swrv";
 import type { Ref } from "vue";
@@ -16,13 +17,13 @@ export const personenRootUrl =
 
 type QueryParam = [string, string][];
 
-type SearchPersoonFieldParams = {
+export type SearchPersoonFieldParams = {
   bsn: string;
   geboortedatum: Date;
   postcodeHuisnummer: PostcodeHuisnummer;
 };
 
-type PersoonSearchField = keyof SearchPersoonFieldParams;
+export type PersoonSearchField = keyof SearchPersoonFieldParams;
 
 type QueryDictionary = {
   [K in PersoonSearchField]: (
@@ -34,6 +35,12 @@ export type PersoonSearch<K extends PersoonSearchField> = {
   searchField: K;
   query: SearchPersoonFieldParams[K];
 };
+
+export function createPersoonSearch<K extends PersoonSearchField>(
+  args: PersoonSearch<K>
+): PersoonSearch<K> {
+  return args;
+}
 
 const queryDictionary: QueryDictionary = {
   bsn: (search) => [["burgerservicenummer", search]],
@@ -109,7 +116,9 @@ export const searchPersonen = (url: string) => {
     });
 };
 
-export function usePersoonByBsn(bsn: Ref<string>) {
+export function usePersoonByBsn(
+  bsn: Ref<string>
+): ServiceData<Persoon | undefined> {
   const getUrl = () => getPersoonUrlByBsn(bsn.value);
   const paginated = ServiceResult.fromFetcher(getUrl, searchPersonen);
   return coerceToSingle(paginated);

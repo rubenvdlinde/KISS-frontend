@@ -15,7 +15,7 @@
       <simple-spinner class="spinner" v-if="result.klant.loading" />
     </td>
     <td>
-      {{ record.bsn }}
+      {{ result.bsn }}
     </td>
     <template v-if="result.persoon.success">
       <td>
@@ -50,14 +50,22 @@
 import { formatDateOnly } from "@/helpers/date";
 import { ServiceResult } from "@/services";
 import { computed } from "vue";
-import { ensureKlant, useEnrichPersoon } from "./service";
+import { ensureKlant, useKlantByBsn } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useRouter } from "vue-router";
+import { usePersoonByBsn } from "./brp/service";
 
 const props = defineProps<{ record: Klant | Persoon }>();
-const record = computed(() => props.record);
-const enriched = useEnrichPersoon(record);
+const klantBsn = computed(() =>
+  props.record._brand !== "klant" || !props.record.bsn ? "" : props.record.bsn
+);
+const persoonBsn = computed(() =>
+  props.record._brand !== "persoon" || !props.record.bsn ? "" : props.record.bsn
+);
+
+const enrichtedPersoon = usePersoonByBsn(klantBsn);
+const enrichedKlant = useKlantByBsn(persoonBsn);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
@@ -87,11 +95,10 @@ function getKlant() {
   if (props.record._brand === "klant")
     return ServiceResult.success(mapKlant(props.record));
   if (!props.record.bsn) return ServiceResult.success(undefined);
-  if (!enriched.success) return enriched;
+  if (!enrichedKlant.success) return enrichedKlant;
   return {
-    ...enriched,
-    data:
-      enriched.data?._brand === "klant" ? mapKlant(enriched.data) : undefined,
+    ...enrichedKlant,
+    data: enrichedKlant.data && mapKlant(enrichedKlant.data),
   };
 }
 
@@ -110,20 +117,17 @@ function getPersoon() {
   if (props.record._brand === "persoon")
     return ServiceResult.success(mapPersoon(props.record));
   if (!props.record.bsn) return ServiceResult.success(undefined);
-  if (!enriched.success) return enriched;
+  if (!enrichtedPersoon.success) return enrichtedPersoon;
   return {
-    ...enriched,
-    data:
-      enriched.data?._brand === "persoon"
-        ? mapPersoon(enriched.data)
-        : undefined,
+    ...enrichtedPersoon,
+    data: enrichtedPersoon.data && mapPersoon(enrichtedPersoon.data),
   };
 }
 
 const router = useRouter();
 
 const result = computed(() => {
-  const bsn = record.value.bsn;
+  const bsn = klantBsn.value || persoonBsn.value;
   const klant = getKlant();
   const create = async () => {
     if (!bsn || !klant.success || !!klant.data?.id) return;
@@ -133,7 +137,7 @@ const result = computed(() => {
   };
 
   return {
-    bsn: record.value.bsn,
+    bsn,
     klant: klant,
     persoon: getPersoon(),
     create,

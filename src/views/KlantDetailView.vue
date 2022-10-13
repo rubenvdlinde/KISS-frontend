@@ -84,7 +84,7 @@ import {
   ContactmomentenOverzicht,
   useContactverzoekenByKlantId,
 } from "@/features/contactmoment";
-import { KlantDetails, useKlant, usePersoonByBsn } from "@/features/klant";
+import { KlantDetails, useKlantById } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
@@ -93,11 +93,12 @@ import { useContactmomentenByKlantId } from "@/features/shared/get-contactmoment
 import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
 import KlantBrpGegevens from "../features/klant/brp/KlantBrpGegevens.vue";
+import { usePersoonByBsn } from "@/features/klant/brp/service";
 
 const props = defineProps<{ klantId: string }>();
 const klantId = computed(() => props.klantId);
 const contactmomentStore = useContactmomentStore();
-const klant = useKlant(klantId);
+const klant = useKlantById(klantId);
 
 watch(
   () => klant.success && klant.data,
