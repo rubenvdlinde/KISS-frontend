@@ -1,6 +1,6 @@
 <template>
   <section>
-    <utrecht-heading :level="1" model-value>Klantinformatie</utrecht-heading>
+    <utrecht-heading :level="1" model-value>Persoonsinformatie</utrecht-heading>
     <nav>
       <ul>
         <li>
