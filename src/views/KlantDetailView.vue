@@ -5,7 +5,7 @@
       <ul>
         <li>
           <router-link :to="{ name: 'klanten' }">{{
-            "< Klanten zoeken"
+            "< Personen zoeken"
           }}</router-link>
         </li>
       </ul>
