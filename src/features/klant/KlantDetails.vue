@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <article class="details-block">
     <non-blocking-form @submit.prevent="submit">
       <header class="heading-container">
         <utrecht-heading model-value :level="level">
@@ -34,104 +34,90 @@
           </li>
         </menu>
       </header>
-      <table>
-        <thead>
-          <tr>
-            <th>Klantnummer</th>
-            <th>Naam</th>
-            <th>Telefoonnummer(s)</th>
-            <th>E-mailadres(sen)</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ klant.klantnummer }}</td>
-            <td>
-              {{
-                [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
-                  .filter((x) => x)
-                  .join(" ")
-              }}
-            </td>
-            <td>
-              <fieldset class="in-cell-edit" v-if="showForm">
-                <template v-for="(tel, idx) in telefoonnummers" :key="tel">
-                  <div>
-                    <non-blocking-errors
-                      :value="tel.telefoonnummer"
-                      :validate="customPhoneValidator"
-                    >
-                      <template #default>
-                        <input
-                          v-model="tel.telefoonnummer"
-                          type="tel"
-                          :name="`Telefoonnummer ${idx + 1}`"
-                          :aria-label="`Telefoonnummer ${idx + 1}`"
-                          required
-                          class="utrecht-textbox utrecht-textbox--html-input"
-                        />
-                      </template>
-                    </non-blocking-errors>
-                  </div>
-                  <button
-                    @click="removePhoneNumber(idx)"
-                    type="button"
-                    title="Telefoonnummer verwijderen"
-                    class="icon-before xmark remove-item"
-                  />
-                </template>
-                <button
-                  v-show="canAddPhone"
-                  title="Telefoonnummer toevoegen"
-                  type="button"
-                  @click="addPhoneNumber"
-                  class="add-item icon-after plus"
-                />
-              </fieldset>
-              <ul v-else>
-                <li
-                  v-for="({ telefoonnummer }, idx) in telefoonnummers"
-                  :key="idx"
-                >
-                  {{ telefoonnummer }}
-                </li>
-              </ul>
-            </td>
-            <td>
-              <fieldset class="in-cell-edit" v-if="showForm">
-                <template v-for="(email, idx) in emails" :key="email">
-                  <input
-                    type="email"
-                    v-model="email.email"
-                    :aria-label="`E-mailadres ${idx + 1}`"
-                    class="utrecht-textbox utrecht-textbox--html-input"
-                    required
-                  />
-                  <button
-                    @click="removeEmail(idx)"
-                    type="button"
-                    title="E-mail verwijderen"
-                    class="icon-before xmark remove-item"
-                  />
-                </template>
-                <button
-                  title="E-mail toevoegen"
-                  type="button"
-                  @click="addEmail"
-                  v-show="canAddEmail"
-                  class="add-item icon-after plus"
-                />
-              </fieldset>
-              <ul v-else>
-                <li v-for="({ email }, idx) in emails" :key="idx">
-                  {{ email }}
-                </li>
-              </ul>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <dl>
+        <dt>Klantnummer</dt>
+        <dd>{{ klant.klantnummer }}</dd>
+        <dt>Naam</dt>
+        <dd>
+          {{
+            [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
+              .filter((x) => x)
+              .join(" ")
+          }}
+        </dd>
+        <dt>E-mailadres</dt>
+        <dd v-for="(email, idx) in emails" :key="idx">
+          <fieldset v-if="showForm">
+            <non-blocking-errors
+              :value="email.email"
+              :validate="customPhoneValidator"
+            />
+            <input
+              v-model="email.email"
+              type="email"
+              :name="`E-mail ${idx + 1}`"
+              :aria-label="`E-mail ${idx + 1}`"
+              required
+              class="utrecht-textbox utrecht-textbox--html-input"
+            />
+            <button
+              @click="removeEmail(idx)"
+              type="button"
+              title="E-mail verwijderen"
+              class="icon-before xmark remove-item"
+            />
+          </fieldset>
+          <template v-else>{{ email.email }}</template>
+        </dd>
+        <dd v-if="showForm">
+          <button
+            :title="
+              canAddEmail ? 'E-mail toevoegen' : 'Vul eerst het lege veld in'
+            "
+            :disabled="!canAddEmail"
+            type="button"
+            @click="addEmail"
+            class="add-item icon-after plus"
+          />
+        </dd>
+        <dt>Telefoonnummer(s)</dt>
+        <dd v-for="(tel, idx) in telefoonnummers" :key="idx">
+          <fieldset v-if="showForm">
+            <non-blocking-errors
+              :value="tel.telefoonnummer"
+              :validate="customPhoneValidator"
+            />
+            <input
+              v-model="tel.telefoonnummer"
+              type="tel"
+              :name="`Telefoonnummer ${idx + 1}`"
+              :aria-label="`Telefoonnummer ${idx + 1}`"
+              required
+              class="utrecht-textbox utrecht-textbox--html-input"
+            />
+            <button
+              @click="removePhoneNumber(idx)"
+              type="button"
+              title="Telefoonnummer verwijderen"
+              class="icon-before xmark remove-item"
+            />
+          </fieldset>
+          <template v-else>{{ tel.telefoonnummer }}</template>
+        </dd>
+        <dd v-if="showForm">
+          <button
+            :title="
+              canAddPhone
+                ? 'Telefoonnummer toevoegen'
+                : 'Vul eerst het lege veld in'
+            "
+            :disabled="!canAddPhone"
+            type="button"
+            @click="addPhoneNumber"
+            class="add-item icon-after plus"
+          />
+        </dd>
+      </dl>
     </non-blocking-form>
   </article>
 </template>
@@ -195,7 +181,11 @@ function focusLastInput(e: Event) {
 
 watch(
   () => props.klant,
-  () => reset(),
+  () => {
+    if (!editing.value) {
+      reset();
+    }
+  },
   { deep: true }
 );
 
@@ -258,23 +248,6 @@ const showForm = computed(() => !submitter.loading && editing.value);
 </script>
 
 <style lang="scss" scoped>
-article {
-  background-color: var(--color-secondary);
-  padding: var(--spacing-default);
-}
-
-table {
-  width: 100%;
-  margin-top: var(--spacing-default);
-}
-
-th,
-td {
-  width: 25%;
-  text-align: left;
-  padding-inline: var(--spacing-small);
-}
-
 .heading-container {
   display: flex;
   align-items: center;
@@ -327,9 +300,12 @@ td {
   font-size: 50%;
 }
 
-.in-cell-edit {
-  gap: var(--spacing-small);
-  display: grid;
-  grid-template-columns: 1fr min-content;
+dd fieldset {
+  display: flex;
+  gap: var(--spacing-default);
+}
+
+:disabled {
+  cursor: not-allowed;
 }
 </style>
