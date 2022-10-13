@@ -323,3 +323,32 @@ export function useEnrichPersoon(input: Ref<Persoon | Klant>) {
 
   return ServiceResult.fromFetcher(getUrl, fetcher);
 }
+
+export async function initializeKlant(bsn: string) {
+  const bsnUrl = getKlantBsnUrl(bsn);
+  if (!bsnUrl) throw new Error();
+
+  const existing = await fetchKlantByBsn(bsnUrl);
+  if (existing) return existing;
+
+  const response = await fetchLoggedIn(klantRootUrl, {
+    method: "POST",
+    body: JSON.stringify({
+      bronorganisatie: window.organisatieIds[0],
+      // TODO: WAT MOET HIER IN KOMEN?
+      klantnummer: "123",
+      subjectIdentificatie: { inpBsn: bsn },
+    }),
+  });
+
+  if (!response.ok) throw new Error();
+
+  const json = await response.json();
+  const newKlant = mapKlant(json);
+  const idUrl = getKlantIdUrl(newKlant.id);
+
+  mutate(idUrl, newKlant);
+  mutate(bsnUrl, newKlant);
+
+  return newKlant;
+}

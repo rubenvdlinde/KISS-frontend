@@ -36,6 +36,13 @@
         v-if="result.klant.success && result.klant.data?.link"
         v-bind="result.klant.data.link"
       />
+      <button
+        type="button"
+        v-else-if="result.klant.success"
+        @click="result.create()"
+      >
+        Aanmaken
+      </button>
     </td>
   </tr>
 </template>
@@ -43,13 +50,16 @@
 import { formatDateOnly } from "@/helpers/date";
 import { ServiceResult } from "@/services";
 import { computed } from "vue";
-import { useEnrichPersoon } from "./service";
+import { initializeKlant, useEnrichPersoon } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 const record = computed(() => props.record);
 const enriched = useEnrichPersoon(record);
+
+const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
 function mapKlant(klant: Klant) {
   const naam = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
@@ -67,7 +77,7 @@ function mapKlant(klant: Klant) {
       .filter(Boolean)
       .join(", "),
     link: {
-      to: `/klanten/${klant.id}`,
+      to: getKlantUrl(klant),
       title: `Details ${naam}`,
     },
   };
@@ -110,11 +120,23 @@ function getPersoon() {
   };
 }
 
+const router = useRouter();
+
 const result = computed(() => {
+  const bsn = record.value.bsn;
+  const klant = getKlant();
+  const create = async () => {
+    if (!bsn || !klant.success || !!klant.data?.id) return;
+    const newKlant = await initializeKlant(bsn);
+    const url = getKlantUrl(newKlant);
+    router.push(url);
+  };
+
   return {
     bsn: record.value.bsn,
-    klant: getKlant(),
+    klant: klant,
     persoon: getPersoon(),
+    create,
   };
 });
 </script>
