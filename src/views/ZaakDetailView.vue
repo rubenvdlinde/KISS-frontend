@@ -8,11 +8,7 @@
       message="Er kon geen zaak gevonden worden"
     ></application-message>
 
-    <zaak-details
-      :zaak="zaak.data"
-      v-if="zaak.success"
-      @zaak-updated="handleZaakUpdated"
-    />
+    <zaak-details :zaak="zaak.data" v-if="zaak.success" />
   </article>
 </template>
 
@@ -40,8 +36,4 @@ watch(
   },
   { immediate: true }
 );
-
-const handleZaakUpdated = () => {
-  zaak.refresh();
-};
 </script>
