@@ -5,12 +5,10 @@ import {
   type Paginated,
   parsePagination,
   throwIfNotOk,
-  type ServiceData,
 } from "@/services";
-import { computed } from "@vue/reactivity";
-import useSWRV, { mutate } from "swrv";
+import { mutate } from "swrv";
+import type { Ref } from "vue";
 
-import { watch, watchEffect, type ComputedRef, type Ref } from "vue";
 import type { UpdateContactgegevensParams, Klant, Persoon } from "./types";
 
 type QueryParam = [string, string][];
@@ -108,6 +106,7 @@ function mapKlant(obj: any): Klant {
 
   return {
     ...obj,
+    _brand: "klant",
     emails: emails ?? [],
     telefoonnummers: telefoonnummers ?? [],
     bsn: inpBsn,
@@ -231,6 +230,7 @@ function mapPersoon(json: any): Persoon {
   const geboortedatum =
     datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
   return {
+    _brand: "persoon",
     postcode: verblijfplaats?.postcode,
     huisnummer: verblijfplaats?.huisnummer?.toString(),
     bsn: json?.burgerservicenummer,
@@ -278,19 +278,10 @@ function getPersoonSearchUrl<K extends PersoonSearchField>(
   url.searchParams.set("page", page?.toString() ?? "1");
   return url.toString();
 }
-export type CombinedPersoonSearchResult = {
-  bsn: string | undefined;
-  persoon: Persoon | undefined;
-  klant: Klant | undefined;
-};
-
-export type UberReturnType = ServiceData<
-  Paginated<CombinedPersoonSearchResult>
->;
 
 export function useUberSearch<K extends KlantSearchField>(
   params: KlantSearchParameters<K>
-): UberReturnType {
+) {
   const getUrl = () => {
     const search = params.search.value;
     const page = params.page.value || 1;
@@ -306,52 +297,29 @@ export function useUberSearch<K extends KlantSearchField>(
     return getPersoonSearchUrl(search as any, page);
   };
 
-  const fetcher = (url: string) => {
+  const fetcher = (
+    url: string
+  ): Promise<Paginated<Persoon> | Paginated<Klant>> => {
     return url.includes(personenRootUrl)
-      ? fetchPersonen(url).then((paginated) => ({
-          ...paginated,
-          page: paginated.page.map<CombinedPersoonSearchResult>((persoon) => ({
-            persoon,
-            bsn: persoon.bsn,
-            klant: undefined,
-          })),
-        }))
-      : searchKlanten(url).then((paginated) => ({
-          ...paginated,
-          page: paginated.page.map<CombinedPersoonSearchResult>((klant) => ({
-            klant,
-            bsn: klant.bsn,
-            persoon: undefined,
-          })),
-        }));
+      ? fetchPersonen(url)
+      : searchKlanten(url);
   };
 
   return ServiceResult.fromFetcher(getUrl, fetcher);
 }
 
-export function useEnrichPersoon(input: Ref<CombinedPersoonSearchResult>) {
+export function useEnrichPersoon(input: Ref<Persoon | Klant>) {
   const getUrl = () => {
-    const { bsn, persoon, klant } = input.value;
-    if (!bsn || (persoon && klant)) return "";
-    if (persoon) return getKlantBsnUrl(bsn);
+    const { bsn, _brand } = input.value;
+    if (!bsn) return "";
+    if (_brand === "persoon") return getKlantBsnUrl(bsn);
     return getPersoonUrl(bsn);
   };
 
-  const fetcher = (
-    url: string
-  ): Promise<{
-    persoon: Persoon | undefined;
-    klant: Klant | undefined;
-  }> =>
+  const fetcher = (url: string): Promise<Persoon | Klant | undefined> =>
     url.includes(personenRootUrl)
-      ? fetchPersoonByBsn(url).then((persoon) => ({
-          persoon,
-          klant: undefined,
-        }))
-      : fetchKlantByBsn(url).then((klant) => ({
-          klant,
-          persoon: undefined,
-        }));
+      ? fetchPersoonByBsn(url)
+      : fetchKlantByBsn(url);
 
   return ServiceResult.fromFetcher(getUrl, fetcher);
 }

@@ -43,11 +43,11 @@
 import { formatDateOnly } from "@/helpers/date";
 import { ServiceResult } from "@/services";
 import { computed } from "vue";
-import { useEnrichPersoon, type CombinedPersoonSearchResult } from "./service";
+import { useEnrichPersoon } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 
-const props = defineProps<{ record: CombinedPersoonSearchResult }>();
+const props = defineProps<{ record: Klant | Persoon }>();
 const record = computed(() => props.record);
 const enriched = useEnrichPersoon(record);
 
@@ -74,13 +74,14 @@ function mapKlant(klant: Klant) {
 }
 
 function getKlant() {
-  const { klant, bsn } = props.record;
-  if (klant) return ServiceResult.success(mapKlant(klant));
-  if (!bsn) return ServiceResult.success(undefined);
+  if (props.record._brand === "klant")
+    return ServiceResult.success(mapKlant(props.record));
+  if (!props.record.bsn) return ServiceResult.success(undefined);
   if (!enriched.success) return enriched;
   return {
     ...enriched,
-    data: enriched.data.klant && mapKlant(enriched.data.klant),
+    data:
+      enriched.data?._brand === "klant" ? mapKlant(enriched.data) : undefined,
   };
 }
 
@@ -96,14 +97,16 @@ function mapPersoon(persoon: Persoon) {
 }
 
 function getPersoon() {
-  const { persoon, bsn } = props.record;
-  if (persoon) return ServiceResult.success(mapPersoon(persoon));
-  if (!bsn) return ServiceResult.success(undefined);
+  if (props.record._brand === "persoon")
+    return ServiceResult.success(mapPersoon(props.record));
+  if (!props.record.bsn) return ServiceResult.success(undefined);
   if (!enriched.success) return enriched;
-
   return {
     ...enriched,
-    data: enriched.data.persoon && mapPersoon(enriched.data.persoon),
+    data:
+      enriched.data?._brand === "persoon"
+        ? mapPersoon(enriched.data)
+        : undefined,
   };
 }
 
@@ -117,11 +120,13 @@ const result = computed(() => {
 </script>
 
 <style scoped lang="scss">
-td:empty::after {
-  content: "-";
-}
+td {
+  > .spinner {
+    font-size: inherit;
+  }
 
-td > .spinner {
-  font-size: inherit;
+  &:empty::after {
+    content: "-";
+  }
 }
 </style>

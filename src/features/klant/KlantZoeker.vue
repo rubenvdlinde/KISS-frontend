@@ -170,8 +170,10 @@ const handleCancelKlantAanmaken = () => {
 
 const singleKlantId = computed(() => {
   if (klanten.success && klanten.data.page.length === 1) {
-    const first = klanten.data.page[0].klant;
-    return first?.id;
+    const first = klanten.data.page[0];
+    if (first?._brand === "klant") {
+      return first.id;
+    }
   }
   return undefined;
 });

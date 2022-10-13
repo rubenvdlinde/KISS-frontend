@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { CombinedPersoonSearchResult } from "./service";
 import KlantenOverzichtRow from "./KlantenOverzichtRow.vue";
-defineProps<{ klanten: CombinedPersoonSearchResult[] }>();
+import type { Klant, Persoon } from "./types";
+defineProps<{ klanten: Klant[] | Persoon[] }>();
 </script>
