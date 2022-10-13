@@ -21,15 +21,27 @@ import { useZaakById } from "@/features/zaaksysteem/service";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZaakDetails from "@/features/zaaksysteem/ZaakDetails.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{ zaakId: string }>();
 
+const contactmomentStore = useContactmomentStore();
 const zaak = useZaakById(computed(() => props.zaakId));
+
+watch(
+  () => zaak.success && zaak.data,
+  (z) => {
+    if (!z || !contactmomentStore.huidigContactmoment) return;
+    contactmomentStore.upsertZaak(
+      z,
+      contactmomentStore.huidigContactmoment.huidigeVraag
+    );
+  },
+  { immediate: true }
+);
 
 const handleZaakUpdated = () => {
   zaak.refresh();
 };
 </script>
-
-<style scoped lang="scss"></style>
