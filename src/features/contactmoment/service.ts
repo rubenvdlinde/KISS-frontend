@@ -48,17 +48,6 @@ export const useGespreksResultaten = () => {
         if (!Array.isArray(results))
           throw new Error("unexpected json result: " + JSON.stringify(json));
 
-        const contactverzoekIndex = results.findIndex(
-          (resultaat) => resultaat.definitie === "Terugbelnotitie gemaakt"
-        );
-
-        if (contactverzoekIndex !== -1) {
-          results[contactverzoekIndex] = {
-            ...results[contactverzoekIndex],
-            definitie: "Contactverzoek gemaakt",
-          };
-        }
-
         return results as Array<Gespreksresultaat>;
       });
 
