@@ -136,11 +136,14 @@ const inputRef = ref();
 
 const currentKlantQuery = computed(() => {
   const { currentSearch, searchField } = store.value;
+
   if (searchField === "telefoonnummer" || searchField === "email")
     return createKlantSearch({
       searchField,
       query: currentSearch,
     });
+
+  return undefined;
 });
 
 const currentPersoonQuery = computed(() => {
@@ -172,6 +175,8 @@ const currentPersoonQuery = computed(() => {
       query: currentSearch,
     });
   }
+
+  return undefined;
 });
 
 watch(
