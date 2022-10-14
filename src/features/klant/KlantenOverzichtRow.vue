@@ -51,7 +51,7 @@
 <script lang="ts" setup>
 import { mapServiceData } from "@/services";
 import { computed, ref } from "vue";
-import { ensureKlant, useKlantByBsn } from "./service";
+import { ensureKlantForBsn, useKlantByBsn } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useRouter } from "vue-router";
@@ -116,7 +116,7 @@ const result = computed(() => {
     try {
       if (!bsn) return;
       dialog.value?.showModal();
-      const newKlant = await ensureKlant(bsn);
+      const newKlant = await ensureKlantForBsn(bsn);
       const url = getKlantUrl(newKlant);
       router.push(url);
     } finally {

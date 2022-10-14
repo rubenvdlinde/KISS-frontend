@@ -13,6 +13,11 @@ import type { Ref } from "vue";
 
 import type { UpdateContactgegevensParams, Klant } from "./types";
 
+enum KlantType {
+  Persoon = "natuurlijk_persoon",
+  Bedrijf = "vestiging",
+}
+
 type QueryParam = [string, string][];
 
 type FieldParams = {
@@ -117,14 +122,6 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
     });
 }
 
-export function useSearchKlanten<K extends KlantSearchField>({
-  query,
-  page,
-}: KlantSearchParameters<K>) {
-  const getUrl = () => getKlantSearchUrl(query.value, page.value);
-  return ServiceResult.fromFetcher(getUrl, searchKlanten);
-}
-
 function getKlantIdUrl(id?: string) {
   if (!id) return "";
   const url = new URL(`${klantRootUrl}/${id}`);
@@ -148,16 +145,6 @@ const getSingleBsnSearchId = (bsn: string | undefined) => {
   if (!url) return url;
   return url + "_single";
 };
-
-export function useKlantByBsn(
-  getBsn: () => string | undefined
-): ServiceData<Klant | undefined> {
-  const getUrl = () => getKlantBsnUrl(getBsn());
-
-  return ServiceResult.fromFetcher(getUrl, searchSingleKlant, {
-    getUniqueId: () => getSingleBsnSearchId(getBsn()),
-  });
-}
 
 function fetchKlantById(url: string) {
   return fetchLoggedIn(url).then(throwIfNotOk).then(parseJson).then(mapKlant);
@@ -202,11 +189,29 @@ function updateContactgegevens({
     }));
 }
 
+export function useSearchKlanten<K extends KlantSearchField>({
+  query,
+  page,
+}: KlantSearchParameters<K>) {
+  const getUrl = () => getKlantSearchUrl(query.value, page.value);
+  return ServiceResult.fromFetcher(getUrl, searchKlanten);
+}
+
+export function useKlantByBsn(
+  getBsn: () => string | undefined
+): ServiceData<Klant | undefined> {
+  const getUrl = () => getKlantBsnUrl(getBsn());
+
+  return ServiceResult.fromFetcher(getUrl, searchSingleKlant, {
+    getUniqueId: () => getSingleBsnSearchId(getBsn()),
+  });
+}
+
 export function useUpdateContactGegevens() {
   return ServiceResult.fromSubmitter(updateContactgegevens);
 }
 
-export async function ensureKlant(bsn: string) {
+export async function ensureKlantForBsn(bsn: string) {
   const bsnUrl = getKlantBsnUrl(bsn);
   const singleBsnId = getSingleBsnSearchId(bsn);
 
@@ -228,6 +233,7 @@ export async function ensureKlant(bsn: string) {
       // TODO: WAT MOET HIER IN KOMEN?
       klantnummer: "123",
       subjectIdentificatie: { inpBsn: bsn },
+      subjectType: KlantType.Persoon,
     }),
   });
 
