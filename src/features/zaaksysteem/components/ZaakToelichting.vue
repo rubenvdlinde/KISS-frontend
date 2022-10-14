@@ -67,7 +67,11 @@ watch(
 const submit = async () => {
   formIsLoading.value = true;
 
-  const newToelichtingen = `${props.zaak.toelichting}\n\n${newToelichtingInputValue.value}`;
+  const newToelichting = newToelichtingInputValue.value.replace(
+    /(\r\n|\n|\r)/gm,
+    " "
+  );
+  const newToelichtingen = `${props.zaak.toelichting}\n\n${newToelichting}`;
 
   updateToelichting(props.zaak, newToelichtingen)
     .then(() => {
