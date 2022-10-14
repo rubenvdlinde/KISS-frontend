@@ -1,6 +1,8 @@
 <template>
-  <simple-spinner v-if="createLoading" />
-  <tr class="row-link" v-else>
+  <dialog ref="dialog">
+    <simple-spinner />
+  </dialog>
+  <tr class="row-link">
     <template v-if="result.klant.success">
       <th scope="row" class="wrap">
         {{ result.klant.data?.naam }}
@@ -57,6 +59,8 @@ import { usePersoonByBsn } from "./brp/service";
 import { useEnricher } from "./service-data-enricher";
 import DutchDate from "../../components/DutchDate.vue";
 
+const dialog = ref<HTMLDialogElement>();
+
 const props = defineProps<{ record: Klant | Persoon }>();
 
 const getEnrichedData = useEnricher(
@@ -68,8 +72,6 @@ const getEnrichedData = useEnricher(
   useKlantByBsn,
   usePersoonByBsn
 );
-
-const createLoading = ref(false);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
@@ -111,11 +113,15 @@ const result = computed(() => {
   const [bsn, klantData, persoonData] = getEnrichedData();
 
   const create = async () => {
-    if (!bsn || !klantData.success || klantData.data?.id) return;
-    createLoading.value = true;
-    const newKlant = await ensureKlant(bsn);
-    const url = getKlantUrl(newKlant);
-    router.push(url);
+    try {
+      if (!bsn) return;
+      dialog.value?.showModal();
+      const newKlant = await ensureKlant(bsn);
+      const url = getKlantUrl(newKlant);
+      router.push(url);
+    } finally {
+      dialog.value?.close();
+    }
   };
 
   return {
@@ -136,5 +142,13 @@ td {
   &:empty::after {
     content: "-";
   }
+}
+
+dialog[open] {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  place-content: center;
+  place-items: center;
 }
 </style>

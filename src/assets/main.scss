@@ -269,8 +269,11 @@ table.overview {
             font-weight: 600;
         }
 
-        &.row-link a {
-            padding-inline-end: var(--spacing-default);
+        &.row-link {
+            a,
+            button {
+                padding-inline-end: var(--spacing-default);
+            }
         }
     }
 
