@@ -274,14 +274,16 @@ table.overview {
         }
     }
 
-    a {
+    a,
+    button {
         color: var(--color-tertiary);
     }
 }
 
 tr.row-link {
     position: relative;
-    a {
+    a,
+    button {
         @extend .icon-after;
         @extend .chevron-down;
 

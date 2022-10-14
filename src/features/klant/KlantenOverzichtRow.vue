@@ -1,5 +1,6 @@
 <template>
-  <tr class="row-link">
+  <simple-spinner v-if="createLoading" />
+  <tr class="row-link" v-else>
     <template v-if="result.klant.success">
       <th scope="row" class="wrap">
         {{ result.klant.data?.naam }}
@@ -30,23 +31,24 @@
       <simple-spinner class="spinner" v-if="result.persoon.loading" />
     </td>
     <td>
-      <router-link
-        v-if="result.klant.success && result.klant.data?.link"
-        v-bind="result.klant.data.link"
-      />
-      <button
-        type="button"
-        v-else-if="result.klant.success"
-        @click="result.create()"
-      >
-        Aanmaken
-      </button>
+      <template v-if="result.klant.success">
+        <router-link
+          v-if="result.klant.data?.link"
+          v-bind="result.klant.data.link"
+        />
+        <button
+          type="button"
+          title="Aanmaken"
+          v-else
+          @click="result.create()"
+        />
+      </template>
     </td>
   </tr>
 </template>
 <script lang="ts" setup>
 import { mapServiceData } from "@/services";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { ensureKlant, useKlantByBsn } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
@@ -66,6 +68,8 @@ const getEnrichedData = useEnricher(
   useKlantByBsn,
   usePersoonByBsn
 );
+
+const createLoading = ref(false);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
@@ -108,6 +112,7 @@ const result = computed(() => {
 
   const create = async () => {
     if (!bsn || !klantData.success || klantData.data?.id) return;
+    createLoading.value = true;
     const newKlant = await ensureKlant(bsn);
     const url = getKlantUrl(newKlant);
     router.push(url);
