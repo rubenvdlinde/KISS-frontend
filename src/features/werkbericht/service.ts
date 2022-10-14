@@ -168,7 +168,7 @@ export function useWerkberichten(
     ];
 
     params.push(["limit", "10"]);
-    params.push(["order[_dateModified]", "desc"]);
+    params.push(["order[modified]", "desc"]);
     params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
     params.push(["extend[]", "x-commongateway-metadata.self"]);
 
