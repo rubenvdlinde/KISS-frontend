@@ -16,7 +16,7 @@
             <application-message
               v-else-if="submitter.error"
               class="error-message"
-              message="Er ging iets mis. Probeer het later nog eens"
+              message="Er ging iets mis. Probeer het later nog eens."
               :auto-close="true"
               message-type="error"
             />
