@@ -19,12 +19,10 @@
     </td>
     <template v-if="result.persoon.success">
       <td>
-        <time
+        <dutch-date
           v-if="result.persoon.data?.geboortedatum"
-          :datetime="result.persoon.data.geboortedatum.datetime"
-        >
-          {{ result.persoon.data.geboortedatum.label }}
-        </time>
+          :date="result.persoon.data.geboortedatum"
+        />
       </td>
       <td>{{ result.persoon.data?.adres }}</td>
     </template>
@@ -47,29 +45,32 @@
   </tr>
 </template>
 <script lang="ts" setup>
-import { formatDateOnly } from "@/helpers/date";
-import { ServiceResult } from "@/services";
+import { mapServiceData } from "@/services";
 import { computed } from "vue";
 import { ensureKlant, useKlantByBsn } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
 import { useRouter } from "vue-router";
 import { usePersoonByBsn } from "./brp/service";
+import { useEnricher } from "./service-data-enricher";
+import DutchDate from "../../components/DutchDate.vue";
 
 const props = defineProps<{ record: Klant | Persoon }>();
-const klantBsn = computed(() =>
-  props.record._brand !== "klant" || !props.record.bsn ? "" : props.record.bsn
-);
-const persoonBsn = computed(() =>
-  props.record._brand !== "persoon" || !props.record.bsn ? "" : props.record.bsn
-);
 
-const enrichtedPersoon = usePersoonByBsn(klantBsn);
-const enrichedKlant = useKlantByBsn(persoonBsn);
+const getEnrichedData = useEnricher(
+  () =>
+    props.record._brand === "klant"
+      ? [props.record, undefined]
+      : [undefined, props.record],
+  (r) => r?.bsn,
+  useKlantByBsn,
+  usePersoonByBsn
+);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
-function mapKlant(klant: Klant) {
+function mapKlant(klant?: Klant) {
+  if (!klant) return klant;
   const naam = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
     .filter(Boolean)
     .join(" ");
@@ -91,46 +92,22 @@ function mapKlant(klant: Klant) {
   };
 }
 
-function getKlant() {
-  if (props.record._brand === "klant")
-    return ServiceResult.success(mapKlant(props.record));
-  if (!props.record.bsn) return ServiceResult.success(undefined);
-  if (!enrichedKlant.success) return enrichedKlant;
-  return {
-    ...enrichedKlant,
-    data: enrichedKlant.data && mapKlant(enrichedKlant.data),
-  };
-}
-
-function mapPersoon(persoon: Persoon) {
-  return {
-    ...persoon,
-    geboortedatum: persoon.geboortedatum && {
-      label: formatDateOnly(persoon.geboortedatum),
-      datetime: persoon.geboortedatum.toISOString().substring(0, 10),
-    },
-    adres: [persoon.postcode, persoon.huisnummer].filter(Boolean).join(" "),
-  };
-}
-
-function getPersoon() {
-  if (props.record._brand === "persoon")
-    return ServiceResult.success(mapPersoon(props.record));
-  if (!props.record.bsn) return ServiceResult.success(undefined);
-  if (!enrichtedPersoon.success) return enrichtedPersoon;
-  return {
-    ...enrichtedPersoon,
-    data: enrichtedPersoon.data && mapPersoon(enrichtedPersoon.data),
-  };
+function mapPersoon(persoon?: Persoon) {
+  return (
+    persoon && {
+      ...persoon,
+      adres: [persoon.postcode, persoon.huisnummer].filter(Boolean).join(" "),
+    }
+  );
 }
 
 const router = useRouter();
 
 const result = computed(() => {
-  const bsn = klantBsn.value || persoonBsn.value;
-  const klant = getKlant();
+  const [bsn, klantData, persoonData] = getEnrichedData();
+
   const create = async () => {
-    if (!bsn || !klant.success || !!klant.data?.id) return;
+    if (!bsn || !klantData.success || klantData.data?.id) return;
     const newKlant = await ensureKlant(bsn);
     const url = getKlantUrl(newKlant);
     router.push(url);
@@ -138,8 +115,8 @@ const result = computed(() => {
 
   return {
     bsn,
-    klant: klant,
-    persoon: getPersoon(),
+    klant: mapServiceData(klantData, mapKlant),
+    persoon: mapServiceData(persoonData, mapPersoon),
     create,
   };
 });

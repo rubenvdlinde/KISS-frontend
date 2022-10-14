@@ -125,12 +125,11 @@ const onContactmomentenNavigate = (page: number) => {
   contactmomentenPage.value = page;
 };
 
-const klantBsn = computed(() =>
-  !klant.success || !klant.data.bsn ? "" : klant.data.bsn
-);
+const getBsn = () => (!klant.success || !klant.data.bsn ? "" : klant.data.bsn);
+const klantBsn = computed(getBsn);
 
 const zaken = useZakenByBsn(klantBsn);
-const persoon = usePersoonByBsn(klantBsn);
+const persoon = usePersoonByBsn(getBsn);
 </script>
 
 <style scoped lang="scss">

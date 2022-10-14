@@ -5,13 +5,13 @@ import {
   parsePagination,
   throwIfNotOk,
   parseJson,
-  coerceToSingle,
   type ServiceData,
+  enforceOneOrZero,
 } from "@/services";
 import { mutate } from "swrv";
 import type { Ref } from "vue";
 
-import type { UpdateContactgegevensParams, Klant, Persoon } from "./types";
+import type { UpdateContactgegevensParams, Klant } from "./types";
 
 type QueryParam = [string, string][];
 
@@ -140,12 +140,23 @@ function getKlantBsnUrl(bsn?: string) {
   return url.toString();
 }
 
+const searchSingleKlant = (url: string) =>
+  searchKlanten(url).then(enforceOneOrZero);
+
+const getSingleBsnSearchId = (bsn: string | undefined) => {
+  const url = getKlantBsnUrl(bsn);
+  if (!url) return url;
+  return url + "_single";
+};
+
 export function useKlantByBsn(
-  bsn: Ref<string | undefined>
+  getBsn: () => string | undefined
 ): ServiceData<Klant | undefined> {
-  const getUrl = () => getKlantBsnUrl(bsn.value);
-  const paginated = ServiceResult.fromFetcher(getUrl, searchKlanten);
-  return coerceToSingle(paginated);
+  const getUrl = () => getKlantBsnUrl(getBsn());
+
+  return ServiceResult.fromFetcher(getUrl, searchSingleKlant, {
+    getUniqueId: () => getSingleBsnSearchId(getBsn()),
+  });
 }
 
 function fetchKlantById(url: string) {
@@ -197,18 +208,17 @@ export function useUpdateContactGegevens() {
 
 export async function ensureKlant(bsn: string) {
   const bsnUrl = getKlantBsnUrl(bsn);
-  if (!bsnUrl) throw new Error();
+  const singleBsnId = getSingleBsnSearchId(bsn);
 
-  const existing = await searchKlanten(bsnUrl);
+  if (!bsnUrl || !singleBsnId) throw new Error();
 
-  if (existing.page.length) {
-    const first = existing.page[0];
-    if (first) {
-      mutate(bsnUrl, existing);
-      const idUrl = getKlantIdUrl(first.id);
-      mutate(idUrl, first);
-      return first;
-    }
+  const first = await searchSingleKlant(bsnUrl);
+
+  if (first) {
+    mutate(singleBsnId, first);
+    const idUrl = getKlantIdUrl(first.id);
+    mutate(idUrl, first);
+    return first;
   }
 
   const response = await fetchLoggedIn(klantRootUrl, {
@@ -228,6 +238,7 @@ export async function ensureKlant(bsn: string) {
   const idUrl = getKlantIdUrl(newKlant.id);
 
   mutate(idUrl, newKlant);
+  mutate(singleBsnId, newKlant);
 
   return newKlant;
 }

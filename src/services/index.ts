@@ -299,12 +299,6 @@ export function parseJson(response: Response) {
   return response.json();
 }
 
-export function coerceToSingle<T>(paginated: ServiceData<Paginated<T>>) {
-  return mapServiceData(paginated, (p) => p.page?.[0]) as ServiceData<
-    T | undefined
-  >;
-}
-
 export function mapServiceData<TIn, TOut>(
   input: ServiceData<TIn>,
   mapper: (i: UnwrapRef<TIn>) => TOut

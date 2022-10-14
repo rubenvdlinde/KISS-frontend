@@ -5,8 +5,8 @@ import {
   parseJson,
   parsePagination,
   ServiceResult,
-  coerceToSingle,
   type ServiceData,
+  enforceOneOrZero,
 } from "@/services";
 import { mutate } from "swrv";
 import type { Ref } from "vue";
@@ -106,19 +106,38 @@ export function getPersoonUrlByBsn(bsn: string) {
   return url.toString();
 }
 
+function getPersoonUniqueBsnId(bsn: string | undefined) {
+  const url = getPersoonUrlByBsn(bsn ?? "");
+  if (!url) return url;
+  return url + "_single";
+}
+
+const searchSinglePersoon = (url: string) =>
+  searchPersonen(url).then(enforceOneOrZero);
+
 export const searchPersonen = (url: string) => {
   return fetchLoggedIn(url)
     .then(throwIfNotOk)
     .then(parseJson)
-    .then((p) => parsePagination(p, mapPersoon));
+    .then((p) => parsePagination(p, mapPersoon))
+    .then((p) => {
+      p.page.forEach((persoon) => {
+        const key = getPersoonUniqueBsnId(persoon.bsn);
+        if (key) {
+          mutate(key, persoon);
+        }
+      });
+      return p;
+    });
 };
 
 export function usePersoonByBsn(
-  bsn: Ref<string | undefined>
+  getBsn: () => string | undefined
 ): ServiceData<Persoon | undefined> {
-  const getUrl = () => getPersoonUrlByBsn(bsn.value ?? "");
-  const paginated = ServiceResult.fromFetcher(getUrl, searchPersonen);
-  return coerceToSingle(paginated);
+  const getUrl = () => getPersoonUrlByBsn(getBsn() ?? "");
+  return ServiceResult.fromFetcher(getUrl, searchSinglePersoon, {
+    getUniqueId: () => getPersoonUniqueBsnId(getBsn()),
+  });
 }
 
 type UseSearchParams<K extends PersoonSearchField> = {
