@@ -199,7 +199,7 @@ export function useSearchKlanten<K extends KlantSearchField>({
 
 export function useKlantByBsn(
   getBsn: () => string | undefined
-): ServiceData<Klant | undefined> {
+): ServiceData<Klant | null> {
   const getUrl = () => getKlantBsnUrl(getBsn());
 
   return ServiceResult.fromFetcher(getUrl, searchSingleKlant, {

@@ -4,49 +4,42 @@
     :handle-cancel="handleCancelKlantAanmaken"
   />
 
-  <section v-else class="actions">
-    <form @submit.prevent="handleSearch">
-      <fieldset class="radio-group">
-        <legend>Waar wil je op zoeken?</legend>
-        <label v-for="(label, field) in labels" :key="field">
-          <input type="radio" :value="field" v-model="store.field" required />
-          {{ label }}
-        </label>
-      </fieldset>
-      <fieldset class="search-bar">
-        <label>
-          <span>Zoek naar een persoon</span>
-          <input
-            type="search"
-            placeholder="Zoek naar een persoon"
-            ref="inputRef"
-            v-model="store.currentSearch"
-            @search="handleSearch"
-          />
-        </label>
-        <button title="Zoeken">
-          <span>Zoeken</span><utrecht-icon-loupe model-value />
-        </button>
-      </fieldset>
-    </form>
+  <template v-else>
+    <section class="actions">
+      <form @submit.prevent="handleSearch">
+        <fieldset class="radio-group">
+          <legend>Waar wil je op zoeken?</legend>
+          <label v-for="(label, field) in labels" :key="field">
+            <input type="radio" :value="field" v-model="store.field" required />
+            {{ label }}
+          </label>
+        </fieldset>
+        <fieldset class="search-bar">
+          <label>
+            <span>Zoek naar een persoon</span>
+            <input
+              type="search"
+              placeholder="Zoek naar een persoon"
+              ref="inputRef"
+              v-model="store.currentSearch"
+              @search="handleSearch"
+            />
+          </label>
+          <button title="Zoeken">
+            <span>Zoeken</span><utrecht-icon-loupe model-value />
+          </button>
+        </fieldset>
+      </form>
+      <button
+        @click="toggleKlantAanmaken"
+        type="button"
+        class="klant-aanmaken icon-before plus utrecht-button utrecht-button--secondary-action"
+      >
+        <span>Klant aanmaken</span>
+      </button>
+    </section>
 
-    <button
-      @click="toggleKlantAanmaken"
-      type="button"
-      class="klant-aanmaken icon-before plus utrecht-button utrecht-button--secondary-action"
-    >
-      <span>Klant aanmaken</span>
-    </button>
-  </section>
-
-  <section
-    v-if="
-      (store.klantSearchQuery?.query || store.persoonSearchQuery?.value) &&
-      !showKlantAanmaken
-    "
-    class="search-section"
-  >
-    <template v-if="store.klantSearchQuery?.query">
+    <section class="search-section" v-if="store.klantSearchQuery?.query">
       <simple-spinner v-if="klanten.loading" />
       <template v-if="klanten.success">
         <klanten-overzicht :records="klanten.data.page">
@@ -60,8 +53,14 @@
           @navigate="navigate"
         />
       </template>
-    </template>
-    <template v-if="store.persoonSearchQuery?.value">
+      <application-message
+        v-if="klanten.error"
+        messageType="error"
+        message="Er is een fout opgetreden"
+      />
+    </section>
+
+    <section class="search-section" v-else-if="store.persoonSearchQuery?.value">
       <simple-spinner v-if="personen.loading" />
       <template v-if="personen.success">
         <klanten-overzicht :records="personen.data.page">
@@ -75,13 +74,13 @@
           @navigate="navigate"
         />
       </template>
-    </template>
-    <application-message
-      v-if="klanten.error"
-      messageType="error"
-      message="Er is een fout opgetreden"
-    />
-  </section>
+      <application-message
+        v-if="personen.error"
+        messageType="error"
+        message="Er is een fout opgetreden"
+      />
+    </section>
+  </template>
 </template>
 
 <script lang="ts" setup>

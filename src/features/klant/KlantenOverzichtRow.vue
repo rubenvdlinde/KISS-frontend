@@ -5,7 +5,10 @@
   <tr class="row-link">
     <template v-if="result.klant.success">
       <th scope="row" class="wrap">
-        {{ result.klant.data?.naam }}
+        {{
+          result.klant.data?.naam ||
+          (result.persoon.success && result.persoon.data?.naam)
+        }}
       </th>
       <td class="wrap">
         {{ result.klant.data?.emails }}
@@ -75,8 +78,8 @@ const getEnrichedData = useEnricher(
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
-function mapKlant(klant?: Klant) {
-  if (!klant) return klant;
+function mapKlant(klant?: Klant | null) {
+  if (!klant) return null;
   const naam = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
     .filter(Boolean)
     .join(" ");
@@ -98,10 +101,19 @@ function mapKlant(klant?: Klant) {
   };
 }
 
-function mapPersoon(persoon?: Persoon) {
+function mapPersoon(persoon?: Persoon | null) {
+  if (!persoon) return null;
+  const naam = [
+    persoon.voornaam,
+    persoon.voorvoegselAchternaam,
+    persoon.achternaam,
+  ]
+    .filter(Boolean)
+    .join(" ");
   return (
     persoon && {
       ...persoon,
+      naam,
       adres: [persoon.postcode, persoon.huisnummer].filter(Boolean).join(" "),
     }
   );
@@ -124,10 +136,13 @@ const result = computed(() => {
     }
   };
 
+  const klant = mapServiceData(klantData, mapKlant);
+  const persoon = mapServiceData(persoonData, mapPersoon);
+
   return {
     bsn,
-    klant: mapServiceData(klantData, mapKlant),
-    persoon: mapServiceData(persoonData, mapPersoon),
+    klant,
+    persoon,
     create,
   };
 });

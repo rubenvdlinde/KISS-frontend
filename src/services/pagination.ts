@@ -16,8 +16,10 @@ export function defaultPagination<T>(page: T[]): Paginated<T> {
   };
 }
 
-export function enforceOneOrZero<T>(paginated: Paginated<T>): T | undefined {
-  if (paginated.page.length === 0) return undefined;
+export function enforceOneOrZero<T>(
+  paginated: Paginated<NonNullable<T>>
+): T | null {
+  if (paginated.page.length === 0) return null;
   if (paginated.page.length === 1) return paginated.page[0];
   throw new Error(
     "expected a single result, instead found " + paginated.page.length

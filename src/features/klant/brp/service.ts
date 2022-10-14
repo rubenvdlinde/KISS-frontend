@@ -1,3 +1,4 @@
+import { formatIsoDate } from "@/helpers/date";
 import type { PostcodeHuisnummer } from "@/helpers/validation";
 import {
   fetchLoggedIn,
@@ -43,9 +44,7 @@ export function persoonQuery<K extends PersoonSearchField>(
 
 const queryDictionary: PersoonQueryParams = {
   bsn: (search) => [["burgerservicenummer", search]],
-  geboortedatum: (search) => [
-    ["geboorte.datum.datum", search.toISOString().substring(0, 10)],
-  ],
+  geboortedatum: (search) => [["geboorte.datum.datum", formatIsoDate(search)]],
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
     ["verblijfplaats.postcode", `${postcode.numbers}${postcode.digits}`],
 
@@ -130,7 +129,7 @@ export const searchPersonen = (url: string) => {
 
 export function usePersoonByBsn(
   getBsn: () => string | undefined
-): ServiceData<Persoon | undefined> {
+): ServiceData<Persoon | null> {
   const getUrl = () => getPersoonUrlByBsn(getBsn() ?? "");
   return ServiceResult.fromFetcher(getUrl, searchSinglePersoon, {
     getUniqueId: () => getPersoonUniqueBsnId(getBsn()),

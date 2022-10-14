@@ -8,7 +8,6 @@ import {
   type UnwrapRef,
 } from "vue";
 import useSWRV from "swrv";
-import type { Paginated } from "./pagination";
 
 export * from "./fetch-logged-in";
 export * from "./pagination";
@@ -18,6 +17,8 @@ const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
   : // eslint-disable-next-line @typescript-eslint/no-empty-function
     () => {};
+
+type NotUndefined<T> = T extends undefined ? never : T;
 
 type Result<T> =
   | {
@@ -178,9 +179,9 @@ export const ServiceResult = {
    * @param fetcher a function to fetch the data
    * @param config optional configuration for the fetcher
    */
-  fromFetcher<T = unknown>(
+  fromFetcher<T>(
     url: string | (() => string),
-    fetcher: (url: string) => Promise<T>,
+    fetcher: (url: string) => Promise<NotUndefined<T>>,
     config?: FetcherConfig<T>
   ): ServiceData<T> & { refresh: () => void } {
     const result =
