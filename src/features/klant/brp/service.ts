@@ -12,12 +12,11 @@ import { mutate } from "swrv";
 import type { Ref } from "vue";
 import type { Persoon } from "../types";
 
-export const personenRootUrl =
-  window.gatewayBaseUri + "/api/ingeschrevenpersonen";
+const personenRootUrl = window.gatewayBaseUri + "/api/ingeschrevenpersonen";
 
 type QueryParam = [string, string][];
 
-export type SearchPersoonFieldParams = {
+type SearchPersoonFieldParams = {
   bsn: string;
   geboortedatum: Date;
   postcodeHuisnummer: PostcodeHuisnummer;
@@ -25,24 +24,24 @@ export type SearchPersoonFieldParams = {
 
 export type PersoonSearchField = keyof SearchPersoonFieldParams;
 
-type QueryDictionary = {
+type PersoonQueryParams = {
   [K in PersoonSearchField]: (
     search: SearchPersoonFieldParams[K]
   ) => QueryParam;
 };
 
-export type PersoonSearch<K extends PersoonSearchField> = {
-  searchField: K;
-  query: SearchPersoonFieldParams[K];
+export type PersoonQuery<K extends PersoonSearchField> = {
+  field: K;
+  value: SearchPersoonFieldParams[K];
 };
 
-export function createPersoonSearch<K extends PersoonSearchField>(
-  args: PersoonSearch<K>
-): PersoonSearch<K> {
+export function persoonQuery<K extends PersoonSearchField>(
+  args: PersoonQuery<K>
+): PersoonQuery<K> {
   return args;
 }
 
-const queryDictionary: QueryDictionary = {
+const queryDictionary: PersoonQueryParams = {
   bsn: (search) => [["burgerservicenummer", search]],
   geboortedatum: (search) => [
     ["geboorte.datum.datum", search.toISOString().substring(0, 10)],
@@ -54,11 +53,9 @@ const queryDictionary: QueryDictionary = {
   ],
 };
 
-function getQueryParams<K extends PersoonSearchField>(
-  params: PersoonSearch<K>
-) {
-  return queryDictionary[params.searchField](params.query) as ReturnType<
-    QueryDictionary[K]
+function getQueryParams<K extends PersoonSearchField>(params: PersoonQuery<K>) {
+  return queryDictionary[params.field](params.value) as ReturnType<
+    PersoonQueryParams[K]
   >;
 }
 
@@ -82,7 +79,7 @@ function mapPersoon(json: any): Persoon {
 }
 
 function getPersoonSearchUrl<K extends PersoonSearchField>(
-  search: PersoonSearch<K> | undefined,
+  search: PersoonQuery<K> | undefined,
   page: number | undefined
 ) {
   if (!search) return "";
@@ -98,7 +95,7 @@ function getPersoonSearchUrl<K extends PersoonSearchField>(
   return url.toString();
 }
 
-export function getPersoonUrlByBsn(bsn: string) {
+function getPersoonUrlByBsn(bsn: string) {
   if (!bsn) return "";
   const url = new URL(personenRootUrl);
   url.searchParams.set("burgerservicenummer", bsn);
@@ -141,12 +138,12 @@ export function usePersoonByBsn(
 }
 
 type UseSearchParams<K extends PersoonSearchField> = {
-  query: Ref<PersoonSearch<K> | undefined>;
+  query: Ref<PersoonQuery<K> | undefined>;
   page: Ref<number | undefined>;
 };
 
 export function useSearchPersonen<K extends PersoonSearchField>({
-  query: query,
+  query,
   page,
 }: UseSearchParams<K>) {
   const getUrl = () => getPersoonSearchUrl(query.value, page.value);

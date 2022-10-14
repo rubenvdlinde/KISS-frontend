@@ -20,7 +20,7 @@ type FieldParams = {
   telefoonnummer: string;
 };
 
-export function createKlantSearch<K extends KlantSearchField>(
+export function createKlantQuery<K extends KlantSearchField>(
   args: KlantSearch<K>
 ): KlantSearch<K> {
   return args;
@@ -40,12 +40,12 @@ const queryDictionary: QueryDictionary = {
 };
 
 export type KlantSearch<K extends KlantSearchField> = {
-  searchField: K;
+  field: K;
   query: FieldParams[K];
 };
 
 function getQueryParams<K extends KlantSearchField>(params: KlantSearch<K>) {
-  return queryDictionary[params.searchField](params.query) as ReturnType<
+  return queryDictionary[params.field](params.query) as ReturnType<
     QueryDictionary[K]
   >;
 }
@@ -118,10 +118,10 @@ function searchKlanten(url: string): Promise<Paginated<Klant>> {
 }
 
 export function useSearchKlanten<K extends KlantSearchField>({
-  query: search,
+  query,
   page,
 }: KlantSearchParameters<K>) {
-  const getUrl = () => getKlantSearchUrl(search.value, page.value);
+  const getUrl = () => getKlantSearchUrl(query.value, page.value);
   return ServiceResult.fromFetcher(getUrl, searchKlanten);
 }
 

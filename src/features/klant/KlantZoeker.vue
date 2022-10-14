@@ -9,12 +9,7 @@
       <fieldset class="radio-group">
         <legend>Waar wil je op zoeken?</legend>
         <label v-for="(label, field) in labels" :key="field">
-          <input
-            type="radio"
-            :value="field"
-            v-model="store.searchField"
-            required
-          />
+          <input type="radio" :value="field" v-model="store.field" required />
           {{ label }}
         </label>
       </fieldset>
@@ -46,7 +41,7 @@
 
   <section
     v-if="
-      (store.klantSearchQuery?.query || store.persoonSearchQuery?.query) &&
+      (store.klantSearchQuery?.query || store.persoonSearchQuery?.value) &&
       !showKlantAanmaken
     "
     class="search-section"
@@ -66,7 +61,7 @@
         />
       </template>
     </template>
-    <template v-if="store.persoonSearchQuery?.query">
+    <template v-if="store.persoonSearchQuery?.value">
       <simple-spinner v-if="personen.loading" />
       <template v-if="personen.success">
         <klanten-overzicht :records="personen.data.page">
@@ -93,7 +88,7 @@
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref, computed } from "vue";
 import {
-  createKlantSearch,
+  createKlantQuery,
   type KlantSearch,
   useSearchKlanten,
   type KlantSearchField,
@@ -108,9 +103,9 @@ import { useRouter } from "vue-router";
 import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
 import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
 import {
-  createPersoonSearch,
+  persoonQuery,
   useSearchPersonen,
-  type PersoonSearch,
+  type PersoonQuery,
   type PersoonSearchField,
 } from "./brp/service";
 
@@ -131,10 +126,10 @@ const store = ensureState({
   stateFactory() {
     return {
       currentSearch: "",
-      searchField: "email" as SearchFields,
+      field: "email" as SearchFields,
       klantSearchQuery: undefined as KlantSearch<KlantSearchField> | undefined,
       persoonSearchQuery: undefined as
-        | PersoonSearch<PersoonSearchField>
+        | PersoonQuery<PersoonSearchField>
         | undefined,
       page: 1,
     };
@@ -144,11 +139,11 @@ const store = ensureState({
 const inputRef = ref();
 
 const currentKlantQuery = computed(() => {
-  const { currentSearch, searchField } = store.value;
+  const { currentSearch, field } = store.value;
 
-  if (searchField === "telefoonnummer" || searchField === "email")
-    return createKlantSearch({
-      searchField,
+  if (field === "telefoonnummer" || field === "email")
+    return createKlantQuery({
+      field,
       query: currentSearch,
     });
 
@@ -156,32 +151,32 @@ const currentKlantQuery = computed(() => {
 });
 
 const currentPersoonQuery = computed(() => {
-  const { currentSearch, searchField } = store.value;
+  const { currentSearch, field } = store.value;
 
-  if (searchField === "geboortedatum") {
+  if (field === "geboortedatum") {
     const parsed = parseDutchDate(currentSearch);
     return parsed instanceof Error
       ? parsed
-      : createPersoonSearch({
-          searchField,
-          query: parsed,
+      : persoonQuery({
+          field,
+          value: parsed,
         });
   }
 
-  if (searchField === "postcodeHuisnummer") {
+  if (field === "postcodeHuisnummer") {
     const parsed = parsePostcodeHuisnummer(currentSearch);
     return parsed instanceof Error
       ? parsed
-      : createPersoonSearch({
-          searchField,
-          query: parsed,
+      : persoonQuery({
+          field,
+          value: parsed,
         });
   }
 
-  if (searchField === "bsn") {
-    return createPersoonSearch({
-      searchField,
-      query: currentSearch,
+  if (field === "bsn") {
+    return persoonQuery({
+      field,
+      value: currentSearch,
     });
   }
 
