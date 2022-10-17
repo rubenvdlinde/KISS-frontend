@@ -27,12 +27,11 @@ function combine<I, K, O>(
 ): Combined<I, K, O> {
   return {
     build(getInput) {
-      const getOserviceData = first.build(() => getInput()[0]);
-      const getIserviceData = other.build(() => getInput()[1]);
+      const getOserviceData = first.build(() => getInput()?.[0]);
+      const getIserviceData = other.build(() => getInput()?.[1]);
 
       return () => {
-        const either = getInput();
-        const [i, o] = either;
+        const [i, o] = getInput() ?? [];
 
         if (i !== undefined) {
           const [key, serviceDataO] = getOserviceData();
@@ -52,7 +51,7 @@ function combine<I, K, O>(
 
 type Combined<I, K, O> = {
   build: (
-    getInput: () => Either<I, O>
+    getInput: GetInput<Either<I, O>>
   ) => () => readonly [
     NonNullable<K> | undefined,
     ServiceData<NotUndefined<O>>,
