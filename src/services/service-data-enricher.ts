@@ -21,26 +21,10 @@ type Execute<K, O> = () => Result<K, O>;
 
 type Build<I, K, O> = (getInput: GetInput<I>) => Execute<K, O>;
 
-type CombinedResult<K, OA, OB> = readonly [
-  NonNullable<K> | undefined,
-  ServiceData<NotUndefined<OA>>,
-  ServiceData<NotUndefined<OB>>
-];
-
-type CombinedExecute<K, OA, OB> = () => CombinedResult<K, OA, OB>;
-
-type CombinedBuild<I, K, O> = (
-  getInput: () => Either<I, O>
-) => CombinedExecute<K, O, I>;
-
-type BuildableCombined<I, K, O> = {
-  build: CombinedBuild<I, K, O>;
-};
-
 function combine<I, K, O>(
   first: Enricher<I, K, O>,
   other: Enricher<O, K, I>
-): BuildableCombined<I, K, O> {
+): Combined<I, K, O> {
   return {
     build(getInput) {
       const getOserviceData = first.build(() => getInput()[0]);
@@ -52,21 +36,13 @@ function combine<I, K, O>(
 
         if (i !== undefined) {
           const [key, serviceDataO] = getOserviceData();
-          return [
-            key,
-            serviceDataO,
-            ServiceResult.success(i),
-          ] as CombinedResult<K, O, I>;
+          return [key, serviceDataO, ServiceResult.success(i)];
         }
 
         const [key, serviceDataI] = getIserviceData();
 
         if (o !== undefined)
-          return [
-            key,
-            ServiceResult.success(o),
-            serviceDataI,
-          ] as CombinedResult<K, O, I>;
+          return [key, ServiceResult.success(o), serviceDataI];
 
         throw new Error();
       };
@@ -74,18 +50,26 @@ function combine<I, K, O>(
   };
 }
 
+type Combined<I, K, O> = {
+  build: (
+    getInput: () => Either<I, O>
+  ) => () => readonly [
+    NonNullable<K> | undefined,
+    ServiceData<NotUndefined<O>>,
+    ServiceData<NotUndefined<I>>
+  ];
+};
+
 export type Either<A, B> = Readonly<
   [NonNullable<A>, undefined] | [undefined, NonNullable<B>]
 >;
 
 export type Enricher<I, K, O> = {
-  getKey: GetKey<K, I>;
-  getServiceData: GetServiceData<K, O>;
   build: Build<I, K, O>;
 };
 
 export type Combinable<I, K, O> = {
-  combineWith: (other: Enricher<O, K, I>) => BuildableCombined<I, K, O>;
+  combineWith: (other: Enricher<O, K, I>) => Combined<I, K, O>;
 };
 
 export const Enrich = {
@@ -97,8 +81,6 @@ export const Enrich = {
             getServiceData: GetServiceData<K, O>
           ): Enricher<I, K, O> & Combinable<I, K, O> {
             return {
-              getKey,
-              getServiceData,
               combineWith(other) {
                 return combine(this, other);
               },
