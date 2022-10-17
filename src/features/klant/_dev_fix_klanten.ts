@@ -1,9 +1,10 @@
+// ONLY use this during development, to fix existing test data without a subjectType
 import { fetchLoggedIn, throwIfNotOk, parseJson } from "@/services";
 import { KlantType } from "./types";
 
 const klantRootUrl = `${window.gatewayBaseUri}/api/klanten`;
 
-function getAllKlantUrl() {
+function getAllKlantenUrl() {
   const url = new URL(klantRootUrl);
   url.searchParams.set("limit", "999");
   url.searchParams.append("fields[]", "klantnummer");
@@ -12,7 +13,7 @@ function getAllKlantUrl() {
   return url.toString();
 }
 
-function fixPersoonAanduiding({
+function fixSubjectType({
   id,
   klantnummer,
   bronorganisatie,
@@ -35,9 +36,9 @@ function fixPersoonAanduiding({
   });
 }
 
-export function fixAllPersoonAanduiding() {
-  return fetchLoggedIn(getAllKlantUrl())
+export function fixAllSubjectTypes() {
+  return fetchLoggedIn(getAllKlantenUrl())
     .then(throwIfNotOk)
     .then(parseJson)
-    .then((json) => Promise.all(json?.results?.map(fixPersoonAanduiding)));
+    .then((json) => Promise.all(json?.results?.map(fixSubjectType)));
 }
