@@ -304,7 +304,7 @@
               >
                 {{ item.title }}
               </option>
-              <option :value="null">Anders</option>
+              <option :value="undefined">Anders</option>
             </select>
 
             <label
