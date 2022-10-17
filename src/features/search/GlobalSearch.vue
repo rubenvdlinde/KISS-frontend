@@ -104,37 +104,39 @@
                 @click.prevent="backToResults"
                 >Alle zoekresultaten</a
               >
-              <medewerker-detail
-                :medewerkerRaw="jsonObject"
-                v-if="source === 'Smoelenboek'"
-                :title="title"
-                :heading-level="2"
-              />
-              <kennisartikel-detail
-                v-else-if="source === 'Kennisartikel'"
-                :kennisartikel-raw="jsonObject"
-                :title="title"
-                :heading-level="2"
-              />
-              <article v-else>
-                <header>
-                  <utrecht-heading model-value :level="2"
-                    ><a
-                      v-if="url"
-                      :href="url.toString()"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {{ title }}
-                    </a>
-                    <template v-else>{{ title }}</template>
-                  </utrecht-heading>
-                  <small :class="`category-${source}`">{{ source }}</small>
-                </header>
-
-                <p v-if="content">{{ content }}</p>
-              </article>
-              <slot name="articleFooter" :id="url" :title="title"></slot>
+              <template v-if="id === state.currentId">
+                <medewerker-detail
+                  :medewerkerRaw="jsonObject"
+                  v-if="source === 'Smoelenboek'"
+                  :title="title"
+                  :heading-level="2"
+                />
+                <kennisartikel-detail
+                  v-else-if="source === 'Kennisartikel'"
+                  :kennisartikel-raw="jsonObject"
+                  :title="title"
+                  :heading-level="2"
+                  @kennisartikel-selected="handleKennisartikelSelected"
+                />
+                <article v-else>
+                  <header>
+                    <utrecht-heading model-value :level="2"
+                      ><a
+                        v-if="url"
+                        :href="url.toString()"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ title }}
+                      </a>
+                      <template v-else>{{ title }}</template>
+                    </utrecht-heading>
+                    <small :class="`category-${source}`">{{ source }}</small>
+                  </header>
+                  <p v-if="content">{{ content }}</p>
+                </article>
+                <slot name="articleFooter" :id="url" :title="title"></slot>
+              </template>
             </li>
           </ul>
         </template>
@@ -277,7 +279,6 @@ const selectSearchResult = (
   if (contactmomentStore.contactmomentLoopt) {
     if (source === "Smoelenboek")
       handleSmoelenboekSelected(jsonObject, self ?? "");
-    if (source === "Kennisartikel") handleKennisartikelSelected(jsonObject);
   }
 
   emit("result-selected", {

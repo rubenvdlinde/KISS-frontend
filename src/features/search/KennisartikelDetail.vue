@@ -45,6 +45,7 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
 import { ContentFeedback } from "../feedback/index";
+import type { Kennisartikel } from "./types";
 
 const knownSections = {
   specifiekeTekst: "Inleiding",
@@ -133,6 +134,29 @@ watch(
   () => {
     currentSectionIndex.value = 0;
   }
+);
+
+const KENNISARTIKEL_SELECTED = "kennisartikel-selected";
+
+const emit = defineEmits<{
+  (e: typeof KENNISARTIKEL_SELECTED, artikel: Kennisartikel): void;
+}>();
+
+watch(
+  processedSections,
+  (s) => {
+    if (!s.length) return;
+    const sections = s
+      .map(({ label }) => label)
+      .filter((x) => x !== knownSections.specifiekeTekst);
+
+    emit(KENNISARTIKEL_SELECTED, {
+      title: props.title,
+      url: props.kennisartikelRaw.url,
+      sections,
+    });
+  },
+  { immediate: true }
 );
 </script>
 
