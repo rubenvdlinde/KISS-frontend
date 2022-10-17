@@ -232,26 +232,25 @@ export const useContactmomentStore = defineStore("contactmoment", {
       }
     },
 
-    addKennisartikel(kennisartikel: any) {
+    addKennisartikel(kennisartikel: Kennisartikel) {
       const { huidigContactmoment } = this;
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
 
-      const newKennisartikelIndex = huidigeVraag.kennisartikelen.findIndex(
+      const record = huidigeVraag.kennisartikelen.find(
         (k) => k.kennisartikel.url === kennisartikel.url
       );
 
-      if (newKennisartikelIndex === -1) {
+      if (!record) {
         huidigeVraag.kennisartikelen.push({
-          kennisartikel: {
-            title:
-              kennisartikel.vertalingen[0]?.productTitelDecentraal ??
-              "Onbekende titel",
-            url: kennisartikel.url,
-          },
+          kennisartikel,
           shouldStore: true,
         });
+      } else {
+        record.kennisartikel = kennisartikel;
       }
+
+      huidigeVraag.primaireVraag = kennisartikel;
     },
 
     addWebsite(website: Website) {
@@ -259,13 +258,17 @@ export const useContactmomentStore = defineStore("contactmoment", {
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
 
-      const newWebsiteIndex = huidigeVraag.websites.findIndex(
+      const record = huidigeVraag.websites.find(
         (w) => w.website.url === website.url
       );
 
-      if (newWebsiteIndex === -1) {
+      if (!record) {
         huidigeVraag.websites.push({ website, shouldStore: true });
+      } else {
+        record.website = website;
       }
+
+      huidigeVraag.primaireVraag = website;
     },
 
     toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
@@ -286,6 +289,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
         nieuwsbericht,
         shouldStore: true,
       });
+
+      huidigeVraag.primaireVraag = nieuwsbericht;
     },
 
     toggleWerkinstructie(werkinstructie: Werkinstructie) {
@@ -306,6 +311,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
         werkinstructie,
         shouldStore: true,
       });
+
+      huidigeVraag.primaireVraag = werkinstructie;
     },
   },
 });
