@@ -67,7 +67,7 @@ const props = defineProps({
   },
   getErrorMessage: {
     type: Function as PropType<(e: Error) => string>,
-    default: () => "Er ging iets mis. Probeer het later nog eens",
+    default: () => "Er ging iets mis. Probeer het later nog eens.",
   },
   pageParamName: {
     type: String,
