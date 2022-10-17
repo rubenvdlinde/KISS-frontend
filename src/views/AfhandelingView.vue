@@ -289,7 +289,13 @@
               <option
                 v-for="(item, itemIdx) in [
                   ...vraag.websites.map((item) => item.website),
-                  ...vraag.kennisartikelen.map((item) => item.kennisartikel),
+                  ...vraag.kennisartikelen.flatMap((item) => [
+                    item.kennisartikel,
+                    ...item.kennisartikel.sections.map((section) => ({
+                      ...item.kennisartikel,
+                      title: [item.kennisartikel.title, section].join(' - '),
+                    })),
+                  ]),
                   ...vraag.nieuwsberichten.map((item) => item.nieuwsbericht),
                   ...vraag.werkinstructies.map((item) => item.werkinstructie),
                 ]"
