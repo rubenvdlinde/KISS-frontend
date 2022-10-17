@@ -1,4 +1,8 @@
-import type { ServiceData, NotUndefined } from "./service-data";
+import {
+  type ServiceData,
+  type NotUndefined,
+  ServiceResult,
+} from "./service-data";
 
 type GetKey<K, I> = (i: NonNullable<I>) => NonNullable<K> | undefined;
 
@@ -6,7 +10,7 @@ type GetServiceData<K, O> = (
   keyFunc: () => NonNullable<K> | undefined
 ) => ServiceData<NotUndefined<O>>;
 
-type GetInput<I> = () => NonNullable<I>;
+type GetInput<I> = () => NonNullable<I> | undefined;
 
 type Result<K, O> = readonly [
   NonNullable<K> | undefined,
@@ -17,13 +21,58 @@ type Execute<K, O> = () => Result<K, O>;
 
 type Build<I, K, O> = (getInput: GetInput<I>) => Execute<K, O>;
 
-type CombinedResult<K, OA, OB> = readonly [...Result<K, OA>, Result<K, OB>[1]];
+type CombinedResult<K, OA, OB> = readonly [
+  NonNullable<K> | undefined,
+  ServiceData<NotUndefined<OA>>,
+  ServiceData<NotUndefined<OB>>
+];
 
 type CombinedExecute<K, OA, OB> = () => CombinedResult<K, OA, OB>;
 
-type CombinedBuild<IA, IB, K, OA, OB> = (
-  getInput: GetInput<Either<IA, IB>>
-) => CombinedExecute<K, OA, OB>;
+type CombinedBuild<I, K, O> = (
+  getInput: () => Either<I, O>
+) => CombinedExecute<K, O, I>;
+
+type BuildableCombined<I, K, O> = {
+  build: CombinedBuild<I, K, O>;
+};
+
+function combine<I, K, O>(
+  first: Enricher<I, K, O>,
+  other: Enricher<O, K, I>
+): BuildableCombined<I, K, O> {
+  return {
+    build(getInput) {
+      const getOserviceData = first.build(() => getInput()[0]);
+      const getIserviceData = other.build(() => getInput()[1]);
+
+      return () => {
+        const either = getInput();
+        const [i, o] = either;
+
+        if (i !== undefined) {
+          const [key, serviceDataO] = getOserviceData();
+          return [
+            key,
+            serviceDataO,
+            ServiceResult.success(i),
+          ] as CombinedResult<K, O, I>;
+        }
+
+        const [key, serviceDataI] = getIserviceData();
+
+        if (o !== undefined)
+          return [
+            key,
+            ServiceResult.success(o),
+            serviceDataI,
+          ] as CombinedResult<K, O, I>;
+
+        throw new Error();
+      };
+    },
+  };
+}
 
 export type Either<A, B> = Readonly<
   [NonNullable<A>, undefined] | [undefined, NonNullable<B>]
@@ -32,45 +81,12 @@ export type Either<A, B> = Readonly<
 export type Enricher<I, K, O> = {
   getKey: GetKey<K, I>;
   getServiceData: GetServiceData<K, O>;
-};
-
-export type Combinable<I, K, O> = {
-  combineWith: <IB, OB>(
-    other: Enricher<IB, K, OB>
-  ) => {
-    build: CombinedBuild<I, IB, K, O, OB>;
-  };
-};
-
-export type Buildable<I, K, O> = {
   build: Build<I, K, O>;
 };
 
-function combine<IA, IB, K, OA, OB>(
-  first: Enricher<IA, K, OA>,
-  other: Enricher<IB, K, OB>
-): {
-  build: CombinedBuild<IA, IB, K, OA, OB>;
-} {
-  const getKey: GetKey<K, Either<IA, IB>> = (either) => {
-    const [i, ni] = either;
-    if (i !== undefined) return first.getKey(i);
-    if (ni !== undefined) return other.getKey(ni);
-    return undefined;
-  };
-
-  return {
-    build(getInput) {
-      const keyResolver = () => getKey(getInput());
-      const firstData = first.getServiceData(keyResolver);
-      const secondData = other.getServiceData(keyResolver);
-      return () => {
-        const key = keyResolver();
-        return [key, firstData, secondData] as const;
-      };
-    },
-  };
-}
+export type Combinable<I, K, O> = {
+  combineWith: (other: Enricher<O, K, I>) => BuildableCombined<I, K, O>;
+};
 
 export const Enrich = {
   from<I>() {
@@ -79,7 +95,7 @@ export const Enrich = {
         return {
           using<O>(
             getServiceData: GetServiceData<K, O>
-          ): Enricher<I, K, O> & Combinable<I, K, O> & Buildable<I, K, O> {
+          ): Enricher<I, K, O> & Combinable<I, K, O> {
             return {
               getKey,
               getServiceData,
@@ -87,9 +103,19 @@ export const Enrich = {
                 return combine(this, other);
               },
               build(getInput) {
-                const keyResolver = () => getKey(getInput());
-                const data = getServiceData(keyResolver);
-                return () => [keyResolver(), data];
+                const keyResolver = () => {
+                  const input = getInput();
+                  if (input !== undefined) return getKey(input);
+                };
+                const serviceData = getServiceData(keyResolver);
+                return () => {
+                  const key = keyResolver();
+                  const data =
+                    key === undefined
+                      ? ServiceResult.success(null)
+                      : serviceData;
+                  return [key, data];
+                };
               },
             };
           },
