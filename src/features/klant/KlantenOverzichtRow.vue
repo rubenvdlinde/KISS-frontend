@@ -56,30 +56,33 @@ import { mapServiceData } from "@/services";
 import { computed, ref } from "vue";
 import { ensureKlantForBsn, useKlantByBsn } from "./service";
 import type { Klant, Persoon } from "./types";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { useRouter } from "vue-router";
 import { usePersoonByBsn } from "./brp/service";
-import { useEnricher } from "./service-data-enricher";
-import DutchDate from "../../components/DutchDate.vue";
-
-const dialog = ref<HTMLDialogElement>();
+import { Enrich } from "@/services";
+import DutchDate from "@/components/DutchDate.vue";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
-const getEnrichedData = useEnricher(
-  () =>
+const enricherFromKlant = Enrich.from<Klant>()
+  .by(({ bsn }) => bsn)
+  .using(usePersoonByBsn);
+
+const enricherFromPersoon = Enrich.from<Persoon>()
+  .by(({ bsn }) => bsn)
+  .using(useKlantByBsn);
+
+const getEnrichedData = enricherFromKlant
+  .combineWith(enricherFromPersoon)
+  .build(() =>
     props.record._brand === "klant"
       ? [props.record, undefined]
-      : [undefined, props.record],
-  (k) => k.bsn,
-  (p) => p.bsn,
-  useKlantByBsn,
-  usePersoonByBsn
-);
+      : [undefined, props.record]
+  );
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
-function mapKlant(klant?: Klant | null) {
+function mapKlant(klant: Klant | null) {
   if (!klant) return null;
   const naam = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
     .filter(Boolean)
@@ -102,7 +105,7 @@ function mapKlant(klant?: Klant | null) {
   };
 }
 
-function mapPersoon(persoon?: Persoon | null) {
+function mapPersoon(persoon: Persoon | null) {
   if (!persoon) return null;
   const naam = [
     persoon.voornaam,
@@ -122,8 +125,10 @@ function mapPersoon(persoon?: Persoon | null) {
 
 const router = useRouter();
 
+const dialog = ref<HTMLDialogElement>();
+
 const result = computed(() => {
-  const [bsn, klantData, persoonData] = getEnrichedData();
+  const [bsn, persoonData, klantData] = getEnrichedData();
 
   const create = async () => {
     try {
