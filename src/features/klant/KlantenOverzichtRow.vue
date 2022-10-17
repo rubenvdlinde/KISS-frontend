@@ -2,7 +2,7 @@
   <dialog ref="dialog">
     <simple-spinner />
   </dialog>
-  <tr class="row-link">
+  <tr class="row-link" v-bind="$attrs">
     <template v-if="result.klant.success">
       <th scope="row" class="wrap">
         {{
