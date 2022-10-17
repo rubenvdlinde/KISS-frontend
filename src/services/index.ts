@@ -18,7 +18,10 @@ const logError = import.meta.env.DEV
   : // eslint-disable-next-line @typescript-eslint/no-empty-function
     () => {};
 
-type NotUndefined<T> = T extends undefined ? never : T;
+// sometimes, a query can return one or zero results.
+// in the case of zero results, we can NEVER return undefined from a fetcher.
+// because in that case, there is no way to discern between a succesful query with zero results vs a failed or loading query.
+type NotUndefined<T> = NonNullable<T> | null;
 
 type Result<T> =
   | {
