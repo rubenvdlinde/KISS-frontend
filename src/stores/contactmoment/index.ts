@@ -232,7 +232,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       }
     },
 
-    addKennisartikel(kennisartikel: any) {
+    addKennisartikel(kennisartikel: Kennisartikel) {
       const { huidigContactmoment } = this;
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
@@ -243,12 +243,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
 
       if (newKennisartikelIndex === -1) {
         huidigeVraag.kennisartikelen.push({
-          kennisartikel: {
-            title:
-              kennisartikel.vertalingen[0]?.productTitelDecentraal ??
-              "Onbekende titel",
-            url: kennisartikel.url,
-          },
+          kennisartikel,
           shouldStore: true,
         });
       }
