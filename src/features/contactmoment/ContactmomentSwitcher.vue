@@ -47,6 +47,13 @@ import { getKlantInfo } from "./helpers";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
+
+const closeDetails = () => {
+  const el = detailsEl.value;
+  if (!(el instanceof HTMLElement)) return;
+  el.removeAttribute("open");
+};
+
 const moments = computed(() =>
   contactmomentStore.contactmomenten.map((moment) => {
     return {
@@ -62,6 +69,7 @@ const moments = computed(() =>
         if (moment.route) {
           router.push(moment.route);
         }
+        closeDetails();
       },
     };
   })
@@ -80,11 +88,7 @@ const detailsEl = ref();
 
 const dialog = useConfirmDialog();
 
-onClickOutside(detailsEl, () => {
-  const el = detailsEl.value;
-  if (!(el instanceof HTMLElement)) return;
-  el.removeAttribute("open");
-});
+onClickOutside(detailsEl, closeDetails);
 </script>
 
 <style lang="scss" scoped>
