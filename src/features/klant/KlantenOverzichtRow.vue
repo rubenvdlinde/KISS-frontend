@@ -30,7 +30,7 @@
           :date="result.persoon.data.geboortedatum"
         />
       </td>
-      <td>{{ result.persoon.data?.adres }}</td>
+      <td>{{ result.persoon.data?.postcodeHuisnummer }}</td>
     </template>
     <td colspan="2" v-else>
       <simple-spinner class="spinner" v-if="result.persoon.loading" />
@@ -64,16 +64,16 @@ import DutchDate from "@/components/DutchDate.vue";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
-const enricherFromKlant = Enrich.from<Klant>()
+const fromKlantToPersoon = Enrich.from<Klant>()
   .by(({ bsn }) => bsn)
   .using(usePersoonByBsn);
 
-const enricherFromPersoon = Enrich.from<Persoon>()
+const fromPersoonToKlant = Enrich.from<Persoon>()
   .by(({ bsn }) => bsn)
   .using(useKlantByBsn);
 
-const getEnrichedData = enricherFromKlant
-  .combineWith(enricherFromPersoon)
+const getEnrichedData = fromKlantToPersoon
+  .combineWith(fromPersoonToKlant)
   .build(() =>
     props.record._brand === "klant"
       ? [props.record, undefined]
@@ -88,7 +88,6 @@ function mapKlant(klant: Klant | null) {
     .filter(Boolean)
     .join(" ");
   return {
-    ...klant,
     naam,
     telefoonnummers: klant.telefoonnummers
       .map(({ telefoonnummer }) => telefoonnummer)
@@ -114,13 +113,13 @@ function mapPersoon(persoon: Persoon | null) {
   ]
     .filter(Boolean)
     .join(" ");
-  return (
-    persoon && {
-      ...persoon,
-      naam,
-      adres: [persoon.postcode, persoon.huisnummer].filter(Boolean).join(" "),
-    }
-  );
+  return {
+    geboortedatum: persoon.geboortedatum,
+    naam,
+    postcodeHuisnummer: [persoon.postcode, persoon.huisnummer]
+      .filter(Boolean)
+      .join(" "),
+  };
 }
 
 const router = useRouter();

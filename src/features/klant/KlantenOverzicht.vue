@@ -9,7 +9,7 @@
           <th>Tel. nummer</th>
           <th>Bsn</th>
           <th>Geb. datum</th>
-          <th>Adres</th>
+          <th>Postcode + Huisnummer</th>
           <th class="row-link-header">Details</th>
         </tr>
       </thead>
