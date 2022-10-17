@@ -71,7 +71,8 @@ const getEnrichedData = useEnricher(
     props.record._brand === "klant"
       ? [props.record, undefined]
       : [undefined, props.record],
-  (r) => r?.bsn,
+  (k) => k.bsn,
+  (p) => p.bsn,
   useKlantByBsn,
   usePersoonByBsn
 );

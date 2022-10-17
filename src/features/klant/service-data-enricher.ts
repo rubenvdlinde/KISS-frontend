@@ -1,46 +1,49 @@
 import { ServiceResult, type ServiceData } from "@/services";
 
-type Either<A, B> = Readonly<[A, undefined] | [undefined, B]>;
+export type Either<A, B> = Readonly<[A, undefined] | [undefined, B]>;
 
-export function useEnricher<A, B, Y>(
-  getRecord: () => Either<A, B>,
-  getKey: (ab: A | B) => Y | undefined,
-  getAData: (key: () => Y | undefined) => ServiceData<A | undefined>,
-  getBData: (key: () => Y | undefined) => ServiceData<B | undefined>
-): () => readonly [
-  Y | undefined,
-  ServiceData<A | undefined>,
-  ServiceData<B | undefined>
-] {
-  const getAorB = () => {
+type ReturnType<A, B, K> = readonly [
+  NonNullable<K> | undefined,
+  ServiceData<NonNullable<A> | null>,
+  ServiceData<NonNullable<B> | null>
+];
+
+export function useEnricher<A, B, K>(
+  getRecord: () => Either<NonNullable<A>, NonNullable<B>>,
+  getAKey: (a: NonNullable<A>) => NonNullable<K> | undefined,
+  getBKey: (b: NonNullable<B>) => NonNullable<K> | undefined,
+  getAData: (key: () => K | undefined) => ServiceData<NonNullable<A> | null>,
+  getBData: (key: () => K | undefined) => ServiceData<NonNullable<B> | null>
+): () => ReturnType<A, B, K> {
+  const keyFromAorB = () => {
     const [a, b] = getRecord();
-    if (a === undefined) return b as B;
-    return a as A;
+    if (a !== undefined) return getAKey(a);
+    if (b !== undefined) return getBKey(b);
+    return undefined;
   };
-  const keyFromAorB = () => getKey(getAorB());
   const aData = getAData(keyFromAorB);
   const bData = getBData(keyFromAorB);
 
   const getA = (
     [a]: Either<A, B>,
-    k: Y | undefined
-  ): ServiceData<A | undefined> => {
+    k: K | undefined
+  ): ServiceData<NonNullable<A> | null> => {
     if (a) return ServiceResult.success(a);
-    if (!k) return ServiceResult.success(undefined);
+    if (!k) return ServiceResult.success(null);
     return aData;
   };
 
   const getB = (
     either: Either<A, B>,
-    k: Y | undefined
-  ): ServiceData<B | undefined> => {
+    k: K | undefined
+  ): ServiceData<NonNullable<B> | null> => {
     const b = either[1];
     if (b) return ServiceResult.success(b);
-    if (!k) return ServiceResult.success(undefined);
+    if (!k) return ServiceResult.success(null);
     return bData;
   };
 
-  return () => {
+  function getResult(): ReturnType<A, B, K> {
     const record = getRecord();
 
     const key = keyFromAorB();
@@ -48,5 +51,7 @@ export function useEnricher<A, B, Y>(
     const b = getB(record, key);
 
     return [key, a, b];
-  };
+  }
+
+  return getResult;
 }
