@@ -11,12 +11,11 @@ import {
 import { mutate } from "swrv";
 import type { Ref } from "vue";
 
-import type { UpdateContactgegevensParams, Klant } from "./types";
-
-enum KlantType {
-  Persoon = "natuurlijk_persoon",
-  Bedrijf = "vestiging",
-}
+import {
+  type UpdateContactgegevensParams,
+  type Klant,
+  KlantType,
+} from "./types";
 
 type QueryParam = [string, string][];
 
@@ -76,6 +75,7 @@ function getKlantSearchUrl<K extends KlantSearchField>(
   setExtend(url);
   url.searchParams.set("order[achternaam]", "asc");
   url.searchParams.set("page", page?.toString() ?? "1");
+  url.searchParams.append("subjectType", KlantType.Persoon);
 
   getQueryParams(search).forEach((tuple) => {
     url.searchParams.set(...tuple);

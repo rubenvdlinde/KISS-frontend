@@ -27,3 +27,8 @@ export interface Persoon {
   geboorteplaats: string;
   geboorteland: string;
 }
+
+export enum KlantType {
+  Persoon = "natuurlijk_persoon",
+  Bedrijf = "vestiging",
+}
