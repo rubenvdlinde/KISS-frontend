@@ -3,43 +3,47 @@
     <simple-spinner />
   </dialog>
   <tr class="row-link" v-bind="$attrs">
-    <template v-if="result.klant.success">
-      <th scope="row" class="wrap">
-        {{
-          result.klant.data?.naam ||
-          (result.persoon.success && result.persoon.data?.naam)
-        }}
-      </th>
-      <td class="wrap">
-        {{ result.klant.data?.emails }}
-      </td>
-      <td class="wrap">
-        {{ result.klant.data?.telefoonnummers }}
-      </td>
-    </template>
-    <td v-else colspan="3">
-      <simple-spinner class="spinner" v-if="result.klant.loading" />
+    <th scope="row" class="wrap">
+      <simple-spinner class="spinner" v-if="result.naam.loading" />
+      <template v-else-if="result.naam.success">{{
+        result.naam.data
+      }}</template>
+    </th>
+    <td class="wrap">
+      <simple-spinner class="spinner" v-if="result.emails.loading" />
+      <template v-if="result.emails.success">{{ result.emails.data }}</template>
+    </td>
+    <td class="wrap">
+      <simple-spinner class="spinner" v-if="result.telefoonnummers.loading" />
+      <template v-if="result.telefoonnummers.success">{{
+        result.telefoonnummers.data
+      }}</template>
     </td>
     <td>
       {{ result.bsn }}
     </td>
-    <template v-if="result.persoon.success">
-      <td>
-        <dutch-date
-          v-if="result.persoon.data?.geboortedatum"
-          :date="result.persoon.data.geboortedatum"
-        />
-      </td>
-      <td>{{ result.persoon.data?.postcodeHuisnummer }}</td>
-    </template>
-    <td colspan="2" v-else>
-      <simple-spinner class="spinner" v-if="result.persoon.loading" />
+    <td>
+      <simple-spinner class="spinner" v-if="result.geboortedatum.loading" />
+      <dutch-date
+        v-else-if="result.geboortedatum.success && result.geboortedatum.data"
+        :date="result.geboortedatum.data"
+      />
     </td>
     <td>
-      <template v-if="result.klant.success">
+      <simple-spinner
+        class="spinner"
+        v-if="result.postcodeHuisnummer.loading"
+      />
+      <template v-if="result.postcodeHuisnummer.success">{{
+        result.postcodeHuisnummer.data
+      }}</template>
+    </td>
+    <td>
+      <simple-spinner class="spinner" v-if="result.detailLink.loading" />
+      <template v-if="result.detailLink.success">
         <router-link
-          v-if="result.klant.data?.link"
-          v-bind="result.klant.data.link"
+          v-if="result.detailLink.data"
+          v-bind="result.detailLink.data"
         />
         <button
           type="button"
@@ -52,8 +56,8 @@
   </tr>
 </template>
 <script lang="ts" setup>
-import { mapServiceData } from "@/services";
-import { computed, ref } from "vue";
+import { mapServiceData, ServiceResult, type ServiceData } from "@/services";
+import { computed, reactive, ref } from "vue";
 import { ensureKlantForBsn } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
@@ -63,48 +67,56 @@ import { useEnrichedPersoon } from "./persoon-enricher";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
-const [bsnRef, persoonData, klantData] = useEnrichedPersoon(() => props.record);
+const [bsn, persoonData, klantData] = useEnrichedPersoon(() => props.record);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
-function mapKlant(klant: Klant | null) {
-  if (!klant) return null;
-  const naam = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
-    .filter(Boolean)
-    .join(" ");
-  return {
-    naam,
-    telefoonnummers: klant.telefoonnummers
-      .map(({ telefoonnummer }) => telefoonnummer)
+function mapNaam(klant: Klant | Persoon | null) {
+  return (
+    klant &&
+    [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
       .filter(Boolean)
-      .join(", "),
-    emails: klant.emails
-      .map(({ email }) => email)
-      .filter(Boolean)
-      .join(", "),
-    link: {
-      to: getKlantUrl(klant),
-      title: `Details ${naam}`,
-    },
-  };
+      .join(" ")
+  );
 }
 
-function mapPersoon(persoon: Persoon | null) {
-  if (!persoon) return null;
-  const naam = [
-    persoon.voornaam,
-    persoon.voorvoegselAchternaam,
-    persoon.achternaam,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  return {
-    geboortedatum: persoon.geboortedatum,
-    naam,
-    postcodeHuisnummer: [persoon.postcode, persoon.huisnummer]
+function mapTelefoonnummers(klant: Klant | null) {
+  return (
+    klant &&
+    klant.telefoonnummers
+      .map(({ telefoonnummer }) => telefoonnummer)
       .filter(Boolean)
-      .join(" "),
-  };
+      .join(", ")
+  );
+}
+
+function mapEmails(klant: Klant | null) {
+  return (
+    klant &&
+    klant.emails
+      .map(({ email }) => email)
+      .filter(Boolean)
+      .join(", ")
+  );
+}
+
+function mapLink(klant: Klant | null, naam: string | null) {
+  return (
+    klant && {
+      to: getKlantUrl(klant),
+      title: `Details ${naam}`,
+    }
+  );
+}
+
+function mapGeboortedatum(persoon: Persoon | null) {
+  return persoon && persoon.geboortedatum;
+}
+
+function mapPostcodeHuisnummer(persoon: Persoon | null) {
+  return (
+    persoon && [persoon.postcode, persoon.huisnummer].filter(Boolean).join(" ")
+  );
 }
 
 const router = useRouter();
@@ -113,9 +125,9 @@ const dialog = ref<HTMLDialogElement>();
 
 const create = async () => {
   try {
-    if (!bsnRef.value) return;
+    if (!bsn.value) return;
     dialog.value?.showModal();
-    const newKlant = await ensureKlantForBsn(bsnRef.value);
+    const newKlant = await ensureKlantForBsn(bsn.value);
     const url = getKlantUrl(newKlant);
     router.push(url);
   } finally {
@@ -123,17 +135,52 @@ const create = async () => {
   }
 };
 
-const result = computed(() => {
-  const klant = mapServiceData(klantData.value, mapKlant);
-  const persoon = mapServiceData(persoonData.value, mapPersoon);
+const klantNaam = computed(() => mapServiceData(klantData.value, mapNaam));
+const persoonNaam = computed(() => mapServiceData(persoonData.value, mapNaam));
 
-  return {
-    bsn: bsnRef.value,
-    klant,
-    persoon,
-    create,
-  };
+const naam = computed<ServiceData<string | null>>(() => {
+  if (klantNaam.value.loading && persoonNaam.value.loading)
+    return ServiceResult.loading();
+  if (klantNaam.value.success && klantNaam.value.data)
+    return ServiceResult.success(klantNaam.value.data);
+  if (persoonNaam.value.success && persoonNaam.value.data)
+    return ServiceResult.success(persoonNaam.value.data);
+  return ServiceResult.success(null);
 });
+
+const telefoonnummers = computed(() =>
+  mapServiceData(klantData.value, mapTelefoonnummers)
+);
+
+const emails = computed(() => mapServiceData(klantData.value, mapEmails));
+
+const geboortedatum = computed(() =>
+  mapServiceData(persoonData.value, mapGeboortedatum)
+);
+
+const postcodeHuisnummer = computed(() =>
+  mapServiceData(persoonData.value, mapPostcodeHuisnummer)
+);
+
+const detailLink = computed(() => {
+  const n = naam.value.success ? naam.value.data : null;
+  return mapServiceData(klantData.value, (k) => mapLink(k, n));
+});
+
+function getResult() {
+  return reactive({
+    naam,
+    bsn,
+    telefoonnummers,
+    emails,
+    geboortedatum,
+    postcodeHuisnummer,
+    create,
+    detailLink,
+  });
+}
+
+const result = getResult();
 </script>
 
 <style scoped lang="scss">
