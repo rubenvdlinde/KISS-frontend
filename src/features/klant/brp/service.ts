@@ -64,7 +64,7 @@ function mapPersoon(json: any): Persoon {
   const geboortedatum =
     datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
   return {
-    _brand: "persoon",
+    _typeOfKlant: "persoon",
     postcode: verblijfplaats?.postcode,
     huisnummer: verblijfplaats?.huisnummer?.toString(),
     bsn: json?.burgerservicenummer,

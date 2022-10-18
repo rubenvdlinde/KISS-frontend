@@ -91,7 +91,7 @@ function mapKlant(obj: any): Klant {
 
   return {
     ...obj,
-    _brand: "klant",
+    _typeOfKlant: "klant",
     emails: emails ?? [],
     telefoonnummers: telefoonnummers ?? [],
     bsn: inpBsn,

@@ -6,7 +6,7 @@ export type UpdateContactgegevensParams = Pick<
 >;
 
 export interface Klant {
-  _brand: "klant";
+  _typeOfKlant: "klant";
   id: string;
   klantnummer: string;
   voornaam: string;
@@ -18,7 +18,7 @@ export interface Klant {
 }
 
 export interface Persoon {
-  _brand: "persoon";
+  _typeOfKlant: "persoon";
   bsn: string;
   postcode?: string;
   huisnummer?: string;

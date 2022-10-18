@@ -14,7 +14,7 @@ const fromPersoonToKlant = enrich<Persoon>()
 const combined = combine(fromKlantToPersoon, fromPersoonToKlant);
 
 const mapToEither = (record: Klant | Persoon) =>
-  record._brand === "klant" ? left(record) : right(record);
+  record._typeOfKlant === "klant" ? left(record) : right(record);
 
 export const useEnrichedPersoon = (getRecord: () => Klant | Persoon) =>
   combined(() => mapToEither(getRecord()));
