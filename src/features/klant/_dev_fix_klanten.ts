@@ -1,27 +1,33 @@
 // ONLY use this during development, to fix existing test data without a subjectType
-import { fetchLoggedIn, throwIfNotOk, parseJson } from "@/services";
+import {
+  fetchLoggedIn,
+  throwIfNotOk,
+  parseJson,
+  parsePagination,
+} from "@/services";
 import { KlantType } from "./types";
 
 const klantRootUrl = `${window.gatewayBaseUri}/api/klanten`;
 
-function getAllKlantenUrl() {
+const urlForKLantenWithoutSubjectType = (function getAllKlantenUrl() {
   const url = new URL(klantRootUrl);
-  url.searchParams.set("limit", "999");
   url.searchParams.append("fields[]", "klantnummer");
   url.searchParams.append("fields[]", "bronorganisatie");
   url.searchParams.append("subjectType", "IS NULL");
   return url.toString();
-}
+})();
+
+type MinimalKlant = {
+  id: string;
+  klantnummer: string;
+  bronorganisatie: string;
+};
 
 function fixSubjectType({
   id,
   klantnummer,
   bronorganisatie,
-}: {
-  id: string;
-  klantnummer: string;
-  bronorganisatie: string;
-}): Promise<Response> {
+}: MinimalKlant): Promise<Response> {
   const url = klantRootUrl + "/" + id;
   return fetchLoggedIn(url, {
     method: "PUT",
@@ -33,12 +39,19 @@ function fixSubjectType({
       bronorganisatie,
       subjectType: KlantType.Persoon,
     }),
-  });
+  }).then(throwIfNotOk);
 }
 
 export function fixAllSubjectTypes() {
-  return fetchLoggedIn(getAllKlantenUrl())
+  return fetchLoggedIn(urlForKLantenWithoutSubjectType)
     .then(throwIfNotOk)
     .then(parseJson)
-    .then((json) => Promise.all(json?.results?.map(fixSubjectType)));
+    .then((json) => parsePagination(json, (o) => o as MinimalKlant))
+    .then(async (pagination) => {
+      await Promise.all(pagination.page.map(fixSubjectType));
+      if (pagination.totalPages > 1) {
+        // this means there are more records without a subjectType
+        await fixAllSubjectTypes();
+      }
+    });
 }
