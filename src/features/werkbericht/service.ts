@@ -55,7 +55,7 @@ function parseWerkbericht(
     );
   }
 
-  const berichtTypeIds = jsonObject?.["openpub-type"];
+  const berichtTypeIds = jsonObject?.["openpub_type"];
   const typeNames = Array.isArray(berichtTypeIds)
     ? berichtTypeIds.map(
         (x) =>
@@ -129,7 +129,7 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
  * Returns a reactive ServiceData object promising a LookupList of berichttypes
  */
 export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
-  const url = window.gatewayBaseUri + "/api/openpub/openpub-type";
+  const url = window.gatewayBaseUri + "/api/openpub/openpub_type";
   return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
@@ -173,7 +173,7 @@ export function useWerkberichten(
     params.push(["extend[]", "x-commongateway-metadata.self"]);
 
     if (typeId) {
-      params.push(["openpub-type", typeId.toString()]);
+      params.push(["acf.openpub_type", typeId.toString()]);
     }
 
     if (search) {
@@ -186,7 +186,7 @@ export function useWerkberichten(
 
     if (skillIds?.length) {
       skillIds.forEach((skillId) => {
-        params.push(["openpub_skill[]", skillId.toString()]);
+        params.push(["acf.openpub_skill[]", skillId.toString()]);
       });
     }
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
