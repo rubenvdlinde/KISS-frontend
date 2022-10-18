@@ -13,10 +13,14 @@ const [bsn, persoonData, klantData] = useEnrichedPersoon(() => props.record);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
-function mapNaam(klant: Klant | Persoon | null) {
+function mapNaam(klantOrPersoon: Klant | Persoon | null) {
   return (
-    klant &&
-    [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
+    klantOrPersoon &&
+    [
+      klantOrPersoon.voornaam,
+      klantOrPersoon.voorvoegselAchternaam,
+      klantOrPersoon.achternaam,
+    ]
       .filter(Boolean)
       .join(" ")
   );
