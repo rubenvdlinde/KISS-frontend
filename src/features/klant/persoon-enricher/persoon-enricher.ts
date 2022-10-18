@@ -1,7 +1,7 @@
 import { enrich, combine, left, right } from "@/services";
-import { usePersoonByBsn } from "./brp/service";
-import { useKlantByBsn } from "./service";
-import type { Klant, Persoon } from "./types";
+import { usePersoonByBsn } from "../brp/service";
+import { useKlantByBsn } from "../service";
+import type { Klant, Persoon } from "../types";
 
 const fromKlantToPersoon = enrich<Klant>()
   .by(({ bsn }) => bsn)

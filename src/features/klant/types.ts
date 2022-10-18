@@ -1,3 +1,5 @@
+import type { ServiceData } from "@/services";
+
 export type UpdateContactgegevensParams = Pick<
   Klant,
   "id" | "telefoonnummers" | "emails"
@@ -31,4 +33,18 @@ export interface Persoon {
 export enum KlantType {
   Persoon = "natuurlijk_persoon",
   Bedrijf = "vestiging",
+}
+
+export interface EnrichedPersoon {
+  naam: ServiceData<string | null>;
+  bsn: string | undefined;
+  telefoonnummers: ServiceData<string | null>;
+  emails: ServiceData<string | null>;
+  geboortedatum: ServiceData<Date | null | undefined>;
+  postcodeHuisnummer: ServiceData<string | null>;
+  create: () => Promise<void>;
+  detailLink: ServiceData<{
+    to: string;
+    title: string;
+  } | null>;
 }

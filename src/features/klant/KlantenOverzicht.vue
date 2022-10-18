@@ -14,13 +14,11 @@
         </tr>
       </thead>
       <tbody>
-        <klanten-overzicht-row
-          v-for="(record, idx) in records"
-          :key="idx"
-          :record="record"
-          class="row-link"
-        >
-        </klanten-overzicht-row>
+        <personen-enrich-context :records="records">
+          <template #default="{ enriched }">
+            <klanten-overzicht-row :result="enriched" />
+          </template>
+        </personen-enrich-context>
       </tbody>
     </template>
   </table>
@@ -29,5 +27,6 @@
 <script lang="ts" setup>
 import KlantenOverzichtRow from "./KlantenOverzichtRow.vue";
 import type { Klant, Persoon } from "./types";
+import PersonenEnrichContext from "./persoon-enricher/PersonenEnrichContext.vue";
 defineProps<{ records: Klant[] | Persoon[] }>();
 </script>

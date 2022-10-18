@@ -1,11 +1,11 @@
 <template><slot :enriched="result"></slot></template>
 <script setup lang="ts">
 import { mapServiceData, ServiceResult, type ServiceData } from "@/services";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive } from "vue";
 import { ensureKlantForBsn } from "../service";
-import type { Klant, Persoon } from "../types";
+import type { EnrichedPersoon, Klant, Persoon } from "../types";
 import { useRouter } from "vue-router";
-import { useEnrichedPersoon } from "../persoon-enricher";
+import { useEnrichedPersoon } from "./persoon-enricher";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
@@ -63,18 +63,11 @@ function mapPostcodeHuisnummer(persoon: Persoon | null) {
 
 const router = useRouter();
 
-const dialog = ref<HTMLDialogElement>();
-
 const create = async () => {
-  try {
-    if (!bsn.value) return;
-    dialog.value?.showModal();
-    const newKlant = await ensureKlantForBsn(bsn.value);
-    const url = getKlantUrl(newKlant);
-    router.push(url);
-  } finally {
-    dialog.value?.close();
-  }
+  if (!bsn.value) throw new Error();
+  const newKlant = await ensureKlantForBsn(bsn.value);
+  const url = getKlantUrl(newKlant);
+  router.push(url);
 };
 
 const klantNaam = computed(() => mapServiceData(klantData.value, mapNaam));
@@ -109,7 +102,7 @@ const detailLink = computed(() => {
   return mapServiceData(klantData.value, (k) => mapLink(k, n));
 });
 
-function getResult() {
+function getResult(): EnrichedPersoon {
   return reactive({
     naam,
     bsn,
