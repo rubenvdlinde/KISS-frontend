@@ -54,31 +54,16 @@
 <script lang="ts" setup>
 import { mapServiceData } from "@/services";
 import { computed, ref } from "vue";
-import { ensureKlantForBsn, useKlantByBsn } from "./service";
+import { ensureKlantForBsn } from "./service";
 import type { Klant, Persoon } from "./types";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { useRouter } from "vue-router";
-import { usePersoonByBsn } from "./brp/service";
-import { Enrich } from "@/services";
 import DutchDate from "@/components/DutchDate.vue";
+import { useEnrichedPersoon } from "./persoon-enricher";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
-const fromKlantToPersoon = Enrich.from<Klant>()
-  .by(({ bsn }) => bsn)
-  .using(usePersoonByBsn);
-
-const fromPersoonToKlant = Enrich.from<Persoon>()
-  .by(({ bsn }) => bsn)
-  .using(useKlantByBsn);
-
-const getEnrichedData = fromKlantToPersoon
-  .combineWith(fromPersoonToKlant)
-  .build(() =>
-    props.record._brand === "klant"
-      ? [props.record, undefined]
-      : [undefined, props.record]
-  );
+const [bsnRef, persoonData, klantData] = useEnrichedPersoon(() => props.record);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
@@ -126,26 +111,24 @@ const router = useRouter();
 
 const dialog = ref<HTMLDialogElement>();
 
+const create = async () => {
+  try {
+    if (!bsnRef.value) return;
+    dialog.value?.showModal();
+    const newKlant = await ensureKlantForBsn(bsnRef.value);
+    const url = getKlantUrl(newKlant);
+    router.push(url);
+  } finally {
+    dialog.value?.close();
+  }
+};
+
 const result = computed(() => {
-  const [bsn, persoonData, klantData] = getEnrichedData();
-
-  const create = async () => {
-    try {
-      if (!bsn) return;
-      dialog.value?.showModal();
-      const newKlant = await ensureKlantForBsn(bsn);
-      const url = getKlantUrl(newKlant);
-      router.push(url);
-    } finally {
-      dialog.value?.close();
-    }
-  };
-
-  const klant = mapServiceData(klantData, mapKlant);
-  const persoon = mapServiceData(persoonData, mapPersoon);
+  const klant = mapServiceData(klantData.value, mapKlant);
+  const persoon = mapServiceData(persoonData.value, mapPersoon);
 
   return {
-    bsn,
+    bsn: bsnRef.value,
     klant,
     persoon,
     create,
