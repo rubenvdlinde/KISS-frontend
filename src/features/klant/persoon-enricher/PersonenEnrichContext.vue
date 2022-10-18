@@ -19,7 +19,7 @@
 import { ref } from "vue";
 import type { Klant, Persoon } from "../types";
 import PersoonEnrichContext from "./PersoonEnrichContext.vue";
-import SimpleSpinner from "../../../components/SimpleSpinner.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 
 defineProps<{ records: Klant[] | Persoon[] }>();
 
