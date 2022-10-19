@@ -10,7 +10,7 @@ const logError = import.meta.env.DEV
 // sometimes, a query can return one or zero results.
 // in the case of zero results, we can NEVER return undefined from a fetcher.
 // because in that case, there is no way to discern between a succesful query with zero results vs a failed or loading query.
-export type NotUndefined<T> = NonNullable<T> | null;
+export type NotUndefined<T> = T extends undefined ? never : T;
 
 export type ServiceData<T> =
   | {

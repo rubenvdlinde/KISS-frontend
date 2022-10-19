@@ -9,7 +9,7 @@ import { useEnrichedPersoon } from "./persoon-enricher";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
-const [bsn, persoonData, klantData] = useEnrichedPersoon(() => props.record);
+const [bsn, klantData, persoonData] = useEnrichedPersoon(() => props.record);
 
 const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
 
@@ -74,8 +74,8 @@ const create = async () => {
   router.push(url);
 };
 
-const klantNaam = computed(() => mapServiceData(klantData.value, mapNaam));
-const persoonNaam = computed(() => mapServiceData(persoonData.value, mapNaam));
+const klantNaam = computed(() => mapServiceData(klantData, mapNaam));
+const persoonNaam = computed(() => mapServiceData(persoonData, mapNaam));
 
 const naam = computed<ServiceData<string | null>>(() => {
   if (klantNaam.value.loading && persoonNaam.value.loading)
@@ -88,36 +88,32 @@ const naam = computed<ServiceData<string | null>>(() => {
 });
 
 const telefoonnummers = computed(() =>
-  mapServiceData(klantData.value, mapTelefoonnummers)
+  mapServiceData(klantData, mapTelefoonnummers)
 );
 
-const emails = computed(() => mapServiceData(klantData.value, mapEmails));
+const emails = computed(() => mapServiceData(klantData, mapEmails));
 
 const geboortedatum = computed(() =>
-  mapServiceData(persoonData.value, mapGeboortedatum)
+  mapServiceData(persoonData, mapGeboortedatum)
 );
 
 const postcodeHuisnummer = computed(() =>
-  mapServiceData(persoonData.value, mapPostcodeHuisnummer)
+  mapServiceData(persoonData, mapPostcodeHuisnummer)
 );
 
 const detailLink = computed(() => {
   const n = naam.value.success ? naam.value.data : null;
-  return mapServiceData(klantData.value, (k) => mapLink(k, n));
+  return mapServiceData(klantData, (k) => mapLink(k, n));
 });
 
-function getResult(): EnrichedPersoon {
-  return reactive({
-    naam,
-    bsn,
-    telefoonnummers,
-    emails,
-    geboortedatum,
-    postcodeHuisnummer,
-    create,
-    detailLink,
-  });
-}
-
-const result = getResult();
+const result: EnrichedPersoon = reactive({
+  naam,
+  bsn,
+  telefoonnummers,
+  emails,
+  geboortedatum,
+  postcodeHuisnummer,
+  create,
+  detailLink,
+});
 </script>
