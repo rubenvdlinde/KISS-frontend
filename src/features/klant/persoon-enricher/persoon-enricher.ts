@@ -18,10 +18,8 @@ function isKlant(klantOfPersoon: Klant | Persoon): klantOfPersoon is Klant {
   return false;
 }
 
-const combined = combine(fromKlantToPersoon, fromPersoonToKlant, isKlant);
-
-const mapToEither = (record: Klant | Persoon) =>
-  record._typeOfKlant === "klant" ? left(record) : right(record);
-
-export const useEnrichedPersoon = (getRecord: () => Klant | Persoon) =>
-  combined(() => mapToEither(getRecord()));
+export const useEnrichedPersoon = combine(
+  fromKlantToPersoon,
+  fromPersoonToKlant,
+  isKlant
+);
