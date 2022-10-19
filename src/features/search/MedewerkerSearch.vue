@@ -184,11 +184,11 @@ watch(searchText, (t) => {
 });
 
 watch(result, (r) => {
-  if (r.loading) return;
   if (r.error) {
     listItems.value = [];
     return;
   }
+  if (!r.success || !r.data) return;
   activeIndex.value = Math.max(
     0,
     Math.min(activeIndex.value, r.data.page.length - 1)

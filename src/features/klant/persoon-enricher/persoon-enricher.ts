@@ -11,12 +11,8 @@ const fromPersoonToKlant = enrich<Persoon>()
   .by(({ bsn }) => bsn)
   .with(useKlantByBsn);
 
-function isKlant(klantOfPersoon: Klant | Persoon): klantOfPersoon is Klant {
-  if ("telefoonnummers" in klantOfPersoon) {
-    return Array.isArray(klantOfPersoon.telefoonnummers);
-  }
-  return false;
-}
+const isKlant = (klantOfPersoon: Klant | Persoon): klantOfPersoon is Klant =>
+  klantOfPersoon._typeOfKlant === "klant";
 
 export const useEnrichedPersoon = combine(
   fromKlantToPersoon,
