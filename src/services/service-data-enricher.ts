@@ -21,15 +21,10 @@ type Result<K, O> = ReadonlyRef<
   readonly [NonNullable<K> | undefined, ServiceData<NotUndefined<O>>]
 >;
 
-type Left<T> = readonly [NonNullable<T>, undefined];
-type Right<T> = readonly [undefined, NonNullable<T>];
-
-export type Either<A, B> = Left<A> | Right<B>;
-
 export type Enricher<I, K, O> = (getInput: GetInput<I>) => Result<K, O>;
 
 export type TwoWayEnricher<I, K, O> = (
-  getInput: GetInput<Either<I, O>>
+  getInput: GetInput<I | O>
 ) => ReadonlyRef<
   readonly [
     NonNullable<K> | undefined,
@@ -37,14 +32,6 @@ export type TwoWayEnricher<I, K, O> = (
     ServiceData<NotUndefined<I>>
   ]
 >;
-
-export function left<T>(t: NonNullable<T>): Left<T> {
-  return [t, undefined];
-}
-
-export function right<T>(t: NonNullable<T>): Right<T> {
-  return [undefined, t];
-}
 
 export function enrich<I>() {
   return {
@@ -77,25 +64,38 @@ export function enrich<I>() {
 
 export function combine<I, K, O>(
   first: Enricher<I, K, O>,
-  other: Enricher<O, K, I>
+  other: Enricher<O, K, I>,
+  isFirst: (either: I | O) => either is I
 ): TwoWayEnricher<I, K, O> {
   return (getInput) => {
-    const [firstKey, firstData] = first(() => getInput()?.[0]);
-    const [secondKey, secondData] = other(() => getInput()?.[1]);
+    const inputRef = computed(getInput);
+
+    const [firstKey, firstData] = first(() => {
+      if (inputRef.value === undefined || !isFirst(inputRef.value))
+        return undefined;
+      return inputRef.value;
+    });
+
+    const [secondKey, secondData] = other(() => {
+      if (inputRef.value === undefined || isFirst(inputRef.value))
+        return undefined;
+      return inputRef.value;
+    });
 
     const newKey = computed(() => firstKey.value ?? secondKey.value);
-    const inputRef = computed(getInput);
+
     const iData = computed(() => {
-      const [i] = inputRef.value ?? [];
-      if (i !== undefined) return ServiceResult.success(i);
+      const io = inputRef.value;
+      if (io !== undefined && isFirst(io)) return ServiceResult.success(io);
       return secondData.value;
     });
+
     const oData = computed(() => {
-      const [_, o] = inputRef.value ?? [];
-      if (o !== undefined) return ServiceResult.success(o);
+      const io = inputRef.value;
+      if (o !== undefined && !isFirst(io)) return ServiceResult.success(io);
       return firstData.value;
     });
 
-    return [newKey, oData, iData];
+    return [newKey, oData, iData] as any;
   };
 }
