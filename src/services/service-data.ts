@@ -1,14 +1,6 @@
 import { toReactive } from "@vueuse/core";
 import useSWRV from "swrv";
-import {
-  type UnwrapNestedRefs,
-  reactive,
-  watch,
-  onUnmounted,
-  type UnwrapRef,
-  computed,
-  toRefs,
-} from "vue";
+import { reactive, computed, watch } from "vue";
 
 const logError = import.meta.env.DEV
   ? (e: unknown) => console.error(e)
@@ -20,38 +12,42 @@ const logError = import.meta.env.DEV
 // because in that case, there is no way to discern between a succesful query with zero results vs a failed or loading query.
 export type NotUndefined<T> = NonNullable<T> | null;
 
-type Result<T> =
+export type ServiceData<T> =
   | {
+      submitted: true;
       state: "loading";
       loading: true;
       success: false;
       error: false;
     }
   | {
+      submitted: true;
       state: "error";
       error: Error;
       loading: false;
       success: false;
     }
   | {
+      submitted: true;
       state: "success";
       data: T;
       loading: false;
       success: true;
       error: false;
-    };
-
-export type ServiceData<T> = UnwrapNestedRefs<Result<T>>;
-export type Submitter<TIn, TOut> = (
-  | (ServiceData<TOut> & { submitted: true })
+    }
   | {
       submitted: false;
       state: "init";
       loading: false;
       success: false;
       error: false;
-    }
-) & { submit: (params: TIn) => Promise<TOut>; reset: () => void };
+    };
+
+export type Submitter<TIn, TOut> = ServiceData<TOut> & {
+  submit: (params: TIn) => Promise<TOut>;
+  reset: () => void;
+};
+
 interface FetcherConfig<T = unknown> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
@@ -66,45 +62,47 @@ interface FetcherConfig<T = unknown> {
 
 export const ServiceResult = {
   success<T>(data: T): ServiceData<T> {
-    return reactive({
+    return {
       state: "success",
       data,
       error: false,
       success: true,
       loading: false,
-    });
+      submitted: true,
+    };
   },
-  loading<T>(): ServiceData<T> {
-    return reactive({
+  loading(): ServiceData<any> {
+    return {
       state: "loading",
-      data: null,
       error: false,
       success: false,
       loading: true,
-    });
+      submitted: true,
+    };
   },
-  error<T>(error: Error): ServiceData<T> {
+  error(error: Error): ServiceData<any> {
     return reactive({
       state: "error",
-      data: null,
       error,
       success: false,
       loading: false,
+      submitted: true,
     });
   },
-  init<T>(): ServiceData<T> | { submitted: false; state: "init" } {
-    return reactive({
+  init(): ServiceData<any> {
+    return {
       state: "init",
-      data: null,
       error: false,
       success: false,
       loading: false,
       submitted: false,
-    });
+    };
   },
 
-  fromPromise<T = unknown>(promise: Promise<T>): ServiceData<T> & Promise<T> {
-    const result = ServiceResult.loading<T>();
+  fromPromise<T = unknown>(
+    promise: Promise<NotUndefined<T>>
+  ): ServiceData<T> & Promise<NotUndefined<T>> {
+    const result = reactive(ServiceResult.loading());
 
     promise
       .then((r) => {
@@ -114,6 +112,7 @@ export const ServiceResult = {
           loading: false,
           error: false,
           success: true,
+          submitted: true,
         });
       })
       .catch((e) => {
@@ -122,6 +121,7 @@ export const ServiceResult = {
           error: e instanceof Error ? e : new Error(e),
           loading: false,
           success: false,
+          submitted: true,
         });
       });
 
@@ -129,12 +129,13 @@ export const ServiceResult = {
   },
 
   fromSubmitter<TIn, TOut>(submitter: (params: TIn) => Promise<TOut>) {
-    const result = ServiceResult.init<TOut>();
+    const result = reactive(ServiceResult.init());
+
     return Object.assign(result, {
       reset() {
         Object.assign(result, {
           state: "init",
-          data: null,
+          data: undefined,
           error: false,
           success: false,
           loading: false,
@@ -144,7 +145,7 @@ export const ServiceResult = {
       submit(params: TIn): Promise<TOut> {
         Object.assign(result, {
           state: "loading",
-          data: null,
+          data: undefined,
           error: false,
           success: false,
           loading: true,
@@ -164,6 +165,7 @@ export const ServiceResult = {
           .catch((e) => {
             Object.assign(result, {
               state: "error",
+              data: undefined,
               error: e instanceof Error ? e : new Error(e),
               loading: false,
               success: false,
@@ -183,12 +185,7 @@ export const ServiceResult = {
     url: string | (() => string),
     fetcher: (url: string) => Promise<NotUndefined<T>>,
     config?: FetcherConfig<T>
-  ): ServiceData<T> & { refresh: () => void } {
-    const result =
-      config?.initialData !== undefined
-        ? ServiceResult.success<T>(config.initialData)
-        : ServiceResult.loading<T>();
-
+  ): ServiceData<NotUndefined<T>> & { refresh: () => Promise<void> } {
     const getUrl = typeof url === "string" ? () => url : url;
     const getRequestUniqueId = config?.getUniqueId || getUrl;
     const fetcherWithoutParameters = () => fetcher(getUrl());
@@ -203,58 +200,43 @@ export const ServiceResult = {
       }
     );
 
-    const dispose1 = watch(
-      [data, error],
-      ([d, e]) => {
-        if (e) {
-          logError(e);
-          const errorInstance = e instanceof Error ? e : new Error(e);
-          Object.assign(result, {
-            state: "error",
-            error: errorInstance,
-            loading: false,
-            success: false,
-          });
-          return;
-        }
-        if (d !== undefined) {
-          Object.assign(result, {
-            data: d,
-            state: "success",
-            loading: false,
-            error: false,
-            success: true,
-          });
-        }
-      },
-      { immediate: true }
-    );
+    if (data.value === undefined && config?.initialData !== undefined) {
+      data.value = config.initialData;
+    }
 
-    // als het uniqueId wijzigt, wordt er nieuwe data opgehaald.
-    // dat betekent dat we weer even in de loading state moeten raken.
-    const dispose2 = watch(getRequestUniqueId, (uid) => {
-      if (uid && isValidating.value) {
-        Object.assign(result, {
-          state: "loading",
-          loading: true,
-          error: false,
-          success: false,
-        });
+    const requestId = computed(getRequestUniqueId);
+
+    watch(requestId, (n, o) => {
+      if (n && n !== o) {
+        data.value = undefined;
       }
     });
 
-    onUnmounted(() => {
-      dispose1();
-      dispose2();
-    });
+    function getResult(): ServiceData<NotUndefined<T>> {
+      const e = error.value;
+      if (e) {
+        logError(e);
+        const errorInstance = e instanceof Error ? e : new Error(e);
+        return ServiceResult.error(errorInstance);
+      }
+      if (!requestId.value) return ServiceResult.init();
 
-    return Object.assign(result, { refresh: mutate });
+      if (data.value !== undefined) return ServiceResult.success(data.value);
+
+      if (isValidating.value) return ServiceResult.loading();
+
+      return ServiceResult.init();
+    }
+
+    const comp = computed(getResult);
+    const result = Object.assign(toReactive(comp), { refresh: () => mutate() });
+    return result;
   },
 };
 
 export function mapServiceData<TIn, TOut>(
   input: ServiceData<TIn>,
-  mapper: (i: UnwrapRef<TIn>) => UnwrapRef<TOut>
+  mapper: (i: TIn) => TOut
 ): ServiceData<TOut> {
   const result = computed(() =>
     !input.success
