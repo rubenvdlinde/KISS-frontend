@@ -74,32 +74,23 @@ const create = async () => {
   router.push(url);
 };
 
-const klantNaam = computed(() => mapServiceData(klantData, mapNaam));
-const persoonNaam = computed(() => mapServiceData(persoonData, mapNaam));
+const klantNaam = mapServiceData(klantData, mapNaam);
+const persoonNaam = mapServiceData(persoonData, mapNaam);
 
 const naam = computed<ServiceData<string | null>>(() => {
-  if (klantNaam.value.loading && persoonNaam.value.loading)
-    return ServiceResult.loading();
-  if (klantNaam.value.success && klantNaam.value.data)
-    return ServiceResult.success(klantNaam.value.data);
-  if (persoonNaam.value.success && persoonNaam.value.data)
-    return ServiceResult.success(persoonNaam.value.data);
+  if (klantNaam.loading && persoonNaam.loading) return klantNaam;
+  if (klantNaam.success && klantNaam.data) return klantNaam;
+  if (persoonNaam.success && persoonNaam.data) return persoonNaam;
   return ServiceResult.success(null);
 });
 
-const telefoonnummers = computed(() =>
-  mapServiceData(klantData, mapTelefoonnummers)
-);
+const telefoonnummers = mapServiceData(klantData, mapTelefoonnummers);
 
-const emails = computed(() => mapServiceData(klantData, mapEmails));
+const emails = mapServiceData(klantData, mapEmails);
 
-const geboortedatum = computed(() =>
-  mapServiceData(persoonData, mapGeboortedatum)
-);
+const geboortedatum = mapServiceData(persoonData, mapGeboortedatum);
 
-const postcodeHuisnummer = computed(() =>
-  mapServiceData(persoonData, mapPostcodeHuisnummer)
-);
+const postcodeHuisnummer = mapServiceData(persoonData, mapPostcodeHuisnummer);
 
 const detailLink = computed(() => {
   const n = naam.value.success ? naam.value.data : null;
