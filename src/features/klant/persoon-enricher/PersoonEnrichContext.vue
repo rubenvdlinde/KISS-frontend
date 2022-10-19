@@ -56,7 +56,7 @@ function mapLink(klant: Klant | null, naam: string | null) {
 }
 
 function mapGeboortedatum(persoon: Persoon | null) {
-  return persoon && persoon.geboortedatum;
+  return persoon?.geboortedatum ?? null;
 }
 
 function mapPostcodeHuisnummer(persoon: Persoon | null) {
