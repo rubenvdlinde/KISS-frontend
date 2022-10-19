@@ -1,3 +1,4 @@
+import { toReactive } from "@vueuse/core";
 import useSWRV from "swrv";
 import {
   type UnwrapNestedRefs,
@@ -253,8 +254,15 @@ export const ServiceResult = {
 
 export function mapServiceData<TIn, TOut>(
   input: ServiceData<TIn>,
-  mapper: (i: UnwrapRef<TIn>) => TOut
+  mapper: (i: UnwrapRef<TIn>) => UnwrapRef<TOut>
 ): ServiceData<TOut> {
-  const data = computed(() => (input.success ? mapper(input.data) : undefined));
-  return reactive({ ...toRefs(input), data }) as ServiceData<TOut>;
+  const result = computed(() =>
+    !input.success
+      ? input
+      : {
+          ...input,
+          data: mapper(input.data),
+        }
+  );
+  return toReactive(result);
 }
