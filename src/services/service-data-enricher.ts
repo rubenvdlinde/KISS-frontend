@@ -39,8 +39,10 @@ export function enrich<I>() {
       return {
         with<O>(getServiceData: GetServiceData<K, O>): Enricher<I, K, O> {
           return (getInput) => {
+            const inputRef = computed(getInput);
+
             const keyRef = computed(() => {
-              const input = getInput();
+              const input = inputRef.value;
               if (input !== undefined) return getKey(input);
               return undefined;
             });
@@ -63,39 +65,41 @@ export function enrich<I>() {
 }
 
 export function combine<I, K, O>(
-  first: Enricher<I, K, O>,
-  other: Enricher<O, K, I>,
-  isFirst: (either: I | O) => either is I
+  leftEnricher: Enricher<I, K, O>,
+  rightEnricher: Enricher<O, K, I>,
+  isLeft: (either: I | O) => either is I
 ): TwoWayEnricher<I, K, O> {
-  return (getInput) => {
-    const inputRef = computed(getInput);
+  return (getEither) => {
+    const eitherRef = computed(getEither);
 
-    const [firstKey, firstData] = first(() => {
-      if (inputRef.value === undefined || !isFirst(inputRef.value))
-        return undefined;
-      return inputRef.value;
+    const [leftKey, leftData] = leftEnricher(() => {
+      const either = eitherRef.value;
+      if (either === undefined || !isLeft(either)) return undefined;
+      return either;
     });
 
-    const [secondKey, secondData] = other(() => {
-      if (inputRef.value === undefined || isFirst(inputRef.value))
-        return undefined;
-      return inputRef.value;
+    const [rightKey, rightData] = rightEnricher(() => {
+      const either = eitherRef.value;
+      if (either === undefined || isLeft(either)) return undefined;
+      return either;
     });
 
-    const newKey = computed(() => firstKey.value ?? secondKey.value);
+    const newKey = computed(() => leftKey.value ?? rightKey.value);
 
     const iData = computed(() => {
-      const io = inputRef.value;
-      if (io !== undefined && isFirst(io)) return ServiceResult.success(io);
-      return secondData.value;
+      const either = eitherRef.value;
+      if (either !== undefined && isLeft(either))
+        return ServiceResult.success(either);
+      return rightData.value;
     });
 
     const oData = computed(() => {
-      const io = inputRef.value;
-      if (o !== undefined && !isFirst(io)) return ServiceResult.success(io);
-      return firstData.value;
+      const either = eitherRef.value;
+      if (either !== undefined && !isLeft(either))
+        return ServiceResult.success(either);
+      return leftData.value;
     });
 
-    return [newKey, oData, iData] as any;
+    return [newKey, oData, iData];
   };
 }
