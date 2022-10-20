@@ -209,24 +209,22 @@ export function useWerkberichten(
     if (!Array.isArray(berichten))
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
-    // Sort json.results based on acf.publication_featured
-    const sortedJson = {
-      ...json,
-      results: json.results.sort((x: any, y: any) =>
-        x.embedded.acf.publication_featured
-          ? -1
-          : !y.embedded.acf.publication_featured
-          ? 1
-          : 0
-      ),
-    };
+    const featuredBerichten = berichten.filter(
+      (bericht) => bericht.embedded.acf.publication_featured
+    );
+    const regularBerichten = berichten.filter(
+      (bericht) => !bericht.embedded.acf.publication_featured
+    );
+    const sortedBerichten = [...featuredBerichten, ...regularBerichten];
 
-    return parsePagination(sortedJson, (bericht: any) =>
-      parseWerkbericht(
-        bericht,
-        typesResult.data.fromKeyToValue,
-        skillsResult.data.fromKeyToValue
-      )
+    return parsePagination(
+      { ...json, results: sortedBerichten },
+      (bericht: any) =>
+        parseWerkbericht(
+          bericht,
+          typesResult.data.fromKeyToValue,
+          skillsResult.data.fromKeyToValue
+        )
     );
   }
 
