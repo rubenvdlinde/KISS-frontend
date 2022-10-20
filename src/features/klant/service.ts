@@ -211,7 +211,17 @@ export function useUpdateContactGegevens() {
   return ServiceResult.fromSubmitter(updateContactgegevens);
 }
 
-export async function ensureKlantForBsn(bsn: string) {
+export async function ensureKlantForBsn({
+  bsn,
+  voornaam,
+  voorvoegselAchternaam,
+  achternaam,
+}: {
+  bsn: string;
+  voornaam: string;
+  voorvoegselAchternaam?: string;
+  achternaam: string;
+}) {
   const bsnUrl = getKlantBsnUrl(bsn);
   const singleBsnId = getSingleBsnSearchId(bsn);
 
@@ -234,6 +244,9 @@ export async function ensureKlantForBsn(bsn: string) {
       klantnummer: "123",
       subjectIdentificatie: { inpBsn: bsn },
       subjectType: KlantType.Persoon,
+      voornaam,
+      voorvoegselAchternaam,
+      achternaam,
     }),
   });
 
