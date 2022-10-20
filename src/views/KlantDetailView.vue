@@ -1,11 +1,11 @@
 <template>
   <section>
-    <utrecht-heading :level="1" model-value>Klantinformatie</utrecht-heading>
+    <utrecht-heading :level="1" model-value>Persoonsinformatie</utrecht-heading>
     <nav>
       <ul>
         <li>
           <router-link :to="{ name: 'klanten' }">{{
-            "< Klanten zoeken"
+            "< Personen zoeken"
           }}</router-link>
         </li>
       </ul>
@@ -17,6 +17,17 @@
       message="Er is geen klant gevonden"
       messageType="error"
     ></application-message>
+
+    <simple-spinner v-if="klantBsn && persoon.loading" />
+    <klant-brp-gegevens
+      v-if="persoon.success && persoon.data"
+      :persoon="persoon.data"
+    />
+    <application-message
+      v-if="persoon.error"
+      message="Er ging iets mis bij het ophalen van de BRP gegevens"
+      messageType="error"
+    />
 
     <utrecht-heading :level="2" model-value
       >Openstaande contactverzoeken</utrecht-heading
@@ -73,7 +84,7 @@ import {
   ContactmomentenOverzicht,
   useContactverzoekenByKlantId,
 } from "@/features/contactmoment";
-import { KlantDetails, useKlant } from "@/features/klant";
+import { KlantDetails, useKlantById } from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
@@ -81,11 +92,13 @@ import Pagination from "../nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
+import KlantBrpGegevens from "../features/klant/brp/KlantBrpGegevens.vue";
+import { usePersoonByBsn } from "@/features/klant/brp/service";
 
 const props = defineProps<{ klantId: string }>();
 const klantId = computed(() => props.klantId);
 const contactmomentStore = useContactmomentStore();
-const klant = useKlant(klantId);
+const klant = useKlantById(klantId);
 
 watch(
   () => klant.success && klant.data,
@@ -112,10 +125,11 @@ const onContactmomentenNavigate = (page: number) => {
   contactmomentenPage.value = page;
 };
 
-const klantBsn = computed(() =>
-  !klant.success || !klant.data.bsn ? "" : klant.data.bsn
-);
+const getBsn = () => (!klant.success || !klant.data.bsn ? "" : klant.data.bsn);
+const klantBsn = computed(getBsn);
+
 const zaken = useZakenByBsn(klantBsn);
+const persoon = usePersoonByBsn(getBsn);
 </script>
 
 <style scoped lang="scss">

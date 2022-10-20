@@ -1,11 +1,9 @@
 <template>
-  <time v-if="date" :datetime="date.toISOString().substring(0, 10)">{{
-    formatDateOnly(date)
-  }}</time>
+  <dutch-date :date="date" v-if="date" />
   <span v-else>Onbekend</span>
 </template>
 <script setup lang="ts">
-import { formatDateOnly } from "@/helpers/date";
+import DutchDate from "@/components/DutchDate.vue";
 
 defineProps<{ date: Date | undefined }>();
 </script>
