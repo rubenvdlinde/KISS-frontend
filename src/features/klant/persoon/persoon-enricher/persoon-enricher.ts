@@ -1,7 +1,8 @@
 import { combineEnrichers } from "@/services";
-import { usePersoonByBsn } from "../brp/service";
-import { useKlantByBsn } from "../service";
-import type { Klant, Persoon } from "../types";
+import { usePersoonByBsn } from "../service";
+import { useKlantByBsn } from "../../service";
+import type { Persoon } from "../types";
+import type { Klant } from "../../types";
 
 const isKlant = (klantOfPersoon: Klant | Persoon): klantOfPersoon is Klant =>
   klantOfPersoon._typeOfKlant === "klant";

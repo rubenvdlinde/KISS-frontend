@@ -30,9 +30,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Persoon } from "../types";
+import type { Persoon } from "./types";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import DutchDate from "../../../components/DutchDate.vue";
+import DutchDate from "@/components/DutchDate.vue";
 
 defineProps<{ persoon: Persoon }>();
 </script>

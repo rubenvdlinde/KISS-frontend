@@ -91,22 +91,22 @@ import {
   type KlantSearch,
   useSearchKlanten,
   type KlantSearchField,
-} from "./service";
-import KlantenOverzicht from "./KlantenOverzicht.vue";
+} from "../service";
+import KlantenOverzicht from "./PersonenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
 import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?
-import KlantAanmaken from "./KlantAanmaken.vue";
+import KlantAanmaken from "./PersoonAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useRouter } from "vue-router";
-import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
+import SearchResultsCaption from "@/components/SearchResultsCaption.vue";
 import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
 import {
   persoonQuery,
   useSearchPersonen,
   type PersoonQuery,
   type PersoonSearchField,
-} from "./brp/service";
+} from "./service";
 
 type SearchFields = KlantSearchField | PersoonSearchField;
 
@@ -227,7 +227,7 @@ const router = useRouter();
 
 watch(singleKlantId, (newId, oldId) => {
   if (newId && newId !== oldId) {
-    router.push(`/klanten/${newId}`);
+    router.push(`/personen/${newId}`);
   }
 });
 

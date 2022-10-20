@@ -124,9 +124,9 @@ import {
   UtrechtHeading,
   UtrechtButton,
 } from "@utrecht/web-component-library-vue";
-import type { Klant } from "./types";
-import { useUpdateContactGegevens } from "./service";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import type { Klant } from "../types";
+import { useUpdateContactGegevens } from "../service";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { computed } from "vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import {

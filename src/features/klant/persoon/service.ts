@@ -11,7 +11,7 @@ import {
 } from "@/services";
 import { mutate } from "swrv";
 import type { Ref } from "vue";
-import type { Persoon } from "../types";
+import type { Persoon } from "./types";
 
 const personenRootUrl = window.gatewayBaseUri + "/api/ingeschrevenpersonen";
 
