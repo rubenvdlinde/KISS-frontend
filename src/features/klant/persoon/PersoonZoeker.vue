@@ -42,11 +42,11 @@
     <section class="search-section" v-if="store.klantSearchQuery?.query">
       <simple-spinner v-if="klanten.loading" />
       <template v-if="klanten.success">
-        <klanten-overzicht :records="klanten.data.page">
+        <personen-overzicht :records="klanten.data.page">
           <template #caption>
             <SearchResultsCaption :results="klanten.data" />
           </template>
-        </klanten-overzicht>
+        </personen-overzicht>
         <pagination
           class="pagination"
           :pagination="klanten.data"
@@ -63,11 +63,11 @@
     <section class="search-section" v-else-if="store.persoonSearchQuery?.value">
       <simple-spinner v-if="personen.loading" />
       <template v-if="personen.success">
-        <klanten-overzicht :records="personen.data.page">
+        <personen-overzicht :records="personen.data.page">
           <template #caption>
             <SearchResultsCaption :results="personen.data" />
           </template>
-        </klanten-overzicht>
+        </personen-overzicht>
         <pagination
           class="pagination"
           :pagination="personen.data"
@@ -92,7 +92,7 @@ import {
   useSearchKlanten,
   type KlantSearchField,
 } from "../service";
-import KlantenOverzicht from "./PersonenOverzicht.vue";
+import PersonenOverzicht from "./PersonenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
 import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?

@@ -4,7 +4,7 @@
     <nav>
       <ul>
         <li>
-          <router-link :to="{ name: 'klanten' }">{{
+          <router-link :to="{ name: 'personen' }">{{
             "< Personen zoeken"
           }}</router-link>
         </li>
