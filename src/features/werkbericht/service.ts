@@ -233,6 +233,24 @@ export function useWerkberichten(
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
 }
 
+export function useFeaturedWerkberichtenCount() {
+  async function fetchFeaturedWerkberichten(url: string): Promise<number> {
+    const r = await fetchLoggedIn(url);
+
+    if (!r.ok) throw new Error(r.status.toString());
+
+    const json = await r.json();
+
+    return 1; // TODO: return actual count
+  }
+
+  return ServiceResult.fromFetcher(
+    `${BERICHTEN_BASE_URI}?x-commongateway-metadata.dateRead=NULL&acf.publication_featured=true&fields[]`,
+    fetchFeaturedWerkberichten,
+    { poll: true }
+  );
+}
+
 export async function readBericht(id: string): Promise<boolean> {
   const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}?fields[]`);
 
