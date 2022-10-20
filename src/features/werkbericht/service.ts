@@ -209,7 +209,19 @@ export function useWerkberichten(
     if (!Array.isArray(berichten))
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
-    return parsePagination(json, (bericht: any) =>
+    // Sort json.results based on acf.publication_featured
+    const sortedJson = {
+      ...json,
+      results: json.results.sort((x: any, y: any) =>
+        x.embedded.acf.publication_featured
+          ? -1
+          : !y.embedded.acf.publication_featured
+          ? 1
+          : 0
+      ),
+    };
+
+    return parsePagination(sortedJson, (bericht: any) =>
       parseWerkbericht(
         bericht,
         typesResult.data.fromKeyToValue,
