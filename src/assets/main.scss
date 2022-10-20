@@ -269,19 +269,24 @@ table.overview {
             font-weight: 600;
         }
 
-        &.row-link a {
-            padding-inline-end: var(--spacing-default);
+        &.row-link {
+            a,
+            button {
+                padding-inline-end: var(--spacing-default);
+            }
         }
     }
 
-    a {
+    a,
+    button {
         color: var(--color-tertiary);
     }
 }
 
 tr.row-link {
     position: relative;
-    a {
+    a,
+    button {
         @extend .icon-after;
         @extend .chevron-down;
 
@@ -322,5 +327,18 @@ th.row-link-header {
 
     dd {
         margin-block-start: var(--spacing-extrasmall);
+    }
+}
+
+.skeleton {
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(200, 20%, 80%);
+    }
+    100% {
+        background-color: hsl(200, 20%, 95%);
     }
 }

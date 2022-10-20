@@ -4,7 +4,7 @@
       <header class="heading-container">
         <utrecht-heading model-value :level="level">
           <span class="heading">
-            Klantgegevens
+            Gegevens klant
             <button
               v-if="!editing"
               @click="toggleEditing"
