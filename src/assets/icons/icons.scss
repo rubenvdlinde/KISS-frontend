@@ -69,3 +69,8 @@
 .icon-after.plus::after {
     mask-image: url("@/assets/icons/plus.svg");
 }
+
+.icon-before.alert::before,
+.icon-after.alert::after {
+    mask-image: url("@/assets/icons/alert.svg");
+}
