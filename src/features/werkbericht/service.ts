@@ -91,6 +91,7 @@ function parseWerkbericht(
     type: berichtTypeName,
     skills: skillNames,
     url: jsonObject["x-commongateway-metadata"]?.self,
+    featured: jsonObject.embedded.acf.publication_featured,
   };
 }
 
