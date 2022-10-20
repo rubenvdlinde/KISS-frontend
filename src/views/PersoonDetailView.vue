@@ -98,8 +98,8 @@ import { useContactmomentenByKlantId } from "@/features/shared/get-contactmoment
 import { useZakenByBsn } from "@/features/zaaksysteem";
 import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 
-const props = defineProps<{ klantId: string }>();
-const klantId = computed(() => props.klantId);
+const props = defineProps<{ persoonId: string }>();
+const klantId = computed(() => props.persoonId);
 const contactmomentStore = useContactmomentStore();
 const klant = useKlantById(klantId);
 
