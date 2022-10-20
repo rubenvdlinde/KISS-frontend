@@ -1,5 +1,10 @@
 <template>
   <article :class="{ read: read }">
+    <div v-if="bericht.featured" class="featured">
+      <span class="icon-before alert" />
+      Belangrijk
+    </div>
+
     <small v-if="showType && bericht.type">
       {{ bericht.type }}
     </small>
@@ -175,6 +180,23 @@ article {
   overflow: hidden;
   display: grid;
   gap: 0.75rem;
+  position: relative;
+
+  .featured {
+    display: flex;
+    position: relative;
+    width: fit-content;
+    align-items: center;
+    gap: var(--spacing-small);
+    color: var(--color-white);
+    background: var(--color-error);
+    border-top-right-radius: var(--radius-large);
+    border-bottom-right-radius: var(--radius-large);
+    padding-inline: var(--spacing-large);
+    padding-block: var(--spacing-small);
+    top: calc(0.75rem * -1); // based on article padding
+    left: calc(var(--text-margin) * -1); // based on article padding
+  }
 
   time {
     color: var(--color-primary);
