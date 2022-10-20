@@ -7,4 +7,5 @@ export interface Werkbericht {
   skills: string[];
   read: boolean;
   url: string;
+  featured: boolean;
 }
