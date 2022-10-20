@@ -241,11 +241,15 @@ export function useFeaturedWerkberichtenCount() {
 
     const json = await r.json();
 
-    return 1; // TODO: return actual count
+    if (!json.results.length) return 0;
+
+    return json.results.filter(
+      (result: any) => !result["x-commongateway-metadata"].dateRead
+    ).length;
   }
 
   return ServiceResult.fromFetcher(
-    `${BERICHTEN_BASE_URI}?x-commongateway-metadata.dateRead=NULL&acf.publication_featured=true&fields[]`,
+    `${BERICHTEN_BASE_URI}?acf.publication_featured=true&fields[]=x-commongateway-metadata.dateRead&extend[]=x-commongateway-metadata.dateRead`,
     fetchFeaturedWerkberichten,
     { poll: true }
   );
