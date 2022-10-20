@@ -12,16 +12,37 @@
           class="log-out"
           >Uitloggen</a
         >
-        <nav v-if="contactmomentStore.contactmomentLoopt && route.meta.showNav">
+        <nav v-if="route.meta.showNav">
           <ul>
             <li>
-              <router-link :to="{ name: 'home' }">Start</router-link>
+              <router-link :to="{ name: 'home' }">
+                <span>Nieuws en werkinstructies</span>
+
+                <span
+                  v-if="
+                    featuredWerkberichtenCount.success &&
+                    featuredWerkberichtenCount.data > 0
+                  "
+                  class="featured-indicator"
+                  >{{
+                    featuredWerkberichtenCount.data < 10
+                      ? featuredWerkberichtenCount.data
+                      : "9+"
+                  }}</span
+                >
+              </router-link>
             </li>
-            <li>
-              <router-link :to="{ name: 'klanten' }">Personen</router-link>
+
+            <li v-if="contactmomentStore.contactmomentLoopt">
+              <router-link :to="{ name: 'klanten' }"
+                ><span>Personen</span></router-link
+              >
             </li>
-            <li>
-              <router-link :to="{ name: 'zaken' }">Zaken</router-link>
+
+            <li v-if="contactmomentStore.contactmomentLoopt">
+              <router-link :to="{ name: 'zaken' }"
+                ><span>Zaken</span></router-link
+              >
             </li>
           </ul>
         </nav>
@@ -31,6 +52,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useFeaturedWerkberichtenCount } from "@/features/werkbericht";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRoute } from "vue-router";
 import { LoginOverlay, logoutUrl } from "../features/login";
@@ -38,6 +60,8 @@ import GlobalSearch from "../features/search/GlobalSearch.vue";
 
 const route = useRoute();
 const contactmomentStore = useContactmomentStore();
+
+const featuredWerkberichtenCount = useFeaturedWerkberichtenCount();
 </script>
 
 <style lang="scss" scoped>
@@ -68,16 +92,33 @@ nav ul {
   gap: var(--spacing-default);
   padding-block: var(--spacing-small);
   list-style: none;
+
   li {
     margin-inline: var(--spacing-large);
   }
+
   a {
+    display: flex;
+    gap: var(--spacing-small);
+    block-size: 1.8rem;
+    align-items: center;
     text-decoration: none;
     color: var(--color-white);
+
+    &.router-link-active > :first-child {
+      border-bottom: 2px solid var(--color-white);
+    }
   }
 
-  a.router-link-active {
-    border-bottom: 2px solid var(--color-white);
+  .featured-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    block-size: 100%;
+    inline-size: 1.8rem;
+    background-color: var(--color-error);
+    border-radius: calc(var(--spacing-large) / 2);
   }
 }
 
