@@ -22,8 +22,8 @@ const handelsRegisterBaseUrl = window.gatewayBaseUri + "/api/vestigingen";
 
 const bedrijfQueryDictionary: BedrijfQueryDictionary = {
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
-    ["bezoekadres.postcode", postcode.digits + postcode.numbers],
-    ["bezoekadres.straatHuisnummer", huisnummer],
+    ["bezoekadres.postcode", postcode.numbers + postcode.digits],
+    ["bezoekadres.huisnummer", huisnummer],
   ],
   emailadres: (search) => [["emails.email", `%${search}%`]],
   telefoonnummer: (search) => [

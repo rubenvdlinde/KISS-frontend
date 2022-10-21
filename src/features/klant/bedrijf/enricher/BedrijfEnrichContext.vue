@@ -19,7 +19,10 @@ const klantTelefoon = mapServiceData(klantData, (k) =>
   k?.telefoonnummers?.map(({ telefoonnummer }) => telefoonnummer).find(Boolean)
 );
 const handelsEmail = mapServiceData(handelsregisterData, (h) => h?.email);
-const handelsTelefoon = mapServiceData(handelsregisterData, (h) => h?.email);
+const handelsTelefoon = mapServiceData(
+  handelsregisterData,
+  (h) => h?.telefoonnummer
+);
 
 const email = computed(() => {
   if (handelsEmail.success && handelsEmail.data) return handelsEmail;
