@@ -13,6 +13,8 @@ export interface Klant {
   telefoonnummers: { telefoonnummer: string }[];
   emails: { email: string }[];
   bsn?: string;
+  bedrijfsnaam?: string;
+  vestigingsnummer?: string;
 }
 
 export enum KlantType {
