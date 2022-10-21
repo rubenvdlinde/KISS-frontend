@@ -50,6 +50,11 @@
                 ><span>Zaken</span></router-link
               >
             </li>
+            <li>
+              <router-link :to="{ name: 'links' }"
+                ><span>Links</span></router-link
+              >
+            </li>
           </ul>
         </nav>
       </header>
