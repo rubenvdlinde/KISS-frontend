@@ -21,6 +21,7 @@
     <medewerker-search
       class="utrecht-textbox utrecht-textbox--html-input"
       v-model="medewerker"
+      :defaultValue="medewerker"
     >
       <template #label
         ><span class="utrecht-form-label"
@@ -52,7 +53,7 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import MedewerkerSearch from "../search/MedewerkerSearch.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { Klant } from "../klant/types";
-import { watch, ref } from "vue";
+import { watch, ref, nextTick } from "vue";
 
 const props = defineProps<{
   huidigeVraag: Vraag;
@@ -61,8 +62,25 @@ const props = defineProps<{
 
 const contactmomentStore = useContactmomentStore();
 
-const medewerker = ref("");
-const notitie = ref("");
+watch(
+  () => contactmomentStore?.huidigContactmoment?.huidigeVraag,
+  (huidigeVraag) => {
+    nextTick(() => {
+      medewerker.value = huidigeVraag?.contactverzoek.medewerker ?? "";
+      notitie.value = huidigeVraag?.contactverzoek.notitie ?? "";
+    });
+  },
+  { deep: true }
+);
+
+const medewerker = ref(
+  contactmomentStore?.huidigContactmoment?.huidigeVraag?.contactverzoek
+    .medewerker ?? ""
+);
+const notitie = ref(
+  contactmomentStore?.huidigContactmoment?.huidigeVraag?.contactverzoek
+    .notitie ?? ""
+);
 
 watch(
   () => notitie.value,

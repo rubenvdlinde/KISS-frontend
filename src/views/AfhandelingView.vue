@@ -264,7 +264,6 @@
               class="utrecht-select utrecht-select--html-select"
               required
               v-if="gespreksresultaten.success"
-              :disabled="vraag.contactverzoek.isActive"
             >
               <option
                 v-for="gespreksresultaat in gespreksresultaten.data"
@@ -274,26 +273,34 @@
               </option>
             </select>
 
-            <template v-if="vraag.contactverzoek.isActive">
+            <template v-if="vraag.resultaat === 'Contactverzoek gemaakt'">
               <label />
 
               <div class="contactverzoek-container">
                 <div>
-                  <span>Contactverzoek versturen naar</span>
-                  {{
-                    vraag.contactverzoek.medewerker
-                      ? vraag.contactverzoek.medewerker
-                      : "Geen medewerker geselecteerd."
-                  }}
+                  <label
+                    class="utrecht-form-label required"
+                    :for="'verzoek-medewerker' + idx"
+                    >Contactverzoek versturen naar</label
+                  >
+                  {{ vraag.contactverzoek.medewerker }}
+                  <medewerker-search
+                    :defaultValue="vraag.contactverzoek.medewerker"
+                    v-model="vraag.contactverzoek.medewerker"
+                    :id="'verzoek-medewerker' + idx"
+                    class="utrecht-textbox utrecht-textbox--html-input medewerker-search"
+                    required
+                  />
                 </div>
 
                 <div>
                   <label
-                    class="utrecht-form-label"
+                    class="utrecht-form-label required"
                     :for="'verzoek-notitie' + idx"
                     >Notitie</label
                   >
                   <textarea
+                    required
                     rows="5"
                     class="utrecht-textarea"
                     :id="'verzoek-notitie' + idx"
@@ -362,11 +369,6 @@
               v-model="vraag.notitie"
             ></textarea>
           </fieldset>
-
-          <p v-if="vraag.contactverzoek.isActive">
-            Contactverzoek verstuurd naar
-            {{ vraag.contactverzoek.medewerker }}
-          </p>
         </section>
       </article>
       <menu>
@@ -414,6 +416,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
 import { getFormattedUtcDate } from "@/services";
 import { nanoid } from "nanoid";
+import MedewerkerSearch from "../features/search/MedewerkerSearch.vue";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
