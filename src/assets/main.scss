@@ -312,8 +312,9 @@ th.row-link-header {
     dl {
         display: grid;
         grid-auto-flow: column dense;
-        grid-template-rows: repeat(50, min-content);
-        column-gap: var(--spacing-default);
+        grid-template-rows: repeat(4, min-content);
+        justify-content: flex-start;
+        column-gap: var(--spacing-large);
 
         &:not(:first-child) {
             margin-block-start: var(--spacing-default);
