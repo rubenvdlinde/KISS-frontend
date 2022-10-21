@@ -13,9 +13,10 @@ export function getKlantInfo(contactmoment: ContactmomentState) {
 }
 
 function _getKlantInfo(klant: Klant) {
-  const name = [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
-    .filter(Boolean)
-    .join(" ");
+  const name =
+    [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
+      .filter(Boolean)
+      .join(" ") || klant.bedrijfsnaam;
 
   const email = klant.emails.map(({ email }) => email).find(Boolean);
   const phone = klant.telefoonnummers
