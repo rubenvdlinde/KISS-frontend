@@ -38,9 +38,6 @@ const vragen = computed(() =>
     return {
       isCurrent: contactmomentStore.huidigContactmoment?.huidigeVraag === vraag,
       async switchVraag() {
-        if (contactmomentStore.wouldLoseProgress) {
-          await waitForConfirmation();
-        }
         contactmomentStore.switchVraag(vraag);
       },
     };
@@ -48,20 +45,10 @@ const vragen = computed(() =>
 );
 
 async function startNieuweVraag() {
-  if (contactmomentStore.wouldLoseProgress) {
-    await waitForConfirmation();
-  }
   contactmomentStore.startNieuweVraag();
   nextTick(() => {
     document.getElementById("cm-notitieblok")?.focus();
   });
-}
-
-async function waitForConfirmation() {
-  const { isCanceled } = await dialog.reveal();
-  if (isCanceled) {
-    throw new Error("canceled");
-  }
 }
 </script>
 

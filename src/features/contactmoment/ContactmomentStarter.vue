@@ -37,9 +37,7 @@ const contactmomentStore = useContactmomentStore();
 
 const onStartContactMoment = async () => {
   if (attrs.disabled) return;
-  if (contactmomentStore.wouldLoseProgress) {
-    await waitForConfirmation();
-  }
+
   if (contactmomentStore.huidigContactmoment) {
     contactmomentStore.huidigContactmoment.route =
       router.currentRoute.value.fullPath;

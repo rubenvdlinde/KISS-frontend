@@ -42,18 +42,11 @@
             />
           </template>
           <template #[NotitieTabs.Contactverzoek]>
-            <p v-if="contactverzoekIsSentToMedewerker">
-              Contactverzoek verstuurd naar
-              {{ contactverzoekIsSentToMedewerker }}
-            </p>
             <ContactverzoekFormulier
-              v-else
               :huidige-vraag="
                 contactmomentStore.huidigContactmoment.huidigeVraag
               "
               :huidige-klant="contactmomentStore.klantVoorHuidigeVraag"
-              @start="handleContactverzoekStart"
-              @submit="handleContactverzoekSubmit"
             />
           </template>
         </tabs-component>
@@ -69,7 +62,7 @@ import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import ContactmomentVragenMenu from "@/features/contactmoment/ContactmomentVragenMenu.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
-import { watch, computed } from "vue";
+import { watch } from "vue";
 import { useRoute } from "vue-router";
 import {
   ContactmomentStarter,
@@ -100,39 +93,6 @@ watch(
     state.reset();
   }
 );
-
-const contactverzoekIsSentToMedewerker = computed(
-  () =>
-    contactmomentStore.huidigContactmoment?.huidigeVraag.contactverzoek
-      .medewerker
-);
-
-const handleContactverzoekStart = () => {
-  if (
-    !contactmomentStore.huidigContactmoment ||
-    contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek
-      .isSubmitted
-  )
-    return;
-  contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
-    true;
-};
-
-const handleContactverzoekSubmit = ({
-  medewerker,
-  url,
-}: {
-  medewerker: string;
-  url: string;
-}) => {
-  if (!contactmomentStore.huidigContactmoment) return;
-  const { contactverzoek } =
-    contactmomentStore.huidigContactmoment.huidigeVraag;
-  contactverzoek.url = url;
-  contactverzoek.medewerker = medewerker;
-  contactverzoek.isSubmitted = true;
-  contactverzoek.isInProgress = false;
-};
 </script>
 
 <style lang="scss" scoped>

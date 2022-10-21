@@ -39,12 +39,6 @@ const klantInfo = computed(() =>
 );
 
 const onStopContactMoment = async () => {
-  if (contactmomentStore.wouldLoseProgress) {
-    const { isCanceled } = await beforeStopDialog.reveal();
-    if (isCanceled) {
-      return;
-    }
-  }
   router.push({ name: "afhandeling" }); //een link zou wellicht toepasselijker zijn, maar de styling adhv het designsystem wordt lastig.
 };
 </script>

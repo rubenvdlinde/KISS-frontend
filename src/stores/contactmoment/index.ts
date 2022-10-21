@@ -13,11 +13,12 @@ import { createSession, type Session } from "../switchable-store";
 export * from "./types";
 
 export type ContactmomentZaak = { zaak: ZaakDetails; shouldStore: boolean };
+
 export type ContactmomentContactVerzoek = {
   url: string;
   medewerker: string;
-  isInProgress: boolean;
-  isSubmitted: boolean;
+  notitie: string;
+  isActive: boolean;
 };
 
 export interface Vraag {
@@ -44,8 +45,8 @@ function initVraag(): Vraag {
     contactverzoek: {
       url: "",
       medewerker: "",
-      isInProgress: false,
-      isSubmitted: false,
+      notitie: "",
+      isActive: false,
     },
     startdatum: getFormattedUtcDate(),
     kanaal: "",
@@ -98,10 +99,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
-    wouldLoseProgress(): boolean {
-      return !!this.huidigContactmoment?.huidigeVraag.contactverzoek
-        .isInProgress;
-    },
   },
   actions: {
     start() {
@@ -112,10 +109,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     switchContactmoment(contactmoment: ContactmomentState) {
       if (!this.contactmomenten.includes(contactmoment)) return;
-      if (this.huidigContactmoment) {
-        this.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
-          false;
-      }
       this.huidigContactmoment = contactmoment;
       contactmoment.session.enable();
     },
@@ -139,7 +132,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
       if (!huidigContactmoment) return;
       if (!huidigContactmoment.vragen.includes(vraag)) return;
 
-      huidigContactmoment.huidigeVraag.contactverzoek.isInProgress = false;
       huidigContactmoment.huidigeVraag = vraag;
     },
     stop() {
@@ -313,6 +305,17 @@ export const useContactmomentStore = defineStore("contactmoment", {
       });
 
       huidigeVraag.primaireVraag = werkinstructie;
+    },
+
+    updateContactverzoek(contactverzoek: ContactmomentContactVerzoek) {
+      const { huidigContactmoment } = this;
+
+      if (!huidigContactmoment) return;
+
+      huidigContactmoment.huidigeVraag.contactverzoek = {
+        ...contactverzoek,
+        isActive: true,
+      };
     },
   },
 });
