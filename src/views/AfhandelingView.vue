@@ -278,12 +278,17 @@
 
               <div class="contactverzoek-container">
                 <div>
+                  <application-message
+                    v-if="!vraag.klanten.length"
+                    message="Er is geen klant geselecteerd"
+                    message-type="warning"
+                  />
+
                   <label
                     class="utrecht-form-label required"
                     :for="'verzoek-medewerker' + idx"
                     >Contactverzoek versturen naar</label
                   >
-                  {{ vraag.contactverzoek.medewerker }}
                   <medewerker-search
                     :defaultValue="vraag.contactverzoek.medewerker"
                     v-model="vraag.contactverzoek.medewerker"
@@ -417,6 +422,7 @@ import PromptModal from "@/components/PromptModal.vue";
 import { getFormattedUtcDate } from "@/services";
 import { nanoid } from "nanoid";
 import MedewerkerSearch from "../features/search/MedewerkerSearch.vue";
+import { saveContactverzoek } from "@/features/contactverzoek";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -476,7 +482,7 @@ const koppelContactverzoek = (
     objectType: "contactmomentobject",
   });
 
-const saveVraag = (vraag: Vraag, gespreksId?: string) => {
+const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
   const contactmoment: Contactmoment = {
     gespreksId,
     vorigContactmoment: undefined,
@@ -506,6 +512,22 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
   addMedewerkersToContactmoment(contactmoment, vraag);
   addNieuwsberichtToContactmoment(contactmoment, vraag);
   addWerkinstructiesToContactmoment(contactmoment, vraag);
+
+  if (vraag.resultaat === "Contactverzoek gemaakt") {
+    const contactverzoek = await saveContactverzoek({
+      bronorganisatie: window.organisatieIds[0],
+      todo: {
+        name: "contactverzoek",
+        description: vraag.contactverzoek.notitie,
+        attendees: [vraag.contactverzoek.medewerker],
+      },
+    });
+
+    koppelKlant({
+      klantId: vraag.klanten[0].klant.id,
+      contactmomentId: contactverzoek.id,
+    });
+  }
 
   return saveContactmoment(contactmoment).then((savedContactmoment) => {
     const nextPromises: Promise<unknown>[] = [
@@ -699,8 +721,7 @@ select {
 .contactverzoek-container {
   padding-inline-start: var(--utrecht-form-input-padding-inline-start);
   padding-inline-end: var(--utrecht-form-input-padding-inline-end);
-  padding-block-start: var(--utrecht-form-input-padding-block-start);
-  padding-block-end: var(--utrecht-form-input-padding-block-end);
+  padding-block: var(--spacing-default);
   border: 1px solid var(--color-primary);
 
   & > :not(:last-child) {
@@ -713,6 +734,11 @@ select {
     display: block;
     font-weight: 600;
     color: var(--utrecht-form-label-color);
+  }
+
+  article.warning {
+    padding: var(--spacing-default);
+    margin-block-end: var(--spacing-default);
   }
 }
 </style>
