@@ -264,7 +264,7 @@
               class="utrecht-select utrecht-select--html-select"
               required
               v-if="gespreksresultaten.success"
-              :disabled="vraag.contactverzoek.isSubmitted"
+              :disabled="vraag.contactverzoek.isActive"
             >
               <option
                 v-for="gespreksresultaat in gespreksresultaten.data"
@@ -273,6 +273,35 @@
                 {{ gespreksresultaat.definitie }}
               </option>
             </select>
+
+            <template v-if="vraag.contactverzoek.isActive">
+              <label />
+
+              <div class="contactverzoek-container">
+                <div>
+                  <span>Contactverzoek versturen naar</span>
+                  {{
+                    vraag.contactverzoek.medewerker
+                      ? vraag.contactverzoek.medewerker
+                      : "Geen medewerker geselecteerd."
+                  }}
+                </div>
+
+                <div>
+                  <label
+                    class="utrecht-form-label"
+                    :for="'verzoek-notitie' + idx"
+                    >Notitie</label
+                  >
+                  <textarea
+                    rows="5"
+                    class="utrecht-textarea"
+                    :id="'verzoek-notitie' + idx"
+                    v-model="vraag.contactverzoek.notitie"
+                  ></textarea>
+                </div>
+              </div>
+            </template>
 
             <label
               :for="'hoofdvraag' + idx"
@@ -334,7 +363,7 @@
             ></textarea>
           </fieldset>
 
-          <p v-if="vraag.contactverzoek.isSubmitted">
+          <p v-if="vraag.contactverzoek.isActive">
             Contactverzoek verstuurd naar
             {{ vraag.contactverzoek.medewerker }}
           </p>
@@ -395,7 +424,7 @@ const gespreksresultaten = useGespreksResultaten();
 onMounted(() => {
   if (!contactmomentStore.huidigContactmoment) return;
   for (const vraag of contactmomentStore.huidigContactmoment.vragen) {
-    if (vraag.contactverzoek.isSubmitted) {
+    if (vraag.contactverzoek.isActive) {
       vraag.resultaat = "Contactverzoek gemaakt";
     }
     if (!vraag.kanaal) {
@@ -662,5 +691,25 @@ menu {
 input,
 select {
   accent-color: var(--color-primary);
+}
+
+.contactverzoek-container {
+  padding-inline-start: var(--utrecht-form-input-padding-inline-start);
+  padding-inline-end: var(--utrecht-form-input-padding-inline-end);
+  padding-block-start: var(--utrecht-form-input-padding-block-start);
+  padding-block-end: var(--utrecht-form-input-padding-block-end);
+  border: 1px solid var(--color-primary);
+
+  & > :not(:last-child) {
+    margin-block-end: var(--spacing-default);
+    padding-block-end: var(--spacing-default);
+    border-bottom: var(--spacing-small) solid var(--color-primary);
+  }
+
+  span {
+    display: block;
+    font-weight: 600;
+    color: var(--utrecht-form-label-color);
+  }
 }
 </style>
