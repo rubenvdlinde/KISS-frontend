@@ -1,20 +1,15 @@
-import {
-  type Klant,
-  useBedrijfKlantByVestigingsnummer,
-} from "@/features/klant";
+import { type Klant, useKlantByVestigingsnummer } from "@/features/klant";
 import { combineEnrichers } from "@/services";
-import { useBedrijfHandelsregisterByVestigingsnummer } from "../service";
+import { useBedrijfByVestigingsnummer } from "../service";
 import type { Bedrijf } from "../types";
 
-const isBedrijfKlant = (
-  klantOfHandelsRegister: Klant | Bedrijf
-): klantOfHandelsRegister is Klant => {
-  return klantOfHandelsRegister._typeOfKlant === "klant";
+const isKlant = (klantOfBedrijf: Klant | Bedrijf): klantOfBedrijf is Klant => {
+  return klantOfBedrijf._typeOfKlant === "klant";
 };
 
 export const useEnrichedBedrijf = combineEnrichers(
-  useBedrijfKlantByVestigingsnummer,
-  useBedrijfHandelsregisterByVestigingsnummer,
+  useKlantByVestigingsnummer,
+  useBedrijfByVestigingsnummer,
   (either) => either.vestigingsnummer,
-  isBedrijfKlant
+  isKlant
 );

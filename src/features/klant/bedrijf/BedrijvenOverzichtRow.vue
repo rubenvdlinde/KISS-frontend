@@ -19,14 +19,14 @@
       }}</template>
     </td>
     <td class="wrap">
+      <div class="skeleton" v-if="result.email.loading" />
+      <template v-if="result.email.success">{{ result.email.data }}</template>
+    </td>
+    <td class="wrap">
       <div class="skeleton" v-if="result.telefoonnummer.loading" />
       <template v-if="result.telefoonnummer.success">{{
         result.telefoonnummer.data
       }}</template>
-    </td>
-    <td class="wrap">
-      <div class="skeleton" v-if="result.email.loading" />
-      <template v-if="result.email.success">{{ result.email.data }}</template>
     </td>
     <td>
       <div class="skeleton" v-if="result.detailLink.loading" />

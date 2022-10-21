@@ -19,7 +19,10 @@ const klantTelefoon = mapServiceData(klantData, (k) =>
   k?.telefoonnummers?.map(({ telefoonnummer }) => telefoonnummer).find(Boolean)
 );
 const handelsEmail = mapServiceData(handelsregisterData, (h) => h?.email);
-const handelsTelefoon = mapServiceData(handelsregisterData, (h) => h?.email);
+const handelsTelefoon = mapServiceData(
+  handelsregisterData,
+  (h) => h?.telefoonnummer
+);
 
 const email = computed(() => {
   if (handelsEmail.success && handelsEmail.data) return handelsEmail;
@@ -37,7 +40,7 @@ const telefoonnummer = computed(() => {
   return klantTelefoon;
 });
 
-const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
+const getKlantUrl = (klant: Klant) => `/bedrijven/${klant.id}`;
 
 function mapLink(klant: Klant | null, naam: string | null) {
   return (
@@ -48,19 +51,7 @@ function mapLink(klant: Klant | null, naam: string | null) {
   );
 }
 
-const detailLink = computed(() => {
-  const n = klantData.success ? klantData.data?.bedrijfsnaam : null;
-  return mapServiceData(klantData, (k) => mapLink(k, n ?? null));
-});
-
 const router = useRouter();
-
-const create = async () => {
-  if (!vestigingsnummer.value) throw new Error();
-  const newKlant = await ensureKlantForVestigingsnummer(vestigingsnummer.value);
-  const url = getKlantUrl(newKlant);
-  router.push(url);
-};
 
 const klantBedrijfsnaam = mapServiceData(
   klantData,
@@ -81,6 +72,24 @@ const bedrijfsnaam = computed(() => {
     return ServiceResult.loading();
   return klantBedrijfsnaam;
 });
+
+const detailLink = computed(() => {
+  const n = bedrijfsnaam.value.success ? bedrijfsnaam.value?.data : null;
+  return mapServiceData(klantData, (k) => mapLink(k, n ?? null));
+});
+
+const create = async () => {
+  if (!vestigingsnummer.value) throw new Error();
+  const bedrijfsnaam = handelsBedrijfsnaam.success
+    ? handelsBedrijfsnaam.data
+    : "";
+  const newKlant = await ensureKlantForVestigingsnummer({
+    vestigingsnummer: vestigingsnummer.value,
+    bedrijfsnaam,
+  });
+  const url = getKlantUrl(newKlant);
+  router.push(url);
+};
 
 const result: EnrichedBedrijf = reactive({
   bedrijfsnaam,

@@ -12,6 +12,7 @@ import ZaakDetailView from "../views/ZaakDetailView.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { redirectRoute } from "@/features/login";
 import BedrijvenView from "@/views/BedrijvenView.vue";
+import BedrijfDetailView from "@/views/BedrijfDetailView.vue";
 
 const guardContactMoment: NavigationGuard = (to, from, next) => {
   const contactmoment = useContactmomentStore();
@@ -62,6 +63,14 @@ const router = createRouter({
       path: "/bedrijven",
       name: "bedrijven",
       component: BedrijvenView,
+      beforeEnter: guardContactMoment,
+      meta: { showNav: true, showNotitie: true, showSearch: true },
+    },
+    {
+      path: "/bedrijven/:bedrijfId",
+      name: "bedrijfDetail",
+      props: true,
+      component: BedrijfDetailView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },

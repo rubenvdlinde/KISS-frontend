@@ -178,3 +178,18 @@ const mapDocumenten = (rawDocumenten: any[]) => {
     inhoud: document.embedded.informatieobject.inhoud,
   }));
 };
+
+export const useZakenByVestigingsnummer = (vestigingsnummer: Ref<string>) => {
+  const getUrl = () => {
+    if (!vestigingsnummer.value) return "";
+    const url = new URL(zaaksysteemBaseUri);
+    addExtends(url);
+    url.searchParams.set(
+      "rollen.betrokkeneIdentificatie.vestigingsNummer",
+      vestigingsnummer.value
+    );
+    return url.toString();
+  };
+
+  return ServiceResult.fromFetcher(getUrl, overviewFetcher);
+};

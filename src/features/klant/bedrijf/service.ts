@@ -22,15 +22,15 @@ const handelsRegisterBaseUrl = window.gatewayBaseUri + "/api/vestigingen";
 
 const bedrijfQueryDictionary: BedrijfQueryDictionary = {
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
-    ["bezoekadres.postcode", postcode.digits + postcode.numbers],
-    ["bezoekadres.straatHuisnummer", huisnummer],
+    ["bezoekadres.postcode", postcode.numbers + postcode.digits],
+    ["bezoekadres.huisnummer", huisnummer],
   ],
   emailadres: (search) => [["emails.email", `%${search}%`]],
   telefoonnummer: (search) => [
     ["telefoonnummers.telefoonnummer", `%${search}%`],
   ],
   kvkNummer: (search) => [["kvknummer", search]],
-  handelsnaam: (search) => [["eersteHandelsnaam", search]],
+  handelsnaam: (search) => [["eersteHandelsnaam", `%${search}%`]],
 };
 
 const getSearchBedrijvenUrl = <K extends SearchCategories>({
@@ -48,7 +48,7 @@ const getSearchBedrijvenUrl = <K extends SearchCategories>({
   const searchParams = bedrijfQueryDictionary[query.field](query.value);
 
   searchParams.forEach((tuple) => {
-    // url.searchParams.set(...tuple);
+    url.searchParams.set(...tuple);
   });
 
   return url.toString();
@@ -56,7 +56,7 @@ const getSearchBedrijvenUrl = <K extends SearchCategories>({
 
 function mapHandelsRegister(json: any): Bedrijf {
   const {
-    bezoekadres,
+    embedded,
     emailAdres,
     telefoonnummer,
     vestigingsnummer,
@@ -64,17 +64,21 @@ function mapHandelsRegister(json: any): Bedrijf {
     eersteHandelsnaam,
   } = json ?? {};
 
-  const { straatHuisnummer, postcode } = bezoekadres ?? {};
+  const { huisnummer, postcode, straatnaam, huisletter, huisnummertoevoeging } =
+    embedded?.bezoekadres ?? {};
 
   return {
     _typeOfKlant: "bedrijf",
     kvknummer,
     vestigingsnummer,
     postcode,
-    huisnummer: straatHuisnummer,
+    huisnummer: huisnummer.toString(),
     telefoonnummer,
     email: emailAdres,
     bedrijfsnaam: eersteHandelsnaam,
+    straatnaam,
+    huisletter,
+    huisnummertoevoeging,
   };
 }
 
@@ -99,7 +103,7 @@ export function useSearchBedrijven<K extends SearchCategories>(
   );
 }
 
-export const useBedrijfHandelsregisterByVestigingsnummer = (
+export const useBedrijfByVestigingsnummer = (
   getVestigingsnummer: () => string | undefined
 ) => {
   const getUrl = () => {
