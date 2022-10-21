@@ -43,17 +43,19 @@ export function parsePostcodeHuisnummer(
 }
 
 export function parseDutchDate(input: string): Date | Error {
-  const matches = input
-    .match(/([0-9][0-9]?)[-|/]([0-9][0-9]?)[-|/]([0-9]{4})$/)
-    ?.filter(Boolean);
+  const dateRegex =
+    /^(([0-9]{2})([0-9]{2})([0-9]{4}))|(([0-9]{1,2})[/|-]([0-9]{1,2})[/|-]([0-9]{4}))$/;
+  const matches = input.match(dateRegex);
 
-  if (matches?.length !== 4) {
-    return new Error("Voer een valide datum in, bijvoorbeeld 23-12-1900.");
+  if (matches?.length !== 9) {
+    return new Error(
+      "Voer een valide datum in, bijvoorbeeld 17-09-2022 of 17092022."
+    );
   }
 
-  const year = +matches[3];
-  const month = +matches[2] - 1;
-  const day = +matches[1];
+  const year = +(matches[4] || matches[8]);
+  const month = +(matches[3] || matches[7]) - 1;
+  const day = +(matches[2] || matches[6]);
 
   return new Date(year, month, day);
 }
