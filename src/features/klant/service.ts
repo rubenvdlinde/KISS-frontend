@@ -218,9 +218,9 @@ export async function ensureKlantForBsn({
   achternaam,
 }: {
   bsn: string;
-  voornaam: string;
+  voornaam?: string;
   voorvoegselAchternaam?: string;
-  achternaam: string;
+  achternaam?: string;
 }) {
   const bsnUrl = getKlantBsnUrl(bsn);
   const singleBsnId = getSingleBsnSearchId(bsn);
