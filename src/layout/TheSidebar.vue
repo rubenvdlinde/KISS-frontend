@@ -93,6 +93,23 @@ watch(
     state.reset();
   }
 );
+
+watch(
+  () => state.value.currentNotitieTab,
+  (tab) => {
+    if (
+      tab !== NotitieTabs.Contactverzoek ||
+      !contactmomentStore.huidigContactmoment
+    )
+      return;
+
+    const { huidigeVraag } = contactmomentStore.huidigContactmoment;
+
+    if (huidigeVraag.notitie && !huidigeVraag.contactverzoek.notitie) {
+      huidigeVraag.contactverzoek.notitie = huidigeVraag.notitie;
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>

@@ -48,10 +48,10 @@ export default {
 <script lang="ts" setup>
 import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import MedewerkerSearch from "../search/MedewerkerSearch.vue";
+import MedewerkerSearch from "@/features/search/MedewerkerSearch.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import type { Klant } from "../klant/types";
-import { watch, ref, nextTick } from "vue";
+import type { Klant } from "@/features/klant/";
+import { computed } from "@vue/reactivity";
 
 const props = defineProps<{
   huidigeVraag: Vraag;
@@ -60,45 +60,25 @@ const props = defineProps<{
 
 const contactmomentStore = useContactmomentStore();
 
-watch(
-  () => contactmomentStore?.huidigContactmoment?.huidigeVraag,
-  (huidigeVraag) => {
-    nextTick(() => {
-      medewerker.value = huidigeVraag?.contactverzoek.medewerker ?? "";
-      notitie.value = huidigeVraag?.contactverzoek.notitie ?? "";
-    });
-  },
-  { deep: true }
-);
-
-const medewerker = ref(
-  contactmomentStore?.huidigContactmoment?.huidigeVraag?.contactverzoek
-    .medewerker ?? ""
-);
-const notitie = ref(
-  contactmomentStore?.huidigContactmoment?.huidigeVraag?.contactverzoek
-    .notitie ?? ""
-);
-
-watch(
-  () => notitie.value,
-  (notitie) => {
-    contactmomentStore.updateContactverzoek({
-      ...props.huidigeVraag.contactverzoek,
-      notitie,
-    });
-  }
-);
-
-watch(
-  () => medewerker.value,
-  (medewerker) => {
+const medewerker = computed({
+  get: () => props.huidigeVraag.contactverzoek.medewerker,
+  set(medewerker) {
     contactmomentStore.updateContactverzoek({
       ...props.huidigeVraag.contactverzoek,
       medewerker,
     });
-  }
-);
+  },
+});
+
+const notitie = computed({
+  get: () => props.huidigeVraag.contactverzoek.notitie,
+  set: (notitie) => {
+    contactmomentStore.updateContactverzoek({
+      ...props.huidigeVraag.contactverzoek,
+      notitie,
+    });
+  },
+});
 </script>
 
 <style lang="scss" scoped>
