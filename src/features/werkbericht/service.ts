@@ -168,6 +168,7 @@ export function useWerkberichten(
     params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
     params.push(["extend[]", "x-commongateway-metadata.self"]);
     params.push(["extend[]", "acf"]);
+    params.push(["acf.publication_end_date[after]", "now"]);
 
     if (typeId) {
       params.push(["acf.publication_type", typeId.toString()]);
@@ -246,11 +247,20 @@ export function useFeaturedWerkberichtenCount() {
     ).length;
   }
 
-  return ServiceResult.fromFetcher(
-    `${BERICHTEN_BASE_URI}?acf.publication_featured=true&fields[]=x-commongateway-metadata.dateRead&extend[]=x-commongateway-metadata.dateRead`,
-    fetchFeaturedWerkberichten,
-    { poll: true }
-  );
+  function getUrl() {
+    const params: [string, string][] = [
+      ["acf.publication_featured", "true"],
+      ["fields[]", "x-commongateway-metadata.dateRead"],
+      ["extend[]", "x-commongateway-metadata.dateRead"],
+      ["acf.publication_end_date[after]", "now"],
+    ];
+
+    return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
+  }
+
+  return ServiceResult.fromFetcher(getUrl(), fetchFeaturedWerkberichten, {
+    poll: true,
+  });
 }
 
 export async function readBericht(id: string): Promise<boolean> {
