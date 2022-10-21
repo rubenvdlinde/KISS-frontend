@@ -4,7 +4,7 @@
       <header class="heading-container">
         <utrecht-heading model-value :level="level">
           <span class="heading">
-            Klantgegevens
+            Gegevens klant
             <button
               v-if="!editing"
               @click="toggleEditing"
@@ -45,13 +45,9 @@
               .join(" ")
           }}
         </dd>
-        <dt>E-mailadres</dt>
+        <dt>E-mailadres{{ emails.length > 1 ? "sen" : "" }}</dt>
         <dd v-for="(email, idx) in emails" :key="idx">
           <fieldset v-if="showForm">
-            <non-blocking-errors
-              :value="email.email"
-              :validate="customPhoneValidator"
-            />
             <input
               v-model="email.email"
               type="email"
@@ -80,7 +76,7 @@
             class="add-item icon-after plus"
           />
         </dd>
-        <dt>Telefoonnummer(s)</dt>
+        <dt>Telefoonnummer{{ telefoonnummers.length > 1 ? "s" : "" }}</dt>
         <dd v-for="(tel, idx) in telefoonnummers" :key="idx">
           <fieldset v-if="showForm">
             <non-blocking-errors
@@ -128,9 +124,9 @@ import {
   UtrechtHeading,
   UtrechtButton,
 } from "@utrecht/web-component-library-vue";
-import type { Klant } from "./types";
-import { useUpdateContactGegevens } from "./service";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
+import type { Klant } from "../types";
+import { useUpdateContactGegevens } from "../service";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { computed } from "vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import {
@@ -242,6 +238,7 @@ const submit = () =>
     })
     .then((response) => {
       Object.assign(props.klant, response);
+      editing.value = false;
     });
 
 const showForm = computed(() => !submitter.loading && editing.value);

@@ -93,12 +93,12 @@ import {
 } from "@utrecht/web-component-library-vue";
 import { customPhoneValidator } from "@/helpers/validation";
 import { ref, computed } from "vue";
-import { createKlant } from "../contactverzoek";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
-import ApplicationMessage from "../../components/ApplicationMessage.vue";
+import { createKlant } from "@/features/contactverzoek";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { useRouter } from "vue-router";
-import NonBlockingForm from "../../components/non-blocking-forms/NonBlockingForm.vue";
-import NonBlockingErrors from "../../components/non-blocking-forms/NonBlockingErrors.vue";
+import NonBlockingForm from "@/components/non-blocking-forms/NonBlockingForm.vue";
+import NonBlockingErrors from "@/components/non-blocking-forms/NonBlockingErrors.vue";
 
 const props = defineProps<{
   handleCancel: () => void;
@@ -143,7 +143,7 @@ const submit = async () => {
 
   const { id } = await createKlant(nieuweKlant);
 
-  router.push("/klanten/" + id);
+  router.push("/personen/" + id);
 };
 </script>
 

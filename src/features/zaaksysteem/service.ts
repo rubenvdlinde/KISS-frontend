@@ -9,6 +9,7 @@ import {
 import type { ZaakDetails } from "./types";
 import type { Ref } from "vue";
 import { mutate } from "swrv";
+import { formatIsoDate } from "@/helpers/date";
 
 type Roltype = "behandelaar" | "initiator";
 
@@ -148,7 +149,7 @@ export async function updateToelichting(
     },
     body: JSON.stringify({
       bronorganisatie: zaak.bronorganisatie,
-      startdatum: zaak.startdatum?.toISOString()?.substring(0, 10),
+      startdatum: zaak.startdatum && formatIsoDate(zaak.startdatum),
       verantwoordelijkeOrganisatie: zaak.verantwoordelijkeOrganisatie,
       zaaktype: zaak.zaaktype,
       toelichting: toelichting,

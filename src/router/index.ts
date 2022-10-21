@@ -6,8 +6,8 @@ import {
 import HomeView from "../views/HomeView.vue";
 import AfhandelingView from "../views/AfhandelingView.vue";
 import ZakenView from "../views/ZakenView.vue";
-import KlantenView from "../views/KlantenView.vue";
-import KlantDetailView from "../views/KlantDetailView.vue";
+import PersonenView from "../views/PersonenView.vue";
+import PersoonDetailView from "../views/PersoonDetailView.vue";
 import ZaakDetailView from "../views/ZaakDetailView.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { redirectRoute } from "@/features/login";
@@ -43,17 +43,17 @@ const router = createRouter({
       },
     },
     {
-      path: "/klanten",
-      name: "klanten",
-      component: KlantenView,
+      path: "/personen",
+      name: "personen",
+      component: PersonenView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     {
-      path: "/klanten/:klantId",
-      name: "klantDetail",
+      path: "/personen/:persoonId",
+      name: "persoonDetail",
       props: true,
-      component: KlantDetailView,
+      component: PersoonDetailView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },

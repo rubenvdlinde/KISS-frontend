@@ -4,6 +4,7 @@ export type UpdateContactgegevensParams = Pick<
 >;
 
 export interface Klant {
+  _typeOfKlant: "klant";
   id: string;
   klantnummer: string;
   voornaam: string;
@@ -12,4 +13,9 @@ export interface Klant {
   telefoonnummers: { telefoonnummer: string }[];
   emails: { email: string }[];
   bsn?: string;
+}
+
+export enum KlantType {
+  Persoon = "natuurlijk_persoon",
+  Bedrijf = "vestiging",
 }

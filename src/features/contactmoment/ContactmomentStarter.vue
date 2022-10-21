@@ -43,7 +43,7 @@ const onStartContactMoment = async () => {
       router.currentRoute.value.fullPath;
   }
   contactmomentStore.start();
-  router.push("/klanten");
+  router.push("/personen");
   nextTick(() => {
     document.getElementById("cm-notitieblok")?.focus();
   });
