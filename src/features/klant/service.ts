@@ -86,7 +86,7 @@ function getKlantSearchUrl<K extends KlantSearchField>(
 
 function mapKlant(obj: any): Klant {
   const { subjectIdentificatie, emails, telefoonnummers } = obj?.embedded ?? {};
-  const { inpBsn, verblijfsadres, geboortedatum, vestigingsnummer } =
+  const { inpBsn, verblijfsadres, geboortedatum, vestigingsNummer } =
     subjectIdentificatie ?? {};
   const { aoaHuisnummer, aoaPostcode } = verblijfsadres ?? {};
 
@@ -99,7 +99,7 @@ function mapKlant(obj: any): Klant {
     postcode: aoaPostcode,
     huisnummer: aoaHuisnummer,
     geboortedatum: geboortedatum && new Date(geboortedatum),
-    vestigingsnummer,
+    vestigingsnummer: vestigingsNummer,
   };
 }
 
@@ -276,7 +276,7 @@ const getKlantByVestigingsnummerUrl = (vestigingsnummer: string) => {
   return url.toString();
 };
 
-export const useBedrijfKlantByVestigingsnummer = (
+export const useKlantByVestigingsnummer = (
   getVestigingsnummer: () => string | undefined
 ) => {
   const getUrl = () =>

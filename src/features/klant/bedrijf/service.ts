@@ -99,7 +99,7 @@ export function useSearchBedrijven<K extends SearchCategories>(
   );
 }
 
-export const useBedrijfHandelsregisterByVestigingsnummer = (
+export const useBedrijfByVestigingsnummer = (
   getVestigingsnummer: () => string | undefined
 ) => {
   const getUrl = () => {
