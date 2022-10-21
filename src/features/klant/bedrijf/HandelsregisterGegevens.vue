@@ -4,6 +4,8 @@
       Gegevens Handelsregister</utrecht-heading
     >
     <dl>
+      <dt>Bedrijfsnaam</dt>
+      <dd>{{ bedrijf.bedrijfsnaam }}</dd>
       <dt>KvK-nummer</dt>
       <dd>{{ bedrijf.kvknummer }}</dd>
       <dt>Vestigingsnummer</dt>
