@@ -311,22 +311,37 @@ th.row-link-header {
 
     dl {
         display: grid;
-        grid-auto-flow: column;
+        grid-auto-flow: column dense;
         grid-template-rows: repeat(50, min-content);
         column-gap: var(--spacing-default);
 
         &:not(:first-child) {
             margin-block-start: var(--spacing-default);
         }
+
+        counter-reset: dt;
+        counter-reset: dtrow;
+        counter-increment: dtrow;
     }
 
     dt {
+        counter-increment: dt;
         font-weight: 600;
         grid-row-start: 1;
+
+        &:nth-of-type(n + 6) {
+            grid-row-start: 3;
+            margin-block-start: var(--spacing-default);
+
+            ~ dd {
+                grid-row-start: 4;
+            }
+        }
     }
 
     dd {
         margin-block-start: var(--spacing-extrasmall);
+        grid-row-start: 2;
     }
 }
 

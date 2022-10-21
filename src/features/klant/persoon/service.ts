@@ -61,12 +61,13 @@ function getQueryParams<K extends PersoonSearchField>(params: PersoonQuery<K>) {
 function mapPersoon(json: any): Persoon {
   const { verblijfplaats, naam, geboorte } = json?.embedded ?? {};
   const { datum, plaats, land } = geboorte?.embedded ?? {};
+  const { postcode, huisnummer, woonplaats, straat } = verblijfplaats ?? {};
   const geboortedatum =
     datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
   return {
     _typeOfKlant: "persoon",
-    postcode: verblijfplaats?.postcode,
-    huisnummer: verblijfplaats?.huisnummer?.toString(),
+    postcode: postcode,
+    huisnummer: huisnummer?.toString(),
     bsn: json?.burgerservicenummer,
     geboortedatum,
     voornaam: naam?.voornamen,
@@ -74,6 +75,8 @@ function mapPersoon(json: any): Persoon {
     achternaam: naam?.geslachtsnaam,
     geboorteplaats: plaats,
     geboorteland: land,
+    woonplaats,
+    straat,
   };
 }
 
