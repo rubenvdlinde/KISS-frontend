@@ -38,7 +38,7 @@
       <li
         v-for="(r, i) in listItems"
         :key="i"
-        @mouseover="activeIndex = i"
+        @mouseover="handleHover(i)"
         @mousedown="selectItem"
         :class="{ active: i === activeIndex }"
         role="option"
@@ -119,7 +119,7 @@ function nextIndex() {
   } else {
     activeIndex.value = 0;
   }
-  handleArrowKey();
+  scrollIntoView();
 }
 
 function previousIndex() {
@@ -130,7 +130,7 @@ function previousIndex() {
   } else {
     activeIndex.value = listItems.value.length - 1;
   }
-  handleArrowKey();
+  scrollIntoView();
 }
 
 function selectItem() {
@@ -146,6 +146,8 @@ const divRef = ref();
 
 const searchText = ref("");
 const debouncedSearchText = debouncedRef(searchText, 300);
+
+const isScrolling = ref(false);
 
 const sources = useSources();
 
@@ -238,12 +240,29 @@ function isInViewport(el: HTMLElement) {
   );
 }
 
-function handleArrowKey() {
+function handleHover(i: number) {
+  // ignore hover if we're scrolling, it's probably accidental
+  if (isScrolling.value) return;
+  activeIndex.value = i;
+}
+
+let timeoutId: number;
+
+function scrollIntoView() {
   const el = divRef.value;
   if (!(el instanceof HTMLElement)) return;
   const matchingLi = el.getElementsByTagName("li").item(activeIndex.value);
+
   if (matchingLi && !isInViewport(matchingLi)) {
+    // when we scroll, the cursor can accidentally end up on an item
+    // in that case, we don't want that item to be selected, because we are navigating using the arrow keys.
+    // so let's wait for a bit before allowing items to be selected on hover.
+    isScrolling.value = true;
     matchingLi.scrollIntoView(false);
+    timeoutId && clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      isScrolling.value = false;
+    }, 500);
   }
 }
 </script>
