@@ -56,7 +56,7 @@ const getSearchBedrijvenUrl = <K extends SearchCategories>({
 
 function mapHandelsRegister(json: any): Bedrijf {
   const {
-    bezoekadres,
+    embedded,
     emailAdres,
     telefoonnummer,
     vestigingsnummer,
@@ -64,17 +64,21 @@ function mapHandelsRegister(json: any): Bedrijf {
     eersteHandelsnaam,
   } = json ?? {};
 
-  const { straatHuisnummer, postcode } = bezoekadres ?? {};
+  const { huisnummer, postcode, straatnaam, huisletter, huisnummertoevoeging } =
+    embedded?.bezoekadres ?? {};
 
   return {
     _typeOfKlant: "bedrijf",
     kvknummer,
     vestigingsnummer,
     postcode,
-    huisnummer: straatHuisnummer,
+    huisnummer: huisnummer.toString(),
     telefoonnummer,
     email: emailAdres,
     bedrijfsnaam: eersteHandelsnaam,
+    straatnaam,
+    huisletter,
+    huisnummertoevoeging,
   };
 }
 

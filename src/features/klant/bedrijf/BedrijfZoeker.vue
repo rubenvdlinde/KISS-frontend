@@ -72,7 +72,7 @@ const state = ensureState({
   stateFactory() {
     return {
       currentSearch: "",
-      field: "email" as SearchCategories,
+      field: "handelsnaam" as SearchCategories,
       query: undefined as BedrijfQuery | undefined,
       page: 1,
     };

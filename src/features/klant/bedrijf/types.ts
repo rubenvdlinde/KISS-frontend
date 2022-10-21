@@ -9,6 +9,9 @@ export interface Bedrijf {
   huisnummer: string;
   telefoonnummer: string;
   email: string;
+  straatnaam: string;
+  huisletter: string;
+  huisnummertoevoeging: string;
 }
 
 export interface EnrichedBedrijf {
