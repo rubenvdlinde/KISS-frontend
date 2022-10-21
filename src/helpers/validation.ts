@@ -64,7 +64,11 @@ const multipliers = [9, 8, 7, 6, 5, 4, 3, 2, -1] as const;
 
 function elfProef(numbers: number[]): boolean {
   if (numbers.length !== 9) return false;
-  const multipliedSum = numbers.reduce((a, b, i) => a + b * multipliers[i], 0);
+  const multipliedSum = numbers.reduce(
+    (previousValue, currentValue, currentIndex) =>
+      previousValue + currentValue * multipliers[currentIndex],
+    0
+  );
   return multipliedSum % 11 === 0;
 }
 
