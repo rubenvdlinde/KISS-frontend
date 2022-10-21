@@ -29,7 +29,7 @@ export function parsePostcodeHuisnummer(
 
   if (matches?.length !== 4) {
     return new Error(
-      "Voer een valide postcode en huisnummer in, bijvoorbeeld 1234 AZ 12"
+      "Voer een valide postcode en huisnummer in, bijvoorbeeld 1234 AZ 12."
     );
   }
 
@@ -48,7 +48,7 @@ export function parseDutchDate(input: string): Date | Error {
     ?.filter(Boolean);
 
   if (matches?.length !== 4) {
-    return new Error("Voer een valide datum in, bijvoorbeeld 23-12-1900");
+    return new Error("Voer een valide datum in, bijvoorbeeld 23-12-1900.");
   }
 
   const year = +matches[3];
@@ -56,4 +56,19 @@ export function parseDutchDate(input: string): Date | Error {
   const day = +matches[1];
 
   return new Date(year, month, day);
+}
+
+const multipliers = [9, 8, 7, 6, 5, 4, 3, 2, -1] as const;
+
+function elfProef(numbers: number[]): boolean {
+  if (numbers.length !== 9) return false;
+  const multipliedSum = numbers.reduce((a, b, i) => a + b * multipliers[i], 0);
+  return multipliedSum % 11 === 0;
+}
+
+export function parseBsn(input: string): string | Error {
+  const matches = input.match(/\d{9}/);
+  if (!matches?.length) return new Error("Voer een BSN in van negen cijfers.");
+  const numbers = matches[0].split("").map((char) => +char);
+  return elfProef(numbers) ? input : new Error("Dit is geen valide BSN.");
 }

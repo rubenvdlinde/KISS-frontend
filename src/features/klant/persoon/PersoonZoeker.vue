@@ -100,7 +100,11 @@ import KlantAanmaken from "./PersoonAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useRouter } from "vue-router";
 import SearchResultsCaption from "@/components/SearchResultsCaption.vue";
-import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
+import {
+  parseBsn,
+  parseDutchDate,
+  parsePostcodeHuisnummer,
+} from "@/helpers/validation";
 import {
   persoonQuery,
   useSearchPersonen,
@@ -173,10 +177,13 @@ const currentPersoonQuery = computed(() => {
   }
 
   if (field === "bsn") {
-    return persoonQuery({
-      field,
-      value: currentSearch,
-    });
+    const parsed = parseBsn(currentSearch);
+    return parsed instanceof Error
+      ? parsed
+      : persoonQuery({
+          field,
+          value: parsed,
+        });
   }
 
   return undefined;
