@@ -13,6 +13,8 @@ export interface Persoon {
   huisnummer?: string;
   straat?: string;
   woonplaats?: string;
+  huisletter?: string;
+  huisnummertoevoeging?: string;
 }
 
 export interface EnrichedPersoon {

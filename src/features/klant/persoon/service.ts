@@ -61,7 +61,14 @@ function getQueryParams<K extends PersoonSearchField>(params: PersoonQuery<K>) {
 function mapPersoon(json: any): Persoon {
   const { verblijfplaats, naam, geboorte } = json?.embedded ?? {};
   const { datum, plaats, land } = geboorte?.embedded ?? {};
-  const { postcode, huisnummer, woonplaats, straat } = verblijfplaats ?? {};
+  const {
+    postcode,
+    huisnummer,
+    woonplaats,
+    straat,
+    huisletter,
+    huisnummertoevoeging,
+  } = verblijfplaats ?? {};
   const geboortedatum =
     datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
   return {
@@ -77,6 +84,8 @@ function mapPersoon(json: any): Persoon {
     geboorteland: land,
     woonplaats,
     straat,
+    huisletter,
+    huisnummertoevoeging,
   };
 }
 

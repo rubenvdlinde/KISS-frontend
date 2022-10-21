@@ -24,7 +24,19 @@
       <dt>Geboorteland</dt>
       <dd>{{ persoon.geboorteland }}</dd>
       <dt>Adres</dt>
-      <dd>{{ persoon.straat && persoon.straat + " " + persoon.huisnummer }}</dd>
+      <dd>
+        {{
+          persoon.straat &&
+          [
+            persoon.straat,
+            persoon.huisnummer,
+            persoon.huisletter,
+            persoon.huisnummertoevoeging,
+          ]
+            .filter(Boolean)
+            .join(" ")
+        }}
+      </dd>
       <dt>Postcode</dt>
       <dd>{{ persoon.postcode }}</dd>
       <dt>Woonplaats</dt>
