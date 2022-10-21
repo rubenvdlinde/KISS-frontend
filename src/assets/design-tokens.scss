@@ -6,6 +6,7 @@
     --color-headings: #1b263b;
     --color-accent: #58af23;
     --color-error: #d44;
+    --color-warning: orange;
     --color-category-default: hsl(184, 54%, 70%);
     --color-category-website: hsl(285, 56%, 83%);
     --color-white: #fff;
@@ -15,7 +16,10 @@
 
     // spacing
     --container-width: 80rem;
-    --container-padding: max(var(--spacing-large), calc(50vw - var(--container-width) / 2));
+    --container-padding: max(
+        var(--spacing-large),
+        calc(50vw - var(--container-width) / 2)
+    );
     --section-width: 30.75rem;
     --section-width-small: 20rem;
     --section-width-large: 60rem;
@@ -74,7 +78,9 @@
     /* button */
     --utrecht-button-background-color: var(--color-primary);
     --utrecht-button-border-color: var(--color-primary);
-    --utrecht-button-secondary-action-border-color: var(--utrecht-button-border-color);
+    --utrecht-button-secondary-action-border-color: var(
+        --utrecht-button-border-color
+    );
     --utrecht-button-secondary-action-color: var(--color-primary);
 
     /* forms */

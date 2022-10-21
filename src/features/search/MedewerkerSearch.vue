@@ -5,9 +5,6 @@
     @keyup.up="previousIndex"
     @keyup.enter="selectItem"
   >
-    <label :id="labelId" :for="inputId" :class="{ required }">
-      <slot name="label"></slot>
-    </label>
     <input
       v-bind="$attrs"
       :id="inputId"
@@ -86,6 +83,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  defaultValue: {
+    type: String,
+    required: true,
+  },
 });
 
 const generatedLabelId = nanoid();
@@ -144,7 +145,7 @@ const emit = defineEmits(["update:modelValue"]);
 const inputRef = ref();
 const divRef = ref();
 
-const searchText = ref("");
+const searchText = ref(props.defaultValue);
 const debouncedSearchText = debouncedRef(searchText, 300);
 
 const isScrolling = ref(false);

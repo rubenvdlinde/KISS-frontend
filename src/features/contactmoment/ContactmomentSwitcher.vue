@@ -60,7 +60,6 @@ const moments = computed(() =>
       description: getKlantInfo(moment),
       isCurrent: moment === contactmomentStore.huidigContactmoment,
       async enable() {
-        await ensureConfirmation();
         if (contactmomentStore.huidigContactmoment) {
           contactmomentStore.huidigContactmoment.route =
             router.currentRoute.value.fullPath;
@@ -74,15 +73,6 @@ const moments = computed(() =>
     };
   })
 );
-
-const ensureConfirmation = async () => {
-  if (contactmomentStore.wouldLoseProgress) {
-    const { isCanceled } = await dialog.reveal();
-    if (isCanceled) {
-      throw new Error();
-    }
-  }
-};
 
 const detailsEl = ref();
 

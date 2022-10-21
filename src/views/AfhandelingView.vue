@@ -264,7 +264,6 @@
               class="utrecht-select utrecht-select--html-select"
               required
               v-if="gespreksresultaten.success"
-              :disabled="vraag.contactverzoek.isSubmitted"
             >
               <option
                 v-for="gespreksresultaat in gespreksresultaten.data"
@@ -273,6 +272,48 @@
                 {{ gespreksresultaat.definitie }}
               </option>
             </select>
+
+            <template v-if="vraag.resultaat === 'Contactverzoek gemaakt'">
+              <label />
+
+              <div class="contactverzoek-container">
+                <div>
+                  <application-message
+                    v-if="!vraag.klanten.length"
+                    message="Er is geen klant geselecteerd"
+                    message-type="warning"
+                  />
+
+                  <label
+                    class="utrecht-form-label required"
+                    :for="'verzoek-medewerker' + idx"
+                    >Contactverzoek versturen naar</label
+                  >
+                  <medewerker-search
+                    :defaultValue="vraag.contactverzoek.medewerker"
+                    v-model="vraag.contactverzoek.medewerker"
+                    :id="'verzoek-medewerker' + idx"
+                    class="utrecht-textbox utrecht-textbox--html-input medewerker-search"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    class="utrecht-form-label required"
+                    :for="'verzoek-notitie' + idx"
+                    >Notitie</label
+                  >
+                  <textarea
+                    required
+                    rows="5"
+                    class="utrecht-textarea"
+                    :id="'verzoek-notitie' + idx"
+                    v-model="vraag.contactverzoek.notitie"
+                  ></textarea>
+                </div>
+              </div>
+            </template>
 
             <label
               :for="'hoofdvraag' + idx"
@@ -333,11 +374,6 @@
               v-model="vraag.notitie"
             ></textarea>
           </fieldset>
-
-          <p v-if="vraag.contactverzoek.isSubmitted">
-            Contactverzoek verstuurd naar
-            {{ vraag.contactverzoek.medewerker }}
-          </p>
         </section>
       </article>
       <menu>
@@ -385,6 +421,8 @@ import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
 import { getFormattedUtcDate } from "@/services";
 import { nanoid } from "nanoid";
+import MedewerkerSearch from "../features/search/MedewerkerSearch.vue";
+import { saveContactverzoek } from "@/features/contactverzoek";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -395,7 +433,7 @@ const gespreksresultaten = useGespreksResultaten();
 onMounted(() => {
   if (!contactmomentStore.huidigContactmoment) return;
   for (const vraag of contactmomentStore.huidigContactmoment.vragen) {
-    if (vraag.contactverzoek.isSubmitted) {
+    if (vraag.contactverzoek.isActive) {
       vraag.resultaat = "Contactverzoek gemaakt";
     }
     if (!vraag.kanaal) {
@@ -444,7 +482,7 @@ const koppelContactverzoek = (
     objectType: "contactmomentobject",
   });
 
-const saveVraag = (vraag: Vraag, gespreksId?: string) => {
+const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
   const contactmoment: Contactmoment = {
     gespreksId,
     vorigContactmoment: undefined,
@@ -474,6 +512,22 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
   addMedewerkersToContactmoment(contactmoment, vraag);
   addNieuwsberichtToContactmoment(contactmoment, vraag);
   addWerkinstructiesToContactmoment(contactmoment, vraag);
+
+  if (vraag.resultaat === "Contactverzoek gemaakt") {
+    const contactverzoek = await saveContactverzoek({
+      bronorganisatie: window.organisatieIds[0],
+      todo: {
+        name: "contactverzoek",
+        description: vraag.contactverzoek.notitie,
+        attendees: [vraag.contactverzoek.medewerker],
+      },
+    });
+
+    koppelKlant({
+      klantId: vraag.klanten[0].klant.id,
+      contactmomentId: contactverzoek.id,
+    });
+  }
 
   return saveContactmoment(contactmoment).then((savedContactmoment) => {
     const nextPromises: Promise<unknown>[] = [
@@ -662,5 +716,29 @@ menu {
 input,
 select {
   accent-color: var(--color-primary);
+}
+
+.contactverzoek-container {
+  padding-inline-start: var(--utrecht-form-input-padding-inline-start);
+  padding-inline-end: var(--utrecht-form-input-padding-inline-end);
+  padding-block: var(--spacing-default);
+  border: 1px solid var(--color-primary);
+
+  & > :not(:last-child) {
+    margin-block-end: var(--spacing-default);
+    padding-block-end: var(--spacing-default);
+    border-bottom: var(--spacing-small) solid var(--color-primary);
+  }
+
+  span {
+    display: block;
+    font-weight: 600;
+    color: var(--utrecht-form-label-color);
+  }
+
+  article.warning {
+    padding: var(--spacing-default);
+    margin-block-end: var(--spacing-default);
+  }
 }
 </style>
