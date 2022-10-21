@@ -40,6 +40,12 @@
             </li>
 
             <li v-if="contactmomentStore.contactmomentLoopt">
+              <router-link :to="{ name: 'bedrijven' }"
+                ><span>Bedrijven</span></router-link
+              >
+            </li>
+
+            <li v-if="contactmomentStore.contactmomentLoopt">
               <router-link :to="{ name: 'zaken' }"
                 ><span>Zaken</span></router-link
               >

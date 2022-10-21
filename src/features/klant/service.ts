@@ -86,7 +86,8 @@ function getKlantSearchUrl<K extends KlantSearchField>(
 
 function mapKlant(obj: any): Klant {
   const { subjectIdentificatie, emails, telefoonnummers } = obj?.embedded ?? {};
-  const { inpBsn, verblijfsadres, geboortedatum } = subjectIdentificatie ?? {};
+  const { inpBsn, verblijfsadres, geboortedatum, vestigingsnummer } =
+    subjectIdentificatie ?? {};
   const { aoaHuisnummer, aoaPostcode } = verblijfsadres ?? {};
 
   return {
@@ -98,6 +99,7 @@ function mapKlant(obj: any): Klant {
     postcode: aoaPostcode,
     huisnummer: aoaHuisnummer,
     geboortedatum: geboortedatum && new Date(geboortedatum),
+    vestigingsnummer,
   };
 }
 
@@ -218,9 +220,9 @@ export async function ensureKlantForBsn({
   achternaam,
 }: {
   bsn: string;
-  voornaam: string;
+  voornaam?: string;
   voorvoegselAchternaam?: string;
-  achternaam: string;
+  achternaam?: string;
 }) {
   const bsnUrl = getKlantBsnUrl(bsn);
   const singleBsnId = getSingleBsnSearchId(bsn);
@@ -258,6 +260,79 @@ export async function ensureKlantForBsn({
 
   mutate(idUrl, newKlant);
   mutate(singleBsnId, newKlant);
+
+  return newKlant;
+}
+
+const getKlantByVestigingsnummerUrl = (vestigingsnummer: string) => {
+  if (!vestigingsnummer) return "";
+  const url = new URL(klantRootUrl);
+  url.searchParams.set("extend[]", "all");
+  url.searchParams.set(
+    "subjectIdentificatie.vestigingsNummer",
+    vestigingsnummer
+  );
+  url.searchParams.set("subjectType", KlantType.Bedrijf);
+  return url.toString();
+};
+
+export const useBedrijfKlantByVestigingsnummer = (
+  getVestigingsnummer: () => string | undefined
+) => {
+  const getUrl = () =>
+    getKlantByVestigingsnummerUrl(getVestigingsnummer() ?? "");
+
+  const getUniqueId = () => {
+    const url = getUrl();
+    return url && url + "_single";
+  };
+
+  return ServiceResult.fromFetcher(getUrl, searchSingleKlant, {
+    getUniqueId,
+  });
+};
+
+export async function ensureKlantForVestigingsnummer({
+  bedrijfsnaam,
+  vestigingsnummer,
+}: {
+  vestigingsnummer: string;
+  bedrijfsnaam: string;
+}) {
+  const url = getKlantByVestigingsnummerUrl(vestigingsnummer);
+  const uniqueId = url && url + "_single";
+
+  if (!url || !uniqueId) throw new Error();
+
+  const first = await searchSingleKlant(url);
+
+  if (first) {
+    mutate(uniqueId, first);
+    const idUrl = getKlantIdUrl(first.id);
+    mutate(idUrl, first);
+    return first;
+  }
+
+  const response = await fetchLoggedIn(klantRootUrl, {
+    method: "POST",
+    body: JSON.stringify({
+      bronorganisatie: window.organisatieIds[0],
+      // TODO: WAT MOET HIER IN KOMEN?
+      klantnummer: "123",
+      subjectIdentificatie: { vestigingsNummer: vestigingsnummer },
+      subjectType: KlantType.Bedrijf,
+      bedrijfsnaam,
+    }),
+  });
+
+  if (!response.ok) throw new Error();
+
+  const json = await response.json();
+  const newKlant = mapKlant(json);
+  const idUrl = getKlantIdUrl(newKlant.id);
+
+  mutate(idUrl, newKlant);
+  mutate(uniqueId, newKlant);
 
   return newKlant;
 }
