@@ -18,17 +18,15 @@
       >Contactverzoek maken</utrecht-heading
     >
 
+    <label class="utrecht-form-label required" for="medewerker-select"
+      >Contactverzoek versturen naar</label
+    >
     <medewerker-search
       class="utrecht-textbox utrecht-textbox--html-input"
+      id="medewerker-select"
       v-model="medewerker"
       :defaultValue="medewerker"
-    >
-      <template #label
-        ><span class="utrecht-form-label"
-          >Contactverzoek versturen naar</span
-        ></template
-      >
-    </medewerker-search>
+    />
 
     <label class="utrecht-form-label notitieveld">
       <span class="required">Notitie bij het contactverzoek</span>
