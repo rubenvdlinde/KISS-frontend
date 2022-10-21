@@ -70,7 +70,17 @@ const router = useRouter();
 
 const create = async () => {
   if (!bsn.value) throw new Error();
-  const newKlant = await ensureKlantForBsn(bsn.value);
+  const naam = klantData.success
+    ? {
+        achternaam: klantData.data?.achternaam,
+        voornaam: klantData.data?.voornaam,
+        voorvoegselAchternaam: klantData.data?.voorvoegselAchternaam,
+      }
+    : {};
+  const newKlant = await ensureKlantForBsn({
+    bsn: bsn.value,
+    ...naam,
+  });
   const url = getKlantUrl(newKlant);
   router.push(url);
 };
