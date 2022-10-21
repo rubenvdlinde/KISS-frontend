@@ -26,7 +26,6 @@
       <dt>Adres</dt>
       <dd>
         {{
-          persoon.straat &&
           [
             persoon.straat,
             persoon.huisnummer,
