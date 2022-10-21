@@ -48,7 +48,7 @@ const getSearchBedrijvenUrl = <K extends SearchCategories>({
   const searchParams = bedrijfQueryDictionary[query.field](query.value);
 
   searchParams.forEach((tuple) => {
-    // url.searchParams.set(...tuple);
+    url.searchParams.set(...tuple);
   });
 
   return url.toString();
