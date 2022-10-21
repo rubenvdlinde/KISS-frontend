@@ -30,7 +30,7 @@ const bedrijfQueryDictionary: BedrijfQueryDictionary = {
     ["telefoonnummers.telefoonnummer", `%${search}%`],
   ],
   kvkNummer: (search) => [["kvknummer", search]],
-  handelsnaam: (search) => [["eersteHandelsnaam", search]],
+  handelsnaam: (search) => [["eersteHandelsnaam", `%${search}%`]],
 };
 
 const getSearchBedrijvenUrl = <K extends SearchCategories>({
