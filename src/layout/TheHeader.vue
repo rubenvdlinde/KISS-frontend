@@ -34,7 +34,7 @@
             </li>
 
             <li v-if="contactmomentStore.contactmomentLoopt">
-              <router-link :to="{ name: 'klanten' }"
+              <router-link :to="{ name: 'personen' }"
                 ><span>Personen</span></router-link
               >
             </li>

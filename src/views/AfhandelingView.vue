@@ -489,7 +489,7 @@ const saveVraag = (vraag: Vraag, gespreksId?: string) => {
   });
 };
 
-const navigateToKlanten = () => router.push({ name: "klanten" });
+const navigateToPersonen = () => router.push({ name: "personen" });
 
 async function submit() {
   try {
@@ -511,7 +511,7 @@ async function submit() {
     //klaar
     contactmomentStore.stop();
     toast({ text: "Het contactmoment is opgeslagen" });
-    navigateToKlanten();
+    navigateToPersonen();
   } catch (error) {
     errorMessage.value =
       "Er is een fout opgetreden bij opslaan van het contactmoment";
@@ -594,7 +594,7 @@ function setUserChannel(e: Event) {
 const cancelDialog = useConfirmDialog();
 cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
-  navigateToKlanten();
+  navigateToPersonen();
 });
 </script>
 

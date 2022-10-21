@@ -4,14 +4,14 @@
     <nav>
       <ul>
         <li>
-          <router-link :to="{ name: 'klanten' }">{{
+          <router-link :to="{ name: 'personen' }">{{
             "< Personen zoeken"
           }}</router-link>
         </li>
       </ul>
     </nav>
     <simple-spinner v-if="klant.loading" />
-    <klant-details v-else-if="klant.success" :klant="klant.data" />
+    <persoon-details v-else-if="klant.success" :klant="klant.data" />
     <application-message
       v-else
       message="Er is geen klant gevonden"
@@ -19,7 +19,7 @@
     ></application-message>
 
     <simple-spinner v-if="klantBsn && persoon.loading" />
-    <klant-brp-gegevens
+    <brp-gegevens
       v-if="persoon.success && persoon.data"
       :persoon="persoon.data"
     />
@@ -84,19 +84,22 @@ import {
   ContactmomentenOverzicht,
   useContactverzoekenByKlantId,
 } from "@/features/contactmoment";
-import { KlantDetails, useKlantById } from "@/features/klant";
+import {
+  PersoonDetails,
+  useKlantById,
+  BrpGegevens,
+  usePersoonByBsn,
+} from "@/features/klant";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import ContactverzoekenOverzicht from "../features/contactmoment/ContactverzoekenOverzicht.vue";
-import Pagination from "../nl-design-system/components/Pagination.vue";
+import ContactverzoekenOverzicht from "@/features/contactmoment/ContactverzoekenOverzicht.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 import { useContactmomentenByKlantId } from "@/features/shared/get-contactmomenten-service";
 import { useZakenByBsn } from "@/features/zaaksysteem";
-import ZakenOverzicht from "../features/zaaksysteem/ZakenOverzicht.vue";
-import KlantBrpGegevens from "../features/klant/brp/KlantBrpGegevens.vue";
-import { usePersoonByBsn } from "@/features/klant/brp/service";
+import ZakenOverzicht from "@/features/zaaksysteem/ZakenOverzicht.vue";
 
-const props = defineProps<{ klantId: string }>();
-const klantId = computed(() => props.klantId);
+const props = defineProps<{ persoonId: string }>();
+const klantId = computed(() => props.persoonId);
 const contactmomentStore = useContactmomentStore();
 const klant = useKlantById(klantId);
 

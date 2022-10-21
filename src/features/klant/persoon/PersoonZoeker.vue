@@ -42,11 +42,11 @@
     <section class="search-section" v-if="store.klantSearchQuery?.query">
       <simple-spinner v-if="klanten.loading" />
       <template v-if="klanten.success">
-        <klanten-overzicht :records="klanten.data.page">
+        <personen-overzicht :records="klanten.data.page">
           <template #caption>
             <SearchResultsCaption :results="klanten.data" />
           </template>
-        </klanten-overzicht>
+        </personen-overzicht>
         <pagination
           class="pagination"
           :pagination="klanten.data"
@@ -63,11 +63,11 @@
     <section class="search-section" v-else-if="store.persoonSearchQuery?.value">
       <simple-spinner v-if="personen.loading" />
       <template v-if="personen.success">
-        <klanten-overzicht :records="personen.data.page">
+        <personen-overzicht :records="personen.data.page">
           <template #caption>
             <SearchResultsCaption :results="personen.data" />
           </template>
-        </klanten-overzicht>
+        </personen-overzicht>
         <pagination
           class="pagination"
           :pagination="personen.data"
@@ -91,22 +91,22 @@ import {
   type KlantSearch,
   useSearchKlanten,
   type KlantSearchField,
-} from "./service";
-import KlantenOverzicht from "./KlantenOverzicht.vue";
+} from "../service";
+import PersonenOverzicht from "./PersonenOverzicht.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue"; //todo: spinner via slot?
 import Pagination from "@/nl-design-system/components/Pagination.vue"; //todo: ook via slot?
-import KlantAanmaken from "./KlantAanmaken.vue";
+import KlantAanmaken from "./PersoonAanmaken.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useRouter } from "vue-router";
-import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
+import SearchResultsCaption from "@/components/SearchResultsCaption.vue";
 import { parseDutchDate, parsePostcodeHuisnummer } from "@/helpers/validation";
 import {
   persoonQuery,
   useSearchPersonen,
   type PersoonQuery,
   type PersoonSearchField,
-} from "./brp/service";
+} from "./service";
 
 type SearchFields = KlantSearchField | PersoonSearchField;
 
@@ -227,7 +227,7 @@ const router = useRouter();
 
 watch(singleKlantId, (newId, oldId) => {
   if (newId && newId !== oldId) {
-    router.push(`/klanten/${newId}`);
+    router.push(`/personen/${newId}`);
   }
 });
 

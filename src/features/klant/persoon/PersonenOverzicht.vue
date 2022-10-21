@@ -16,7 +16,7 @@
       <tbody>
         <personen-enrich-context :records="records">
           <template #default="{ enriched }">
-            <klanten-overzicht-row :result="enriched" />
+            <personen-overzicht-row :result="enriched" />
           </template>
         </personen-enrich-context>
       </tbody>
@@ -25,8 +25,9 @@
 </template>
 
 <script lang="ts" setup>
-import KlantenOverzichtRow from "./KlantenOverzichtRow.vue";
-import type { Klant, Persoon } from "./types";
+import PersonenOverzichtRow from "./PersonenOverzichtRow.vue";
+import type { Persoon } from "./types";
 import PersonenEnrichContext from "./persoon-enricher/PersonenEnrichContext.vue";
+import type { Klant } from "../types";
 defineProps<{ records: Klant[] | Persoon[] }>();
 </script>

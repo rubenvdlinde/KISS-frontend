@@ -2,16 +2,17 @@
 <script setup lang="ts">
 import { mapServiceData, ServiceResult, type ServiceData } from "@/services";
 import { computed, reactive } from "vue";
-import { ensureKlantForBsn } from "../service";
-import type { EnrichedPersoon, Klant, Persoon } from "../types";
+import { ensureKlantForBsn } from "../../service";
+import type { EnrichedPersoon, Persoon } from "../types";
 import { useRouter } from "vue-router";
 import { useEnrichedPersoon } from "./persoon-enricher";
+import type { Klant } from "../../types";
 
 const props = defineProps<{ record: Klant | Persoon }>();
 
 const [bsn, klantData, persoonData] = useEnrichedPersoon(() => props.record);
 
-const getKlantUrl = (klant: Klant) => `/klanten/${klant.id}`;
+const getKlantUrl = (klant: Klant) => `/personen/${klant.id}`;
 
 function mapNaam(klantOrPersoon: Klant | Persoon | null) {
   return (

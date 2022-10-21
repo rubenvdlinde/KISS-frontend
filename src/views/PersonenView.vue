@@ -1,13 +1,13 @@
 <template>
   <article class="klant-panel">
     <utrecht-heading :level="1" model-value>Personen</utrecht-heading>
-    <klant-zoeker />
+    <persoon-zoeker />
   </article>
 </template>
 
 <script setup lang="ts">
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import { KlantZoeker } from "@/features/klant";
+import { PersoonZoeker } from "@/features/klant";
 </script>
 
 <style scoped lang="scss">
