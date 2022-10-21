@@ -61,7 +61,7 @@ export default {
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
 import { debouncedRef, useFocusWithin } from "@vueuse/core";
-import { nextTick, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useGlobalSearch, useSources } from "./service";
 import type { SearchResult } from "./types";
 import SimpleSpinner from "../../components/SimpleSpinner.vue";
@@ -146,6 +146,8 @@ const divRef = ref();
 
 const searchText = ref("");
 const debouncedSearchText = debouncedRef(searchText, 300);
+
+const isScrolling = ref(false);
 
 const sources = useSources();
 
@@ -263,8 +265,6 @@ function scrollIntoView() {
     }, 500);
   }
 }
-
-const isScrolling = ref(false);
 </script>
 
 <style lang="scss" scoped>
