@@ -24,7 +24,7 @@ export function parsePostcodeHuisnummer(
   input: string
 ): PostcodeHuisnummer | Error {
   const matches = input
-    .match(/ *([1-9]\d{3}) *([A-Za-z]{2}) *(\d*) */)
+    .match(/^ *([1-9]\d{3}) *([A-Za-z]{2}) *(\d*) *$/)
     ?.filter(Boolean);
 
   if (matches?.length !== 4) {
@@ -45,7 +45,7 @@ export function parsePostcodeHuisnummer(
 export function parseDutchDate(input: string): Date | Error {
   const dateRegex =
     /^(([0-9]{2})([0-9]{2})([0-9]{4}))|(([0-9]{1,2})[/|-]([0-9]{1,2})[/|-]([0-9]{4}))$/;
-  const matches = input.match(dateRegex);
+  const matches = input?.trim().match(dateRegex);
 
   if (matches?.length !== 9) {
     return new Error(
@@ -73,8 +73,17 @@ function elfProef(numbers: number[]): boolean {
 }
 
 export function parseBsn(input: string): string | Error {
-  const matches = input.match(/\d{9}/);
-  if (!matches?.length) return new Error("Voer een BSN in van negen cijfers.");
-  const numbers = matches[0].split("").map((char) => +char);
-  return elfProef(numbers) ? input : new Error("Dit is geen valide BSN.");
+  const matches = input.match(/^ *(\d{9}) *$/);
+  if (!matches || matches.length < 2)
+    return new Error("Voer een BSN in van negen cijfers.");
+  const match = matches[1];
+  const numbers = match.split("").map((char) => +char);
+  return elfProef(numbers) ? match : new Error("Dit is geen valide BSN.");
+}
+
+export function parseKvkNummer(input: string): string | Error {
+  const matches = input.match(/^ *(\d{8}) *$/);
+  return !matches || matches.length < 2
+    ? new Error("Vul de 8 cijfers van het KvK-nummer in, bijvoorbeeld 12345678")
+    : matches[1];
 }
