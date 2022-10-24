@@ -279,7 +279,7 @@
               <div class="contactverzoek-container">
                 <div>
                   <application-message
-                    v-if="!vraag.klanten.length"
+                    v-if="!vraag.klanten.some((klant) => klant.shouldStore)"
                     message="Er is geen klant geselecteerd"
                     message-type="warning"
                   />
@@ -376,6 +376,11 @@
           </fieldset>
         </section>
       </article>
+      <application-message
+        v-if="!contactmomentStore.canStoreContactmoment"
+        message="Bij één of meerdere vragen met contactverzoek is geen klant geselecteerd"
+        message-type="warning"
+      />
       <menu>
         <li>
           <utrecht-button
@@ -388,7 +393,12 @@
           </utrecht-button>
         </li>
         <li>
-          <button class="utrecht-button utrecht-button--submit">Opslaan</button>
+          <button
+            class="utrecht-button utrecht-button--submit"
+            :disabled="!contactmomentStore.canStoreContactmoment"
+          >
+            Opslaan
+          </button>
         </li>
       </menu>
     </template>
@@ -735,10 +745,9 @@ select {
     font-weight: 600;
     color: var(--utrecht-form-label-color);
   }
-
-  article.warning {
-    padding: var(--spacing-default);
-    margin-block-end: var(--spacing-default);
-  }
+}
+.warning {
+  padding: var(--spacing-default);
+  margin-block-end: var(--spacing-default);
 }
 </style>
