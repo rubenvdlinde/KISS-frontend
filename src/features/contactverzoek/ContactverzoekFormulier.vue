@@ -65,6 +65,8 @@ const contactmomentStore = useContactmomentStore();
 const medewerker = computed({
   get: () => props.huidigeVraag.contactverzoek.medewerker,
   set(medewerker) {
+    if (!medewerker) return;
+
     contactmomentStore.updateContactverzoek({
       ...props.huidigeVraag.contactverzoek,
       medewerker,
@@ -75,6 +77,8 @@ const medewerker = computed({
 const notitie = computed({
   get: () => props.huidigeVraag.contactverzoek.notitie,
   set: (notitie) => {
+    if (!notitie) return;
+
     contactmomentStore.updateContactverzoek({
       ...props.huidigeVraag.contactverzoek,
       notitie,
