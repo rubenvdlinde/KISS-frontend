@@ -133,12 +133,15 @@ h2 {
         }
     }
 
-    > :first-child {
-        input,
-        select {
-            border-radius: var(--radius-large) 0 0 var(--radius-large);
-            border-inline-start: var(--border-style);
-        }
+    > label:first-child > *,
+    > label:first-child + input[type="search"] {
+        border-start-start-radius: var(--radius-large);
+        border-end-start-radius: var(--radius-large);
+        border-inline-start: var(--border-style);
+    }
+
+    > input[type="search"] {
+        flex: 1;
     }
 
     > :last-child {

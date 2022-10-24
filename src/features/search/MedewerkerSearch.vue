@@ -1,14 +1,22 @@
 <template>
-  <search-combobox
-    v-bind="{ ...$attrs, ...props }"
-    placeholder="Zoek een medewerker"
-    v-model="searchText"
-    :result="result"
-    :list-items="datalistItems"
-    :exact-match="true"
-    :required="true"
-  />
+  <div>
+    <search-combobox
+      v-bind="{ ...$attrs, ...props }"
+      placeholder="Zoek een medewerker"
+      v-model="searchText"
+      :result="result"
+      :list-items="datalistItems"
+      :exact-match="true"
+      :required="true"
+    />
+  </div>
 </template>
+
+<script lang="ts">
+export default {
+  inheritAttrs: false,
+};
+</script>
 
 <script lang="ts" setup>
 import { debouncedRef } from "@vueuse/core";
@@ -84,3 +92,9 @@ const datalistItems = mapServiceData(result, (paginated) =>
   paginated.page.map(mapDatalistItem)
 );
 </script>
+
+<style lang="scss" scoped>
+div {
+  position: relative;
+}
+</style>

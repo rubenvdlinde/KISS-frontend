@@ -1,52 +1,49 @@
 <template>
-  <div
-    ref="divRef"
-    @keyup.down="nextIndex"
-    @keyup.up="previousIndex"
-    @keyup.enter="selectItem"
+  <input
+    v-bind="$attrs"
+    :id="inputId"
+    :required="required"
+    type="search"
+    autocomplete="off"
+    role="combobox"
+    :aria-expanded="showList ? 'true' : 'false'"
+    :aria-controls="listboxId"
+    :aria-owns="listboxId"
+    aria-autocomplete="list"
+    aria-haspopup="listbox"
+    @input="onInput"
+    :value="modelValue"
+    ref="inputRef"
+    @keydown.down.prevent="nextIndex"
+    @keydown.up.prevent="previousIndex"
+    @keydown.enter.prevent="selectItem"
+  />
+  <simple-spinner
+    v-if="!matchingResult && listItems.loading"
+    class="spinner small"
+  />
+  <ul
+    v-if="showList"
+    class="utrecht-textbox"
+    role="listbox"
+    :id="listboxId"
+    :aria-labelledby="labelId"
+    ref="ulref"
   >
-    <input
-      v-bind="$attrs"
-      :id="inputId"
-      :required="required"
-      type="search"
-      autocomplete="off"
-      role="combobox"
-      :aria-expanded="showList ? 'true' : 'false'"
-      :aria-controls="listboxId"
-      :aria-owns="listboxId"
-      aria-autocomplete="list"
-      aria-haspopup="listbox"
-      @input="onInput"
-      :value="modelValue"
-      ref="inputRef"
-    />
-    <simple-spinner
-      v-if="!matchingResult && listItems.loading"
-      class="spinner"
-    />
-    <ul
-      v-if="showList"
-      class="utrecht-textbox"
-      role="listbox"
-      :id="listboxId"
-      :aria-labelledby="labelId"
+    <li
+      v-for="(r, i) in workingList"
+      :key="i"
+      @mouseover="handleHover(i)"
+      @mousedown="selectItem"
+      :class="{ active: i === activeIndex }"
+      role="option"
     >
-      <li
-        v-for="(r, i) in workingList"
-        :key="i"
-        @mouseover="handleHover(i)"
-        @mousedown="selectItem"
-        :class="{ active: i === activeIndex }"
-        role="option"
-      >
-        <article>
-          <header>{{ r.value }}</header>
-          <p v-if="r.description">{{ r.description }}</p>
-        </article>
-      </li>
-    </ul>
-  </div>
+      <article>
+        <header>{{ r.value }}</header>
+        <p v-if="r.description">{{ r.description }}</p>
+      </article>
+    </li>
+  </ul>
 </template>
 
 <script lang="ts">
@@ -57,7 +54,7 @@ export default {
 
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
-import { useFocusWithin } from "@vueuse/core";
+import { useFocus } from "@vueuse/core";
 import { ref, watch, type PropType } from "vue";
 import { nanoid } from "nanoid";
 import { focusNextFormItem } from "@/helpers/html";
@@ -134,7 +131,7 @@ function selectItem() {
 const emit = defineEmits(["update:modelValue"]);
 
 const inputRef = ref();
-const divRef = ref();
+const ulref = ref();
 
 function onInput(e: Event) {
   if (!(e.currentTarget instanceof HTMLInputElement)) return;
@@ -143,7 +140,7 @@ function onInput(e: Event) {
 
 const isScrolling = ref(false);
 
-const hasFocus = useFocusWithin(divRef);
+const hasFocus = useFocus(inputRef);
 
 const showList = computed(
   () =>
@@ -208,7 +205,7 @@ function handleHover(i: number) {
 let timeoutId: number;
 
 function scrollIntoView() {
-  const el = divRef.value;
+  const el = ulref.value;
   if (!(el instanceof HTMLElement)) return;
   const matchingLi = el.getElementsByTagName("li").item(activeIndex.value);
 
@@ -227,21 +224,11 @@ function scrollIntoView() {
 </script>
 
 <style lang="scss" scoped>
-div .spinner {
+.spinner.small {
   font-size: 0.875rem;
   color: black;
-}
-.spinner,
-input,
-ul {
-  grid-column: 1;
-  grid-row: 1;
-}
-div {
-  position: relative;
-  display: grid;
-  gap: var(--spacing-small);
-  align-items: center;
+  position: absolute;
+  inset-inline-end: var(--spacing-default);
 }
 ul {
   position: absolute;
@@ -250,6 +237,8 @@ ul {
   gap: var(--spacing-default);
   align-self: flex-end;
   transform: translateY(100%);
+  z-index: 1;
+  inset-block-end: 0;
 }
 li {
   max-width: 100%;

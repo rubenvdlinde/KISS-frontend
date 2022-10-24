@@ -12,16 +12,14 @@
       </label>
     </fieldset>
     <div class="search-bar">
-      <label>
-        <search-combobox
-          :list-items="listItems"
-          v-model="state.searchInput"
-          placeholder="Zoeken"
-          @search.prevent="applySearch"
-          id="global-search-input"
-        />
-        Zoekterm</label
-      >
+      <label for="global-search-input"> Zoekterm</label>
+      <search-combobox
+        :list-items="listItems"
+        v-model="state.searchInput"
+        placeholder="Zoeken"
+        @search.prevent="applySearch"
+        id="global-search-input"
+      />
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </div>
   </form>
@@ -345,15 +343,7 @@ form {
 .search-bar {
   max-width: 40rem;
   width: 100%;
-
-  > label > :deep(div) {
-    inline-size: 100%;
-    z-index: 1;
-
-    [role="listbox"] {
-      inline-size: calc(100% + 2rem);
-    }
-  }
+  position: relative;
 }
 
 button {
