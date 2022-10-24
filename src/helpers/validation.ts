@@ -73,10 +73,11 @@ function elfProef(numbers: number[]): boolean {
 }
 
 export function parseBsn(input: string): string | Error {
-  const matches = input.match(/\d{9}/);
+  const matches = input.match(/ *(\d{9}) */);
   if (!matches?.length) return new Error("Voer een BSN in van negen cijfers.");
-  const numbers = matches[0].split("").map((char) => +char);
-  return elfProef(numbers) ? input : new Error("Dit is geen valide BSN.");
+  const match = matches[1];
+  const numbers = match.split("").map((char) => +char);
+  return elfProef(numbers) ? match : new Error("Dit is geen valide BSN.");
 }
 
 export function parseKvkNummer(input: string): string | Error {

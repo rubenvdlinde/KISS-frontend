@@ -36,7 +36,9 @@
       message="Er ging iets mis bij het ophalen van de contactverzoeken. Probeer het later nog eens."
       messageType="error"
     />
-    <template v-if="contactverzoeken.success">
+    <template
+      v-if="contactverzoeken.success && contactverzoeken.data.page.length"
+    >
       <utrecht-heading :level="2" model-value>Contactverzoeken</utrecht-heading>
 
       <contactverzoeken-overzicht
@@ -54,7 +56,7 @@
       messageType="error"
     />
 
-    <template v-if="zaken.success">
+    <template v-if="zaken.success && zaken.data.page.length">
       <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
 
       <zaken-overzicht
@@ -73,7 +75,9 @@
       messageType="error"
     />
 
-    <template v-if="contactmomenten.success">
+    <template
+      v-if="contactmomenten.success && contactmomenten.data.page.length"
+    >
       <utrecht-heading model-value :level="2">
         Contactmomenten
       </utrecht-heading>
