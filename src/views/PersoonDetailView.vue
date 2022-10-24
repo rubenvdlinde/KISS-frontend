@@ -39,9 +39,7 @@
     <template
       v-if="contactverzoeken.success && contactverzoeken.data.page.length"
     >
-      <utrecht-heading :level="2" model-value
-        >Openstaande contactverzoeken</utrecht-heading
-      >
+      <utrecht-heading :level="2" model-value>Contactverzoeken</utrecht-heading>
 
       <contactverzoeken-overzicht
         :contactverzoeken="contactverzoeken.data.page"
