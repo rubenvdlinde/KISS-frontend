@@ -6,6 +6,13 @@
     confirm-message="Ja"
   />
 
+  <prompt-modal
+    :dialog="removeVraagDialog"
+    message="Weet je zeker dat je deze vraag wilt verwijderen? Alle gegevens in de vraag worden verwijderd."
+    cancel-message="Nee"
+    confirm-message="Ja"
+  />
+
   <simple-spinner v-if="saving || gespreksresultaten.loading" />
 
   <form v-else class="afhandeling" @submit.prevent="submit">
@@ -25,7 +32,15 @@
         :key="idx"
       >
         <utrecht-heading :level="2" model-value>
-          Vraag {{ idx + 1 }}
+          <div class="vraag-heading">
+            Vraag {{ idx + 1 }}
+
+            <span
+              v-if="contactmomentStore.huidigContactmoment.vragen.length > 1"
+              class="icon icon-after trash"
+              @click="toggleRemoveVraagDialog(idx)"
+            />
+          </div>
         </utrecht-heading>
         <section v-if="vraag.klanten.length" class="gerelateerde-resources">
           <utrecht-heading :level="3" model-value>{{
@@ -650,6 +665,16 @@ cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
   navigateToPersonen();
 });
+
+const removeVraagDialog = useConfirmDialog();
+
+const toggleRemoveVraagDialog = async (vraagId: number) => {
+  await removeVraagDialog.reveal().then((res) => {
+    if (res.isCanceled) return;
+
+    contactmomentStore.removeVraag(vraagId);
+  });
+};
 </script>
 
 <style scoped lang="scss">
@@ -666,6 +691,16 @@ cancelDialog.onConfirm(() => {
   padding: var(--spacing-default);
   box-sizing: border-box;
   margin-top: var(--spacing-default);
+}
+
+.vraag-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+
+  .icon:hover {
+    cursor: pointer;
+  }
 }
 
 .gerelateerde-resources {
