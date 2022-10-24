@@ -34,15 +34,22 @@
           <ul>
             <li v-for="record in vraag.klanten" :key="record.klant.id">
               <label>
-                <span v-if="record.klant.voornaam || record.klant.achternaam">{{
-                  [
-                    record.klant.voornaam,
-                    record.klant.voorvoegselAchternaam,
-                    record.klant.achternaam,
-                  ]
-                    .filter((x) => x)
-                    .join(" ")
-                }}</span>
+                <span
+                  v-if="
+                    record.klant.voornaam ||
+                    record.klant.achternaam ||
+                    record.klant.bedrijfsnaam
+                  "
+                  >{{
+                    [
+                      record.klant.voornaam,
+                      record.klant.voorvoegselAchternaam,
+                      record.klant.achternaam,
+                    ]
+                      .filter((x) => x)
+                      .join(" ") || record.klant.bedrijfsnaam
+                  }}</span
+                >
                 <span v-else>{{
                   [
                     record.klant.emails[0]?.email,
