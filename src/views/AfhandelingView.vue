@@ -284,6 +284,16 @@
                     message-type="warning"
                   />
 
+                  <application-message
+                    v-else-if="
+                      !vraag.klanten.some(
+                        (klant) => klant.klant.hasContactInformation
+                      )
+                    "
+                    messageType="warning"
+                    message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
+                  />
+
                   <label
                     class="utrecht-form-label required"
                     :for="'verzoek-medewerker' + idx"
@@ -378,7 +388,7 @@
       </article>
       <application-message
         v-if="!contactmomentStore.canStoreContactmoment"
-        message="Bij één of meerdere vragen met contactverzoek is geen klant geselecteerd"
+        message="Bij één of meerdere vragen met contactverzoek is geen klant geselecteerd óf een klant zonder contactgegevens"
         message-type="warning"
       />
       <menu>

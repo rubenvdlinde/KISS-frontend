@@ -113,7 +113,9 @@ export const useContactmomentStore = defineStore("contactmoment", {
       return !state.huidigContactmoment?.vragen.some(
         (vraag) =>
           vraag.resultaat === "Contactverzoek gemaakt" &&
-          !vraag.klanten.some((klant) => klant.shouldStore)
+          !vraag.klanten.some(
+            (klant) => klant.shouldStore && klant.klant.hasContactInformation
+          )
       );
     },
   },
