@@ -6,6 +6,13 @@
     confirm-message="Ja"
   />
 
+  <prompt-modal
+    :dialog="removeVraagDialog"
+    message="Weet je zeker dat je deze vraag wilt verwijderen? Alle gegevens in de vraag worden verwijderd."
+    cancel-message="Nee"
+    confirm-message="Ja"
+  />
+
   <simple-spinner v-if="saving || gespreksresultaten.loading" />
 
   <form v-else class="afhandeling" @submit.prevent="submit">
@@ -25,7 +32,15 @@
         :key="idx"
       >
         <utrecht-heading :level="2" model-value>
-          Vraag {{ idx + 1 }}
+          <div class="vraag-heading">
+            Vraag {{ idx + 1 }}
+
+            <span
+              v-if="contactmomentStore.huidigContactmoment.vragen.length > 1"
+              class="icon icon-after trash"
+              @click="toggleRemoveVraagDialog(idx)"
+            />
+          </div>
         </utrecht-heading>
         <section v-if="vraag.klanten.length" class="gerelateerde-resources">
           <utrecht-heading :level="3" model-value>{{
@@ -34,15 +49,22 @@
           <ul>
             <li v-for="record in vraag.klanten" :key="record.klant.id">
               <label>
-                <span v-if="record.klant.voornaam || record.klant.achternaam">{{
-                  [
-                    record.klant.voornaam,
-                    record.klant.voorvoegselAchternaam,
-                    record.klant.achternaam,
-                  ]
-                    .filter((x) => x)
-                    .join(" ")
-                }}</span>
+                <span
+                  v-if="
+                    record.klant.voornaam ||
+                    record.klant.achternaam ||
+                    record.klant.bedrijfsnaam
+                  "
+                  >{{
+                    [
+                      record.klant.voornaam,
+                      record.klant.voorvoegselAchternaam,
+                      record.klant.achternaam,
+                    ]
+                      .filter((x) => x)
+                      .join(" ") || record.klant.bedrijfsnaam
+                  }}</span
+                >
                 <span v-else>{{
                   [
                     record.klant.emails[0]?.email,
@@ -279,9 +301,19 @@
               <div class="contactverzoek-container">
                 <div>
                   <application-message
-                    v-if="!vraag.klanten.length"
+                    v-if="!vraag.klanten.some((klant) => klant.shouldStore)"
                     message="Er is geen klant geselecteerd"
                     message-type="warning"
+                  />
+
+                  <application-message
+                    v-else-if="
+                      !vraag.klanten.some(
+                        (klant) => klant.klant.hasContactInformation
+                      )
+                    "
+                    messageType="warning"
+                    message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
                   />
 
                   <label
@@ -376,6 +408,11 @@
           </fieldset>
         </section>
       </article>
+      <application-message
+        v-if="!contactmomentStore.canStoreContactmoment"
+        message="Bij één of meerdere vragen is geen klant óf een klant zonder contactgegevens geselecteerd."
+        message-type="warning"
+      />
       <menu>
         <li>
           <utrecht-button
@@ -388,7 +425,12 @@
           </utrecht-button>
         </li>
         <li>
-          <button class="utrecht-button utrecht-button--submit">Opslaan</button>
+          <button
+            class="utrecht-button utrecht-button--submit"
+            :disabled="!contactmomentStore.canStoreContactmoment"
+          >
+            Opslaan
+          </button>
         </li>
       </menu>
     </template>
@@ -521,6 +563,8 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
         description: vraag.contactverzoek.notitie,
         attendees: [vraag.contactverzoek.medewerker],
       },
+      primaireVraagWeergave: vraag.primaireVraag?.title,
+      afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
     });
 
     koppelKlant({
@@ -650,6 +694,16 @@ cancelDialog.onConfirm(() => {
   contactmomentStore.stop();
   navigateToPersonen();
 });
+
+const removeVraagDialog = useConfirmDialog();
+
+const toggleRemoveVraagDialog = async (vraagId: number) => {
+  await removeVraagDialog.reveal().then((res) => {
+    if (res.isCanceled) return;
+
+    contactmomentStore.removeVraag(vraagId);
+  });
+};
 </script>
 
 <style scoped lang="scss">
@@ -666,6 +720,16 @@ cancelDialog.onConfirm(() => {
   padding: var(--spacing-default);
   box-sizing: border-box;
   margin-top: var(--spacing-default);
+}
+
+.vraag-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+
+  .icon:hover {
+    cursor: pointer;
+  }
 }
 
 .gerelateerde-resources {
@@ -735,10 +799,9 @@ select {
     font-weight: 600;
     color: var(--utrecht-form-label-color);
   }
-
-  article.warning {
-    padding: var(--spacing-default);
-    margin-block-end: var(--spacing-default);
-  }
+}
+.warning {
+  padding: var(--spacing-default);
+  margin-block-end: var(--spacing-default);
 }
 </style>

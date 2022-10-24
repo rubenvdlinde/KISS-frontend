@@ -44,10 +44,18 @@
           <dd>{{ contactverzoek.status }}</dd>
         </dl>
 
-        <dl>
-          <dt>Vraag</dt>
-          <dd>{{ contactverzoek.vraag }}</dd>
-        </dl>
+        <template v-if="contactverzoek.primaireVraagWeergave">
+          <dl>
+            <dt>Vraag</dt>
+            <dd>{{ contactverzoek.primaireVraagWeergave }}</dd>
+          </dl>
+        </template>
+        <template v-if="contactverzoek.afwijkendOnderwerp">
+          <dl>
+            <dt>Specificatie</dt>
+            <dd>{{ contactverzoek.afwijkendOnderwerp }}</dd>
+          </dl>
+        </template>
 
         <dl>
           <dt>Notitie</dt>
@@ -117,6 +125,11 @@ const toggleItemContent = (idx: number) => {
 
 .verzoek-item-content {
   background-color: var(--color-secondary);
+
+  dt {
+    font-weight: bold;
+  }
+
   dl {
     display: flex;
     padding: var(--spacing-default);

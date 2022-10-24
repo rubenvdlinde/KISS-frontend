@@ -36,10 +36,10 @@
       message="Er ging iets mis bij het ophalen van de contactverzoeken. Probeer het later nog eens."
       messageType="error"
     />
-    <template v-if="contactverzoeken.success">
-      <utrecht-heading :level="2" model-value
-        >Openstaande contactverzoeken</utrecht-heading
-      >
+    <template
+      v-if="contactverzoeken.success && contactverzoeken.data.page.length"
+    >
+      <utrecht-heading :level="2" model-value>Contactverzoeken</utrecht-heading>
 
       <contactverzoeken-overzicht
         :contactverzoeken="contactverzoeken.data.page"
@@ -56,7 +56,7 @@
       messageType="error"
     />
 
-    <template v-if="zaken.success">
+    <template v-if="zaken.success && zaken.data.page.length">
       <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
 
       <zaken-overzicht
@@ -75,7 +75,9 @@
       messageType="error"
     />
 
-    <template v-if="contactmomenten.success">
+    <template
+      v-if="contactmomenten.success && contactmomenten.data.page.length"
+    >
       <utrecht-heading model-value :level="2">
         Contactmomenten
       </utrecht-heading>
@@ -124,7 +126,10 @@ watch(
   () => klant.success && klant.data,
   (k) => {
     if (!k) return;
-    contactmomentStore.setKlant(k);
+    contactmomentStore.setKlant({
+      ...k,
+      hasContactInformation: !k.emails.length || !k.telefoonnummers.length,
+    });
   },
   { immediate: true }
 );
@@ -154,6 +159,17 @@ const klantVestigingsnummer = computed(getVestigingsnummer);
 const zaken = useZakenByVestigingsnummer(klantVestigingsnummer);
 
 const bedrijf = useBedrijfByVestigingsnummer(getVestigingsnummer);
+
+watch(
+  () => bedrijf.success && bedrijf.data,
+  (bedrijf) => {
+    if (!bedrijf || (!bedrijf.telefoonnummer && !bedrijf.email)) return;
+    if (!klant.success || !klant.data) return;
+
+    contactmomentStore.setKlantHasContactgegevens(klant.data.id);
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped lang="scss">
