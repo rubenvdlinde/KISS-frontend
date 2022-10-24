@@ -124,7 +124,11 @@ watch(
   () => klant.success && klant.data,
   (k) => {
     if (!k) return;
-    contactmomentStore.setKlant(k);
+    contactmomentStore.setKlant({
+      ...k,
+      hasContactInformation:
+        k.emails.length > 0 || k.telefoonnummers.length > 0,
+    });
   },
   { immediate: true }
 );

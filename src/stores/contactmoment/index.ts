@@ -1,4 +1,3 @@
-import type { Klant } from "@/features/klant/types";
 import type {
   Medewerker,
   Website,
@@ -21,6 +20,16 @@ export type ContactmomentContactVerzoek = {
   isActive: boolean;
 };
 
+export type ContactmomentKlant = {
+  id: string;
+  voornaam: string;
+  voorvoegselAchternaam?: string;
+  achternaam: string;
+  telefoonnummers: { telefoonnummer: string }[];
+  emails: { email: string }[];
+  hasContactInformation: boolean;
+};
+
 export interface Vraag {
   zaken: ContactmomentZaak[];
   notitie: string;
@@ -28,7 +37,7 @@ export interface Vraag {
   startdatum: string;
   kanaal: string;
   resultaat: string;
-  klanten: { klant: Klant; shouldStore: boolean }[];
+  klanten: { klant: ContactmomentKlant; shouldStore: boolean }[];
   medewerkers: { medewerker: Medewerker; shouldStore: boolean }[];
   websites: { website: Website; shouldStore: boolean }[];
   kennisartikelen: { kennisartikel: Kennisartikel; shouldStore: boolean }[];
@@ -94,10 +103,20 @@ export const useContactmomentStore = defineStore("contactmoment", {
     } as ContactmomentenState;
   },
   getters: {
-    klantVoorHuidigeVraag(state): Klant | undefined {
+    klantVoorHuidigeVraag(state): ContactmomentKlant | undefined {
       return state.huidigContactmoment?.huidigeVraag.klanten
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
+    },
+
+    canStoreContactmoment(state): boolean {
+      return !state.huidigContactmoment?.vragen.some(
+        (vraag) =>
+          vraag.resultaat === "Contactverzoek gemaakt" &&
+          !vraag.klanten.some(
+            (klant) => klant.shouldStore && klant.klant.hasContactInformation
+          )
+      );
     },
   },
   actions: {
@@ -175,7 +194,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       );
     },
 
-    setKlant(klant: Klant) {
+    setKlant(klant: ContactmomentKlant) {
       const { huidigContactmoment } = this;
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
@@ -196,6 +215,22 @@ export const useContactmomentStore = defineStore("contactmoment", {
         shouldStore: true,
         klant,
       });
+    },
+
+    setKlantHasContactgegevens(klantId: string) {
+      const { huidigContactmoment } = this;
+
+      if (!huidigContactmoment) return;
+
+      const { huidigeVraag } = huidigContactmoment;
+
+      const targetKlantIndex = huidigeVraag.klanten.findIndex(
+        (k) => k.klant.id === klantId
+      );
+
+      if (targetKlantIndex === -1) return;
+
+      huidigeVraag.klanten[targetKlantIndex].klant.hasContactInformation = true;
     },
 
     addMedewerker(medewerker: any, url: string) {

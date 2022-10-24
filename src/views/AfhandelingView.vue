@@ -301,9 +301,19 @@
               <div class="contactverzoek-container">
                 <div>
                   <application-message
-                    v-if="!vraag.klanten.length"
+                    v-if="!vraag.klanten.some((klant) => klant.shouldStore)"
                     message="Er is geen klant geselecteerd"
                     message-type="warning"
+                  />
+
+                  <application-message
+                    v-else-if="
+                      !vraag.klanten.some(
+                        (klant) => klant.klant.hasContactInformation
+                      )
+                    "
+                    messageType="warning"
+                    message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
                   />
 
                   <label
@@ -398,6 +408,11 @@
           </fieldset>
         </section>
       </article>
+      <application-message
+        v-if="!contactmomentStore.canStoreContactmoment"
+        message="Bij één of meerdere vragen is geen klant óf een klant zonder contactgegevens geselecteerd."
+        message-type="warning"
+      />
       <menu>
         <li>
           <utrecht-button
@@ -410,7 +425,12 @@
           </utrecht-button>
         </li>
         <li>
-          <button class="utrecht-button utrecht-button--submit">Opslaan</button>
+          <button
+            class="utrecht-button utrecht-button--submit"
+            :disabled="!contactmomentStore.canStoreContactmoment"
+          >
+            Opslaan
+          </button>
         </li>
       </menu>
     </template>
@@ -543,6 +563,8 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
         description: vraag.contactverzoek.notitie,
         attendees: [vraag.contactverzoek.medewerker],
       },
+      primaireVraagWeergave: vraag.primaireVraag?.title,
+      afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
     });
 
     koppelKlant({
@@ -777,10 +799,9 @@ select {
     font-weight: 600;
     color: var(--utrecht-form-label-color);
   }
-
-  article.warning {
-    padding: var(--spacing-default);
-    margin-block-end: var(--spacing-default);
-  }
+}
+.warning {
+  padding: var(--spacing-default);
+  margin-block-end: var(--spacing-default);
 }
 </style>

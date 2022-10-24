@@ -7,9 +7,7 @@
     />
 
     <application-message
-      v-if="
-        huidigeKlant && !huidigeKlant.emails && !huidigeKlant.telefoonnummers
-      "
+      v-if="huidigeKlant && !huidigeKlant.hasContactInformation"
       messageType="warning"
       message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
     />
@@ -46,16 +44,19 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { useContactmomentStore, type Vraag } from "@/stores/contactmoment";
+import {
+  useContactmomentStore,
+  type ContactmomentKlant,
+  type Vraag,
+} from "@/stores/contactmoment";
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
 import MedewerkerSearch from "@/features/search/MedewerkerSearch.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
-import type { Klant } from "@/features/klant/";
 import { computed } from "@vue/reactivity";
 
 const props = defineProps<{
   huidigeVraag: Vraag;
-  huidigeKlant: Klant | undefined;
+  huidigeKlant: ContactmomentKlant | undefined;
 }>();
 
 const contactmomentStore = useContactmomentStore();
@@ -63,6 +64,8 @@ const contactmomentStore = useContactmomentStore();
 const medewerker = computed({
   get: () => props.huidigeVraag.contactverzoek.medewerker,
   set(medewerker) {
+    if (!medewerker) return;
+
     contactmomentStore.updateContactverzoek({
       ...props.huidigeVraag.contactverzoek,
       medewerker,
@@ -73,6 +76,8 @@ const medewerker = computed({
 const notitie = computed({
   get: () => props.huidigeVraag.contactverzoek.notitie,
   set: (notitie) => {
+    if (!notitie) return;
+
     contactmomentStore.updateContactverzoek({
       ...props.huidigeVraag.contactverzoek,
       notitie,
