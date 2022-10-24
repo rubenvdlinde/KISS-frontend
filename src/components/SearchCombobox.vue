@@ -146,7 +146,8 @@ const isScrolling = ref(false);
 const hasFocus = useFocusWithin(divRef);
 
 const showList = computed(
-  () => workingList.value.length && hasFocus.focused.value
+  () =>
+    !!workingList.value.length && hasFocus.focused.value && !!props.modelValue
 );
 
 watch(workingList.value, (r) => {
