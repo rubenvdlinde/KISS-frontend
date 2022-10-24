@@ -78,3 +78,10 @@ export function parseBsn(input: string): string | Error {
   const numbers = matches[0].split("").map((char) => +char);
   return elfProef(numbers) ? input : new Error("Dit is geen valide BSN.");
 }
+
+export function parseKvkNummer(input: string): string | Error {
+  const matches = input.match(/\d{8}/);
+  return !matches?.length
+    ? new Error("Vul de 8 cijfers van het KvK-nummer in, bijvoorbeeld 12345678")
+    : input;
+}

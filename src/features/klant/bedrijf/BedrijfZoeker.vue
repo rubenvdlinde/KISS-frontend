@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { parsePostcodeHuisnummer } from "@/helpers/validation";
+import { parseKvkNummer, parsePostcodeHuisnummer } from "@/helpers/validation";
 import { ensureState } from "@/stores/create-store";
 import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
@@ -86,6 +86,16 @@ const currentQuery = computed(() => {
 
   if (field === "postcodeHuisnummer") {
     const parsed = parsePostcodeHuisnummer(currentSearch);
+    return parsed instanceof Error
+      ? parsed
+      : bedrijfQuery({
+          field,
+          value: parsed,
+        });
+  }
+
+  if (field === "kvkNummer") {
+    const parsed = parseKvkNummer(currentSearch);
     return parsed instanceof Error
       ? parsed
       : bedrijfQuery({
