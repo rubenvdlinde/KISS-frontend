@@ -10,6 +10,8 @@ export interface Contactverzoek {
     description: string;
     attendees: string[];
   };
+  primaireVraagWeergave?: string;
+  afwijkendOnderwerp?: string;
 }
 
 export function saveContactverzoek(data: Contactverzoek) {

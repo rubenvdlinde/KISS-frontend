@@ -45,6 +45,7 @@ export interface ContactverzoekDetail {
   afgerond: string;
   starttijd: string;
   aanmaker: string;
-  vraag: string;
   notitie: string;
+  primaireVraagWeergave?: string;
+  afwijkendOnderwerp?: string;
 }

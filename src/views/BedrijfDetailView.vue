@@ -126,7 +126,10 @@ watch(
   () => klant.success && klant.data,
   (k) => {
     if (!k) return;
-    contactmomentStore.setKlant(k);
+    contactmomentStore.setKlant({
+      ...k,
+      hasContactInformation: !k.emails.length || !k.telefoonnummers.length,
+    });
   },
   { immediate: true }
 );
@@ -156,6 +159,17 @@ const klantVestigingsnummer = computed(getVestigingsnummer);
 const zaken = useZakenByVestigingsnummer(klantVestigingsnummer);
 
 const bedrijf = useBedrijfByVestigingsnummer(getVestigingsnummer);
+
+watch(
+  () => bedrijf.success && bedrijf.data,
+  (bedrijf) => {
+    if (!bedrijf || (!bedrijf.telefoonnummer && !bedrijf.email)) return;
+    if (!klant.success || !klant.data) return;
+
+    contactmomentStore.setKlantHasContactgegevens(klant.data.id);
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped lang="scss">
