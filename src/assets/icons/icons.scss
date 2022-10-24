@@ -74,3 +74,8 @@
 .icon-after.alert::after {
     mask-image: url("@/assets/icons/alert.svg");
 }
+
+.icon-before.trash::before,
+.icon-after.trash::after {
+    mask-image: url("@/assets/icons/trash.svg");
+}
