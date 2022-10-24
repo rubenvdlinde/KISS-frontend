@@ -388,7 +388,7 @@
       </article>
       <application-message
         v-if="!contactmomentStore.canStoreContactmoment"
-        message="Bij één of meerdere vragen met contactverzoek is geen klant geselecteerd óf een klant zonder contactgegevens"
+        message="Bij één of meerdere vragen is geen klant óf een klant zonder contactgegevens geselecteerd."
         message-type="warning"
       />
       <menu>
