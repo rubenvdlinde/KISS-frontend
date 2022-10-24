@@ -170,7 +170,12 @@ export function useSuggestions(input: Ref<string>) {
       method: "POST",
       body: JSON.stringify({
         query: input.value,
-        size: 5,
+        size: 10,
+        types: {
+          documents: {
+            fields: ["title", "body_content"],
+          },
+        },
       }),
     })
       .then(throwIfNotOk)
