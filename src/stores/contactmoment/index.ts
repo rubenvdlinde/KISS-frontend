@@ -352,5 +352,13 @@ export const useContactmomentStore = defineStore("contactmoment", {
         isActive: true,
       };
     },
+
+    removeVraag(vraagIndex: number) {
+      const { huidigContactmoment } = this;
+
+      if (!huidigContactmoment) return;
+
+      huidigContactmoment.vragen.splice(vraagIndex, 1);
+    },
   },
 });
