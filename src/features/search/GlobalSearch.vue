@@ -174,9 +174,9 @@ import {
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
 import { computed, nextTick, ref, watch } from "vue";
-import { useGlobalSearch, useSources } from "./service";
+import { useGlobalSearch, useSources, useSuggestions } from "./service";
 
-import Pagination from "../../nl-design-system/components/Pagination.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 import MedewerkerDetail from "./MedewerkerDetail.vue";
@@ -316,6 +316,8 @@ const handleWebsiteSelected = (website: Website): void => {
   contactmomentStore.addWebsite(website);
   window.open(website.url);
 };
+
+const suggestions = useSuggestions(computed(() => state.value.searchInput));
 </script>
 
 <style lang="scss" scoped>
