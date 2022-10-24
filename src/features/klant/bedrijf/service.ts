@@ -62,8 +62,14 @@ function mapHandelsRegister(json: any): Bedrijf {
     eersteHandelsnaam,
   } = json ?? {};
 
-  const { huisnummer, postcode, straatnaam, huisletter, huisnummertoevoeging } =
-    embedded?.bezoekadres ?? {};
+  const {
+    huisnummer,
+    postcode,
+    straatnaam,
+    huisletter,
+    huisnummertoevoeging,
+    woonplaats,
+  } = embedded?.bezoekadres ?? {};
 
   return {
     _typeOfKlant: "bedrijf",
@@ -77,6 +83,7 @@ function mapHandelsRegister(json: any): Bedrijf {
     straatnaam,
     huisletter,
     huisnummertoevoeging,
+    woonplaats,
   };
 }
 
