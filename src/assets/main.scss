@@ -133,8 +133,10 @@ h2 {
         }
     }
 
-    > label:first-child > *,
-    > label:first-child + input[type="search"] {
+    > label:first-child > input,
+    label:first-child > select,
+    > label:first-child + input,
+    label:first-child + select {
         border-start-start-radius: var(--radius-large);
         border-end-start-radius: var(--radius-large);
         border-inline-start: var(--border-style);
