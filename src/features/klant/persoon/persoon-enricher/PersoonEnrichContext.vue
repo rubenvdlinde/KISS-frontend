@@ -70,11 +70,11 @@ const router = useRouter();
 
 const create = async () => {
   if (!bsn.value) throw new Error();
-  const naam = klantData.success
+  const naam = persoonData.success
     ? {
-        achternaam: klantData.data?.achternaam,
-        voornaam: klantData.data?.voornaam,
-        voorvoegselAchternaam: klantData.data?.voorvoegselAchternaam,
+        achternaam: persoonData.data?.achternaam,
+        voornaam: persoonData.data?.voornaam,
+        voorvoegselAchternaam: persoonData.data?.voorvoegselAchternaam,
       }
     : {};
   const newKlant = await ensureKlantForBsn({
