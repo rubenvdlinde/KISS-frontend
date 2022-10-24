@@ -8,7 +8,9 @@
 
     <application-message
       v-if="
-        huidigeKlant && !huidigeKlant.emails && !huidigeKlant.telefoonnummers
+        huidigeKlant &&
+        !huidigeKlant.emails.length &&
+        !huidigeKlant.telefoonnummers.length
       "
       messageType="warning"
       message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
