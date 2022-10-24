@@ -13,58 +13,77 @@
     <simple-spinner v-if="klant.loading" />
     <bedrijf-details v-else-if="klant.success" :klant="klant.data" />
     <application-message
-      v-else
-      message="Er is geen klant gevonden"
+      v-if="klant.error"
+      message="Er ging iets mis bij het ophalen van de klant. Probeer het later
+      nog eens."
       messageType="error"
-    ></application-message>
+    />
 
-    <simple-spinner v-if="klantVestigingsnummer && bedrijf.loading" />
+    <simple-spinner v-if="bedrijf.loading" />
     <handelsregister-gegevens
       v-if="bedrijf.success && bedrijf.data"
       :bedrijf="bedrijf.data"
     />
     <application-message
       v-if="bedrijf.error"
-      message="Er ging iets mis bij het ophalen van de BRP gegevens"
+      message="Er ging iets mis bij het ophalen van de Handelsregister gegevens. Probeer het later nog eens."
       messageType="error"
     />
 
-    <utrecht-heading :level="2" model-value
-      >Openstaande contactverzoeken</utrecht-heading
-    >
     <simple-spinner v-if="contactverzoeken.loading" />
-    <contactverzoeken-overzicht
-      v-if="contactverzoeken.success"
-      :contactverzoeken="contactverzoeken.data.page"
+    <application-message
+      v-if="contactverzoeken.error"
+      message="Er ging iets mis bij het ophalen van de contactverzoeken. Probeer het later nog eens."
+      messageType="error"
     />
+    <template
+      v-if="contactverzoeken.success && contactverzoeken.data.page.length"
+    >
+      <utrecht-heading :level="2" model-value
+        >Openstaande contactverzoeken</utrecht-heading
+      >
+
+      <contactverzoeken-overzicht
+        :contactverzoeken="contactverzoeken.data.page"
+      />
+    </template>
 
     <!-- Zaken -->
-    <template v-if="klantVestigingsnummer">
+
+    <simple-spinner v-if="zaken.loading" />
+
+    <application-message
+      v-if="zaken.error"
+      message="Er ging iets mis bij het ophalen van de zaken. Probeer het later nog eens."
+      messageType="error"
+    />
+
+    <template v-if="zaken.success && zaken.data.page.length">
       <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
 
-      <simple-spinner v-if="zaken.loading" />
-
-      <span v-if="zaken.error">
-        Er ging iets mis. Probeer het later nog eens.
-      </span>
-
       <zaken-overzicht
-        v-if="zaken.success"
         :zaken="zaken.data.page"
         :vraag="contactmomentStore.huidigContactmoment?.huidigeVraag"
       />
     </template>
 
     <!-- Contactmomenten -->
-    <utrecht-heading model-value :level="2"> Contactmomenten </utrecht-heading>
 
     <simple-spinner v-if="contactmomenten.loading" />
 
-    <span v-if="contactmomenten.error">
-      Er ging iets mis. Probeer het later nog eens.
-    </span>
+    <application-message
+      v-if="contactmomenten.error"
+      message="Er ging iets mis bij het ophalen van de contactmomenten. Probeer het later nog eens."
+      messageType="error"
+    />
 
-    <template v-if="contactmomenten.success">
+    <template
+      v-if="contactmomenten.success && contactmomenten.data.page.length"
+    >
+      <utrecht-heading model-value :level="2">
+        Contactmomenten
+      </utrecht-heading>
+
       <contactmomenten-overzicht :contactmomenten="contactmomenten.data.page" />
 
       <pagination
