@@ -12,14 +12,15 @@
       </label>
     </fieldset>
     <div class="search-bar">
-      <label
-        ><input
-          type="search"
+      <label>
+        <search-combobox
+          :list-items="listItems"
           v-model="state.searchInput"
           placeholder="Zoeken"
           @search.prevent="applySearch"
           id="global-search-input"
-        />Zoekterm</label
+        />
+        Zoekterm</label
       >
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </div>
@@ -188,6 +189,9 @@ import type {
 } from "@/features/search/types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
+import SearchCombobox from "../../components/SearchCombobox.vue";
+import { mapServiceData } from "@/services";
+import { debouncedRef } from "@vueuse/core";
 
 const emit = defineEmits<{
   (
@@ -317,7 +321,16 @@ const handleWebsiteSelected = (website: Website): void => {
   window.open(website.url);
 };
 
-const suggestions = useSuggestions(computed(() => state.value.searchInput));
+const debounceInput = debouncedRef(
+  computed(() => state.value.searchInput),
+  300
+);
+
+const suggestions = useSuggestions(debounceInput);
+
+const listItems = mapServiceData(suggestions, (items) =>
+  items.map((value) => ({ value }))
+);
 </script>
 
 <style lang="scss" scoped>
@@ -332,6 +345,15 @@ form {
 .search-bar {
   max-width: 40rem;
   width: 100%;
+
+  > label > :deep(div) {
+    inline-size: 100%;
+    z-index: 1;
+
+    [role="listbox"] {
+      inline-size: calc(100% + 2rem);
+    }
+  }
 }
 
 button {

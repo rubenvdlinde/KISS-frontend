@@ -66,7 +66,7 @@ import SimpleSpinner from "./SimpleSpinner.vue";
 
 export type DatalistItem = {
   value: string;
-  description: string;
+  description?: string;
 };
 
 const props = defineProps({
@@ -234,7 +234,7 @@ div .spinner {
 input,
 ul {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1;
 }
 div {
   position: relative;
