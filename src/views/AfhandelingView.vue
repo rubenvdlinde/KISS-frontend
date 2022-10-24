@@ -531,6 +531,8 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
         description: vraag.contactverzoek.notitie,
         attendees: [vraag.contactverzoek.medewerker],
       },
+      primaireVraagWeergave: vraag.primaireVraag?.title,
+      afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
     });
 
     koppelKlant({
