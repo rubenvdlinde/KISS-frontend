@@ -228,7 +228,9 @@ function scrollIntoView() {
   font-size: 0.875rem;
   color: black;
   position: absolute;
-  inset-inline-end: var(--spacing-default);
+  inset-inline-end: 50%;
+  transform: translateX(100%);
+  z-index: 2;
 }
 ul {
   position: absolute;
