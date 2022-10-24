@@ -39,7 +39,7 @@
       </div>
 
       <utrecht-heading model-value :level="level">
-        <span class="title">{{ bericht.title }}</span>
+        <span class="title" v-html="sanitizedTitle" />
       </utrecht-heading>
     </div>
 
@@ -54,7 +54,7 @@
     </div>
 
     <utrecht-document model-value class="correct-header">
-      <div v-html="sanitized" />
+      <div v-html="sanitizedContent" />
     </utrecht-document>
   </article>
 </template>
@@ -160,7 +160,8 @@ function processHtml(html: string) {
   return increasedHeadings;
 }
 
-const sanitized = computed(() => processHtml(props.bericht.content));
+const sanitizedContent = computed(() => processHtml(props.bericht.content));
+const sanitizedTitle = computed(() => processHtml(props.bericht.title));
 
 const handleToggleBerichtInContactmoment = (): void => {
   const type = props.bericht.type;
