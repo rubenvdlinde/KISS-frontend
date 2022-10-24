@@ -12,6 +12,7 @@ export interface Bedrijf {
   straatnaam: string;
   huisletter: string;
   huisnummertoevoeging: string;
+  woonplaats: string;
 }
 
 export interface EnrichedBedrijf {
