@@ -10,12 +10,12 @@
         >
         <dl>
           <dt>E-mailadres:</dt>
-          <dd>{{ medewerkerRaw?.user }}</dd>
+          <dd>{{ emails }}</dd>
           <dt>Telefoonnummer:</dt>
-          <dd>{{ medewerkerRaw?.contact?.telefoonnummer1 }}</dd>
+          <dd>{{ telefoonnummers }}</dd>
         </dl>
       </section>
-      <section>
+      <section v-if="medewerkerRaw?.calendar?.availabilities">
         <utrecht-heading model-value :level="headingLevel + 1"
           >Agenda</utrecht-heading
         >
@@ -72,9 +72,9 @@
         <dd>{{ medewerkerRaw?.department }}</dd>
         <dt>Wat kun je en wat doe je:</dt>
         <dd>{{ medewerkerRaw?.skills }}</dd>
-        <template v-if="medewerkerRaw?.replacement?.name">
+        <template v-if="replacement">
           <dt>Vervanger:</dt>
-          <dd>{{ medewerkerRaw.replacement.name }}</dd>
+          <dd>{{ replacement }}</dd>
         </template>
       </dl>
     </section>
@@ -89,6 +89,7 @@
 
 <script lang="ts" setup>
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { computed } from "@vue/reactivity";
 import { ContentFeedback } from "../feedback/index";
 import type { CurrentFeedbackSection } from "../feedback/types";
 
@@ -102,6 +103,29 @@ const currentFeedbackSection: CurrentFeedbackSection = {
   label: props.title,
   id: props.medewerkerRaw?.user,
 };
+
+const telefoonnummers = computed(() =>
+  props.medewerkerRaw?.contact?.telefoonnummers
+    ?.map(({ telefoonnummer }: any) => telefoonnummer)
+    ?.filter(Boolean)
+    ?.join(", ")
+);
+
+const emails = computed(
+  () =>
+    props.medewerkerRaw?.contact?.emails
+      ?.map(({ email }: any) => email)
+      ?.filter(Boolean)
+      ?.join(", ") || props.medewerkerRaw?.user
+);
+
+const replacement = computed(() => {
+  if (typeof props.medewerkerRaw?.replacement === "string")
+    return props.medewerkerRaw.replacement;
+  if (typeof props.medewerkerRaw?.replacement?.name === "string")
+    return props.medewerkerRaw.replacement.name;
+  return "";
+});
 </script>
 
 <style lang="scss" scoped>

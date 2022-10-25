@@ -10,7 +10,9 @@
       <template v-for="[category, links] in categories.data" :key="category">
         <dt>{{ category }}</dt>
         <dd v-for="link in links" :key="link.id">
-          <a :href="link.url" rel="noopener noreferrer">{{ link.title }}</a>
+          <a :href="link.url" rel="noopener noreferrer" target="_blank">{{
+            link.title
+          }}</a>
         </dd>
       </template>
     </dl>
