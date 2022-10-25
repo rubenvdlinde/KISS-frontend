@@ -29,12 +29,12 @@
     :id="listboxId"
     :aria-labelledby="labelId"
     ref="ulref"
+    @mousedown="selectItem"
   >
     <li
       v-for="(r, i) in workingList"
       :key="i"
       @mouseover="handleHover(i)"
-      @mousedown="selectItem"
       :class="{ active: i === activeIndex }"
       role="option"
     >
@@ -171,11 +171,11 @@ watch([inputRef, shouldSetValidity], ([r, s]) => {
 watch(
   props.listItems,
   (r) => {
-    if (r.error) {
+    if (r.loading) return;
+    if (!r.success) {
       workingList.value = [];
       return;
     }
-    if (!r.success) return;
     activeIndex.value = Math.max(
       0,
       Math.min(activeIndex.value, r.data.length - 1)
@@ -241,6 +241,7 @@ ul {
   transform: translateY(100%);
   z-index: 1;
   inset-block-end: 0;
+  cursor: pointer;
 }
 li {
   max-width: 100%;
@@ -249,7 +250,6 @@ li {
 
 li.active {
   background-color: var(--color-secondary);
-  cursor: pointer;
 }
 article > p,
 article > header {

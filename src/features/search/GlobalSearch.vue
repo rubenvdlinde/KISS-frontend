@@ -344,6 +344,36 @@ form {
   max-width: 40rem;
   width: 100%;
   position: relative;
+
+  :deep([role="combobox"]) {
+    outline: none;
+    &[aria-expanded="true"] {
+      border-end-start-radius: 0;
+      border-block-end-color: white;
+      &::after {
+        content: "";
+        inline-size: 100%;
+        block-size: 1px;
+        background-color: var(--color-secondary);
+      }
+
+      ~ button {
+        border-end-end-radius: 0;
+        border-block-end-color: white;
+      }
+    }
+  }
+
+  :deep([role="listbox"]) {
+    border-end-start-radius: var(--radius-large);
+    border-end-end-radius: var(--radius-large);
+    border-block-start-color: white;
+    gap: var(--spacing-small);
+  }
+
+  :deep([role="option"]) {
+    padding-block: var(--spacing-small);
+  }
 }
 
 button {
