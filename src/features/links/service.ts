@@ -8,7 +8,6 @@ import type { Link } from "./types";
 
 const linksUrl = (function () {
   const url = new URL(window.gatewayBaseUri + "/api/kiss/links");
-  //   url.searchParams.set("order[category]", "asc");
   return url.toString();
 })();
 
@@ -61,6 +60,6 @@ function fetchGrouped(url: string) {
   });
 }
 
-export function useLinks() {
+export function useLinksPerCategory() {
   return ServiceResult.fromFetcher(linksUrl, fetchGrouped);
 }

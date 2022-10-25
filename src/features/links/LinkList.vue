@@ -19,11 +19,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useLinks } from "./service";
+import { useLinksPerCategory } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
-const categories = useLinks();
+const categories = useLinksPerCategory();
 </script>
 
 <style lang="scss" scoped>
