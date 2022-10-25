@@ -72,9 +72,9 @@
         <dd>{{ medewerkerRaw?.department }}</dd>
         <dt>Wat kun je en wat doe je:</dt>
         <dd>{{ medewerkerRaw?.skills }}</dd>
-        <template v-if="medewerkerRaw?.replacement?.name">
+        <template v-if="replacement">
           <dt>Vervanger:</dt>
-          <dd>{{ medewerkerRaw.replacement.name }}</dd>
+          <dd>{{ replacement }}</dd>
         </template>
       </dl>
     </section>
@@ -118,6 +118,14 @@ const emails = computed(
       ?.filter(Boolean)
       ?.join(", ") || props.medewerkerRaw?.user
 );
+
+const replacement = computed(() => {
+  if (typeof props.medewerkerRaw?.replacement === "string")
+    return props.medewerkerRaw.replacement;
+  if (typeof props.medewerkerRaw?.replacement?.name === "string")
+    return props.medewerkerRaw.replacement.name;
+  return "";
+});
 </script>
 
 <style lang="scss" scoped>
