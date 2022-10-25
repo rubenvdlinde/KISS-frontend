@@ -10,9 +10,9 @@
         >
         <dl>
           <dt>E-mailadres:</dt>
-          <dd>{{ medewerkerRaw?.user }}</dd>
+          <dd>{{ emails }}</dd>
           <dt>Telefoonnummer:</dt>
-          <dd>{{ medewerkerRaw?.contact?.telefoonnummer1 }}</dd>
+          <dd>{{ telefoonnummers }}</dd>
         </dl>
       </section>
       <section>
@@ -89,6 +89,7 @@
 
 <script lang="ts" setup>
 import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { computed } from "@vue/reactivity";
 import { ContentFeedback } from "../feedback/index";
 import type { CurrentFeedbackSection } from "../feedback/types";
 
@@ -102,6 +103,21 @@ const currentFeedbackSection: CurrentFeedbackSection = {
   label: props.title,
   id: props.medewerkerRaw?.user,
 };
+
+const telefoonnummers = computed(() =>
+  props.medewerkerRaw?.contact?.telefoonnummers
+    ?.map(({ telefoonnummer }: any) => telefoonnummer)
+    ?.filter(Boolean)
+    ?.join(", ")
+);
+
+const emails = computed(
+  () =>
+    props.medewerkerRaw?.contact?.emails
+      ?.map(({ email }: any) => email)
+      ?.filter(Boolean)
+      ?.join(", ") || props.medewerkerRaw?.user
+);
 </script>
 
 <style lang="scss" scoped>
