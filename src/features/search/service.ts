@@ -1,4 +1,10 @@
-import { parseValidUrl, ServiceResult, type Paginated } from "@/services";
+import {
+  parseJson,
+  parseValidUrl,
+  ServiceResult,
+  throwIfNotOk,
+  type Paginated,
+} from "@/services";
 import { fetchLoggedIn } from "@/services";
 import type { Ref } from "vue";
 import type { SearchResult, Source } from "./types";
@@ -23,7 +29,11 @@ function mapResult(obj: any): SearchResult {
 }
 
 const globalSearchBaseUri =
-  window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-engine/search";
+  window.gatewayBaseUri + "/api/elastic/api/as/v1/engines/kiss-engine";
+
+const searchUrl = globalSearchBaseUri + "/search";
+
+const suggestionUrl = globalSearchBaseUri + "/query_suggestion";
 
 export function useGlobalSearch(
   parameters: Ref<{
@@ -32,13 +42,6 @@ export function useGlobalSearch(
     filters: Source[];
   }>
 ) {
-  function getUrl() {
-    const query = parameters.value.search;
-    if (!query) return "";
-
-    return `${globalSearchBaseUri}?query=${query}`;
-  }
-
   function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
     return array.reduce((store, item) => {
       const key = grouper(item);
@@ -51,8 +54,7 @@ export function useGlobalSearch(
     }, new Map<K, V[]>());
   }
 
-  async function fetcher(url: string): Promise<Paginated<SearchResult>> {
-    if (!url) throw new Error();
+  async function fetcher(): Promise<Paginated<SearchResult>> {
     const payLoad = {
       query: parameters.value.search,
       page: {
@@ -74,7 +76,7 @@ export function useGlobalSearch(
       });
     }
 
-    const r = await fetchLoggedIn(url, {
+    const r = await fetchLoggedIn(searchUrl, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -106,15 +108,14 @@ export function useGlobalSearch(
     )}`;
   }
 
-  return ServiceResult.fromFetcher(getUrl, fetcher, {
+  return ServiceResult.fromFetcher(searchUrl, fetcher, {
     getUniqueId,
   });
 }
 
 export function useSources() {
-  async function fetcher(url: string): Promise<Source[]> {
-    if (!url) throw new Error();
-    const r = await fetchLoggedIn(url, {
+  async function fetcher(): Promise<Source[]> {
+    const r = await fetchLoggedIn(searchUrl, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -154,5 +155,37 @@ export function useSources() {
     );
   }
 
-  return ServiceResult.fromFetcher(globalSearchBaseUri, fetcher);
+  return ServiceResult.fromFetcher(globalSearchBaseUri, fetcher, {
+    getUniqueId: () => "sources",
+  });
+}
+
+export function useSuggestions(input: Ref<string>) {
+  function mapSuggestions(json: any): string[] {
+    if (!Array.isArray(json?.results?.documents)) return [];
+    return json.results.documents.map(({ suggestion }: any) => suggestion);
+  }
+  function fetchSuggestions() {
+    return fetchLoggedIn(suggestionUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        query: input.value,
+        size: 10,
+        types: {
+          documents: {
+            fields: ["title", "body_content"],
+          },
+        },
+      }),
+    })
+      .then(throwIfNotOk)
+      .then(parseJson)
+      .then(mapSuggestions);
+  }
+  function getUniqueId() {
+    return input.value && "suggestions_" + input.value;
+  }
+  return ServiceResult.fromFetcher(suggestionUrl, fetchSuggestions, {
+    getUniqueId,
+  });
 }

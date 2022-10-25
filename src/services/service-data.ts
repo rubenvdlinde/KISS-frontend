@@ -48,11 +48,11 @@ export type Submitter<TIn, TOut> = ServiceData<TOut> & {
   reset: () => void;
 };
 
-interface FetcherConfig<T = unknown> {
+interface FetcherConfig<T> {
   /**
    * data to initialize the ServiceData, so we won't start with a loading state.
    */
-  initialData?: T;
+  initialData?: NotUndefined<T>;
   /**
    * if the url alone is not enough to identify a unique request, you can supply a function that does this in stead.
    */
@@ -207,7 +207,7 @@ export const ServiceResult = {
     const requestId = computed(getRequestUniqueId);
 
     watch(requestId, (n, o) => {
-      if (n && n !== o) {
+      if (!n || (n && n !== o)) {
         data.value = undefined;
       }
     });
@@ -221,11 +221,9 @@ export const ServiceResult = {
       }
       if (!requestId.value) return ServiceResult.init();
 
-      if (data.value !== undefined) return ServiceResult.success(data.value);
+      if (data.value === undefined) return ServiceResult.loading();
 
-      if (isValidating.value) return ServiceResult.loading();
-
-      return ServiceResult.init();
+      return ServiceResult.success(data.value);
     }
 
     const comp = computed(getResult);

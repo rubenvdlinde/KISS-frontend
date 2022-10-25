@@ -322,7 +322,6 @@
                     >Contactverzoek versturen naar</label
                   >
                   <medewerker-search
-                    :defaultValue="vraag.contactverzoek.medewerker"
                     v-model="vraag.contactverzoek.medewerker"
                     :id="'verzoek-medewerker' + idx"
                     class="utrecht-textbox utrecht-textbox--html-input medewerker-search"
