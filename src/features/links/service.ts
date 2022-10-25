@@ -8,6 +8,7 @@ import type { Link } from "./types";
 
 const linksUrl = (function () {
   const url = new URL(window.gatewayBaseUri + "/api/kiss/links");
+  url.searchParams.set("order[category]", "asc");
   return url.toString();
 })();
 
@@ -45,21 +46,6 @@ async function fetchAllLinks(url: string) {
   return [...first.page, ...rest.flatMap((r) => r.page)];
 }
 
-function fetchGrouped(url: string) {
-  return fetchAllLinks(url).then((results) => {
-    const map = new Map<string, Link[]>();
-    for (const link of results) {
-      let group = map.get(link.category);
-      if (!group) {
-        group = [];
-        map.set(link.category, group);
-      }
-      group.push(link);
-    }
-    return [...map.entries()] as const;
-  });
-}
-
-export function useLinksPerCategory() {
-  return ServiceResult.fromFetcher(linksUrl, fetchGrouped);
+export function useLinks() {
+  return ServiceResult.fromFetcher(linksUrl, fetchAllLinks);
 }
