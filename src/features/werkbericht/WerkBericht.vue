@@ -231,7 +231,6 @@ article {
 
           &:hover {
             color: var(--color-tertiary);
-            cursor: pointer;
           }
           &:hover:disabled {
             cursor: wait;

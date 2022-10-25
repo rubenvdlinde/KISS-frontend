@@ -54,6 +54,8 @@ article {
 
   utrecht-button {
     --utrecht-button-background-color: var(--color-error);
+    --utrecht-button-hover-background-color: var(--color-error-hover);
+    --utrecht-button-hover-color: var(--color-error-hover-text);
     --utrecht-button-min-inline-size: 12ch;
   }
 

@@ -68,10 +68,6 @@ async function startNieuweVraag() {
     block-size: var(--spacing-large);
     border-radius: 50%;
 
-    &:hover {
-      cursor: pointer;
-    }
-
     &:disabled {
       background: var(--color-white);
       color: var(--color-headings);

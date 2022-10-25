@@ -85,14 +85,16 @@ onClickOutside(detailsEl, closeDetails);
 summary.utrecht-button {
   --utrecht-button-background-color: none;
   --utrecht-button-border-color: var(--color-white);
+  --utrecht-button-hover-border-color: var(--color-white-hover);
+  --utrecht-button-hover-color: var(--color-white-hover);
+  --utrecht-button-active-border-color: var(--color-white-hover);
+  --utrecht-button-focus-border-color: var(--color-white-hover);
+  --utrecht-button-active-color: var(--color-white-hover);
+
   border-style: solid;
   border-width: 2px;
   display: flex;
   justify-content: center;
-
-  &:hover {
-    cursor: pointer;
-  }
 }
 
 details {
@@ -120,10 +122,6 @@ menu {
     padding-inline-start: var(--spacing-small);
     inline-size: 100%;
     text-align: inherit;
-
-    &:hover {
-      cursor: pointer;
-    }
 
     &:disabled:hover {
       cursor: not-allowed;

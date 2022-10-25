@@ -4,22 +4,23 @@
     --color-secondary: #eceff1;
     --color-tertiary: #778da9;
     --color-headings: #1b263b;
-    --color-accent: #58af23;
-    --color-error: #d44;
+    --color-accent: #258839;
+    --color-accent-hover: #89cf5e;
+    --color-accent-hover-text: var(--color-headings);
+    --color-error: #c82d2d;
+    --color-error-hover: #f47171;
+    --color-error-hover-text: var(--color-headings);
     --color-warning: orange;
     --color-category-default: hsl(184, 54%, 70%);
     --color-category-website: hsl(285, 56%, 83%);
     --color-white: #fff;
-    //TODO discuss. these colors seem to clash.
+    --color-white-hover: #e4e8ee;
     --sidebar-color-1: var(--color-headings);
     --sidebar-color-2: var(--color-primary);
 
     // spacing
     --container-width: 80rem;
-    --container-padding: max(
-        var(--spacing-large),
-        calc(50vw - var(--container-width) / 2)
-    );
+    --container-padding: max(var(--spacing-large), calc(50vw - var(--container-width) / 2));
     --section-width: 30.75rem;
     --section-width-small: 20rem;
     --section-width-large: 60rem;
@@ -78,33 +79,12 @@
     /* button */
     --utrecht-button-background-color: var(--color-primary);
     --utrecht-button-border-color: var(--color-primary);
-    --utrecht-button-secondary-action-border-color: var(
-        --utrecht-button-border-color
-    );
+    --utrecht-button-secondary-action-border-color: var(--utrecht-button-border-color);
     --utrecht-button-secondary-action-color: var(--color-primary);
-
-    /* forms */
-    --utrecht-form-fieldset-legend-font-size: 1.5rem;
-    --utrecht-form-fieldset-legend-font-weight: 600;
-    --utrecht-form-fieldset-legend-line-height: 2rem;
-
-    --utrecht-form-label-font-weight: 600;
-    --utrecht-form-label-font-size: 1rem;
-
-    --utrecht-form-input-border-color: var(--color-primary);
-    --utrecht-form-input-border-radius: var(--radius-default);
-
-    --utrecht-form-input-padding-block-end: var(--spacing-small);
-    --utrecht-form-input-padding-block-start: var(--spacing-small);
-
-    --utrecht-form-input-placeholder-color: #999;
-
-    --utrecht-form-input-disabled-border-color: #999;
-    --utrecht-form-input-disabled-color: #999;
-}
-
-utrecht-button,
-.utrecht-button {
+    --utrecht-focus-outline-color: rgb(16, 16, 16);
+    --utrecht-focus-outline-width: 1px;
+    --utrecht-focus-outline-offset: 1px;
+    --utrecht-focus-outline-style: auto;
     --utrecht-button-border-radius: 100px;
     --utrecht-button-min-inline-size: 150px;
 
@@ -116,13 +96,24 @@ utrecht-button,
     --utrecht-button-padding-block-end: 0.6rem;
 
     --utrecht-button-secondary-action-background-color: transparent;
-}
 
-utrecht-button.button-small {
-    --utrecht-button-padding-inline-start: 1rem;
-    --utrecht-button-padding-inline-end: 1rem;
-    --utrecht-button-min-block-size: 1rem;
-    --utrecht-button-min-inline-size: 1rem;
-    --utrecht-button-padding-block-start: 0.6rem;
-    --utrecht-button-padding-block-end: 0.6rem;
+    /* forms */
+    --utrecht-form-fieldset-legend-font-size: 1.5rem;
+    --utrecht-form-fieldset-legend-font-weight: 600;
+    --utrecht-form-fieldset-legend-line-height: 2rem;
+
+    --utrecht-form-label-font-weight: 600;
+    --utrecht-form-label-font-size: 1rem;
+
+    --utrecht-form-input-background-color: var(--color-white);
+    --utrecht-form-input-border-color: var(--color-primary);
+    --utrecht-form-input-border-radius: var(--radius-default);
+
+    --utrecht-form-input-padding-block-end: var(--spacing-small);
+    --utrecht-form-input-padding-block-start: var(--spacing-small);
+
+    --utrecht-form-input-placeholder-color: #999;
+
+    --utrecht-form-input-disabled-border-color: #999;
+    --utrecht-form-input-disabled-color: #999;
 }

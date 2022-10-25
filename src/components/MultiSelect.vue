@@ -66,10 +66,6 @@ summary {
   max-width: 100%;
   user-select: none;
 
-  &:hover {
-    cursor: pointer;
-  }
-
   &:focus-visible {
     outline-color: var(--utrecht-focus-outline-color, transparent);
     outline-offset: var(--utrecht-focus-outline-offset, 0);
@@ -144,10 +140,6 @@ fieldset {
       --utrecht-paragraph-line-height,
       var(--utrecht-document-line-height, normal)
     );
-
-    &:hover {
-      cursor: pointer;
-    }
   }
 
   input {

@@ -473,10 +473,6 @@ nav ul {
     padding-block: var(--spacing-default);
     border-block-end: 1px solid var(--color-tertiary);
     display: flex;
-
-    a:hover {
-      cursor: pointer;
-    }
   }
 }
 
