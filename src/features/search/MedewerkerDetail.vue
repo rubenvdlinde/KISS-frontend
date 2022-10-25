@@ -15,7 +15,7 @@
           <dd>{{ telefoonnummers }}</dd>
         </dl>
       </section>
-      <section>
+      <section v-if="medewerkerRaw?.calendar?.availabilities">
         <utrecht-heading model-value :level="headingLevel + 1"
           >Agenda</utrecht-heading
         >
