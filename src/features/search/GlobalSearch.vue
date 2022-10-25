@@ -12,15 +12,14 @@
       </label>
     </fieldset>
     <div class="search-bar">
-      <label
-        ><input
-          type="search"
-          v-model="state.searchInput"
-          placeholder="Zoeken"
-          @search.prevent="applySearch"
-          id="global-search-input"
-        />Zoekterm</label
-      >
+      <label for="global-search-input"> Zoekterm</label>
+      <search-combobox
+        :list-items="listItems"
+        v-model="state.searchInput"
+        placeholder="Zoeken"
+        @search.prevent="applySearch"
+        id="global-search-input"
+      />
       <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
     </div>
   </form>
@@ -174,9 +173,9 @@ import {
   UtrechtHeading,
 } from "@utrecht/web-component-library-vue";
 import { computed, nextTick, ref, watch } from "vue";
-import { useGlobalSearch, useSources } from "./service";
+import { useGlobalSearch, useSources, useSuggestions } from "./service";
 
-import Pagination from "../../nl-design-system/components/Pagination.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 import MedewerkerDetail from "./MedewerkerDetail.vue";
@@ -188,6 +187,9 @@ import type {
 } from "@/features/search/types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
+import SearchCombobox from "../../components/SearchCombobox.vue";
+import { mapServiceData } from "@/services";
+import { debouncedRef } from "@vueuse/core";
 
 const emit = defineEmits<{
   (
@@ -316,6 +318,17 @@ const handleWebsiteSelected = (website: Website): void => {
   contactmomentStore.addWebsite(website);
   window.open(website.url);
 };
+
+const debounceInput = debouncedRef(
+  computed(() => state.value.searchInput),
+  300
+);
+
+const suggestions = useSuggestions(debounceInput);
+
+const listItems = mapServiceData(suggestions, (items) =>
+  items.map((value) => ({ value }))
+);
 </script>
 
 <style lang="scss" scoped>
@@ -330,6 +343,37 @@ form {
 .search-bar {
   max-width: 40rem;
   width: 100%;
+  position: relative;
+
+  :deep([role="combobox"]) {
+    outline: none;
+    &[aria-expanded="true"] {
+      border-end-start-radius: 0;
+      border-block-end-color: white;
+      &::after {
+        content: "";
+        inline-size: 100%;
+        block-size: 1px;
+        background-color: var(--color-secondary);
+      }
+
+      ~ button {
+        border-end-end-radius: 0;
+        border-block-end-color: white;
+      }
+    }
+  }
+
+  :deep([role="listbox"]) {
+    border-end-start-radius: var(--radius-large);
+    border-end-end-radius: var(--radius-large);
+    border-block-start-color: white;
+    gap: var(--spacing-small);
+  }
+
+  :deep([role="option"]) {
+    padding-block: var(--spacing-small);
+  }
 }
 
 button {
