@@ -11,28 +11,26 @@ import type { Ref } from "vue";
 import { mutate } from "swrv";
 import { formatIsoDate } from "@/helpers/date";
 
-type Roltype = "behandelaar" | "initiator";
+const ONBEKEND = "Onbekend";
 
-const getNamePerRoltype = (zaak: any, roltype: Roltype): string => {
-  const behandelaar = zaak.embedded.rollen.find(
-    (rol: any) =>
-      rol.betrokkeneType === "medewerker" &&
-      rol.omschrijvingGeneriek === roltype
+const getNamePerRoltype = (zaak: any, roletype: string | string[]) => {
+  if (!Array.isArray(zaak?.embedded?.rollen)) return ONBEKEND;
+  const rolesArr = typeof roletype === "string" ? [roletype] : roletype;
+  const behandelaar = zaak.embedded.rollen.find((rol: any) =>
+    rolesArr.includes(rol?.embedded?.roltype?.omschrijvingGeneriek)
   );
-
-  const identificatie = behandelaar?.embedded?.betrokkeneIdentificatie;
-
-  if (!identificatie) return "Onbekend";
+  const { voorletters, voornamen, voorvoegselGeslachtsnaam, geslachtsnaam } =
+    behandelaar?.embedded?.betrokkeneIdentificatie ?? {};
 
   const name = [
-    identificatie.voornamen,
-    identificatie.voorvoegselGeslachtsnaam,
-    identificatie.geslachtsnaam,
+    voornamen || voorletters,
+    voorvoegselGeslachtsnaam,
+    geslachtsnaam,
   ]
-    .filter((item) => item)
+    .filter(Boolean)
     .join(" ");
 
-  return name;
+  return name || ONBEKEND;
 };
 
 const mapZaakDetails = (zaak: any) => {
@@ -61,7 +59,7 @@ const mapZaakDetails = (zaak: any) => {
     zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
     status: zaak.embedded.status.statustoelichting,
     behandelaar: getNamePerRoltype(zaak, "behandelaar"),
-    aanvrager: getNamePerRoltype(zaak, "initiator"),
+    aanvrager: getNamePerRoltype(zaak, ["indiener", "initiator"]),
     startdatum,
     fataleDatum: fataleDatum,
     streefDatum: streefDatum,
