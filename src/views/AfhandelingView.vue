@@ -567,8 +567,10 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
       afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
     });
 
+    const selectedKlant = vraag.klanten.findIndex((klant) => klant.shouldStore);
+
     koppelKlant({
-      klantId: vraag.klanten[0].klant.id,
+      klantId: vraag.klanten[selectedKlant].klant.id,
       contactmomentId: contactverzoek.id,
     });
   }
