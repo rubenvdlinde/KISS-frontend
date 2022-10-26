@@ -35,9 +35,10 @@
           <div class="vraag-heading">
             Vraag {{ idx + 1 }}
 
-            <span
+            <button
               v-if="contactmomentStore.huidigContactmoment.vragen.length > 1"
               class="icon icon-after trash"
+              :title="`Vraag ${idx + 1} verwijderen`"
               @click="toggleRemoveVraagDialog(idx)"
             />
           </div>
