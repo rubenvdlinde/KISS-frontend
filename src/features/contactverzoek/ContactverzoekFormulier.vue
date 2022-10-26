@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <form class="container" @submit.prevent>
     <application-message
       v-if="!huidigeKlant"
       messageType="warning"
@@ -34,7 +34,7 @@
         rows="10"
       />
     </label>
-  </div>
+  </form>
 </template>
 
 <script lang="ts">
