@@ -11,9 +11,10 @@ import type { Ref } from "vue";
 import { mutate } from "swrv";
 import { formatIsoDate } from "@/helpers/date";
 
+type Roltype = "behandelaar" | "initiator";
 const ONBEKEND = "Onbekend";
 
-const getNamePerRoltype = (zaak: any, roletype: string) => {
+const getNamePerRoltype = (zaak: any, roletype: Roltype) => {
   if (!Array.isArray(zaak?.embedded?.rollen)) return ONBEKEND;
   const rolesArr = typeof roletype === "string" ? [roletype] : roletype;
   const behandelaar = zaak.embedded.rollen.find((rol: any) =>
