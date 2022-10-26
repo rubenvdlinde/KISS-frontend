@@ -82,9 +82,11 @@ onClickOutside(detailsEl, closeDetails);
 </script>
 
 <style lang="scss" scoped>
-summary.utrecht-button {
+summary {
   display: flex;
   justify-content: center;
+  --utrecht-button-secondary-action-color: var(--color-white);
+  --utrecht-button-secondary-action-border-color: var(--color-white);
 }
 
 details {
@@ -112,6 +114,10 @@ menu {
     padding-inline-start: var(--spacing-small);
     inline-size: 100%;
     text-align: inherit;
+
+    &:hover {
+      background-color: var(--color-secondary);
+    }
 
     &:disabled:hover {
       cursor: not-allowed;

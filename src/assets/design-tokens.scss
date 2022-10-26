@@ -87,8 +87,11 @@
 
     --utrecht-button-color: var(--color-white);
 
-    --utrecht-button-secondary-action-border-color: currentColor;
-    --utrecht-button-secondary-action-color: currentColor;
+    --utrecht-button-secondary-action-border-color: var(--color-primary);
+    --utrecht-button-secondary-action-color: var(--color-primary);
+    --utrecht-button-secondary-action-hover-color: var(--color-primary-hover);
+    --utrecht-button-secondary-action-hover-border-color: var(--color-primary-hover);
+    --utrecht-button-secondary-action-background-color: transparent;
 
     --utrecht-button-subtle-color: currentColor;
     --utrecht-button-subtle-background-color: transparent;
@@ -108,8 +111,6 @@
 
     --utrecht-button-padding-block-start: 0.6rem;
     --utrecht-button-padding-block-end: 0.6rem;
-
-    --utrecht-button-secondary-action-background-color: transparent;
 
     /* forms */
     --utrecht-form-fieldset-legend-font-size: 1.5rem;
@@ -162,9 +163,5 @@
             box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.15) !important;
             scale: 98%;
         }
-    }
-
-    .utrecht-button--secondary-action:hover {
-        filter: invert(0.25);
     }
 }
