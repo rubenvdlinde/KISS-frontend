@@ -30,7 +30,9 @@
           </button>
         </fieldset>
       </form>
+      <!-- temporarily disabled -->
       <button
+        v-if="false"
         @click="toggleKlantAanmaken"
         type="button"
         class="klant-aanmaken icon-before plus utrecht-button utrecht-button--secondary-action"

@@ -1,16 +1,20 @@
 <template>
-  <simple-spinner v-if="categories.loading" />
+  <simple-spinner v-if="links.loading" />
   <application-message
-    v-if="categories.error"
+    v-if="links.error"
     :message-type="'error'"
     message="Er ging iets mis. Probeer het later nog eens."
   />
-  <nav v-if="categories.success">
-    <dl v-if="categories.data.length">
-      <template v-for="[category, links] in categories.data" :key="category">
-        <dt>{{ category }}</dt>
-        <dd v-for="link in links" :key="link.id">
-          <a :href="link.url" rel="noopener noreferrer">{{ link.title }}</a>
+  <nav v-if="links.success">
+    <dl v-if="links.data.length">
+      <template v-for="(link, idx) in links.data" :key="idx">
+        <dt v-if="idx === 0 || link.category !== links.data[idx - 1]?.category">
+          {{ link.category }}
+        </dt>
+        <dd>
+          <a :href="link.url" rel="noopener noreferrer" target="_blank">{{
+            link.title
+          }}</a>
         </dd>
       </template>
     </dl>
@@ -19,11 +23,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useLinksPerCategory } from "./service";
+import { useLinks } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 
-const categories = useLinksPerCategory();
+const links = useLinks();
 </script>
 
 <style lang="scss" scoped>

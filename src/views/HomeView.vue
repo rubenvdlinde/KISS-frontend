@@ -2,7 +2,9 @@
   <div class="home">
     <header>
       <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
+      <!-- Temporarily hide -->
       <a
+        v-if="false"
         :href="pubBeheerUrl"
         rel="noopener noreferrer"
         target="_blank"
