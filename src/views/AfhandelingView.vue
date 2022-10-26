@@ -425,12 +425,13 @@
           </utrecht-button>
         </li>
         <li>
-          <button
+          <utrecht-button
             class="utrecht-button utrecht-button--submit"
+            appearance="primary-action-button"
             :disabled="!contactmomentStore.canStoreContactmoment"
           >
             Opslaan
-          </button>
+          </utrecht-button>
         </li>
       </menu>
     </template>

@@ -1,6 +1,7 @@
 :root {
     // colors
     --color-primary: #415a77;
+    --color-primary-hover: #7d9abf;
     --color-secondary: #eceff1;
     --color-tertiary: #778da9;
     --color-headings: #1b263b;
@@ -79,11 +80,20 @@
 
     /* button */
     --utrecht-button-background-color: var(--color-primary);
-    --utrecht-button-border-color: var(--color-primary);
+    --utrecht-button-border-color: transparent;
+    --utrecht-button-border-width: 2px;
+    --utrecht-button-hover-background-color: var(--color-primary-hover);
+    --utrecht-button-hover-color: black;
+
     --utrecht-button-color: var(--color-white);
+
     --utrecht-button-secondary-action-border-color: currentColor;
-    --utrecht-button-secondary-action-border-width: 2px;
     --utrecht-button-secondary-action-color: currentColor;
+
+    --utrecht-button-subtle-color: currentColor;
+    --utrecht-button-subtle-background-color: transparent;
+    --utrecht-button-subtle-border-color: transparent;
+
     --utrecht-focus-outline-color: rgb(16, 16, 16);
     --utrecht-focus-outline-width: 1px;
     --utrecht-focus-outline-offset: 1px;
@@ -137,6 +147,8 @@
     --denhaag-pagination-size: var(--spacing-large);
     --denhaag-pagination-link-disabled-color: var(--color-grey);
     --denhaag-pagination-arrow-size: var(--spacing-default);
+    --denhaag-link-focus-outline: var(--utrecht-focus-outline-color) var(--utrecht-focus-outline-style)
+        var(--utrecht-focus-outline-width);
 
     /* HACKS */
     .utrecht-button:focus:not(:focus-visible) {
@@ -148,12 +160,11 @@
 
         &:active {
             box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.15) !important;
-            scale: 95%;
+            scale: 98%;
         }
     }
 
-    .utrecht-button--secondary-action {
-        &:hover {
-        }
+    .utrecht-button--secondary-action:hover {
+        filter: invert(0.25);
     }
 }
