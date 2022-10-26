@@ -13,7 +13,7 @@ import { formatIsoDate } from "@/helpers/date";
 
 const ONBEKEND = "Onbekend";
 
-const getNamePerRoltype = (zaak: any, roletype: string | string[]) => {
+const getNamePerRoltype = (zaak: any, roletype: string) => {
   if (!Array.isArray(zaak?.embedded?.rollen)) return ONBEKEND;
   const rolesArr = typeof roletype === "string" ? [roletype] : roletype;
   const behandelaar = zaak.embedded.rollen.find((rol: any) =>
@@ -59,7 +59,7 @@ const mapZaakDetails = (zaak: any) => {
     zaaktypeOmschrijving: zaak.embedded.zaaktype.omschrijving,
     status: zaak.embedded.status.statustoelichting,
     behandelaar: getNamePerRoltype(zaak, "behandelaar"),
-    aanvrager: getNamePerRoltype(zaak, ["indiener", "initiator"]),
+    aanvrager: getNamePerRoltype(zaak, "initiator"),
     startdatum,
     fataleDatum: fataleDatum,
     streefDatum: streefDatum,
