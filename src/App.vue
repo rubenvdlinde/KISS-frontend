@@ -33,11 +33,9 @@ const route = useRoute();
 
 <style lang="scss">
 /* Design Tokens */
-@import "@gemeente-denhaag/design-tokens-components/dist/index.css";
+@import "@utrecht/component-library-css";
 @import "@/assets/design-tokens.scss";
-
 @import "@/assets/fonts/fonts.css";
 @import "@/assets/reset.css";
-@import "@utrecht/component-library-css";
 @import "@/assets/main.scss";
 </style>

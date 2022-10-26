@@ -49,7 +49,7 @@ import {
   type ContactmomentKlant,
   type Vraag,
 } from "@/stores/contactmoment";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import MedewerkerSearch from "@/features/search/MedewerkerSearch.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { computed } from "@vue/reactivity";

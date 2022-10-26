@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts" setup>
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed } from "@vue/reactivity";
 import { ContentFeedback } from "../feedback/index";
 import type { CurrentFeedbackSection } from "../feedback/types";

@@ -3,7 +3,7 @@
   <link-list />
 </template>
 <script lang="ts" setup>
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import LinkList from "@/features/links/LinkList.vue";
 </script>
 

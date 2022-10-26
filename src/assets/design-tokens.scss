@@ -17,6 +17,7 @@
     --color-white-hover: #e4e8ee;
     --sidebar-color-1: var(--color-headings);
     --sidebar-color-2: var(--color-primary);
+    --color-grey: #999;
 
     // spacing
     --container-width: 80rem;
@@ -72,13 +73,14 @@
 
     /* h3 */
     --utrecht-heading-3-line-height: 2rem;
-    --utrecht-heading-3-font-size: var(--utrecht-typography-scale-lg);
+    --utrecht-heading-3-font-size: 1.25rem;
 
-    --utrecht-typography-scale-lg: 1.25rem;
+    --utrecht-heading-4-font-size: 1rem;
 
     /* button */
     --utrecht-button-background-color: var(--color-primary);
     --utrecht-button-border-color: var(--color-primary);
+    --utrecht-button-color: var(--color-white);
     --utrecht-button-secondary-action-border-color: var(--utrecht-button-border-color);
     --utrecht-button-secondary-action-color: var(--color-primary);
     --utrecht-focus-outline-color: rgb(16, 16, 16);
@@ -87,6 +89,7 @@
     --utrecht-focus-outline-style: auto;
     --utrecht-button-border-radius: 100px;
     --utrecht-button-min-inline-size: 150px;
+    --utrecht-button-icon-gap: 0.75rem;
 
     --utrecht-button-padding-inline-start: 1rem;
     --utrecht-button-padding-inline-end: 1rem;
@@ -104,16 +107,33 @@
 
     --utrecht-form-label-font-weight: 600;
     --utrecht-form-label-font-size: 1rem;
+    --utrecht-form-label-color: var(--color-headings);
 
     --utrecht-form-input-background-color: var(--color-white);
     --utrecht-form-input-border-color: var(--color-primary);
     --utrecht-form-input-border-radius: var(--radius-default);
+    --utrecht-form-input-border-width: 1px;
+    --utrecht-form-input-color: black;
+    --utrecht-form-input-font-size: 1.125rem;
 
     --utrecht-form-input-padding-block-end: var(--spacing-small);
     --utrecht-form-input-padding-block-start: var(--spacing-small);
+    --utrecht-form-input-padding-inline-end: var(--spacing-small);
+    --utrecht-form-input-padding-inline-start: var(--spacing-small);
 
-    --utrecht-form-input-placeholder-color: #999;
+    --utrecht-form-input-placeholder-color: var(--color-grey);
 
-    --utrecht-form-input-disabled-border-color: #999;
-    --utrecht-form-input-disabled-color: #999;
+    --utrecht-form-input-disabled-border-color: var(--color-grey);
+    --utrecht-form-input-disabled-color: var(--color-grey);
+
+    --utrecht-form-input-invalid-border-color: var(--color-error);
+    --utrecht-select-invalid-border-color: var(--color-error);
+
+    /* pagination */
+    --denhaag-pagination-link-current-disabled-color: var(-color-white);
+    --denhaag-pagination-link-current-disabled-background-color: var(--color-grey);
+    --denhaag-pagination-link-current-font-weight: 600;
+    --denhaag-pagination-size: var(--spacing-large);
+    --denhaag-pagination-link-disabled-color: var(--color-grey);
+    --denhaag-pagination-arrow-size: var(--spacing-default);
 }

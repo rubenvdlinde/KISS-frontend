@@ -440,9 +440,9 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
-  UtrechtHeading,
-  UtrechtButton,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 

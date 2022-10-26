@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed, ref, watch, type PropType } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";

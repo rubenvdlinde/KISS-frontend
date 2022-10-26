@@ -39,9 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import type { ZaakDetails } from "./../types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { formatDateOnly } from "@/helpers/date";
 import { formatBytes } from "@/helpers/formatBytes";
 

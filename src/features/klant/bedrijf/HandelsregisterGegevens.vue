@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import type { Bedrijf } from "./types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 
 defineProps<{ bedrijf: Bedrijf }>();
 </script>

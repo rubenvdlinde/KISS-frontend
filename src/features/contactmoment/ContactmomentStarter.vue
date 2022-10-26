@@ -1,6 +1,7 @@
 <template>
   <utrecht-button
     model-value
+    class="start-button"
     type="button"
     @click="onStartContactMoment"
     v-bind="$attrs"
@@ -21,7 +22,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
 import { nextTick, useAttrs } from "vue";
@@ -58,7 +59,7 @@ async function waitForConfirmation() {
 </script>
 
 <style scoped lang="scss">
-utrecht-button {
+.start-button {
   --utrecht-button-min-inline-size: 15rem;
   --utrecht-button-background-color: var(--color-accent);
   --utrecht-button-color: var(--color-white);

@@ -10,26 +10,24 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@types/luxon": "^2.3.1",
     "@vueuse/core": "^8.6.0",
     "dompurify": "^2.3.8",
+    "luxon": "^2.3.1",
     "nanoid": "^4.0.0",
     "pinia": "^2.0.14",
     "swrv": "^1.0.0-beta.8",
     "vue": "^3.2.33",
     "vue-router": "^4.0.14",
-    "vue-toast-notification": "3.0",
-    "@types/luxon": "^2.3.1",
-    "luxon": "^2.3.1"
+    "vue-toast-notification": "3.0"
   },
   "devDependencies": {
-    "@gemeente-denhaag/design-tokens-components": "^0.2.3-alpha.205",
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/dompurify": "^2.3.3",
     "@types/jsdom": "^16.2.14",
     "@types/node": "^16.11.27",
-    "@utrecht/component-library-css": "1.0.0-alpha.222",
-    "@utrecht/web-component-library-stencil": "1.0.0-alpha.218",
-    "@utrecht/web-component-library-vue": "1.0.0-alpha.164",
+    "@utrecht/component-library-css": "^1.0.0-alpha.360",
+    "@utrecht/component-library-vue": "1.0.0-alpha.137",
     "@vitejs/plugin-vue": "^2.3.1",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^10.0.0",

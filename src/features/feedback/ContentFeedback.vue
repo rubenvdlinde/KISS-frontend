@@ -27,8 +27,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { ref } from "vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import FeedbackForm from "./components/FeedbackForm.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { CurrentFeedbackSection } from "./types";

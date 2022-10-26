@@ -41,7 +41,7 @@ import {
   unescapeHtml,
   increaseHeadings,
 } from "@/helpers/html";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
 import { ContentFeedback } from "../feedback/index";

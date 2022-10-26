@@ -20,7 +20,7 @@
         @search.prevent="applySearch"
         id="global-search-input"
       />
-      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+      <button><span>Zoeken</span></button>
     </div>
   </form>
   <template v-if="state.currentSearch">
@@ -168,10 +168,7 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {
-  UtrechtIconLoupe,
-  UtrechtHeading,
-} from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed, nextTick, ref, watch } from "vue";
 import { useGlobalSearch, useSources, useSuggestions } from "./service";
 

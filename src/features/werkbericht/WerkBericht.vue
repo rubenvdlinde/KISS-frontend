@@ -63,9 +63,9 @@
 import { computed, ref, watch, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import {
-  UtrechtHeading,
-  UtrechtDocument,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Document as UtrechtDocument,
+} from "@utrecht/component-library-vue";
 import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
 import { toast } from "@/stores/toast";

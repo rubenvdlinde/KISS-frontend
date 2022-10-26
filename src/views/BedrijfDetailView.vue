@@ -95,7 +95,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import {
   ContactmomentenOverzicht,

@@ -58,7 +58,7 @@
 <script lang="ts" setup>
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import ContactmomentVragenMenu from "@/features/contactmoment/ContactmomentVragenMenu.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
@@ -199,14 +199,10 @@ aside {
   margin-block-start: var(--spacing-default);
   padding-block-start: var(--spacing-default);
 
-  h2 {
+  > h2 {
     margin-block-start: var(--spacing-small);
     margin-inline: var(--spacing-default);
     color: inherit;
   }
-}
-
-:deep(h2) {
-  font-size: 1.25rem;
 }
 </style>

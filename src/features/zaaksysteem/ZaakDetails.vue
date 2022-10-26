@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { ZaakDetails } from "./types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import ZaakToelichting from "./components/ZaakToelichting.vue";
 import TabsComponent from "../../components/TabsComponent.vue";
 import ZaakAlgemeen from "./components/ZaakAlgemeen.vue";

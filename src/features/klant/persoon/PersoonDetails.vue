@@ -121,9 +121,9 @@
 <script lang="ts" setup>
 import { nextTick, ref, watch, type PropType } from "vue";
 import {
-  UtrechtHeading,
-  UtrechtButton,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import type { Klant } from "../types";
 import { useUpdateContactGegevens } from "../service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";

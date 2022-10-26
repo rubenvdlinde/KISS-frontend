@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactmomentenOverzicht from "@/features/contactmoment/ContactmomentenOverzicht.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";

@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { BedrijfZoeker } from "@/features/klant";
 </script>
 
