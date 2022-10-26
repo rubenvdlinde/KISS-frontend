@@ -801,4 +801,7 @@ select {
   padding: var(--spacing-default);
   margin-block-end: var(--spacing-default);
 }
+.icon {
+  padding: var(--spacing-small);
+}
 </style>
