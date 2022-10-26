@@ -16,7 +16,8 @@
     ref="inputRef"
     @keydown.down.prevent="nextIndex"
     @keydown.up.prevent="previousIndex"
-    @keydown.enter.prevent="selectItem"
+    @keydown.enter="selectItem"
+    @mouseenter="setMinIndex"
   />
   <simple-spinner
     v-if="!matchingResult && listItems.loading"
@@ -94,7 +95,8 @@ const inputId = computed(() => props.id || generatedLabelId);
 const labelId = nanoid();
 const listboxId = nanoid();
 
-const activeIndex = ref(0);
+const minIndex = computed(() => (props.exactMatch ? 0 : -1));
+const activeIndex = ref(minIndex.value);
 
 const workingList = ref<DatalistItem[]>([]);
 
@@ -106,15 +108,15 @@ function nextIndex() {
   ) {
     activeIndex.value += 1;
   } else {
-    activeIndex.value = 0;
+    activeIndex.value = minIndex.value;
   }
   scrollIntoView();
 }
 
 function previousIndex() {
   if (!showList.value || !workingList.value.length) {
-    activeIndex.value = 0;
-  } else if (activeIndex.value > 0) {
+    activeIndex.value = minIndex.value;
+  } else if (activeIndex.value > minIndex.value) {
     activeIndex.value -= 1;
   } else {
     activeIndex.value = workingList.value.length - 1;
@@ -122,9 +124,15 @@ function previousIndex() {
   scrollIntoView();
 }
 
+function setMinIndex() {
+  activeIndex.value = minIndex.value;
+}
+
 function selectItem() {
-  if (!workingList.value.length) return;
-  emit("update:modelValue", workingList.value[activeIndex.value].value);
+  const item = workingList.value[activeIndex.value];
+  if (item) {
+    emit("update:modelValue", item.value);
+  }
   focusNextFormItem(inputRef.value);
 }
 
@@ -148,7 +156,10 @@ const showList = computed(
 );
 
 watch(workingList.value, (r) => {
-  activeIndex.value = Math.max(0, Math.min(activeIndex.value, r.length - 1));
+  activeIndex.value = Math.max(
+    minIndex.value,
+    Math.min(activeIndex.value, r.length - 1)
+  );
 });
 
 const matchingResult = computed(() => {
@@ -159,7 +170,7 @@ const matchingResult = computed(() => {
 
 const shouldSetValidity = computed(
   () =>
-    (!matchingResult.value && !!props.modelValue) ||
+    (!matchingResult.value && !!props.modelValue && props.exactMatch) ||
     (!props.modelValue && props.required)
 );
 
@@ -177,7 +188,7 @@ watch(
       return;
     }
     activeIndex.value = Math.max(
-      0,
+      minIndex.value,
       Math.min(activeIndex.value, r.data.length - 1)
     );
     workingList.value = r.data;
