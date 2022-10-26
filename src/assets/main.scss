@@ -48,18 +48,8 @@ body {
     padding-inline-end: var(--container-padding);
 }
 
-utrecht-icon-loupe {
-    pointer-events: none;
-}
-
 .utrecht-select {
     appearance: auto;
-}
-
-utrecht-button,
-.utrecht-button {
-    border-radius: var(--utrecht-button-border-radius);
-    box-shadow: var(--shadow-default);
 }
 
 .main-tabs > nav {

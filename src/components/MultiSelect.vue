@@ -1,6 +1,8 @@
 <template>
   <details ref="detailsEl">
-    <summary>{{ label }}</summary>
+    <summary class="utrecht-button utrecht-button--secondary-action">
+      {{ label }}
+    </summary>
     <fieldset>
       <legend>{{ label }}</legend>
       <label
@@ -61,17 +63,8 @@ summary {
   font-weight: 500;
   padding-block: 0.5rem;
   padding-inline: var(--padding-inline);
-  border: var(--border-style);
-  color: var(--color-primary);
-  max-width: 100%;
+  width: 100%;
   user-select: none;
-
-  &:focus-visible {
-    outline-color: var(--utrecht-focus-outline-color, transparent);
-    outline-offset: var(--utrecht-focus-outline-offset, 0);
-    outline-style: var(--utrecht-focus-outline-style, solid);
-    outline-width: var(--utrecht-focus-outline-width, 0);
-  }
 
   > * {
     display: inline;
@@ -84,31 +77,11 @@ details {
   --border-style: var(--color-primary) var(--border-width) solid;
   --padding-inline: 1.5rem;
   position: relative;
-  min-width: fit-content;
-  width: 100%;
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-end;
-  justify-content: flex-end;
+  min-width: 20rem;
   z-index: 1;
-  border-start-start-radius: var(--radius-medium);
-  border-start-end-radius: var(--radius-medium);
-}
-
-select {
-  max-width: 100%;
-}
-
-details[open] {
-  background-color: var(--color-secondary);
-  box-shadow: var(--box-shadow);
-
-  > summary {
-    border-color: transparent;
-    border-radius: 0;
-    width: 100%;
-    padding-inline-start: 1rem;
-  }
+  display: flex;
+  gap: 1rem;
+  color: var(--color-primary);
 }
 
 legend {
@@ -118,19 +91,15 @@ legend {
 fieldset {
   display: grid;
   position: absolute;
-  width: 100%;
-  border-block-start: var(--border-style);
-  bottom: var(--border-width);
-  transform: translateY(100%);
+  inline-size: 100%;
+  margin-block-start: var(--spacing-small);
   gap: 0.5rem;
-  background-color: var(--color-secondary);
+  background-color: var(--color-white);
   box-shadow: var(--box-shadow);
-  padding-block: 1rem;
+  padding-block: var(--spacing-default);
   padding-inline-end: var(--padding-inline);
   padding-inline-start: calc(1rem + var(--border-width));
-  border-end-end-radius: var(--radius-medium);
-  border-end-start-radius: var(--radius-medium);
-  clip-path: inset(0px -5px -5px -5px);
+  border-radius: var(--radius-medium);
 
   label {
     display: flex;

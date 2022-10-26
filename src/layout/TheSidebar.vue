@@ -170,6 +170,7 @@ aside {
 }
 
 .starter {
+  color: var(--color-white);
   align-self: center;
   margin-block-start: 4rem;
   margin-block-end: var(--spacing-default);

@@ -64,6 +64,6 @@ async function waitForConfirmation() {
   --utrecht-button-background-color: var(--color-accent);
   --utrecht-button-color: var(--color-white);
   --utrecht-button-hover-background-color: var(--color-accent-hover);
-  --utrecht-button-hover-color: var(--color-accent-hover-text);
+  --utrecht-button-hover-color: black;
 }
 </style>
