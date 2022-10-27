@@ -9,8 +9,8 @@
       <menu>
         <li>
           <utrecht-button
-            modelValue
             value="cancel"
+            type="submit"
             appearance="secondary-action-button"
           >
             {{ cancelMessage }}
@@ -18,6 +18,7 @@
         </li>
         <li>
           <utrecht-button
+            type="submit"
             value="confirm"
             appearance="primary-action-button"
             v-focus
