@@ -146,8 +146,6 @@ const clear = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@utrecht/component-library-css";
-
 fieldset {
   display: grid;
   align-items: center;
