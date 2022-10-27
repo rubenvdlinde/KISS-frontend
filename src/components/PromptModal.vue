@@ -20,7 +20,6 @@
           <utrecht-button
             value="confirm"
             appearance="primary-action-button"
-            class="utrecht-button utrecht-button--action"
             v-focus
           >
             {{ confirmMessage }}
