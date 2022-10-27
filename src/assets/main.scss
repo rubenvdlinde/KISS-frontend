@@ -119,10 +119,7 @@ h2 {
     button {
         border: none;
         border-block: var(--border-style);
-
-        &:focus-visible {
-            outline-color: var(--color-primary);
-        }
+        outline-offset: -1px;
     }
 
     > label:first-child > input,

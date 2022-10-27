@@ -17,7 +17,6 @@
     @keydown.down.prevent="nextIndex"
     @keydown.up.prevent="previousIndex"
     @keydown.enter="selectItem"
-    @mouseenter="setMinIndex"
   />
   <simple-spinner
     v-if="!matchingResult && listItems.loading"
@@ -31,6 +30,7 @@
     :aria-labelledby="labelId"
     ref="ulref"
     @mousedown="selectItem"
+    @mouseleave="setMinIndex"
   >
     <li
       v-for="(r, i) in workingList"
