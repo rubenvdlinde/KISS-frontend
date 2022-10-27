@@ -427,6 +427,7 @@
         </li>
         <li>
           <utrecht-button
+            type="submit"
             appearance="primary-action-button"
             :disabled="!contactmomentStore.canStoreContactmoment"
           >
