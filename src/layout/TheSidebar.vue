@@ -170,6 +170,7 @@ aside {
 }
 
 .starter {
+  color: var(--color-white);
   align-self: center;
   margin-block-start: 4rem;
   margin-block-end: var(--spacing-default);
@@ -197,14 +198,10 @@ aside {
   margin-block-start: var(--spacing-default);
   padding-block-start: var(--spacing-default);
 
-  h2 {
+  > h2 {
     margin-block-start: var(--spacing-small);
     margin-inline: var(--spacing-default);
     color: inherit;
   }
-}
-
-:deep(h2) {
-  font-size: 1.25rem;
 }
 </style>
