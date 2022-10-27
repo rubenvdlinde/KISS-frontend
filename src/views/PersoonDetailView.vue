@@ -1,6 +1,6 @@
 <template>
   <section>
-    <utrecht-heading :level="1" model-value>Persoonsinformatie</utrecht-heading>
+    <utrecht-heading :level="1">Persoonsinformatie</utrecht-heading>
     <nav>
       <ul>
         <li>
@@ -39,7 +39,7 @@
     <template
       v-if="contactverzoeken.success && contactverzoeken.data.page.length"
     >
-      <utrecht-heading :level="2" model-value>Contactverzoeken</utrecht-heading>
+      <utrecht-heading :level="2">Contactverzoeken</utrecht-heading>
 
       <contactverzoeken-overzicht
         :contactverzoeken="contactverzoeken.data.page"
@@ -57,7 +57,7 @@
     />
 
     <template v-if="zaken.success && zaken.data.page.length">
-      <utrecht-heading model-value :level="2"> Zaken </utrecht-heading>
+      <utrecht-heading :level="2"> Zaken </utrecht-heading>
 
       <zaken-overzicht
         :zaken="zaken.data.page"
@@ -78,9 +78,7 @@
     <template
       v-if="contactmomenten.success && contactmomenten.data.page.length"
     >
-      <utrecht-heading model-value :level="2">
-        Contactmomenten
-      </utrecht-heading>
+      <utrecht-heading :level="2"> Contactmomenten </utrecht-heading>
 
       <contactmomenten-overzicht :contactmomenten="contactmomenten.data.page" />
 
@@ -95,7 +93,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import {
   ContactmomentenOverzicht,

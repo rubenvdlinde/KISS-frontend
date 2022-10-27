@@ -10,7 +10,7 @@
         />
       </label>
       <button title="Zoeken">
-        <span>Zoeken</span><utrecht-icon-loupe model-value />
+        <span>Zoeken</span>
       </button>
     </form>
 
@@ -43,7 +43,6 @@ import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZakenOverzicht from "./ZakenOverzicht.vue";
 import { ensureState } from "@/stores/create-store"; //todo: niet in de stores map. die is applicatie specifiek. dit is generieke functionaliteit
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { useRouter } from "vue-router";
 import SearchResultsCaption from "../../components/SearchResultsCaption.vue";
 

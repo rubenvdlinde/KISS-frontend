@@ -38,7 +38,7 @@
         </menu>
       </div>
 
-      <utrecht-heading model-value :level="level">
+      <utrecht-heading :level="level">
         <span class="title" v-html="sanitizedTitle" />
       </utrecht-heading>
     </div>
@@ -53,7 +53,7 @@
       </small>
     </div>
 
-    <utrecht-document model-value class="correct-header">
+    <utrecht-document class="correct-header">
       <div v-html="sanitizedContent" />
     </utrecht-document>
   </article>
@@ -63,9 +63,9 @@
 import { computed, ref, watch, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import {
-  UtrechtHeading,
-  UtrechtDocument,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Document as UtrechtDocument,
+} from "@utrecht/component-library-vue";
 import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
 import { toast } from "@/stores/toast";

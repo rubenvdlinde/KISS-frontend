@@ -79,3 +79,8 @@
 .icon-after.trash::after {
     mask-image: url("@/assets/icons/trash.svg");
 }
+
+.icon-before.loupe::before,
+.icon-after.loupe::after {
+    mask-image: url("@/assets/icons/loupe.svg");
+}

@@ -26,7 +26,7 @@
             />
           </label>
           <button title="Zoeken">
-            <span>Zoeken</span><utrecht-icon-loupe model-value />
+            <span>Zoeken</span>
           </button>
         </fieldset>
       </form>
@@ -86,7 +86,6 @@
 </template>
 
 <script lang="ts" setup>
-import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { watch, ref, computed } from "vue";
 import {
   createKlantQuery,

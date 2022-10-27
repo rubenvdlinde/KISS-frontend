@@ -1,6 +1,6 @@
 <template>
   <section>
-    <utrecht-heading model-value :level="level">{{ header }}</utrecht-heading>
+    <utrecht-heading :level="level">{{ header }}</utrecht-heading>
 
     <paragraph v-if="berichten.state === 'error'">{{
       getErrorMessage(berichten.error)
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed, ref, watch, type PropType } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
