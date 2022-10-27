@@ -20,7 +20,7 @@
         @search.prevent="applySearch"
         id="global-search-input"
       />
-      <button class="icon-after loupe"><span>Zoeken</span></button>
+      <button><span>Zoeken</span></button>
     </div>
   </form>
   <template v-if="state.currentSearch">

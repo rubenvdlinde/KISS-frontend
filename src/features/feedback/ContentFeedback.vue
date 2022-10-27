@@ -11,12 +11,12 @@
   </section>
   <menu v-else>
     <li>
-      <button
+      <utrecht-button
         @click="openFeedbackForm"
-        class="utrecht-button utrecht-button--action"
+        appearance="primary-action-button"
       >
         Feedback
-      </button>
+      </utrecht-button>
     </li>
   </menu>
   <application-message
@@ -28,7 +28,10 @@
 
 <script lang="ts" setup>
 import { ref, defineProps } from "vue";
-import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
+import {
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import FeedbackForm from "./components/FeedbackForm.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { CurrentFeedbackSection } from "./types";
