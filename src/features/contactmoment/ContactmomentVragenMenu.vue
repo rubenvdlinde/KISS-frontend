@@ -5,22 +5,25 @@
   />
   <menu class="vragen-menu" v-if="vragen">
     <li>
-      <button
-        class="icon-after plus new-question"
+      <utrecht-button
+        appearance="subtle-button"
+        class="icon-after plus new-question icon-only"
         type="button"
         title="Nieuwe vraag"
         @click="startNieuweVraag"
-      ></button>
+      ></utrecht-button>
     </li>
     <li v-for="(vraag, idx) in vragen" :key="idx">
-      <button
+      <utrecht-button
+        appearance="subtle-button"
+        class="icon-only"
         type="button"
         :disabled="vraag.isCurrent"
         :title="vraag.isCurrent ? 'Huidige vraag' : `Ga naar vraag ${idx + 1}`"
         @click="vraag.switchVraag"
       >
         {{ idx + 1 }}
-      </button>
+      </utrecht-button>
     </li>
   </menu>
 </template>
@@ -29,6 +32,7 @@ import { useContactmomentStore } from "@/stores/contactmoment";
 import { useConfirmDialog } from "@vueuse/core";
 import PromptModal from "@/components/PromptModal.vue";
 import { nextTick, computed } from "vue";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 
 const contactmomentStore = useContactmomentStore();
 const dialog = useConfirmDialog();
@@ -60,13 +64,7 @@ async function startNieuweVraag() {
   padding: var(--spacing-small);
 
   button {
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--spacing-large);
-    block-size: var(--spacing-large);
-    border-radius: 50%;
+    color: var(--color-white);
 
     &:disabled {
       background: var(--color-white);

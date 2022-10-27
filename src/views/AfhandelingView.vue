@@ -35,9 +35,10 @@
           <div class="vraag-heading">
             Vraag {{ idx + 1 }}
 
-            <button
+            <utrecht-button
               v-if="contactmomentStore.huidigContactmoment.vragen.length > 1"
-              class="icon icon-after trash"
+              appearance="subtle-button"
+              class="icon icon-after trash icon-only"
               :title="`Vraag ${idx + 1} verwijderen`"
               @click="toggleRemoveVraagDialog(idx)"
             />
@@ -796,8 +797,5 @@ select {
 .warning {
   padding: var(--spacing-default);
   margin-block-end: var(--spacing-default);
-}
-.icon {
-  padding: var(--spacing-small);
 }
 </style>
