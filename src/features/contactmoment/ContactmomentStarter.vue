@@ -61,5 +61,8 @@ async function waitForConfirmation() {
 .start-button {
   --utrecht-button-min-inline-size: 15rem;
   --utrecht-button-background-color: var(--color-accent);
+  --utrecht-button-color: var(--color-white);
+  --utrecht-button-hover-background-color: var(--color-accent-hover);
+  --utrecht-button-hover-color: black;
 }
 </style>

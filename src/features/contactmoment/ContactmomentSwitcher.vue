@@ -4,7 +4,7 @@
     message="Let op, je hebt het contactverzoek niet afgerond. Als je van contactmoment wisselt, wordt het contactverzoek niet verstuurd."
   />
   <details ref="detailsEl" v-if="contactmomentStore.contactmomenten.length">
-    <summary class="utrecht-button">
+    <summary class="utrecht-button utrecht-button--secondary-action">
       {{
         moments.length > 1
           ? `${moments.length} actieve contactmomenten`
@@ -82,17 +82,11 @@ onClickOutside(detailsEl, closeDetails);
 </script>
 
 <style lang="scss" scoped>
-summary.utrecht-button {
-  --utrecht-button-background-color: none;
-  --utrecht-button-border-color: var(--color-white);
-  border-style: solid;
-  border-width: 2px;
+summary {
   display: flex;
   justify-content: center;
-
-  &:hover {
-    cursor: pointer;
-  }
+  --utrecht-button-secondary-action-color: var(--color-white);
+  --utrecht-button-secondary-action-border-color: var(--color-white);
 }
 
 details {
@@ -122,7 +116,7 @@ menu {
     text-align: inherit;
 
     &:hover {
-      cursor: pointer;
+      background-color: var(--color-secondary);
     }
 
     &:disabled:hover {

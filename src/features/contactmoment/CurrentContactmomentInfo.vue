@@ -49,7 +49,9 @@ article {
   gap: var(--spacing-default);
 
   --utrecht-button-background-color: var(--color-error);
-  --utrecht-button-min-inline-size: 12ch;
+  --utrecht-button-hover-background-color: var(--color-error-hover);
+  --utrecht-button-hover-color: black;
+  --utrecht-button-min-inline-size: auto;
 
   h2 {
     margin-block-start: 0;
