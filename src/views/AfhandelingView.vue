@@ -723,10 +723,6 @@ const toggleRemoveVraagDialog = async (vraagId: number) => {
   display: flex;
   align-items: center;
   gap: var(--spacing-small);
-
-  .icon:hover {
-    cursor: pointer;
-  }
 }
 
 .gerelateerde-resources {

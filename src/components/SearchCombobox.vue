@@ -252,7 +252,6 @@ ul {
   transform: translateY(100%);
   z-index: 1;
   inset-block-end: 0;
-  cursor: pointer;
 }
 li {
   max-width: 100%;

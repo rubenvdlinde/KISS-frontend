@@ -229,10 +229,6 @@ article {
           position: relative;
           top: 4px;
 
-          &:hover {
-            color: var(--color-tertiary);
-            cursor: pointer;
-          }
           &:hover:disabled {
             cursor: wait;
           }
