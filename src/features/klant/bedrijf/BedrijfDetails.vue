@@ -25,12 +25,18 @@
 
         <menu v-if="showForm" class="buttons-container">
           <li>
-            <button @click="reset" type="reset" class="annuleren">
+            <utrecht-button
+              @click="reset"
+              type="reset"
+              appearance="secondary-action-button"
+            >
               Annuleren
-            </button>
+            </utrecht-button>
           </li>
           <li>
-            <utrecht-button modelValue type="submit">Opslaan</utrecht-button>
+            <utrecht-button appearance="primary-action-button" type="submit"
+              >Opslaan</utrecht-button
+            >
           </li>
         </menu>
       </header>

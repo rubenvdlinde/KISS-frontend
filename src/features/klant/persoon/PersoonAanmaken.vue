@@ -72,16 +72,20 @@
     />
 
     <menu>
-      <utrecht-button
-        modelValue
-        @click="props.handleCancel"
-        type="button"
-        appearance="secondary-action-button"
-        >Annuleren</utrecht-button
-      >
-      <button class="utrecht-button utrecht-button--submit" type="submit">
-        Opslaan
-      </button>
+      <li>
+        <utrecht-button
+          modelValue
+          @click="props.handleCancel"
+          type="button"
+          appearance="secondary-action-button"
+          >Annuleren</utrecht-button
+        >
+      </li>
+      <li>
+        <utrecht-button appearance="primary-action-button" type="submit">
+          Opslaan
+        </utrecht-button>
+      </li>
     </menu>
   </non-blocking-form>
 </template>

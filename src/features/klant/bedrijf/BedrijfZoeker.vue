@@ -18,7 +18,7 @@
           @search="handleSearch"
         />
       </label>
-      <button title="Zoeken" class="icon-after loupe">
+      <button title="Zoeken">
         <span>Zoeken</span>
       </button>
     </fieldset>

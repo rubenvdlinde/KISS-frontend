@@ -8,22 +8,23 @@
       </slot>
       <menu>
         <li>
-          <button
-            modelValue
+          <utrecht-button
             value="cancel"
-            class="utrecht-button utrecht-button--secondary-action"
+            type="submit"
+            appearance="secondary-action-button"
           >
             {{ cancelMessage }}
-          </button>
+          </utrecht-button>
         </li>
         <li>
-          <button
+          <utrecht-button
+            type="submit"
             value="confirm"
-            class="utrecht-button utrecht-button--action"
+            appearance="primary-action-button"
             v-focus
           >
             {{ confirmMessage }}
-          </button>
+          </utrecht-button>
         </li>
       </menu>
     </form>
@@ -32,6 +33,7 @@
 
 <script setup lang="ts">
 import Paragraph from "@/nl-design-system/components/Paragraph.vue";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 import { whenever, type UseConfirmDialogReturn } from "@vueuse/core";
 import { ref, type PropType } from "vue";
 

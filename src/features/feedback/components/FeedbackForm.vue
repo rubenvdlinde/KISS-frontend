@@ -61,17 +61,21 @@
     ></application-message>
 
     <menu>
-      <button
-        @click="cancelDialog.reveal"
-        class="utrecht-button utrecht-button--secondary-action"
-        type="button"
-      >
-        Annuleren
-      </button>
+      <li>
+        <utrecht-button
+          @click="cancelDialog.reveal"
+          appearance="secondary-action-button"
+          type="button"
+        >
+          Annuleren
+        </utrecht-button>
+      </li>
 
-      <button class="utrecht-button utrecht-button--submit" type="submit">
-        Opslaan
-      </button>
+      <li>
+        <utrecht-button appearance="primary-action-button" type="submit">
+          Opslaan
+        </utrecht-button>
+      </li>
     </menu>
   </form>
 
@@ -94,6 +98,7 @@ import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import type { ServiceData } from "@/services/index";
 import { useUserStore } from "@/stores/user";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 
 const props = defineProps<{
   url: unknown | URL;

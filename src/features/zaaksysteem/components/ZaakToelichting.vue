@@ -28,13 +28,13 @@
         v-model="newToelichtingInputValue"
       ></textarea>
 
-      <button
+      <utrecht-button
         :disabled="formIsLoading"
-        class="utrecht-button utrecht-button--submit"
+        appearance="primary-action-button"
         type="submit"
       >
         Opslaan
-      </button>
+      </utrecht-button>
     </form>
   </div>
 </template>
@@ -42,7 +42,10 @@
 <script setup lang="ts">
 import { defineProps, ref, watch } from "vue";
 import type { ZaakDetails } from "./../types";
-import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
+import {
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./../service";
 import SimpleSpinner from "../../../components/SimpleSpinner.vue";
