@@ -1,15 +1,21 @@
 :root {
     // colors
     --color-primary: #415a77;
+    --color-primary-hover: #4b75aa;
     --color-secondary: #eceff1;
     --color-tertiary: #778da9;
     --color-headings: #1b263b;
-    --color-accent: #58af23;
-    --color-error: #d44;
+    --color-accent: #258839;
+    --color-accent-hover: #89cf5e;
+    --color-accent-hover-text: var(--color-headings);
+    --color-error: #c82d2d;
+    --color-error-hover: #f47171;
+    --color-error-hover-text: var(--color-headings);
     --color-warning: orange;
     --color-category-default: hsl(184, 54%, 70%);
     --color-category-website: hsl(285, 56%, 83%);
     --color-white: #fff;
+    --color-white-hover: #e4e8ee;
     --sidebar-color-1: var(--color-headings);
     --sidebar-color-2: var(--color-primary);
     --color-grey: #999;
@@ -76,11 +82,15 @@
     --utrecht-button-background-color: var(--color-primary);
     --utrecht-button-border-color: transparent;
     --utrecht-button-border-width: 2px;
+    --utrecht-button-hover-background-color: var(--color-primary-hover);
 
     --utrecht-button-color: var(--color-white);
 
     --utrecht-button-secondary-action-border-color: var(--color-primary);
     --utrecht-button-secondary-action-color: var(--color-primary);
+    --utrecht-button-secondary-action-hover-color: var(--color-primary-hover);
+    --utrecht-button-secondary-action-hover-border-color: var(--color-primary-hover);
+    --utrecht-button-secondary-action-focus-background-color: transparent;
     --utrecht-button-secondary-action-background-color: transparent;
 
     --utrecht-focus-outline-color: rgb(16, 16, 16);
@@ -136,4 +146,18 @@
     --denhaag-pagination-arrow-size: var(--spacing-default);
     --denhaag-link-focus-outline: var(--utrecht-focus-outline-color) var(--utrecht-focus-outline-style)
         var(--utrecht-focus-outline-width);
+
+    /* HACKS: there are no design tokens for this */
+    .utrecht-button:focus:not(:focus-visible) {
+        --utrecht-focus-outline-style: none;
+    }
+
+    .utrecht-button {
+        box-shadow: var(--shadow-default);
+
+        &:active {
+            box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.15) !important;
+            scale: 98%;
+        }
+    }
 }
