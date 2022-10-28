@@ -118,7 +118,6 @@ const toggleItemContent = (idx: number) => {
   }
 
   &:hover {
-    cursor: pointer;
     background-color: var(--color-secondary);
   }
 }
