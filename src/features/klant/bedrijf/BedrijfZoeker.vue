@@ -18,8 +18,8 @@
           @search="handleSearch"
         />
       </label>
-      <button title="Zoeken">
-        <span>Zoeken</span><utrecht-icon-loupe model-value />
+      <button title="Zoeken" class="icon-after loupe">
+        <span>Zoeken</span>
       </button>
     </fieldset>
   </form>
@@ -49,7 +49,6 @@
 <script setup lang="ts">
 import { parseKvkNummer, parsePostcodeHuisnummer } from "@/helpers/validation";
 import { ensureState } from "@/stores/create-store";
-import { UtrechtIconLoupe } from "@utrecht/web-component-library-vue";
 import { computed, ref, watch } from "vue";
 import { bedrijfQuery, useSearchBedrijven } from "./service";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";

@@ -48,10 +48,6 @@ body {
     padding-inline-end: var(--container-padding);
 }
 
-utrecht-icon-loupe {
-    pointer-events: none;
-}
-
 .utrecht-select {
     appearance: auto;
 }
@@ -152,14 +148,11 @@ h2 {
     }
 
     button {
-        --utrecht-icon-size: 1rem;
+        @extend .icon-after;
+        @extend .loupe;
         background: var(--color-white);
         font-size: 0;
         padding-right: var(--spacing-default);
-    }
-
-    utrecht-icon-loupe {
-        pointer-events: none;
     }
 
     input,

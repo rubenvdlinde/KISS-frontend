@@ -1,8 +1,6 @@
 <template>
   <article class="details-block">
-    <utrecht-heading model-value :level="2">
-      Gegevens Handelsregister</utrecht-heading
-    >
+    <utrecht-heading :level="2"> Gegevens Handelsregister</utrecht-heading>
     <dl>
       <dt>Bedrijfsnaam</dt>
       <dd>{{ bedrijf.bedrijfsnaam }}</dd>
@@ -39,7 +37,7 @@
 
 <script setup lang="ts">
 import type { Bedrijf } from "./types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 
 defineProps<{ bedrijf: Bedrijf }>();
 </script>

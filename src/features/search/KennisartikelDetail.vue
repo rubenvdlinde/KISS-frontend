@@ -1,6 +1,6 @@
 <template>
   <article>
-    <utrecht-heading model-value :level="headingLevel" class="heading">
+    <utrecht-heading :level="headingLevel" class="heading">
       {{ title }}
     </utrecht-heading>
     <nav>
@@ -21,9 +21,7 @@
       :class="{ 'is-active': isActive }"
       :id="id"
     >
-      <utrecht-heading model-value :level="headingLevel + 1">{{
-        label
-      }}</utrecht-heading>
+      <utrecht-heading :level="headingLevel + 1">{{ label }}</utrecht-heading>
       <div v-html="html"></div>
     </section>
   </article>
@@ -41,7 +39,7 @@ import {
   unescapeHtml,
   increaseHeadings,
 } from "@/helpers/html";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
 import { ContentFeedback } from "../feedback/index";

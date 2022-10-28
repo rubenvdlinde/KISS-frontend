@@ -1,7 +1,7 @@
 <template>
   <div class="toelichtingen-container">
     <div class="toelichtingen">
-      <utrecht-heading :level="3" model-value>Toelichtingen</utrecht-heading>
+      <utrecht-heading :level="3">Toelichtingen</utrecht-heading>
 
       <p
         class="toelichting"
@@ -14,9 +14,7 @@
 
     <form class="add-toelichting" @submit.prevent="submit">
       <div class="add-toelichting-heading">
-        <utrecht-heading :level="3" model-value
-          >Nieuwe toelichting
-        </utrecht-heading>
+        <utrecht-heading :level="3">Nieuwe toelichting </utrecht-heading>
 
         <simple-spinner v-if="formIsLoading" class="spinner" />
       </div>
@@ -44,7 +42,7 @@
 <script setup lang="ts">
 import { defineProps, ref, watch } from "vue";
 import type { ZaakDetails } from "./../types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { toast } from "@/stores/toast";
 import { updateToelichting } from "./../service";
 import SimpleSpinner from "../../../components/SimpleSpinner.vue";

@@ -31,7 +31,7 @@
         v-for="(vraag, idx) in contactmomentStore.huidigContactmoment.vragen"
         :key="idx"
       >
-        <utrecht-heading :level="2" model-value>
+        <utrecht-heading :level="2">
           <div class="vraag-heading">
             Vraag {{ idx + 1 }}
 
@@ -44,7 +44,7 @@
           </div>
         </utrecht-heading>
         <section v-if="vraag.klanten.length" class="gerelateerde-resources">
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.klanten.length > 1 ? "Klanten" : "Klant"
           }}</utrecht-heading>
           <ul>
@@ -85,7 +85,7 @@
         </section>
 
         <section v-if="vraag.zaken.length" class="gerelateerde-resources">
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.zaken.length > 1 ? "Gerelateerde zaken" : "Gerelateerde zaak"
           }}</utrecht-heading>
           <ul>
@@ -108,7 +108,7 @@
         </section>
 
         <section v-if="vraag.medewerkers.length" class="gerelateerde-resources">
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.medewerkers.length > 1
               ? "Gerelateerde medewerkers"
               : "Gerelateerde medewerker"
@@ -144,7 +144,7 @@
         </section>
 
         <section v-if="vraag.websites.length" class="gerelateerde-resources">
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.websites.length > 1
               ? "Gerelateerde websites"
               : "Gerelateerde website"
@@ -172,7 +172,7 @@
           v-if="vraag.kennisartikelen.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.kennisartikelen.length > 1
               ? "Gerelateerde kennisartikelen"
               : "Gerelateerde kennisartikel"
@@ -200,7 +200,7 @@
           v-if="vraag.nieuwsberichten.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.nieuwsberichten.length > 1
               ? "Gerelateerde nieuwsberichten"
               : "Gerelateerd nieuwsbericht"
@@ -228,7 +228,7 @@
           v-if="vraag.werkinstructies.length"
           class="gerelateerde-resources"
         >
-          <utrecht-heading :level="3" model-value>{{
+          <utrecht-heading :level="3">{{
             vraag.werkinstructies.length > 1
               ? "Gerelateerde werkinstructies"
               : "Gerelateerde werkinstructie"
@@ -252,7 +252,7 @@
           </ul>
         </section>
         <section class="details">
-          <utrecht-heading :level="3" model-value> Details </utrecht-heading>
+          <utrecht-heading :level="3"> Details </utrecht-heading>
           <fieldset class="utrecht-form-fieldset">
             <label :for="'kanaal' + idx" class="utrecht-form-label required"
               >Kanaal</label
@@ -441,9 +441,9 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
-  UtrechtHeading,
-  UtrechtButton,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 

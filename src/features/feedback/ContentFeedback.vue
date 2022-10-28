@@ -1,6 +1,6 @@
 <template>
   <section v-if="isOpen">
-    <utrecht-heading model-value :level="2">Feedback</utrecht-heading>
+    <utrecht-heading :level="2">Feedback</utrecht-heading>
     <feedback-form
       @cancelled="feedbackCancelled"
       @saved="feedbackSaved"
@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import { ref, defineProps } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import FeedbackForm from "./components/FeedbackForm.vue";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import type { CurrentFeedbackSection } from "./types";

@@ -1,6 +1,6 @@
 <template>
   <article class="details-block">
-    <utrecht-heading model-value :level="2"> Gegevens BRP</utrecht-heading>
+    <utrecht-heading :level="2"> Gegevens BRP</utrecht-heading>
     <dl>
       <dt>Naam</dt>
       <dd>
@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import type { Persoon } from "./types";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import DutchDate from "@/components/DutchDate.vue";
 
 defineProps<{ persoon: Persoon }>();

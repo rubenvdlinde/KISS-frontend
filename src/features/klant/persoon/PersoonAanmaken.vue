@@ -88,9 +88,9 @@
 
 <script setup lang="ts">
 import {
-  UtrechtHeading,
-  UtrechtButton,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import { customPhoneValidator } from "@/helpers/validation";
 import { ref, computed } from "vue";
 import { createKlant } from "@/features/contactverzoek";

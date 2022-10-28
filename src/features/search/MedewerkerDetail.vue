@@ -1,11 +1,11 @@
 <template>
   <article>
-    <utrecht-heading model-value :level="headingLevel">
+    <utrecht-heading :level="headingLevel">
       {{ title }}
     </utrecht-heading>
     <div>
       <section>
-        <utrecht-heading model-value :level="headingLevel + 1"
+        <utrecht-heading :level="headingLevel + 1"
           >Algemene contactgegevens</utrecht-heading
         >
         <dl>
@@ -16,9 +16,7 @@
         </dl>
       </section>
       <section v-if="medewerkerRaw?.calendar?.availabilities">
-        <utrecht-heading model-value :level="headingLevel + 1"
-          >Agenda</utrecht-heading
-        >
+        <utrecht-heading :level="headingLevel + 1">Agenda</utrecht-heading>
         <table class="availability">
           <thead>
             <tr>
@@ -57,7 +55,7 @@
       </section>
     </div>
     <section>
-      <utrecht-heading :level="headingLevel + 1" model-value
+      <utrecht-heading :level="headingLevel + 1"
         >Detailgegevens</utrecht-heading
       >
       <img
@@ -88,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed } from "@vue/reactivity";
 import { ContentFeedback } from "../feedback/index";
 import type { CurrentFeedbackSection } from "../feedback/types";

@@ -8,11 +8,7 @@
       <h2>{{ klantInfo?.name || "onbekend" }}</h2>
       <p v-if="klantInfo?.contact">{{ klantInfo.contact }}</p>
     </header>
-    <utrecht-button
-      model-value
-      @click="onStopContactMoment"
-      title="Contactmoment afronden"
-    >
+    <utrecht-button @click="onStopContactMoment" title="Contactmoment afronden">
       Afronden
     </utrecht-button>
   </article>
@@ -20,7 +16,7 @@
 
 <script setup lang="ts">
 import { useContactmomentStore } from "@/stores/contactmoment";
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 import { useConfirmDialog } from "@vueuse/core";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
@@ -52,10 +48,8 @@ article {
   justify-content: space-between;
   gap: var(--spacing-default);
 
-  utrecht-button {
-    --utrecht-button-background-color: var(--color-error);
-    --utrecht-button-min-inline-size: 12ch;
-  }
+  --utrecht-button-background-color: var(--color-error);
+  --utrecht-button-min-inline-size: 12ch;
 
   h2 {
     margin-block-start: 0;

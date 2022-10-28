@@ -29,7 +29,7 @@
             ></span>
           </template>
           <template #[NotitieTabs.Regulier]>
-            <utrecht-heading id="notitieblok" model-value :level="2"
+            <utrecht-heading id="notitieblok" :level="2"
               >Notitieblok</utrecht-heading
             >
             <textarea
@@ -58,7 +58,7 @@
 <script lang="ts" setup>
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import ContactmomentVragenMenu from "@/features/contactmoment/ContactmomentVragenMenu.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
@@ -184,9 +184,7 @@ aside {
     align-items: stretch;
   }
 
-  :deep(utrecht-button) {
-    --utrecht-button-min-inline-size: 17rem;
-  }
+  --utrecht-button-min-inline-size: 17rem;
 }
 
 .within-moment {
