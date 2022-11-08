@@ -43,14 +43,6 @@
       <dl>
         <dt>Klantnummer</dt>
         <dd>{{ klant.klantnummer }}</dd>
-        <dt>Naam</dt>
-        <dd>
-          {{
-            [klant.voornaam, klant.voorvoegselAchternaam, klant.achternaam]
-              .filter((x) => x)
-              .join(" ")
-          }}
-        </dd>
         <dt>E-mailadres{{ emails.length > 1 ? "sen" : "" }}</dt>
         <dd v-for="(email, idx) in emails" :key="idx">
           <fieldset v-if="showForm">
