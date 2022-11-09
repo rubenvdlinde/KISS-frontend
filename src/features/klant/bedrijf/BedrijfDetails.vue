@@ -5,11 +5,12 @@
         <utrecht-heading :level="level">
           <span class="heading">
             Gegevens klant
-            <button
+            <utrecht-button
               v-if="!editing"
+              appearance="subtle-button"
               @click="toggleEditing"
               title="Bewerken"
-              :class="'icon-after pen'"
+              :class="'icon-after icon-only pen'"
               class="toggleEdit"
             />
             <simple-spinner class="spinner" v-if="submitter.loading" />
@@ -56,24 +57,26 @@
               required
               class="utrecht-textbox utrecht-textbox--html-input"
             />
-            <button
+            <utrecht-button
+              appearance="subtle-button"
               @click="removeEmail(idx)"
               type="button"
               title="E-mail verwijderen"
-              class="icon-before xmark remove-item"
+              class="icon-before xmark remove-item icon-only"
             />
           </fieldset>
           <template v-else>{{ email.email }}</template>
         </dd>
         <dd v-if="showForm">
-          <button
+          <utrecht-button
+            appearance="primary-action-button"
             :title="
               canAddEmail ? 'E-mail toevoegen' : 'Vul eerst het lege veld in'
             "
             :disabled="!canAddEmail"
             type="button"
             @click="addEmail"
-            class="add-item icon-after plus"
+            class="add-item icon-after plus icon-only"
           />
         </dd>
         <dt>Telefoonnummer{{ telefoonnummers.length > 1 ? "s" : "" }}</dt>
@@ -91,17 +94,19 @@
               required
               class="utrecht-textbox utrecht-textbox--html-input"
             />
-            <button
+            <utrecht-button
+              appearance="subtle-button"
               @click="removePhoneNumber(idx)"
               type="button"
               title="Telefoonnummer verwijderen"
-              class="icon-before xmark remove-item"
+              class="icon-before xmark remove-item icon-only"
             />
           </fieldset>
           <template v-else>{{ tel.telefoonnummer }}</template>
         </dd>
         <dd v-if="showForm">
-          <button
+          <utrecht-button
+            appearance="primary-action-button"
             :title="
               canAddPhone
                 ? 'Telefoonnummer toevoegen'
@@ -110,7 +115,7 @@
             :disabled="!canAddPhone"
             type="button"
             @click="addPhoneNumber"
-            class="add-item icon-after plus"
+            class="add-item icon-after plus icon-only"
           />
         </dd>
       </dl>
@@ -252,41 +257,20 @@ const showForm = computed(() => !submitter.loading && editing.value);
   .heading {
     display: flex;
     align-items: center;
-    gap: var(--spacing-default);
+    gap: var(--spacing-small);
   }
 
   .buttons-container {
     display: flex;
     align-items: center;
     gap: var(--spacing-default);
-
-    .annuleren {
-      text-decoration: underline;
-    }
   }
 }
 
 .add-item {
   display: flex;
   color: white;
-  width: fit-content;
-  background-color: var(--color-primary);
-  border-radius: var(--radius-medium);
-  padding-inline-start: var(--spacing-default);
-  padding-inline-end: var(--spacing-default);
-  padding-block-start: var(--spacing-small);
-  padding-block-end: var(--spacing-small);
   margin-inline-start: auto;
-
-  &::after {
-    inline-size: 0.75rem;
-    block-size: 0.75rem;
-  }
-}
-
-.icon-after,
-.icon-before {
-  border: none;
 }
 
 .spinner {
@@ -298,8 +282,11 @@ const showForm = computed(() => !submitter.loading && editing.value);
 }
 
 dd fieldset {
-  display: flex;
+  // flex seems to mess up icons
+  display: grid;
+  grid-auto-flow: column;
   gap: var(--spacing-default);
+  align-items: center;
 }
 
 :disabled {

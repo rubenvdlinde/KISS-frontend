@@ -13,7 +13,8 @@
     </summary>
     <menu>
       <li v-for="(moment, idx) in moments" :key="idx">
-        <button
+        <utrecht-button
+          appearance="subtle-button"
           :disabled="moment.isCurrent"
           @click="moment.enable"
           :class="{ 'is-current': moment.isCurrent }"
@@ -32,7 +33,7 @@
           <p v-if="moment.description?.contact" class="contact">
             {{ moment.description.contact }}
           </p>
-        </button>
+        </utrecht-button>
       </li>
     </menu>
   </details>
@@ -40,6 +41,7 @@
 <script lang="ts" setup>
 import PromptModal from "@/components/PromptModal.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 import { onClickOutside, useConfirmDialog } from "@vueuse/core";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -110,14 +112,15 @@ menu {
   }
 
   button {
+    --utrecht-button-border-radius: 0;
+    --utrecht-button-min-inline-size: 100%;
+    --utrecht-button-hover-background-color: var(--color-secondary);
+
+    display: block;
+    border: none;
     border-inline-start: 4px solid transparent;
     padding-inline-start: var(--spacing-small);
-    inline-size: 100%;
     text-align: inherit;
-
-    &:hover {
-      background-color: var(--color-secondary);
-    }
 
     &:disabled:hover {
       cursor: not-allowed;

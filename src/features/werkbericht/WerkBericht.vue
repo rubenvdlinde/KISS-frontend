@@ -17,21 +17,25 @@
 
         <menu>
           <li>
-            <input
-              v-if="contactmomentStore.contactmomentLoopt"
-              class="save-bericht-to-contactmoment-checkbox"
-              type="checkbox"
-              title="Opslaan bij contactmoment"
-              v-model="berichtSelectedInContactmoment"
-              @click.stop="handleToggleBerichtInContactmoment"
-            />
+            <label class="save-bericht-to-contactmoment-label">
+              <input
+                v-if="contactmomentStore.contactmomentLoopt"
+                class="save-bericht-to-contactmoment-checkbox"
+                type="checkbox"
+                title="Opslaan bij contactmoment"
+                v-model="berichtSelectedInContactmoment"
+                @click.stop="handleToggleBerichtInContactmoment"
+              />
+              Opslaan bij contactmoment
+            </label>
           </li>
 
           <li>
-            <button
+            <utrecht-button
+              appearance="subtle-button"
               @click="toggleRead"
               :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
-              class="toggle-read icon-after book"
+              class="toggle-read icon-after book icon-only"
               :disabled="toggleReadIsLoading"
             />
           </li>
@@ -65,6 +69,7 @@ import type { Werkbericht } from "./types";
 import {
   Heading as UtrechtHeading,
   Document as UtrechtDocument,
+  Button as UtrechtButton,
 } from "@utrecht/component-library-vue";
 import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
@@ -215,19 +220,26 @@ article {
 
       menu {
         display: flex;
-        gap: var(--spacing-default);
+        gap: var(--spacing-small);
+
+        .save-bericht-to-contactmoment-label {
+          display: flex;
+          place-content: center;
+          place-items: center;
+          place-self: center;
+          font-size: 0;
+          block-size: var(--spacing-large);
+          inline-size: var(--spacing-large);
+        }
 
         .save-bericht-to-contactmoment-checkbox {
           accent-color: var(--color-primary);
-          transform: scale(1.25);
+          transform: scale(1.25) translateY(-1px);
           margin: 0;
-          margin-inline-start: 2px;
         }
 
         .toggle-read {
           color: var(--color-headings);
-          position: relative;
-          top: 4px;
 
           &:hover:disabled {
             cursor: wait;

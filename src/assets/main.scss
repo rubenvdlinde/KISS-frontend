@@ -303,6 +303,7 @@ th.row-link-header {
         grid-template-rows: repeat(50, min-content);
         justify-content: flex-start;
         column-gap: var(--spacing-large);
+        align-items: center;
 
         &:not(:first-child) {
             margin-block-start: var(--spacing-default);
