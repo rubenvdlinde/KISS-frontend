@@ -1,5 +1,7 @@
 import { fetchLoggedIn, getFormattedUtcDate, throwIfNotOk } from "@/services";
 import type { NieuweKlant } from "@/stores/contactmoment";
+// creating a klant will be done differently in the future. for now, jus reuse the type from the klant feature
+import { KlantType } from "../klant/types";
 
 export interface Contactverzoek {
   bronorganisatie: string; //verplicht in de api
@@ -8,6 +10,8 @@ export interface Contactverzoek {
     description: string;
     attendees: string[];
   };
+  primaireVraagWeergave?: string;
+  afwijkendOnderwerp?: string;
 }
 
 export function saveContactverzoek(data: Contactverzoek) {
@@ -41,6 +45,7 @@ export function createKlant(klant: NieuweKlant) {
       bronorganisatie: window.organisatieIds[0],
       // TODO: WAT MOET HIER IN KOMEN?
       klantnummer: "123",
+      subjectType: KlantType.Persoon,
     }),
   })
     .then(throwIfNotOk)

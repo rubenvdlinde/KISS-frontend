@@ -1,3 +1,18 @@
+.icon-only {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    --utrecht-button-inline-size: var(--spacing-large);
+    aspect-ratio: 1;
+    --utrecht-button-padding-inline-start: 0;
+    --utrecht-button-padding-inline-end: 0;
+    --utrecht-button-padding-block-start: 0;
+    --utrecht-button-padding-block-end: 0;
+    --utrecht-button-min-inline-size: var(--spacing-default);
+}
+
 .icon-before,
 .icon-after {
     align-items: center;
@@ -9,19 +24,19 @@
     content: "";
     background-color: currentColor;
     mask-repeat: no-repeat;
-    width: 1rem;
-    height: 1rem;
+    inline-size: 1rem;
+    block-size: 1rem;
 }
 
 .icon-large::after,
 .icon-large::before {
-    width: 1.5rem;
-    height: 1.5rem;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
 }
 
 .icon-before.chevron-down::before,
 .icon-after.chevron-down::after {
-    height: 0.6rem;
+    block-size: 0.6rem;
     mask-image: url("@/assets/icons/chevron-down.svg");
 }
 
@@ -62,10 +77,27 @@
 
 .icon-before.xmark::before,
 .icon-after.xmark::after {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
     mask-image: url("@/assets/icons/xmark.svg");
 }
 
 .icon-before.plus::before,
 .icon-after.plus::after {
     mask-image: url("@/assets/icons/plus.svg");
+}
+
+.icon-before.alert::before,
+.icon-after.alert::after {
+    mask-image: url("@/assets/icons/alert.svg");
+}
+
+.icon-before.trash::before,
+.icon-after.trash::after {
+    mask-image: url("@/assets/icons/trash.svg");
+}
+
+.icon-before.loupe::before,
+.icon-after.loupe::after {
+    mask-image: url("@/assets/icons/loupe.svg");
 }

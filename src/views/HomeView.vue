@@ -1,8 +1,10 @@
 <template>
   <div class="home">
     <header>
-      <utrecht-heading model-value :level="1">Startscherm</utrecht-heading>
+      <utrecht-heading :level="1">Startscherm</utrecht-heading>
+      <!-- Temporarily hide -->
       <a
+        v-if="false"
         :href="pubBeheerUrl"
         rel="noopener noreferrer"
         target="_blank"
@@ -50,7 +52,7 @@
               v-model="state.searchField"
           /></label>
           <button title="Zoeken">
-            <span>Zoeken</span><utrecht-icon-loupe model-value />
+            <span>Zoeken</span>
           </button>
         </form>
       </li>
@@ -123,10 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  UtrechtHeading,
-  UtrechtIconLoupe,
-} from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed, ref } from "vue";
 import {
   useBerichtTypes,

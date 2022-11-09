@@ -4,7 +4,7 @@
     message="Let op, je hebt het contactverzoek niet afgerond. Als je van contactmoment wisselt, wordt het contactverzoek niet verstuurd."
   />
   <details ref="detailsEl" v-if="contactmomentStore.contactmomenten.length">
-    <summary class="utrecht-button">
+    <summary class="utrecht-button utrecht-button--secondary-action">
       {{
         moments.length > 1
           ? `${moments.length} actieve contactmomenten`
@@ -13,7 +13,8 @@
     </summary>
     <menu>
       <li v-for="(moment, idx) in moments" :key="idx">
-        <button
+        <utrecht-button
+          appearance="subtle-button"
           :disabled="moment.isCurrent"
           @click="moment.enable"
           :class="{ 'is-current': moment.isCurrent }"
@@ -32,7 +33,7 @@
           <p v-if="moment.description?.contact" class="contact">
             {{ moment.description.contact }}
           </p>
-        </button>
+        </utrecht-button>
       </li>
     </menu>
   </details>
@@ -40,6 +41,7 @@
 <script lang="ts" setup>
 import PromptModal from "@/components/PromptModal.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 import { onClickOutside, useConfirmDialog } from "@vueuse/core";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -47,13 +49,19 @@ import { getKlantInfo } from "./helpers";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
+
+const closeDetails = () => {
+  const el = detailsEl.value;
+  if (!(el instanceof HTMLElement)) return;
+  el.removeAttribute("open");
+};
+
 const moments = computed(() =>
   contactmomentStore.contactmomenten.map((moment) => {
     return {
       description: getKlantInfo(moment),
       isCurrent: moment === contactmomentStore.huidigContactmoment,
       async enable() {
-        await ensureConfirmation();
         if (contactmomentStore.huidigContactmoment) {
           contactmomentStore.huidigContactmoment.route =
             router.currentRoute.value.fullPath;
@@ -62,43 +70,25 @@ const moments = computed(() =>
         if (moment.route) {
           router.push(moment.route);
         }
+        closeDetails();
       },
     };
   })
 );
 
-const ensureConfirmation = async () => {
-  if (contactmomentStore.wouldLoseProgress) {
-    const { isCanceled } = await dialog.reveal();
-    if (isCanceled) {
-      throw new Error();
-    }
-  }
-};
-
 const detailsEl = ref();
 
 const dialog = useConfirmDialog();
 
-onClickOutside(detailsEl, () => {
-  const el = detailsEl.value;
-  if (!(el instanceof HTMLElement)) return;
-  el.removeAttribute("open");
-});
+onClickOutside(detailsEl, closeDetails);
 </script>
 
 <style lang="scss" scoped>
-summary.utrecht-button {
-  --utrecht-button-background-color: none;
-  --utrecht-button-border-color: var(--color-white);
-  border-style: solid;
-  border-width: 2px;
+summary {
   display: flex;
   justify-content: center;
-
-  &:hover {
-    cursor: pointer;
-  }
+  --utrecht-button-secondary-action-color: var(--color-white);
+  --utrecht-button-secondary-action-border-color: var(--color-white);
 }
 
 details {
@@ -122,14 +112,15 @@ menu {
   }
 
   button {
+    --utrecht-button-border-radius: 0;
+    --utrecht-button-min-inline-size: 100%;
+    --utrecht-button-hover-background-color: var(--color-secondary);
+
+    display: block;
+    border: none;
     border-inline-start: 4px solid transparent;
     padding-inline-start: var(--spacing-small);
-    inline-size: 100%;
     text-align: inherit;
-
-    &:hover {
-      cursor: pointer;
-    }
 
     &:disabled:hover {
       cursor: not-allowed;

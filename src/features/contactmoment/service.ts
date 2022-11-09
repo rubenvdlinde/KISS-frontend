@@ -136,7 +136,8 @@ const mapContactverzoekDetail = (
     afgerond: todo.completed ? formatDateOnly(new Date(todo.completed)) : "-",
     starttijd: formatTimeOnly(new Date(contactmoment.registratiedatum)),
     aanmaker: contactmoment["x-commongateway-metadata"].owner,
-    vraag: "-",
     notitie: todo.description,
+    primaireVraagWeergave: contactmoment.primaireVraagWeergave,
+    afwijkendOnderwerp: contactmoment.afwijkendOnderwerp,
   };
 };

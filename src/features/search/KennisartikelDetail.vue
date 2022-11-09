@@ -1,6 +1,6 @@
 <template>
   <article>
-    <utrecht-heading model-value :level="headingLevel" class="heading">
+    <utrecht-heading :level="headingLevel" class="heading">
       {{ title }}
     </utrecht-heading>
     <nav>
@@ -21,9 +21,7 @@
       :class="{ 'is-active': isActive }"
       :id="id"
     >
-      <utrecht-heading model-value :level="headingLevel + 1">{{
-        label
-      }}</utrecht-heading>
+      <utrecht-heading :level="headingLevel + 1">{{ label }}</utrecht-heading>
       <div v-html="html"></div>
     </section>
   </article>
@@ -41,10 +39,11 @@ import {
   unescapeHtml,
   increaseHeadings,
 } from "@/helpers/html";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { nanoid } from "nanoid";
 import { computed, ref, watch } from "vue";
 import { ContentFeedback } from "../feedback/index";
+import type { Kennisartikel } from "./types";
 
 const knownSections = {
   specifiekeTekst: "Inleiding",
@@ -133,6 +132,29 @@ watch(
   () => {
     currentSectionIndex.value = 0;
   }
+);
+
+const KENNISARTIKEL_SELECTED = "kennisartikel-selected";
+
+const emit = defineEmits<{
+  (e: typeof KENNISARTIKEL_SELECTED, artikel: Kennisartikel): void;
+}>();
+
+watch(
+  processedSections,
+  (s) => {
+    if (!s.length) return;
+    const sections = s
+      .map(({ label }) => label)
+      .filter((x) => x !== knownSections.specifiekeTekst);
+
+    emit(KENNISARTIKEL_SELECTED, {
+      title: props.title,
+      url: props.kennisartikelRaw.url,
+      sections,
+    });
+  },
+  { immediate: true }
 );
 </script>
 

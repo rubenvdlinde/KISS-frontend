@@ -159,10 +159,6 @@ details {
   }
 }
 
-details:hover {
-  cursor: pointer;
-}
-
 .header-row {
   padding-block-start: var(--spacing-default);
   padding-block-end: var(--spacing-default);

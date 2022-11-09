@@ -1,17 +1,24 @@
 :root {
     // colors
     --color-primary: #415a77;
+    --color-primary-hover: #4b75aa;
     --color-secondary: #eceff1;
     --color-tertiary: #778da9;
     --color-headings: #1b263b;
-    --color-accent: #58af23;
-    --color-error: #d44;
+    --color-accent: #258839;
+    --color-accent-hover: #89cf5e;
+    --color-accent-hover-text: var(--color-headings);
+    --color-error: #c82d2d;
+    --color-error-hover: #f47171;
+    --color-error-hover-text: var(--color-headings);
+    --color-warning: orange;
     --color-category-default: hsl(184, 54%, 70%);
     --color-category-website: hsl(285, 56%, 83%);
     --color-white: #fff;
-    //TODO discuss. these colors seem to clash.
+    --color-white-hover: #e4e8ee;
     --sidebar-color-1: var(--color-headings);
     --sidebar-color-2: var(--color-primary);
+    --color-grey: #999;
 
     // spacing
     --container-width: 80rem;
@@ -39,6 +46,11 @@
     --height-body: 100vh;
 
     --shadow-default: 0 0 0.2857142857em 0 rgb(0 0 0 / 20%);
+
+    --outline-color: rgb(16, 16, 16);
+    --outline-width: 1px;
+    --outline-style: auto;
+    --outline-offset: 1px;
 }
 
 .kiss-theme {
@@ -67,15 +79,44 @@
 
     /* h3 */
     --utrecht-heading-3-line-height: 2rem;
-    --utrecht-heading-3-font-size: var(--utrecht-typography-scale-lg);
+    --utrecht-heading-3-font-size: 1.25rem;
 
-    --utrecht-typography-scale-lg: 1.25rem;
+    --utrecht-heading-4-font-size: 1rem;
 
     /* button */
-    --utrecht-button-background-color: var(--color-primary);
-    --utrecht-button-border-color: var(--color-primary);
-    --utrecht-button-secondary-action-border-color: var(--utrecht-button-border-color);
+    --utrecht-button-border-width: 2px;
+    --utrecht-button-focus-border-color: transparent;
+    --utrecht-button-disabled-border-color: transparent;
+    --utrecht-button-hover-border-color: transparent;
+    --utrecht-button-border-radius: var(--radius-large);
+    --utrecht-button-min-inline-size: 16ch;
+    --utrecht-button-icon-gap: 0.75rem;
+
+    --utrecht-button-hover-border-color: transparent;
+
+    --utrecht-button-padding-inline-start: var(--spacing-default);
+    --utrecht-button-padding-inline-end: var(--spacing-default);
+    --utrecht-button-min-block-size: var(--spacing-default);
+
+    --utrecht-button-padding-block-start: var(--spacing-small);
+    --utrecht-button-padding-block-end: var(--spacing-small);
+
+    --utrecht-button-primary-action-border-color: transparent;
+    --utrecht-button-primary-action-background-color: var(--color-primary);
+    --utrecht-button-primary-action-color: var(--color-white);
+    --utrecht-button-primary-action-hover-background-color: var(--color-primary-hover);
+
+    --utrecht-button-secondary-action-border-color: var(--color-primary);
     --utrecht-button-secondary-action-color: var(--color-primary);
+    --utrecht-button-secondary-action-hover-color: var(--color-primary-hover);
+    --utrecht-button-secondary-action-hover-border-color: var(--color-primary-hover);
+    --utrecht-button-secondary-action-focus-background-color: transparent;
+    --utrecht-button-secondary-action-background-color: transparent;
+
+    --utrecht-focus-outline-color: var(--outline-color);
+    --utrecht-focus-outline-width: var(--outline-width);
+    --utrecht-focus-outline-offset: var(--outline-offset);
+    --utrecht-focus-outline-style: var(--outline-style);
 
     /* forms */
     --utrecht-form-fieldset-legend-font-size: 1.5rem;
@@ -84,39 +125,56 @@
 
     --utrecht-form-label-font-weight: 600;
     --utrecht-form-label-font-size: 1rem;
+    --utrecht-form-label-color: var(--color-headings);
 
+    --utrecht-form-input-background-color: var(--color-white);
     --utrecht-form-input-border-color: var(--color-primary);
     --utrecht-form-input-border-radius: var(--radius-default);
+    --utrecht-form-input-border-width: 1px;
+    --utrecht-form-input-color: black;
+    --utrecht-form-input-font-size: 1.125rem;
 
     --utrecht-form-input-padding-block-end: var(--spacing-small);
     --utrecht-form-input-padding-block-start: var(--spacing-small);
+    --utrecht-form-input-padding-inline-end: var(--spacing-small);
+    --utrecht-form-input-padding-inline-start: var(--spacing-small);
 
-    --utrecht-form-input-placeholder-color: #999;
+    --utrecht-form-input-placeholder-color: var(--color-grey);
 
-    --utrecht-form-input-disabled-border-color: #999;
-    --utrecht-form-input-disabled-color: #999;
-}
+    --utrecht-form-input-disabled-border-color: var(--color-grey);
+    --utrecht-form-input-disabled-color: var(--color-grey);
 
-utrecht-button,
-.utrecht-button {
-    --utrecht-button-border-radius: 100px;
-    --utrecht-button-min-inline-size: 150px;
+    --utrecht-form-input-invalid-border-color: var(--color-error);
+    --utrecht-select-invalid-border-color: var(--color-error);
 
-    --utrecht-button-padding-inline-start: 1rem;
-    --utrecht-button-padding-inline-end: 1rem;
-    --utrecht-button-min-block-size: 1rem;
+    /* pagination */
+    --denhaag-pagination-link-current-disabled-color: var(-color-white);
+    --denhaag-pagination-link-current-disabled-background-color: var(--color-grey);
+    --denhaag-pagination-link-current-font-weight: 600;
+    --denhaag-pagination-size: var(--spacing-large);
+    --denhaag-pagination-link-disabled-color: var(--color-grey);
+    --denhaag-pagination-arrow-size: var(--spacing-default);
+    --denhaag-link-focus-outline: var(--utrecht-focus-outline-color) var(--utrecht-focus-outline-style)
+        var(--utrecht-focus-outline-width);
 
-    --utrecht-button-padding-block-start: 0.6rem;
-    --utrecht-button-padding-block-end: 0.6rem;
+    /* HACKS: there are no design tokens for this */
+    .utrecht-button:focus:not(:focus-visible) {
+        --utrecht-focus-outline-style: none;
+        --utrecht-primary-action-focus-outline-style: none;
+    }
 
-    --utrecht-button-secondary-action-background-color: transparent;
-}
+    .utrecht-button:not(.utrecht-button--subtle) {
+        box-shadow: var(--shadow-default);
+    }
 
-utrecht-button.button-small {
-    --utrecht-button-padding-inline-start: 1rem;
-    --utrecht-button-padding-inline-end: 1rem;
-    --utrecht-button-min-block-size: 1rem;
-    --utrecht-button-min-inline-size: 1rem;
-    --utrecht-button-padding-block-start: 0.6rem;
-    --utrecht-button-padding-block-end: 0.6rem;
+    .utrecht-button:active:not(:disabled) {
+        box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.15) !important;
+        scale: 98%;
+    }
+
+    .utrecht-button.utrecht-button--subtle {
+        &:not(:disabled):hover {
+            --utrecht-button-hover-border-color: currentColor;
+        }
+    }
 }

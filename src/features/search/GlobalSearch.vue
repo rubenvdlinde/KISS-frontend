@@ -12,16 +12,15 @@
       </label>
     </fieldset>
     <div class="search-bar">
-      <label
-        ><input
-          type="search"
-          v-model="state.searchInput"
-          placeholder="Zoeken"
-          @search.prevent="applySearch"
-          id="global-search-input"
-        />Zoekterm</label
-      >
-      <button><span>Zoeken</span><utrecht-icon-loupe model-value /></button>
+      <label for="global-search-input"> Zoekterm</label>
+      <search-combobox
+        :list-items="listItems"
+        v-model="state.searchInput"
+        placeholder="Zoeken"
+        @search.prevent="applySearch"
+        id="global-search-input"
+      />
+      <button><span>Zoeken</span></button>
     </div>
   </form>
   <template v-if="state.currentSearch">
@@ -104,37 +103,39 @@
                 @click.prevent="backToResults"
                 >Alle zoekresultaten</a
               >
-              <medewerker-detail
-                :medewerkerRaw="jsonObject"
-                v-if="source === 'Smoelenboek'"
-                :title="title"
-                :heading-level="2"
-              />
-              <kennisartikel-detail
-                v-else-if="source === 'Kennisartikel'"
-                :kennisartikel-raw="jsonObject"
-                :title="title"
-                :heading-level="2"
-              />
-              <article v-else>
-                <header>
-                  <utrecht-heading model-value :level="2"
-                    ><a
-                      v-if="url"
-                      :href="url.toString()"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {{ title }}
-                    </a>
-                    <template v-else>{{ title }}</template>
-                  </utrecht-heading>
-                  <small :class="`category-${source}`">{{ source }}</small>
-                </header>
-
-                <p v-if="content">{{ content }}</p>
-              </article>
-              <slot name="articleFooter" :id="url" :title="title"></slot>
+              <template v-if="id === state.currentId">
+                <medewerker-detail
+                  :medewerkerRaw="jsonObject"
+                  v-if="source === 'Smoelenboek'"
+                  :title="title"
+                  :heading-level="2"
+                />
+                <kennisartikel-detail
+                  v-else-if="source === 'Kennisartikel'"
+                  :kennisartikel-raw="jsonObject"
+                  :title="title"
+                  :heading-level="2"
+                  @kennisartikel-selected="handleKennisartikelSelected"
+                />
+                <article v-else>
+                  <header>
+                    <utrecht-heading :level="2"
+                      ><a
+                        v-if="url"
+                        :href="url.toString()"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ title }}
+                      </a>
+                      <template v-else>{{ title }}</template>
+                    </utrecht-heading>
+                    <small :class="`category-${source}`">{{ source }}</small>
+                  </header>
+                  <p v-if="content">{{ content }}</p>
+                </article>
+                <slot name="articleFooter" :id="url" :title="title"></slot>
+              </template>
             </li>
           </ul>
         </template>
@@ -167,14 +168,11 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {
-  UtrechtIconLoupe,
-  UtrechtHeading,
-} from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import { computed, nextTick, ref, watch } from "vue";
-import { useGlobalSearch, useSources } from "./service";
+import { useGlobalSearch, useSources, useSuggestions } from "./service";
 
-import Pagination from "../../nl-design-system/components/Pagination.vue";
+import Pagination from "@/nl-design-system/components/Pagination.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import type { Source } from "./types";
 import MedewerkerDetail from "./MedewerkerDetail.vue";
@@ -186,6 +184,9 @@ import type {
 } from "@/features/search/types";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
+import SearchCombobox from "../../components/SearchCombobox.vue";
+import { mapServiceData } from "@/services";
+import { debouncedRef } from "@vueuse/core";
 
 const emit = defineEmits<{
   (
@@ -277,7 +278,6 @@ const selectSearchResult = (
   if (contactmomentStore.contactmomentLoopt) {
     if (source === "Smoelenboek")
       handleSmoelenboekSelected(jsonObject, self ?? "");
-    if (source === "Kennisartikel") handleKennisartikelSelected(jsonObject);
   }
 
   emit("result-selected", {
@@ -315,6 +315,17 @@ const handleWebsiteSelected = (website: Website): void => {
   contactmomentStore.addWebsite(website);
   window.open(website.url);
 };
+
+const debounceInput = debouncedRef(
+  computed(() => state.value.searchInput),
+  300
+);
+
+const suggestions = useSuggestions(debounceInput);
+
+const listItems = mapServiceData(suggestions, (items) =>
+  items.map((value) => ({ value }))
+);
 </script>
 
 <style lang="scss" scoped>
@@ -329,6 +340,37 @@ form {
 .search-bar {
   max-width: 40rem;
   width: 100%;
+  position: relative;
+
+  :deep([role="combobox"]) {
+    outline: none;
+    &[aria-expanded="true"] {
+      border-end-start-radius: 0;
+      border-block-end-color: white;
+      &::after {
+        content: "";
+        inline-size: 100%;
+        block-size: 1px;
+        background-color: var(--color-secondary);
+      }
+
+      ~ button {
+        border-end-end-radius: 0;
+        border-block-end-color: white;
+      }
+    }
+  }
+
+  :deep([role="listbox"]) {
+    border-end-start-radius: var(--radius-large);
+    border-end-end-radius: var(--radius-large);
+    border-block-start-color: white;
+    gap: var(--spacing-small);
+  }
+
+  :deep([role="option"]) {
+    padding-block: var(--spacing-small);
+  }
 }
 
 button {
@@ -428,10 +470,6 @@ nav ul {
     padding-block: var(--spacing-default);
     border-block-end: 1px solid var(--color-tertiary);
     display: flex;
-
-    a:hover {
-      cursor: pointer;
-    }
   }
 }
 

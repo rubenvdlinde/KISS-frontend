@@ -48,16 +48,8 @@ body {
     padding-inline-end: var(--container-padding);
 }
 
-utrecht-icon-loupe {
-    pointer-events: none;
-}
-
 .utrecht-select {
     appearance: auto;
-}
-
-button:hover {
-    cursor: pointer;
 }
 
 .main-tabs > nav {
@@ -127,18 +119,20 @@ h2 {
     button {
         border: none;
         border-block: var(--border-style);
-
-        &:focus-visible {
-            outline-color: var(--color-primary);
-        }
+        outline-offset: -1px;
     }
 
-    > :first-child {
-        input,
-        select {
-            border-radius: var(--radius-large) 0 0 var(--radius-large);
-            border-inline-start: var(--border-style);
-        }
+    > label:first-child > input,
+    label:first-child > select,
+    > label:first-child + input,
+    label:first-child + select {
+        border-start-start-radius: var(--radius-large);
+        border-end-start-radius: var(--radius-large);
+        border-inline-start: var(--border-style);
+    }
+
+    > input[type="search"] {
+        flex: 1;
     }
 
     > :last-child {
@@ -147,14 +141,11 @@ h2 {
     }
 
     button {
-        --utrecht-icon-size: 1rem;
+        @extend .icon-after;
+        @extend .loupe;
         background: var(--color-white);
         font-size: 0;
         padding-right: var(--spacing-default);
-    }
-
-    utrecht-icon-loupe {
-        pointer-events: none;
     }
 
     input,
@@ -223,14 +214,165 @@ details {
     summary {
         @extend .icon-after;
         @extend .chevron-down;
-        gap: 0.75rem;
+        gap: var(--utrecht-button-icon-gap);
+        cursor: default;
     }
 
     &[open] > summary::after {
         transform: rotate(180deg);
     }
+}
 
-    summary:focus-visible {
-        outline: auto currentColor;
+//
+//
+//TABLES
+table.overview {
+    width: 100%;
+
+    thead {
+        color: var(--color-white);
+        background-color: var(--color-tertiary);
+    }
+
+    tr {
+        border: 1px solid var(--color-tertiary);
+
+        th,
+        td {
+            text-align: left;
+            padding-inline: var(--spacing-default);
+
+            &:not(.wrap) {
+                white-space: nowrap;
+            }
+        }
+
+        td {
+            padding-block: var(--spacing-default);
+            font-weight: normal;
+        }
+
+        th {
+            padding-block: var(--spacing-small);
+            font-weight: 600;
+        }
+
+        &.row-link {
+            a,
+            button {
+                padding-inline-end: var(--spacing-default);
+            }
+        }
+    }
+
+    a,
+    button {
+        color: var(--color-tertiary);
+    }
+}
+
+tr.row-link {
+    position: relative;
+    a,
+    button {
+        @extend .icon-after;
+        @extend .chevron-down;
+
+        display: flex;
+        position: absolute;
+        inset: 0;
+        justify-content: flex-end;
+
+        &::after {
+            rotate: -90deg;
+        }
+    }
+}
+
+th.row-link-header {
+    font-size: 0;
+}
+
+.details-block {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-default);
+
+    dl {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(50, min-content);
+        justify-content: flex-start;
+        column-gap: var(--spacing-large);
+        align-items: center;
+
+        &:not(:first-child) {
+            margin-block-start: var(--spacing-default);
+        }
+
+        > dt {
+            grid-row-start: 1;
+
+            &:nth-of-type(n + 6) {
+                margin-top: var(--spacing-default);
+                grid-row-start: 3;
+
+                ~ dd {
+                    grid-row-start: 4;
+                }
+            }
+
+            &:nth-of-type(6) {
+                grid-column-start: 1;
+
+                ~ dd {
+                    grid-column-start: 1;
+                }
+            }
+
+            &:nth-of-type(7) {
+                grid-column-start: 2;
+
+                ~ dd {
+                    grid-column-start: 2;
+                }
+            }
+
+            &:nth-of-type(8) {
+                grid-column-start: 3;
+
+                ~ dd {
+                    grid-column-start: 3;
+                }
+            }
+
+            &:nth-of-type(9) {
+                grid-column-start: 4;
+
+                ~ dd {
+                    grid-column-start: 4;
+                }
+            }
+        }
+    }
+
+    dt {
+        font-weight: 600;
+    }
+
+    dd {
+        margin-block-start: var(--spacing-extrasmall);
+    }
+}
+
+.skeleton {
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(200, 20%, 80%);
+    }
+    100% {
+        background-color: hsl(200, 20%, 95%);
     }
 }

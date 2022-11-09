@@ -46,7 +46,7 @@ function parseWerkbericht(
 ): Werkbericht {
   if (
     typeof jsonObject?.embedded?.title?.rendered !== "string" ||
-    typeof jsonObject?.embedded?.content?.rendered !== "string" ||
+    typeof jsonObject?.embedded?.acf?.publication_content !== "string" ||
     typeof jsonObject?.date !== "string"
   ) {
     throw new Error(
@@ -55,15 +55,10 @@ function parseWerkbericht(
     );
   }
 
-  const berichtTypeIds = jsonObject?.["openpub-type"];
-  const typeNames = Array.isArray(berichtTypeIds)
-    ? berichtTypeIds.map(
-        (x) =>
-          (typeof x === "number" && getBerichtTypeNameById(x)) || "onbekend"
-      )
-    : ["onbekend"];
+  const berichtTypeId = jsonObject?.embedded?.acf?.publication_type;
+  const berichtTypeName = getBerichtTypeNameById(berichtTypeId) ?? "onbekend";
 
-  const skillIds = jsonObject?.["openpub_skill"];
+  const skillIds = jsonObject?.embedded?.acf?.publication_skill;
   const skillNames = Array.isArray(skillIds)
     ? skillIds.map(
         (x) => (typeof x === "number" && getSkillNameById(x)) || "onbekend"
@@ -91,11 +86,12 @@ function parseWerkbericht(
     id: jsonObject.id,
     read: !!dateRead,
     title: jsonObject.embedded.title.rendered,
-    content: jsonObject.embedded.content.rendered,
+    content: jsonObject.embedded.acf.publication_content,
     date: dateLatest,
-    types: typeNames,
+    type: berichtTypeName,
     skills: skillNames,
     url: jsonObject["x-commongateway-metadata"]?.self,
+    featured: jsonObject.embedded.acf.publication_featured,
   };
 }
 
@@ -129,7 +125,7 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
  * Returns a reactive ServiceData object promising a LookupList of berichttypes
  */
 export function useBerichtTypes(): ServiceData<LookupList<number, string>> {
-  const url = window.gatewayBaseUri + "/api/openpub/openpub-type";
+  const url = window.gatewayBaseUri + "/api/openpub/openpub_type";
   return ServiceResult.fromFetcher(url, fetchLookupList);
 }
 
@@ -168,12 +164,14 @@ export function useWerkberichten(
     ];
 
     params.push(["limit", "10"]);
-    params.push(["order[_dateModified]", "desc"]);
+    params.push(["order[modified]", "desc"]);
     params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
     params.push(["extend[]", "x-commongateway-metadata.self"]);
+    params.push(["extend[]", "acf"]);
+    params.push(["acf.publication_end_date[after]", "now"]);
 
     if (typeId) {
-      params.push(["openpub-type", typeId.toString()]);
+      params.push(["acf.publication_type", typeId.toString()]);
     }
 
     if (search) {
@@ -186,7 +184,7 @@ export function useWerkberichten(
 
     if (skillIds?.length) {
       skillIds.forEach((skillId) => {
-        params.push(["openpub_skill[]", skillId.toString()]);
+        params.push(["acf.publication_skill[]", skillId.toString()]);
       });
     }
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
@@ -212,16 +210,57 @@ export function useWerkberichten(
     if (!Array.isArray(berichten))
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
-    return parsePagination(json, (bericht: any) =>
-      parseWerkbericht(
-        bericht,
-        typesResult.data.fromKeyToValue,
-        skillsResult.data.fromKeyToValue
-      )
+    const featuredBerichten = berichten.filter(
+      (bericht) => bericht.embedded.acf.publication_featured
+    );
+    const regularBerichten = berichten.filter(
+      (bericht) => !bericht.embedded.acf.publication_featured
+    );
+    const sortedBerichten = [...featuredBerichten, ...regularBerichten];
+
+    return parsePagination(
+      { ...json, results: sortedBerichten },
+      (bericht: any) =>
+        parseWerkbericht(
+          bericht,
+          typesResult.data.fromKeyToValue,
+          skillsResult.data.fromKeyToValue
+        )
     );
   }
 
   return ServiceResult.fromFetcher(getUrl, fetchBerichten, { poll: true });
+}
+
+export function useFeaturedWerkberichtenCount() {
+  async function fetchFeaturedWerkberichten(url: string): Promise<number> {
+    const r = await fetchLoggedIn(url);
+
+    if (!r.ok) throw new Error(r.status.toString());
+
+    const json = await r.json();
+
+    if (!json.results.length) return 0;
+
+    return json.results.filter(
+      (result: any) => !result["x-commongateway-metadata"].dateRead
+    ).length;
+  }
+
+  function getUrl() {
+    const params: [string, string][] = [
+      ["acf.publication_featured", "true"],
+      ["fields[]", "x-commongateway-metadata.dateRead"],
+      ["extend[]", "x-commongateway-metadata.dateRead"],
+      ["acf.publication_end_date[after]", "now"],
+    ];
+
+    return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
+  }
+
+  return ServiceResult.fromFetcher(getUrl(), fetchFeaturedWerkberichten, {
+    poll: true,
+  });
 }
 
 export async function readBericht(id: string): Promise<boolean> {

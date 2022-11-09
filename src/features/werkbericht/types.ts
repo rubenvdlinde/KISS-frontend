@@ -3,8 +3,9 @@ export interface Werkbericht {
   title: string;
   date: Date;
   content: string;
-  types: string[];
+  type: string;
   skills: string[];
   read: boolean;
   url: string;
+  featured: boolean;
 }

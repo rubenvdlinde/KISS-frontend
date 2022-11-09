@@ -30,6 +30,7 @@ export type Website = {
 export type Kennisartikel = {
   url: string;
   title: string;
+  sections: string[];
 };
 
 export type Nieuwsbericht = {

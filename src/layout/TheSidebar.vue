@@ -24,12 +24,12 @@
               :title="tabName"
               :class="[
                 'icon-after',
-                tabName === NotitieTabs.Terugbel ? 'phone-flip' : 'note',
+                tabName === NotitieTabs.Contactverzoek ? 'phone-flip' : 'note',
               ]"
             ></span>
           </template>
           <template #[NotitieTabs.Regulier]>
-            <utrecht-heading id="notitieblok" model-value :level="2"
+            <utrecht-heading id="notitieblok" :level="2"
               >Notitieblok</utrecht-heading
             >
             <textarea
@@ -41,19 +41,12 @@
               "
             />
           </template>
-          <template #[NotitieTabs.Terugbel]>
-            <p v-if="contactverzoekIsSentToMedewerker">
-              Contactverzoek verstuurd naar
-              {{ contactverzoekIsSentToMedewerker }}
-            </p>
+          <template #[NotitieTabs.Contactverzoek]>
             <ContactverzoekFormulier
-              v-else
               :huidige-vraag="
                 contactmomentStore.huidigContactmoment.huidigeVraag
               "
               :huidige-klant="contactmomentStore.klantVoorHuidigeVraag"
-              @start="handleContactverzoekStart"
-              @submit="handleContactverzoekSubmit"
             />
           </template>
         </tabs-component>
@@ -65,11 +58,11 @@
 <script lang="ts" setup>
 import { ContactverzoekFormulier } from "@/features/contactverzoek";
 import TabsComponent from "@/components/TabsComponent.vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import ContactmomentVragenMenu from "@/features/contactmoment/ContactmomentVragenMenu.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { ensureState } from "@/stores/create-store";
-import { watch, computed } from "vue";
+import { watch } from "vue";
 import { useRoute } from "vue-router";
 import {
   ContactmomentStarter,
@@ -79,7 +72,7 @@ import {
 
 enum NotitieTabs {
   Regulier = "Reguliere notitie",
-  Terugbel = "Contactverzoek maken",
+  Contactverzoek = "Contactverzoek maken",
 }
 
 const contactmomentStore = useContactmomentStore();
@@ -101,38 +94,22 @@ watch(
   }
 );
 
-const contactverzoekIsSentToMedewerker = computed(
-  () =>
-    contactmomentStore.huidigContactmoment?.huidigeVraag.contactverzoek
-      .medewerker
+watch(
+  () => state.value.currentNotitieTab,
+  (tab) => {
+    if (
+      tab !== NotitieTabs.Contactverzoek ||
+      !contactmomentStore.huidigContactmoment
+    )
+      return;
+
+    const { huidigeVraag } = contactmomentStore.huidigContactmoment;
+
+    if (huidigeVraag.notitie && !huidigeVraag.contactverzoek.notitie) {
+      huidigeVraag.contactverzoek.notitie = huidigeVraag.notitie;
+    }
+  }
 );
-
-const handleContactverzoekStart = () => {
-  if (
-    !contactmomentStore.huidigContactmoment ||
-    contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek
-      .isSubmitted
-  )
-    return;
-  contactmomentStore.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
-    true;
-};
-
-const handleContactverzoekSubmit = ({
-  medewerker,
-  url,
-}: {
-  medewerker: string;
-  url: string;
-}) => {
-  if (!contactmomentStore.huidigContactmoment) return;
-  const { contactverzoek } =
-    contactmomentStore.huidigContactmoment.huidigeVraag;
-  contactverzoek.url = url;
-  contactverzoek.medewerker = medewerker;
-  contactverzoek.isSubmitted = true;
-  contactverzoek.isInProgress = false;
-};
 </script>
 
 <style lang="scss" scoped>
@@ -193,6 +170,7 @@ aside {
 }
 
 .starter {
+  color: var(--color-white);
   align-self: center;
   margin-block-start: 4rem;
   margin-block-end: var(--spacing-default);
@@ -206,9 +184,7 @@ aside {
     align-items: stretch;
   }
 
-  :deep(utrecht-button) {
-    --utrecht-button-min-inline-size: 17rem;
-  }
+  --utrecht-button-min-inline-size: 17rem;
 }
 
 .within-moment {
@@ -222,14 +198,10 @@ aside {
   margin-block-start: var(--spacing-default);
   padding-block-start: var(--spacing-default);
 
-  h2 {
+  > h2 {
     margin-block-start: var(--spacing-small);
     margin-inline: var(--spacing-default);
     color: inherit;
   }
-}
-
-:deep(h2) {
-  font-size: 1.25rem;
 }
 </style>

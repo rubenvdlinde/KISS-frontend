@@ -1,6 +1,6 @@
 <template>
   <utrecht-button
-    model-value
+    class="start-button"
     type="button"
     @click="onStartContactMoment"
     v-bind="$attrs"
@@ -21,7 +21,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { UtrechtButton } from "@utrecht/web-component-library-vue";
+import { Button as UtrechtButton } from "@utrecht/component-library-vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { useRouter } from "vue-router";
 import { nextTick, useAttrs } from "vue";
@@ -37,15 +37,13 @@ const contactmomentStore = useContactmomentStore();
 
 const onStartContactMoment = async () => {
   if (attrs.disabled) return;
-  if (contactmomentStore.wouldLoseProgress) {
-    await waitForConfirmation();
-  }
+
   if (contactmomentStore.huidigContactmoment) {
     contactmomentStore.huidigContactmoment.route =
       router.currentRoute.value.fullPath;
   }
   contactmomentStore.start();
-  router.push("/klanten");
+  router.push("/personen");
   nextTick(() => {
     document.getElementById("cm-notitieblok")?.focus();
   });
@@ -60,8 +58,11 @@ async function waitForConfirmation() {
 </script>
 
 <style scoped lang="scss">
-utrecht-button {
+.start-button {
   --utrecht-button-min-inline-size: 15rem;
   --utrecht-button-background-color: var(--color-accent);
+  --utrecht-button-color: var(--color-white);
+  --utrecht-button-hover-background-color: var(--color-accent-hover);
+  --utrecht-button-hover-color: black;
 }
 </style>

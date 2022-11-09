@@ -1,4 +1,3 @@
-import type { Klant } from "@/features/klant/types";
 import type {
   Medewerker,
   Website,
@@ -6,18 +5,29 @@ import type {
   Nieuwsbericht,
   Werkinstructie,
 } from "@/features/search/types";
-import type { Zaak } from "@/features/zaaksysteem/types";
+import type { ZaakDetails } from "@/features/zaaksysteem/types";
 import { getFormattedUtcDate } from "@/services";
 import { defineStore } from "pinia";
 import { createSession, type Session } from "../switchable-store";
 export * from "./types";
 
-export type ContactmomentZaak = { zaak: Zaak; shouldStore: boolean };
+export type ContactmomentZaak = { zaak: ZaakDetails; shouldStore: boolean };
+
 export type ContactmomentContactVerzoek = {
   url: string;
   medewerker: string;
-  isInProgress: boolean;
-  isSubmitted: boolean;
+  notitie: string;
+  isActive: boolean;
+};
+
+export type ContactmomentKlant = {
+  id: string;
+  voornaam: string;
+  voorvoegselAchternaam?: string;
+  achternaam: string;
+  telefoonnummers: { telefoonnummer: string }[];
+  emails: { email: string }[];
+  hasContactInformation: boolean;
 };
 
 export interface Vraag {
@@ -27,7 +37,7 @@ export interface Vraag {
   startdatum: string;
   kanaal: string;
   resultaat: string;
-  klanten: { klant: Klant; shouldStore: boolean }[];
+  klanten: { klant: ContactmomentKlant; shouldStore: boolean }[];
   medewerkers: { medewerker: Medewerker; shouldStore: boolean }[];
   websites: { website: Website; shouldStore: boolean }[];
   kennisartikelen: { kennisartikel: Kennisartikel; shouldStore: boolean }[];
@@ -44,8 +54,8 @@ function initVraag(): Vraag {
     contactverzoek: {
       url: "",
       medewerker: "",
-      isInProgress: false,
-      isSubmitted: false,
+      notitie: "",
+      isActive: false,
     },
     startdatum: getFormattedUtcDate(),
     kanaal: "",
@@ -93,14 +103,10 @@ export const useContactmomentStore = defineStore("contactmoment", {
     } as ContactmomentenState;
   },
   getters: {
-    klantVoorHuidigeVraag(state): Klant | undefined {
+    klantVoorHuidigeVraag(state): ContactmomentKlant | undefined {
       return state.huidigContactmoment?.huidigeVraag.klanten
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
-    },
-    wouldLoseProgress(): boolean {
-      return !!this.huidigContactmoment?.huidigeVraag.contactverzoek
-        .isInProgress;
     },
   },
   actions: {
@@ -112,10 +118,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
     },
     switchContactmoment(contactmoment: ContactmomentState) {
       if (!this.contactmomenten.includes(contactmoment)) return;
-      if (this.huidigContactmoment) {
-        this.huidigContactmoment.huidigeVraag.contactverzoek.isInProgress =
-          false;
-      }
       this.huidigContactmoment = contactmoment;
       contactmoment.session.enable();
     },
@@ -139,7 +141,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
       if (!huidigContactmoment) return;
       if (!huidigContactmoment.vragen.includes(vraag)) return;
 
-      huidigContactmoment.huidigeVraag.contactverzoek.isInProgress = false;
       huidigContactmoment.huidigeVraag = vraag;
     },
     stop() {
@@ -160,7 +161,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       // start with an empty session. this is equivalent to resetting all state.
       createSession().enable();
     },
-    upsertZaak(zaak: Zaak, vraag: Vraag, shouldStore = true) {
+    upsertZaak(zaak: ZaakDetails, vraag: Vraag, shouldStore = true) {
       const existingZaak = vraag.zaken.find(
         (contacmomentZaak) => contacmomentZaak.zaak.id === zaak.id
       );
@@ -183,7 +184,7 @@ export const useContactmomentStore = defineStore("contactmoment", {
       );
     },
 
-    setKlant(klant: Klant) {
+    setKlant(klant: ContactmomentKlant) {
       const { huidigContactmoment } = this;
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
@@ -204,6 +205,22 @@ export const useContactmomentStore = defineStore("contactmoment", {
         shouldStore: true,
         klant,
       });
+    },
+
+    setKlantHasContactgegevens(klantId: string) {
+      const { huidigContactmoment } = this;
+
+      if (!huidigContactmoment) return;
+
+      const { huidigeVraag } = huidigContactmoment;
+
+      const targetKlantIndex = huidigeVraag.klanten.findIndex(
+        (k) => k.klant.id === klantId
+      );
+
+      if (targetKlantIndex === -1) return;
+
+      huidigeVraag.klanten[targetKlantIndex].klant.hasContactInformation = true;
     },
 
     addMedewerker(medewerker: any, url: string) {
@@ -232,26 +249,25 @@ export const useContactmomentStore = defineStore("contactmoment", {
       }
     },
 
-    addKennisartikel(kennisartikel: any) {
+    addKennisartikel(kennisartikel: Kennisartikel) {
       const { huidigContactmoment } = this;
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
 
-      const newKennisartikelIndex = huidigeVraag.kennisartikelen.findIndex(
+      const record = huidigeVraag.kennisartikelen.find(
         (k) => k.kennisartikel.url === kennisartikel.url
       );
 
-      if (newKennisartikelIndex === -1) {
+      if (!record) {
         huidigeVraag.kennisartikelen.push({
-          kennisartikel: {
-            title:
-              kennisartikel.vertalingen[0]?.productTitelDecentraal ??
-              "Onbekende titel",
-            url: kennisartikel.url,
-          },
+          kennisartikel,
           shouldStore: true,
         });
+      } else {
+        record.kennisartikel = kennisartikel;
       }
+
+      huidigeVraag.primaireVraag = kennisartikel;
     },
 
     addWebsite(website: Website) {
@@ -259,13 +275,17 @@ export const useContactmomentStore = defineStore("contactmoment", {
       if (!huidigContactmoment) return;
       const { huidigeVraag } = huidigContactmoment;
 
-      const newWebsiteIndex = huidigeVraag.websites.findIndex(
+      const record = huidigeVraag.websites.find(
         (w) => w.website.url === website.url
       );
 
-      if (newWebsiteIndex === -1) {
+      if (!record) {
         huidigeVraag.websites.push({ website, shouldStore: true });
+      } else {
+        record.website = website;
       }
+
+      huidigeVraag.primaireVraag = website;
     },
 
     toggleNieuwsbericht(nieuwsbericht: Nieuwsbericht) {
@@ -286,6 +306,8 @@ export const useContactmomentStore = defineStore("contactmoment", {
         nieuwsbericht,
         shouldStore: true,
       });
+
+      huidigeVraag.primaireVraag = nieuwsbericht;
     },
 
     toggleWerkinstructie(werkinstructie: Werkinstructie) {
@@ -306,6 +328,27 @@ export const useContactmomentStore = defineStore("contactmoment", {
         werkinstructie,
         shouldStore: true,
       });
+
+      huidigeVraag.primaireVraag = werkinstructie;
+    },
+
+    updateContactverzoek(contactverzoek: ContactmomentContactVerzoek) {
+      const { huidigContactmoment } = this;
+
+      if (!huidigContactmoment) return;
+
+      huidigContactmoment.huidigeVraag.contactverzoek = {
+        ...contactverzoek,
+        isActive: true,
+      };
+    },
+
+    removeVraag(vraagIndex: number) {
+      const { huidigContactmoment } = this;
+
+      if (!huidigContactmoment) return;
+
+      huidigContactmoment.vragen.splice(vraagIndex, 1);
     },
   },
 });

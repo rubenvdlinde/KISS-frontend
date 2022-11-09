@@ -19,18 +19,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { UtrechtHeading } from "@utrecht/web-component-library-vue";
-import type { ZaakDetails } from "../types";
+import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import ContactmomentenOverzicht from "@/features/contactmoment/ContactmomentenOverzicht.vue";
 import Pagination from "@/nl-design-system/components/Pagination.vue";
 import { useContactmomentenByZaakUrl } from "@/features/shared/get-contactmomenten-service";
 
 const props = defineProps<{
-  zaak: ZaakDetails;
+  self: string;
 }>();
 
-const self = computed(() => props.zaak.self);
+const self = computed(() => props.self);
 const page = ref(1);
 
 const navigate = (val: number) => {

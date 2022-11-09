@@ -8,11 +8,7 @@
       message="Er kon geen zaak gevonden worden"
     ></application-message>
 
-    <zaak-details
-      :zaak="zaak.data"
-      v-if="zaak.success"
-      @zaak-updated="handleZaakUpdated"
-    />
+    <zaak-details :zaak="zaak.data" v-if="zaak.success" />
   </article>
 </template>
 
@@ -21,15 +17,23 @@ import { useZaakById } from "@/features/zaaksysteem/service";
 import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import ZaakDetails from "@/features/zaaksysteem/ZaakDetails.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import { useContactmomentStore } from "@/stores/contactmoment";
 
 const props = defineProps<{ zaakId: string }>();
 
+const contactmomentStore = useContactmomentStore();
 const zaak = useZaakById(computed(() => props.zaakId));
 
-const handleZaakUpdated = () => {
-  zaak.refresh();
-};
+watch(
+  () => zaak.success && zaak.data,
+  (z) => {
+    if (!z || !contactmomentStore.huidigContactmoment) return;
+    contactmomentStore.upsertZaak(
+      z,
+      contactmomentStore.huidigContactmoment.huidigeVraag
+    );
+  },
+  { immediate: true }
+);
 </script>
-
-<style scoped lang="scss"></style>

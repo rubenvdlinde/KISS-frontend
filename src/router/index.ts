@@ -6,11 +6,14 @@ import {
 import HomeView from "../views/HomeView.vue";
 import AfhandelingView from "../views/AfhandelingView.vue";
 import ZakenView from "../views/ZakenView.vue";
-import KlantenView from "../views/KlantenView.vue";
-import KlantDetailView from "../views/KlantDetailView.vue";
+import PersonenView from "../views/PersonenView.vue";
+import PersoonDetailView from "../views/PersoonDetailView.vue";
 import ZaakDetailView from "../views/ZaakDetailView.vue";
 import { useContactmomentStore } from "@/stores/contactmoment";
 import { redirectRoute } from "@/features/login";
+import BedrijvenView from "@/views/BedrijvenView.vue";
+import BedrijfDetailView from "@/views/BedrijfDetailView.vue";
+import LinksView from "@/views/LinksView.vue";
 
 const guardContactMoment: NavigationGuard = (to, from, next) => {
   const contactmoment = useContactmomentStore();
@@ -43,17 +46,32 @@ const router = createRouter({
       },
     },
     {
-      path: "/klanten",
-      name: "klanten",
-      component: KlantenView,
+      path: "/personen",
+      name: "personen",
+      component: PersonenView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     {
-      path: "/klanten/:klantId",
-      name: "klantDetail",
+      path: "/personen/:persoonId",
+      name: "persoonDetail",
       props: true,
-      component: KlantDetailView,
+      component: PersoonDetailView,
+      beforeEnter: guardContactMoment,
+      meta: { showNav: true, showNotitie: true, showSearch: true },
+    },
+    {
+      path: "/bedrijven",
+      name: "bedrijven",
+      component: BedrijvenView,
+      beforeEnter: guardContactMoment,
+      meta: { showNav: true, showNotitie: true, showSearch: true },
+    },
+    {
+      path: "/bedrijven/:bedrijfId",
+      name: "bedrijfDetail",
+      props: true,
+      component: BedrijfDetailView,
       beforeEnter: guardContactMoment,
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
@@ -70,6 +88,12 @@ const router = createRouter({
       props: true,
       component: ZaakDetailView,
       beforeEnter: guardContactMoment,
+      meta: { showNav: true, showNotitie: true, showSearch: true },
+    },
+    {
+      path: "/links",
+      name: "links",
+      component: LinksView,
       meta: { showNav: true, showNotitie: true, showSearch: true },
     },
     redirectRoute,

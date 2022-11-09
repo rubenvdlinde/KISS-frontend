@@ -72,33 +72,37 @@
     />
 
     <menu>
-      <utrecht-button
-        modelValue
-        @click="props.handleCancel"
-        type="button"
-        appearance="secondary-action-button"
-        >Annuleren</utrecht-button
-      >
-      <button class="utrecht-button utrecht-button--submit" type="submit">
-        Opslaan
-      </button>
+      <li>
+        <utrecht-button
+          modelValue
+          @click="props.handleCancel"
+          type="button"
+          appearance="secondary-action-button"
+          >Annuleren</utrecht-button
+        >
+      </li>
+      <li>
+        <utrecht-button appearance="primary-action-button" type="submit">
+          Opslaan
+        </utrecht-button>
+      </li>
     </menu>
   </non-blocking-form>
 </template>
 
 <script setup lang="ts">
 import {
-  UtrechtHeading,
-  UtrechtButton,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import { customPhoneValidator } from "@/helpers/validation";
 import { ref, computed } from "vue";
-import { createKlant } from "../contactverzoek";
-import SimpleSpinner from "../../components/SimpleSpinner.vue";
-import ApplicationMessage from "../../components/ApplicationMessage.vue";
+import { createKlant } from "@/features/contactverzoek";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { useRouter } from "vue-router";
-import NonBlockingForm from "../../components/non-blocking-forms/NonBlockingForm.vue";
-import NonBlockingErrors from "../../components/non-blocking-forms/NonBlockingErrors.vue";
+import NonBlockingForm from "@/components/non-blocking-forms/NonBlockingForm.vue";
+import NonBlockingErrors from "@/components/non-blocking-forms/NonBlockingErrors.vue";
 
 const props = defineProps<{
   handleCancel: () => void;
@@ -143,7 +147,7 @@ const submit = async () => {
 
   const { id } = await createKlant(nieuweKlant);
 
-  router.push("/klanten/" + id);
+  router.push("/personen/" + id);
 };
 </script>
 

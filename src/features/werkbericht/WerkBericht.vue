@@ -1,7 +1,12 @@
 <template>
   <article :class="{ read: read }">
-    <small v-if="showType && bericht.types.length">
-      {{ bericht.types.join(", ") }}
+    <div v-if="bericht.featured" class="featured">
+      <span class="icon-before alert" />
+      Belangrijk
+    </div>
+
+    <small v-if="showType && bericht.type">
+      {{ bericht.type }}
     </small>
 
     <div class="heading-container">
@@ -12,29 +17,33 @@
 
         <menu>
           <li>
-            <input
-              v-if="contactmomentStore.contactmomentLoopt"
-              class="save-bericht-to-contactmoment-checkbox"
-              type="checkbox"
-              title="Opslaan bij contactmoment"
-              v-model="berichtSelectedInContactmoment"
-              @click.stop="handleToggleBerichtInContactmoment"
-            />
+            <label class="save-bericht-to-contactmoment-label">
+              <input
+                v-if="contactmomentStore.contactmomentLoopt"
+                class="save-bericht-to-contactmoment-checkbox"
+                type="checkbox"
+                title="Opslaan bij contactmoment"
+                v-model="berichtSelectedInContactmoment"
+                @click.stop="handleToggleBerichtInContactmoment"
+              />
+              Opslaan bij contactmoment
+            </label>
           </li>
 
           <li>
-            <button
+            <utrecht-button
+              appearance="subtle-button"
               @click="toggleRead"
               :title="`Markeer als ${read ? 'ongelezen' : 'gelezen'}`"
-              class="toggle-read icon-after book"
+              class="toggle-read icon-after book icon-only"
               :disabled="toggleReadIsLoading"
             />
           </li>
         </menu>
       </div>
 
-      <utrecht-heading model-value :level="level">
-        <span class="title">{{ bericht.title }}</span>
+      <utrecht-heading :level="level">
+        <span class="title" v-html="sanitizedTitle" />
       </utrecht-heading>
     </div>
 
@@ -48,8 +57,8 @@
       </small>
     </div>
 
-    <utrecht-document model-value class="correct-header">
-      <div v-html="sanitized" />
+    <utrecht-document class="correct-header">
+      <div v-html="sanitizedContent" />
     </utrecht-document>
   </article>
 </template>
@@ -58,9 +67,10 @@
 import { computed, ref, watch, type PropType } from "vue";
 import type { Werkbericht } from "./types";
 import {
-  UtrechtHeading,
-  UtrechtDocument,
-} from "@utrecht/web-component-library-vue";
+  Heading as UtrechtHeading,
+  Document as UtrechtDocument,
+  Button as UtrechtButton,
+} from "@utrecht/component-library-vue";
 import { readBericht, unreadBericht } from "./service";
 import { sanitizeHtmlToBerichtFormat, increaseHeadings } from "@/helpers/html";
 import { toast } from "@/stores/toast";
@@ -155,10 +165,11 @@ function processHtml(html: string) {
   return increasedHeadings;
 }
 
-const sanitized = computed(() => processHtml(props.bericht.content));
+const sanitizedContent = computed(() => processHtml(props.bericht.content));
+const sanitizedTitle = computed(() => processHtml(props.bericht.title));
 
 const handleToggleBerichtInContactmoment = (): void => {
-  const type = props.bericht.types[0];
+  const type = props.bericht.type;
   const bericht = { url: props.bericht.url, title: props.bericht.title };
 
   type === "nieuws" && contactmomentStore.toggleNieuwsbericht(bericht);
@@ -175,6 +186,23 @@ article {
   overflow: hidden;
   display: grid;
   gap: 0.75rem;
+  position: relative;
+
+  .featured {
+    display: flex;
+    position: relative;
+    width: fit-content;
+    align-items: center;
+    gap: var(--spacing-small);
+    color: var(--color-white);
+    background: var(--color-error);
+    border-top-right-radius: var(--radius-large);
+    border-bottom-right-radius: var(--radius-large);
+    padding-inline: var(--spacing-large);
+    padding-block: var(--spacing-small);
+    top: calc(0.75rem * -1); // based on article padding
+    left: calc(var(--text-margin) * -1); // based on article padding
+  }
 
   time {
     color: var(--color-primary);
@@ -192,24 +220,27 @@ article {
 
       menu {
         display: flex;
-        gap: var(--spacing-default);
+        gap: var(--spacing-small);
+
+        .save-bericht-to-contactmoment-label {
+          display: flex;
+          place-content: center;
+          place-items: center;
+          place-self: center;
+          font-size: 0;
+          block-size: var(--spacing-large);
+          inline-size: var(--spacing-large);
+        }
 
         .save-bericht-to-contactmoment-checkbox {
           accent-color: var(--color-primary);
-          transform: scale(1.25);
+          transform: scale(1.25) translateY(-1px);
           margin: 0;
-          margin-inline-start: 2px;
         }
 
         .toggle-read {
           color: var(--color-headings);
-          position: relative;
-          top: 4px;
 
-          &:hover {
-            color: var(--color-tertiary);
-            cursor: pointer;
-          }
           &:hover:disabled {
             cursor: wait;
           }
@@ -259,6 +290,10 @@ article {
     & > *:not(.heading-container) {
       display: none;
     }
+  }
+
+  .correct-header div {
+    white-space: break-spaces;
   }
 }
 </style>
