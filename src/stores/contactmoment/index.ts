@@ -108,16 +108,6 @@ export const useContactmomentStore = defineStore("contactmoment", {
         ?.filter((x) => x.shouldStore)
         ?.map((x) => x.klant)?.[0];
     },
-
-    canStoreContactmoment(state): boolean {
-      return !state.huidigContactmoment?.vragen.some(
-        (vraag) =>
-          vraag.resultaat === "Contactverzoek gemaakt" &&
-          !vraag.klanten.some(
-            (klant) => klant.shouldStore && klant.klant.hasContactInformation
-          )
-      );
-    },
   },
   actions: {
     start() {

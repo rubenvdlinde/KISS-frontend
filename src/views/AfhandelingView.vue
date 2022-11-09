@@ -302,22 +302,6 @@
 
               <div class="contactverzoek-container">
                 <div>
-                  <application-message
-                    v-if="!vraag.klanten.some((klant) => klant.shouldStore)"
-                    message="Er is geen klant geselecteerd"
-                    message-type="warning"
-                  />
-
-                  <application-message
-                    v-else-if="
-                      !vraag.klanten.some(
-                        (klant) => klant.klant.hasContactInformation
-                      )
-                    "
-                    messageType="warning"
-                    message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
-                  />
-
                   <label
                     class="utrecht-form-label required"
                     :for="'verzoek-medewerker' + idx"
@@ -409,11 +393,6 @@
           </fieldset>
         </section>
       </article>
-      <application-message
-        v-if="!contactmomentStore.canStoreContactmoment"
-        message="Bij één of meerdere vragen is geen klant óf een klant zonder contactgegevens geselecteerd."
-        message-type="warning"
-      />
       <menu>
         <li>
           <utrecht-button
@@ -426,11 +405,7 @@
           </utrecht-button>
         </li>
         <li>
-          <utrecht-button
-            type="submit"
-            appearance="primary-action-button"
-            :disabled="!contactmomentStore.canStoreContactmoment"
-          >
+          <utrecht-button type="submit" appearance="primary-action-button">
             Opslaan
           </utrecht-button>
         </li>
