@@ -130,7 +130,7 @@ const store = ensureState({
   stateFactory() {
     return {
       currentSearch: "",
-      field: "email" as SearchFields,
+      field: "geboortedatum" as SearchFields,
       klantSearchQuery: undefined as KlantSearch<KlantSearchField> | undefined,
       persoonSearchQuery: undefined as
         | PersoonQuery<PersoonSearchField>
