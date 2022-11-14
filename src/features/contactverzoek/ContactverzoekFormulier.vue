@@ -1,17 +1,5 @@
 <template>
   <form class="container" @submit.prevent>
-    <application-message
-      v-if="!huidigeKlant"
-      messageType="warning"
-      message="Er is geen klant geselecteerd"
-    />
-
-    <application-message
-      v-if="huidigeKlant && !huidigeKlant.hasContactInformation"
-      messageType="warning"
-      message="Geselecteerde klant heeft geen telefoonnummer of e-mailadres"
-    />
-
     <utrecht-heading :level="2">Contactverzoek maken</utrecht-heading>
 
     <label class="utrecht-form-label required" for="medewerker-select"
@@ -49,7 +37,6 @@ import {
 } from "@/stores/contactmoment";
 import { Heading as UtrechtHeading } from "@utrecht/component-library-vue";
 import MedewerkerSearch from "@/features/search/MedewerkerSearch.vue";
-import ApplicationMessage from "@/components/ApplicationMessage.vue";
 import { computed } from "@vue/reactivity";
 
 const props = defineProps<{
