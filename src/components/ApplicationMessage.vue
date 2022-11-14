@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toRefs, onMounted, ref, type PropType } from "vue";
+import { defineProps, toRefs, onMounted, ref, type PropType } from "vue";
 
 const fade = ref(false);
 const props = defineProps({

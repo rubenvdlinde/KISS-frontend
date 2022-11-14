@@ -89,7 +89,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, defineProps, computed } from "vue";
 import { useFeedbackService } from "../service";
 import type { CurrentFeedbackSection, Feedback } from "../types";
 import { useConfirmDialog } from "@vueuse/core";

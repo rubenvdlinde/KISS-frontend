@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 import {
   Heading as UtrechtHeading,
   Button as UtrechtButton,
