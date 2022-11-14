@@ -18,7 +18,7 @@
   <form v-else class="afhandeling" @submit.prevent="submit">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
-    <a @click="$router.back()" href="#"> terug </a>
+    <a @click="$router.back()" href="#">{{ "< Terug" }}</a>
 
     <application-message
       v-if="errorMessage != ''"
