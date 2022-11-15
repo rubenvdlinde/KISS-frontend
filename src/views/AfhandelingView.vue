@@ -309,11 +309,13 @@
                   >
                   <select
                     v-model="vraag.contactverzoek.afdeling"
+                    class="utrecht-select utrecht-select--html-select"
                     :id="'verzoek-afdeling' + idx"
                   >
                     <option
                       v-for="afdeling in afdelingen.data"
                       :key="idx + afdeling.id"
+                      :value="afdeling.name"
                     >
                       {{ afdeling.name }}
                     </option>
