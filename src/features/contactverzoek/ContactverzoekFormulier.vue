@@ -15,7 +15,7 @@
         <option
           v-for="afdeling in afdelingen.data"
           :key="afdeling.id"
-          :value="afdeling.id"
+          :value="afdeling.name"
         >
           {{ afdeling.name }}
         </option>
