@@ -1,6 +1,29 @@
 Security considerations
 ---
 
+### OSWAP DOcker top 10
+
+## D01 - Secure User Mapping
+
+## D02 - Patch Management Strategy
+
+## D03 - Network Segmentation and Firewalling
+
+## D04 - Secure Defaults and Hardening
+
+## D05 - Maintain Security Contexts
+
+## D06 - Protect Secrets
+
+## D07 - Resource Protection
+
+## D08 - Container Image Integrity and Origin
+
+## D09 - Follow Immutable Paradigm
+
+## D10 - Logging
+
+
 ##Vulnerability Scanning
 The repository is regularly scanned by [Snyk](https://snyk.io). This scan produces a list of vulnerabilities in the repository it scans. Usually we will aim at fixing a vulnerability as soon as possible, however, there are some exceptions for false-positives in the results of the scan. Also GitHub vulnerability scanning is enabled which also gives a security report periodically. For now this document only reports snyk vulnerabilities.
 
