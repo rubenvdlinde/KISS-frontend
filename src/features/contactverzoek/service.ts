@@ -78,7 +78,8 @@ export function useAfdelingen() {
         if (current.totalPages <= current.pageNumber) return current.page;
         const nextPage = await fetcher(url, page + 1);
         return [...current.page, ...nextPage];
-      });
+      })
+      .then((all) => all.sort((a, b) => a.name.localeCompare(b.name)));
 
   return ServiceResult.fromFetcher(url, fetcher);
 }
