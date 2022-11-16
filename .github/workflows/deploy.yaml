@@ -22,6 +22,7 @@ jobs:
           else
             echo "##[set-output name=success]false"
           fi
+      # Auto deploys the frontend to the development environment
       - name: Upgrade helm installation
         if: steps.kubeconfig.outputs.success == 'true' && success()
         run: helm upgrade --install kiss-frontend kiss-frontend/kiss-frontend --reuse-values --kubeconfig="kubeconfig.yaml" --namespace=dev-frontend --description https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/KISS-frontend/development/helm
