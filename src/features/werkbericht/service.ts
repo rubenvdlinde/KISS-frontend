@@ -66,9 +66,8 @@ function parseWerkbericht(
     : ["onbekend"];
 
   const dateCreated = parseDateStrWithTimezone(jsonObject.date);
-  const dateModified = parseDateStrWithTimezone(
-    jsonObject["x-commongateway-metadata"].dateModified
-  );
+  const dateModified = parseDateStrWithTimezone(jsonObject.modified);
+
   const dateLatest = maxDate([dateCreated, dateModified]);
 
   let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
@@ -165,7 +164,6 @@ export function useWerkberichten(
 
     params.push(["limit", "10"]);
     params.push(["order[modified]", "desc"]);
-    params.push(["extend[]", "x-commongateway-metadata.dateModified"]);
     params.push(["extend[]", "x-commongateway-metadata.self"]);
     params.push(["extend[]", "acf"]);
     params.push(["acf.publication_end_date[after]", "now"]);
