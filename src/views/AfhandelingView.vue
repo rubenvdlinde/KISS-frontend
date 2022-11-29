@@ -590,7 +590,7 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
 
   await Promise.all(promises);
 
-  return saveContactmoment;
+  return savedContactmoment;
 };
 
 const navigateToPersonen = () => router.push({ name: "personen" });
@@ -606,6 +606,9 @@ async function submit() {
     const otherVragen = vragen.slice(1);
 
     let { gespreksId } = await saveVraag(firstVraag);
+
+    console.log({ gespreksId });
+
     if (!gespreksId) {
       gespreksId = nanoid();
     }
