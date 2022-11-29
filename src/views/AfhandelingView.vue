@@ -606,9 +606,6 @@ async function submit() {
     const otherVragen = vragen.slice(1);
 
     let { gespreksId } = await saveVraag(firstVraag);
-
-    console.log({ gespreksId });
-
     if (!gespreksId) {
       gespreksId = nanoid();
     }
