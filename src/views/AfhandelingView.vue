@@ -590,7 +590,7 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
 
   await Promise.all(promises);
 
-  return saveContactmoment;
+  return savedContactmoment;
 };
 
 const navigateToPersonen = () => router.push({ name: "personen" });
