@@ -46,7 +46,7 @@ function parseWerkbericht(
 ): Werkbericht {
   if (
     typeof jsonObject?.embedded?.title?.rendered !== "string" ||
-    typeof jsonObject?.embedded?.acf?.publication_content !== "string" ||
+    typeof jsonObject?.embedded?.acf?.publicationContent !== "string" ||
     typeof jsonObject?.date !== "string"
   ) {
     throw new Error(
@@ -55,10 +55,10 @@ function parseWerkbericht(
     );
   }
 
-  const berichtTypeId = jsonObject?.embedded?.acf?.publication_type;
+  const berichtTypeId = jsonObject?.embedded?.acf?.publicationType;
   const berichtTypeName = getBerichtTypeNameById(berichtTypeId) ?? "onbekend";
 
-  const skillIds = jsonObject?.embedded?.acf?.publication_skill;
+  const skillIds = jsonObject?.embedded?.acf?.publicationSkill;
   const skillNames = Array.isArray(skillIds)
     ? skillIds.map(
         (x) => (typeof x === "number" && getSkillNameById(x)) || "onbekend"
@@ -85,12 +85,12 @@ function parseWerkbericht(
     id: jsonObject.id,
     read: !!dateRead,
     title: jsonObject.embedded.title.rendered,
-    content: jsonObject.embedded.acf.publication_content,
+    content: jsonObject.embedded.acf.publicationContent,
     date: dateLatest,
     type: berichtTypeName,
     skills: skillNames,
     url: jsonObject["x-commongateway-metadata"]?.self,
-    featured: jsonObject.embedded.acf.publication_featured,
+    featured: jsonObject.embedded.acf.publicationFeatured,
   };
 }
 
@@ -166,10 +166,10 @@ export function useWerkberichten(
     params.push(["order[modified]", "desc"]);
     params.push(["extend[]", "x-commongateway-metadata.self"]);
     params.push(["extend[]", "acf"]);
-    params.push(["acf.publication_end_date[after]", "now"]);
+    params.push(["acf.publicationEndDate[after]", "now"]);
 
     if (typeId) {
-      params.push(["acf.publication_type", typeId.toString()]);
+      params.push(["acf.publicationType", typeId.toString()]);
     }
 
     if (search) {
@@ -182,7 +182,7 @@ export function useWerkberichten(
 
     if (skillIds?.length) {
       skillIds.forEach((skillId) => {
-        params.push(["acf.publication_skill[]", skillId.toString()]);
+        params.push(["acf.publicationSkill[]", skillId.toString()]);
       });
     }
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
@@ -209,10 +209,10 @@ export function useWerkberichten(
       throw new Error("expected a list, input: " + JSON.stringify(berichten));
 
     const featuredBerichten = berichten.filter(
-      (bericht) => bericht.embedded.acf.publication_featured
+      (bericht) => bericht.embedded.acf.publicationFeatured
     );
     const regularBerichten = berichten.filter(
-      (bericht) => !bericht.embedded.acf.publication_featured
+      (bericht) => !bericht.embedded.acf.publicationFeatured
     );
     const sortedBerichten = [...featuredBerichten, ...regularBerichten];
 
@@ -247,10 +247,10 @@ export function useFeaturedWerkberichtenCount() {
 
   function getUrl() {
     const params: [string, string][] = [
-      ["acf.publication_featured", "true"],
+      ["acf.publicationFeatured", "true"],
       ["fields[]", "x-commongateway-metadata.dateRead"],
       ["extend[]", "x-commongateway-metadata.dateRead"],
-      ["acf.publication_end_date[after]", "now"],
+      ["acf.publicationEndDate[after]", "now"],
     ];
 
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;
