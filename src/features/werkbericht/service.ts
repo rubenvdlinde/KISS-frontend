@@ -103,7 +103,7 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
 
   // having pagination here is a nuisance.
   if (!url.searchParams.has("page")) {
-    url.searchParams.set("per_page", WP_MAX_ALLOWED_PAGE_SIZE);
+    url.searchParams.set("limit", WP_MAX_ALLOWED_PAGE_SIZE);
   }
 
   return fetchLoggedIn(url)
