@@ -48,7 +48,7 @@ const queryDictionary: PersoonQueryParams = {
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
     ["verblijfplaats.postcode", `${postcode.numbers}${postcode.digits}`],
 
-    ["verblijfplaats.huisnummer", huisnummer],
+    ["verblijfplaats.huisnummer[int_compare]", huisnummer],
   ],
 };
 
