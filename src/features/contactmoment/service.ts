@@ -92,12 +92,12 @@ export function useContactverzoekenByKlantId(
 ) {
   function getUrl() {
     const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
-    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
+    url.searchParams.set("_order[contactmoment.registratiedatum]", "desc");
     url.searchParams.append("extend[]", "medewerker");
-    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
+    url.searchParams.append("extend[]", "_self.owner");
     url.searchParams.append("extend[]", "contactmoment.todo");
-    url.searchParams.set("limit", "10");
-    url.searchParams.set("page", page.value.toString());
+    url.searchParams.set("_limit", "10");
+    url.searchParams.set("_page", page.value.toString());
     url.searchParams.set("klant.id", id.value);
     url.searchParams.set("contactmoment.todo", "IS NOT NULL");
     return url.toString();
@@ -135,7 +135,7 @@ const mapContactverzoekDetail = (
     behandelaar: todo.attendees?.[0] ?? "-",
     afgerond: todo.completed ? formatDateOnly(new Date(todo.completed)) : "-",
     starttijd: formatTimeOnly(new Date(contactmoment.registratiedatum)),
-    aanmaker: contactmoment["x-commongateway-metadata"].owner,
+    aanmaker: contactmoment["_self"].owner,
     notitie: todo.description,
     primaireVraagWeergave: contactmoment.primaireVraagWeergave,
     afwijkendOnderwerp: contactmoment.afwijkendOnderwerp,

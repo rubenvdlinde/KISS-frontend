@@ -100,7 +100,7 @@ function getPersoonSearchUrl<K extends PersoonSearchField>(
   });
   url.searchParams.set("extend[]", "all");
   if (page !== undefined && page !== 1) {
-    url.searchParams.set("page", page.toString());
+    url.searchParams.set("_page", page.toString());
   }
 
   return url.toString();

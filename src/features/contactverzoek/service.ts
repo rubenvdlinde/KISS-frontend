@@ -70,7 +70,7 @@ export function useAfdelingen() {
   const mapOrganisatie = (x: unknown): Afdeling => x as any;
 
   const fetcher = (url: string, page = 1, limit = 100): Promise<Afdeling[]> =>
-    fetchLoggedIn(`${url}?limit=${limit}&page=${page}`)
+    fetchLoggedIn(`${url}?_limit=${limit}&_page=${page}`)
       .then(throwIfNotOk)
       .then(parseJson)
       .then((json) => parsePagination(json, mapOrganisatie))
