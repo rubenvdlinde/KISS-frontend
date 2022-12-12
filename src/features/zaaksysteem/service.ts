@@ -66,7 +66,7 @@ const mapZaakDetails = (zaak: any) => {
     streefDatum: streefDatum,
     indienDatum: zaak.publicatiedatum && new Date(zaak.publicatiedatum),
     registratieDatum: zaak.registratiedatum && new Date(zaak.registratiedatum),
-    self: zaak["x-commongateway-metadata"].self,
+    self: zaak["_self"].self,
     documenten: mapDocumenten(zaak?.embedded?.zaakinformatieobjecten),
     omschrijving: zaak.omschrijving,
   } as ZaakDetails;
@@ -76,7 +76,7 @@ const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
 function addExtends(url: URL) {
   url.searchParams.set("extend[]", "all");
-  url.searchParams.append("extend[]", "x-commongateway-metadata.self");
+  url.searchParams.append("extend[]", "_self.self");
 }
 
 const overviewFetcher = (url: string): Promise<Paginated<ZaakDetails>> =>

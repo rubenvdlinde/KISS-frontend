@@ -40,7 +40,7 @@ const getSearchBedrijvenUrl = <K extends SearchCategories>({
   const url = new URL(handelsRegisterBaseUrl);
   // TODO: think about how to search in both klantregister and handelsregister for phone / email
 
-  url.searchParams.set("page", page?.toString() ?? "1");
+  url.searchParams.set("_page", page?.toString() ?? "1");
   url.searchParams.set("extend[]", "all");
 
   const searchParams = bedrijfQueryDictionary[query.field](query.value);

@@ -70,7 +70,7 @@ function parseWerkbericht(
 
   const dateLatest = maxDate([dateCreated, dateModified]);
 
-  let dateRead = jsonObject["x-commongateway-metadata"]?.dateRead;
+  let dateRead = jsonObject["_self"]?.dateRead;
 
   if (
     dateRead &&
@@ -89,7 +89,7 @@ function parseWerkbericht(
     date: dateLatest,
     type: berichtTypeName,
     skills: skillNames,
-    url: jsonObject["x-commongateway-metadata"]?.self,
+    url: jsonObject["_self"]?.self,
     featured: jsonObject.embedded.acf.publicationFeatured,
   };
 }
@@ -102,8 +102,8 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
   const url = new URL(urlStr);
 
   // having pagination here is a nuisance.
-  if (!url.searchParams.has("page")) {
-    url.searchParams.set("limit", WP_MAX_ALLOWED_PAGE_SIZE);
+  if (!url.searchParams.has("_page")) {
+    url.searchParams.set("_limit", WP_MAX_ALLOWED_PAGE_SIZE);
   }
 
   return fetchLoggedIn(url)
@@ -158,13 +158,11 @@ export function useWerkberichten(
 
     const { typeId, search, page, skillIds } = parameters.value;
 
-    const params: [string, string][] = [
-      ["extend[]", "x-commongateway-metadata.dateRead"],
-    ];
+    const params: [string, string][] = [["extend[]", "_self.dateRead"]];
 
-    params.push(["limit", "10"]);
-    params.push(["order[modified]", "desc"]);
-    params.push(["extend[]", "x-commongateway-metadata.self"]);
+    params.push(["_limit", "10"]);
+    params.push(["_order[modified]", "desc"]);
+    params.push(["extend[]", "_self.self"]);
     params.push(["extend[]", "acf"]);
     params.push(["acf.publicationEndDate[after]", "now"]);
 
@@ -177,7 +175,7 @@ export function useWerkberichten(
     }
 
     if (page) {
-      params.push(["page", page.toString()]);
+      params.push(["_page", page.toString()]);
     }
 
     if (skillIds?.length) {
@@ -240,16 +238,15 @@ export function useFeaturedWerkberichtenCount() {
 
     if (!json.results.length) return 0;
 
-    return json.results.filter(
-      (result: any) => !result["x-commongateway-metadata"].dateRead
-    ).length;
+    return json.results.filter((result: any) => !result["_self"].dateRead)
+      .length;
   }
 
   function getUrl() {
     const params: [string, string][] = [
       ["acf.publicationFeatured", "true"],
-      ["fields[]", "x-commongateway-metadata.dateRead"],
-      ["extend[]", "x-commongateway-metadata.dateRead"],
+      ["fields[]", "_self.dateRead"],
+      ["extend[]", "_self.dateRead"],
       ["acf.publicationEndDate[after]", "now"],
     ];
 

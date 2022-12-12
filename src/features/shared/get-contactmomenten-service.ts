@@ -93,12 +93,12 @@ export function useContactmomentenByZaakUrl(
 ) {
   function getUrl() {
     const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
-    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
-    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
+    url.searchParams.set("_order[contactmoment.registratiedatum]", "desc");
+    url.searchParams.append("extend[]", "_self.owner");
     url.searchParams.append("extend[]", "all");
     url.searchParams.append("objectType", "zaak");
     url.searchParams.append("object", self.value);
-    url.searchParams.append("page", page.value.toString());
+    url.searchParams.append("_page", page.value.toString());
     return url.toString();
   }
   return ServiceResult.fromFetcher(getUrl, fetchContactmomenten);
@@ -110,12 +110,12 @@ export function useContactmomentenByKlantId(
 ) {
   function getUrl() {
     const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
-    url.searchParams.set("order[contactmoment.registratiedatum]", "desc");
+    url.searchParams.set("_order[contactmoment.registratiedatum]", "desc");
     url.searchParams.append("extend[]", "medewerker");
-    url.searchParams.append("extend[]", "x-commongateway-metadata.owner");
+    url.searchParams.append("extend[]", "_self.owner");
     url.searchParams.append("extend[]", "contactmoment.todo");
-    url.searchParams.set("limit", "10");
-    url.searchParams.set("page", page.value.toString());
+    url.searchParams.set("_limit", "10");
+    url.searchParams.set("_page", page.value.toString());
     url.searchParams.set("klant.id", id.value);
     url.searchParams.set("contactmoment.todo", "IS NULL");
     return url.toString();

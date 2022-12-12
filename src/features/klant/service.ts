@@ -73,8 +73,8 @@ function getKlantSearchUrl<K extends KlantSearchField>(
 
   const url = new URL(klantRootUrl);
   setExtend(url);
-  url.searchParams.set("order[achternaam]", "asc");
-  url.searchParams.set("page", page?.toString() ?? "1");
+  url.searchParams.set("_order[achternaam]", "asc");
+  url.searchParams.set("_page", page?.toString() ?? "1");
   url.searchParams.append("subjectType", KlantType.Persoon);
 
   getQueryParams(search).forEach((tuple) => {
