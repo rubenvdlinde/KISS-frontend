@@ -6,7 +6,7 @@
 **Current candidates for unit tests are, in order of priority:**
 - [ ] [`/src/services/service-data.ts`](/src/services/service-data.ts)
 - [ ] [`/src/services/service-data-enricher.ts`](/src/services/service-data-enricher.ts)
-- [ ] all other code directly or inderectly exported by [`/src/services/index.ts`](/src/services/index.ts)
+- [ ] all other code directly or indirectly exported by [`/src/services/index.ts`](/src/services/index.ts)
 - [ ] all code in [`/src/stores`](/src/stores)
 - [ ] all code in [`/src/helpers`](/src/helpers)
 - [ ] all code in [`/src/features/shared`](/src/features/shared)
