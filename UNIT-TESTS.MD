@@ -3,7 +3,7 @@
 - Code that's specifically meant for broad re-use. In this case the possibility of extracting this code into a seperate package should also be taken into consideration.
 - If and when code is indeed seperated into a package, unit tests for this code are mandatory.
 
-**Current candidates for unit tests are:**
+**Current candidates for unit tests are, in order of priority:**
 - [ ] all code in [`/src/services`](/src/services)
 - [ ] all code in [`/src/stores`](/src/stores)
 - [ ] all code in [`/src/helpers`](/src/helpers)
