@@ -102,8 +102,8 @@ function fetchLookupList(urlStr: string): Promise<LookupList<number, string>> {
   const url = new URL(urlStr);
 
   // having pagination here is a nuisance.
-  if (!url.searchParams.has("_page")) {
-    url.searchParams.set("_limit", WP_MAX_ALLOWED_PAGE_SIZE);
+  if (!url.searchParams.has("page")) {
+    url.searchParams.set("per_page", WP_MAX_ALLOWED_PAGE_SIZE);
   }
 
   return fetchLoggedIn(url)
@@ -175,7 +175,7 @@ export function useWerkberichten(
     }
 
     if (page) {
-      params.push(["_page", page.toString()]);
+      params.push(["page", page.toString()]);
     }
 
     if (skillIds?.length) {
