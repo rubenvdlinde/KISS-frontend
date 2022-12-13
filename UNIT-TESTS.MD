@@ -4,7 +4,9 @@
 - If and when code is indeed seperated into a package, unit tests for this code are mandatory.
 
 **Current candidates for unit tests are, in order of priority:**
-- [ ] all code in [`/src/services`](/src/services)
+- [ ] [`/src/services/service-data.ts`](/src/services/service-data.ts)
+- [ ] [`/src/services/service-data-enricher.ts`](/src/services/service-data-enricher.ts)
+- [ ] all other code directly or inderectly exported by [`/src/services/index.ts`](/src/services/index.ts)
 - [ ] all code in [`/src/stores`](/src/stores)
 - [ ] all code in [`/src/helpers`](/src/helpers)
 - [ ] all code in [`/src/features/shared`](/src/features/shared)
