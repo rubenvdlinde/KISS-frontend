@@ -9,7 +9,7 @@ Unit tests for the front-end are written if deemed appropriate by the developer 
 
 ## Criteria to keep in mind when writing unit tests
 [based on this article](https://www.ponicode.com/shift-left/a-beginner-guide-to-understanding-unit-testing)
-- **Independent**: unit tests should test an isolated unit of code. Mocks are only used if there is no feasable alternative.
+- **Independent**: unit tests should test an isolated unit of code. Mocks should only be used if there is no feasable alternative.
 - **Repeatable**: unit tests should be deterministic.
 - **Readable**: when a test fails, it needs to be easy to identify the point of failure. 
 - **Exhaustive**: unit tests should target an exhaustive range of scenarios.
