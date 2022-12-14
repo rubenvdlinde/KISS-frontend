@@ -30,6 +30,8 @@ In order of priority:
   - [ ] start with an object of type `Right`, having the necessary key to retrieve data of type `Left`. The enricher returns a resolved promise
   - [ ] start with an object of type `Right`, having the necessary key to retrieve data of type `Left`. The enricher returns a forever pending promise
   - [ ] start with an object of type `Right`, having the necessary key to retrieve data of type `Left`. The enricher returns a rejected promise
+- [ ] [`/src/services/gateway.ts`](/src/services/gateway.ts)
+  - [ ] `parsePagination`: test with an invalid pagination object, a pagination object with an empty result array, a synchronous mapper and an asynchronous mapper
 - [ ] all other code directly or indirectly exported by [`/src/services/index.ts`](/src/services/index.ts)
 - [ ] all code in [`/src/stores`](/src/stores)
 - [ ] all code in [`/src/helpers`](/src/helpers)
