@@ -13,7 +13,7 @@ Unit tests for the front-end are written if deemed appropriate by the developer 
 - **Repeatable**: unit tests should be deterministic.
 - **Readable**: when a test fails, it needs to be easy to identify the point of failure. 
 - **Exhaustive**: unit tests should target an exhaustive range of scenarios.
-- **Maintainable**: unit tests should not be tightly coupled to the implementation of the unit of code it is meant to test.
+- **Maintainable**: unit tests should NOT be tightly coupled to the implementation of the unit of code it is meant to test.
 
 ## Current candidates for unit tests
 In order of priority:
