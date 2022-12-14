@@ -4,7 +4,7 @@ Unit tests for the front-end are written if deemed appropriate by the developer 
 
 ## Possible criteria for a unit of code that merits unit tests
 - A unit of code that, when not properly implemented, could result in critical failures that are difficult to detect.
-- A unit of code that's difficult to document without runnable examples.
+- A unit of code that's difficult to reason about without runnable examples.
 - A unit of code that's specifically meant for widespread re-use.
 
 ## Criteria to keep in mind when writing unit tests
