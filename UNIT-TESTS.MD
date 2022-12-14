@@ -32,8 +32,13 @@ In order of priority:
   - [ ] start with an object of type `Right`, having the necessary key to retrieve data of type `Left`. The enricher returns a rejected promise
 - [ ] [`/src/services/gateway.ts`](/src/services/gateway.ts)
   - [ ] `parsePagination`: test with an invalid pagination object, a pagination object with an empty result array, a synchronous mapper and an asynchronous mapper
-- [ ] all other code directly or indirectly exported by [`/src/services/index.ts`](/src/services/index.ts)
-- [ ] all code in [`/src/stores`](/src/stores)
+- [ ] [`/src/services/fetch-logged-in.ts`](/src/services/fetch-logged-in.ts)
+  - [ ] test if a non-401 response is just returned
+  - [ ] test if a 401 response triggers a retry after calling `handleLogin`
+- [ ] [`/src/stores/create-store.ts`](/src/stores/create-store.ts)
+- [ ] [`/src/helpers/validation.ts`](/src/helpers/validation.ts)
+  - [ ] `parseDutchDate`: check for valid cases: `dd-MM-yyyy`, `d-MM-yyyy`, `dd-M-yyyy`, `dd/MM/yyyy`, `d/MM/yyyy`, `dd/M/yyyy`, `d/M/yyyy`, `ddMMyyyy`, as well as an invalid case
+  - [ ] `parseBsn`: test for a list of known valid/invalid bsns
 - [ ] all code in [`/src/helpers`](/src/helpers)
 - [ ] all code in [`/src/features/shared`](/src/features/shared)
 - [ ] [`/src/nl-design-system/components/Pagination.vue`](/src/nl-design-system/components/Pagination.vue)
