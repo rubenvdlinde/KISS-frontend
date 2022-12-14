@@ -18,6 +18,9 @@ Unit tests for the front-end are written if deemed appropriate by the developer 
 ## Current candidates for unit tests
 In order of priority:
 - [ ] [`/src/services/service-data.ts`](/src/services/service-data.ts)
+  - [ ] `ServiceResult.fromPromise`: test if the correct result type is returned for a pending, a resolved and an errored Promise.
+  - [ ] `ServiceResult.fromSubmitter`: test if the starting state is init, test for the three stages of a Promise on the submit function, test if the state goes back to init after the reset function is called.
+  - [ ] `ServiceResult.fromFetcher`: Test for the three stages of a Promise on the fetcher, test if the unique id is preferred over the url, test for the loading boolean: does it initialize as false if there's a value in the cache? Does it switch to true if the uniqueId changes?
 - [ ] [`/src/services/service-data-enricher.ts`](/src/services/service-data-enricher.ts)
 - [ ] all other code directly or indirectly exported by [`/src/services/index.ts`](/src/services/index.ts)
 - [ ] all code in [`/src/stores`](/src/stores)
