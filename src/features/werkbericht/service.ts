@@ -171,7 +171,7 @@ export function useWerkberichten(
     }
 
     if (search) {
-      params.push(["search", search]);
+      params.push(["_search[title.rendered,acf.publicationContent]", search]);
     }
 
     if (page) {
