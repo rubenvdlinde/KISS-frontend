@@ -116,7 +116,7 @@ export function useContactmomentenByKlantId(
     url.searchParams.append("extend[]", "contactmoment.todo");
     url.searchParams.set("_limit", "10");
     url.searchParams.set("_page", page.value.toString());
-    url.searchParams.set("klant.id", id.value);
+    url.searchParams.set("klant._self.id", id.value);
     url.searchParams.set("contactmoment.todo", "IS NULL");
     return url.toString();
   }
