@@ -164,14 +164,20 @@ export function useWerkberichten(
     params.push(["_order[modified]", "desc"]);
     params.push(["extend[]", "_self.self"]);
     params.push(["extend[]", "acf"]);
-    params.push(["acf.publicationEndDate[after]", "now"]);
+    params.push(["embedded.acf.publicationEndDate[after]", "now"]);
 
     if (typeId) {
-      params.push(["acf.publicationType[int_compare]", typeId.toString()]);
+      params.push([
+        "embedded.acf.publicationType[int_compare]",
+        typeId.toString(),
+      ]);
     }
 
     if (search) {
-      params.push(["_search[title.rendered,acf.publicationContent]", search]);
+      params.push([
+        "_search[embedded.title.rendered,embedded.acf.publicationContent]",
+        search,
+      ]);
     }
 
     if (page) {
@@ -181,7 +187,7 @@ export function useWerkberichten(
     if (skillIds?.length) {
       skillIds.forEach((skillId) => {
         params.push([
-          "acf.publicationSkill[int_compare][]",
+          "embedded.acf.publicationSkill[int_compare][]",
           skillId.toString(),
         ]);
       });
@@ -247,10 +253,10 @@ export function useFeaturedWerkberichtenCount() {
 
   function getUrl() {
     const params: [string, string][] = [
-      ["acf.publicationFeatured[bool_compare]", "true"],
+      ["embedded.acf.publicationFeatured[bool_compare]", "true"],
       ["fields[]", "_self.dateRead"],
       ["extend[]", "_self.dateRead"],
-      ["acf.publicationEndDate[after]", "now"],
+      ["embedded.acf.publicationEndDate[after]", "now"],
     ];
 
     return `${BERICHTEN_BASE_URI}?${new URLSearchParams(params)}`;

@@ -37,7 +37,7 @@ type QueryDictionary = {
 };
 
 const queryDictionary: QueryDictionary = {
-  email: (search) => [["emails.email", `%${search}%`]],
+  email: (search) => [["embedded.emails.email", `%${search}%`]],
   telefoonnummer: (search) => [
     ["telefoonnummers.telefoonnummer", `%${search}%`],
   ],
@@ -135,7 +135,7 @@ function getKlantBsnUrl(bsn?: string) {
   if (!bsn) return "";
   const url = new URL(klantRootUrl);
   setExtend(url);
-  url.searchParams.set("subjectIdentificatie.inpBsn", bsn);
+  url.searchParams.set("embedded.subjectIdentificatie.inpBsn", bsn);
   return url.toString();
 }
 
@@ -170,7 +170,7 @@ function updateContactgegevens({
     .then(parseJson)
     .then(({ klantnummer, bronorganisatie }) =>
       fetchLoggedIn(url, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -269,7 +269,7 @@ const getKlantByVestigingsnummerUrl = (vestigingsnummer: string) => {
   const url = new URL(klantRootUrl);
   url.searchParams.set("extend[]", "all");
   url.searchParams.set(
-    "subjectIdentificatie.vestigingsNummer",
+    "embedded.subjectIdentificatie.vestigingsNummer",
     vestigingsnummer
   );
   url.searchParams.set("subjectType", KlantType.Bedrijf);

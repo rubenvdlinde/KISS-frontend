@@ -76,7 +76,7 @@ const zaaksysteemBaseUri = `${window.gatewayBaseUri}/api/zaken`;
 
 function addExtends(url: URL) {
   url.searchParams.set("extend[]", "all");
-  url.searchParams.append("extend[]", "_self.self");
+  url.searchParams.append("extend[]", "embedded._self.self");
 }
 
 const overviewFetcher = (url: string): Promise<Paginated<ZaakDetails>> =>
@@ -96,7 +96,10 @@ export const useZakenByBsn = (bsn: Ref<string>) => {
     if (!bsn.value) return "";
     const url = new URL(zaaksysteemBaseUri);
     addExtends(url);
-    url.searchParams.set("rollen.betrokkeneIdentificatie.inpBsn", bsn.value);
+    url.searchParams.set(
+      "embedded.rollen.betrokkeneIdentificatie.inpBsn",
+      bsn.value
+    );
     return url.toString();
   };
 
@@ -184,7 +187,7 @@ export const useZakenByVestigingsnummer = (vestigingsnummer: Ref<string>) => {
     const url = new URL(zaaksysteemBaseUri);
     addExtends(url);
     url.searchParams.set(
-      "rollen.betrokkeneIdentificatie.vestigingsNummer",
+      "embedded.rollen.betrokkeneIdentificatie.vestigingsNummer",
       vestigingsnummer.value
     );
     return url.toString();

@@ -94,7 +94,7 @@ export function useContactmomentenByZaakUrl(
   function getUrl() {
     const url = new URL(`${window.gatewayBaseUri}/api/objectcontactmomenten`);
     url.searchParams.set("_order[contactmoment.registratiedatum]", "desc");
-    url.searchParams.append("extend[]", "_self.owner");
+    url.searchParams.append("extend[]", "embedded._self.owner");
     url.searchParams.append("extend[]", "all");
     url.searchParams.append("objectType", "zaak");
     url.searchParams.append("object", self.value);
@@ -110,14 +110,17 @@ export function useContactmomentenByKlantId(
 ) {
   function getUrl() {
     const url = new URL(window.gatewayBaseUri + "/api/klantcontactmomenten");
-    url.searchParams.set("_order[contactmoment.registratiedatum]", "desc");
+    url.searchParams.set(
+      "_order[embedded.contactmoment.registratiedatum]",
+      "desc"
+    );
     url.searchParams.append("extend[]", "medewerker");
-    url.searchParams.append("extend[]", "_self.owner");
-    url.searchParams.append("extend[]", "contactmoment.todo");
+    url.searchParams.append("extend[]", "embedded._self.owner");
+    url.searchParams.append("extend[]", "embedded.contactmoment.todo");
     url.searchParams.set("_limit", "10");
     url.searchParams.set("_page", page.value.toString());
-    url.searchParams.set("klant._self.id", id.value);
-    url.searchParams.set("contactmoment.todo", "IS NULL");
+    url.searchParams.set("embedded.klant._self.id", id.value);
+    url.searchParams.set("embedded.contactmoment.todo", "IS NULL");
     return url.toString();
   }
   return ServiceResult.fromFetcher(getUrl, fetchContactmomenten, {
