@@ -97,7 +97,7 @@ export const useZakenByBsn = (bsn: Ref<string>) => {
     const url = new URL(zaaksysteemBaseUri);
     addExtends(url);
     url.searchParams.set(
-      "embedded.rollen.betrokkeneIdentificatie.inpBsn",
+      "embedded.rollen.embedded.betrokkeneIdentificatie.inpBsn",
       bsn.value
     );
     return url.toString();
@@ -187,7 +187,7 @@ export const useZakenByVestigingsnummer = (vestigingsnummer: Ref<string>) => {
     const url = new URL(zaaksysteemBaseUri);
     addExtends(url);
     url.searchParams.set(
-      "embedded.rollen.betrokkeneIdentificatie.vestigingsNummer",
+      "embedded.rollen.embedded.betrokkeneIdentificatie.vestigingsNummer",
       vestigingsnummer.value
     );
     return url.toString();

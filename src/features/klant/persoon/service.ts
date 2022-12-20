@@ -45,7 +45,7 @@ export function persoonQuery<K extends PersoonSearchField>(
 const queryDictionary: PersoonQueryParams = {
   bsn: (search) => [["burgerservicenummer", search]],
   geboortedatum: (search) => [
-    ["embedded.geboorte.datum.datum", formatIsoDate(search)],
+    ["embedded.geboorte.embedded.datum.datum", formatIsoDate(search)],
   ],
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
     [
