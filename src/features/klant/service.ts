@@ -37,9 +37,9 @@ type QueryDictionary = {
 };
 
 const queryDictionary: QueryDictionary = {
-  email: (search) => [["embedded.emails.email", `%${search}%`]],
+  email: (search) => [["embedded.emails.email[like]", search]],
   telefoonnummer: (search) => [
-    ["telefoonnummers.telefoonnummer", `%${search}%`],
+    ["embedded.telefoonnummers.telefoonnummer[like]", search],
   ],
 };
 

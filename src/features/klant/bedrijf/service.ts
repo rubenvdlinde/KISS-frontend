@@ -25,10 +25,10 @@ const bedrijfQueryDictionary: BedrijfQueryDictionary = {
     ["embedded.bezoekadres.postcode", postcode.numbers + postcode.digits],
     ["embedded.bezoekadres.huisnummer[int_compare]", huisnummer],
   ],
-  emailadres: (search) => [["emailAdres", `%${search}%`]],
-  telefoonnummer: (search) => [["telefoonnummer", `%${search}%`]],
+  emailadres: (search) => [["emailAdres[like]", search]],
+  telefoonnummer: (search) => [["telefoonnummer[like]", search]],
   kvkNummer: (search) => [["kvknummer", search]],
-  handelsnaam: (search) => [["eersteHandelsnaam", `%${search}%`]],
+  handelsnaam: (search) => [["eersteHandelsnaam[like]", search]],
 };
 
 const getSearchBedrijvenUrl = <K extends SearchCategories>({
