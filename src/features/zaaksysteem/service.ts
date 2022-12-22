@@ -144,16 +144,12 @@ export async function updateToelichting(
 ): Promise<void> {
   const url = getZaakUrl(zaak.id);
   const res = await fetchLoggedIn(url, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      bronorganisatie: zaak.bronorganisatie,
-      startdatum: zaak.startdatum && formatIsoDate(zaak.startdatum),
-      verantwoordelijkeOrganisatie: zaak.verantwoordelijkeOrganisatie,
-      zaaktype: zaak.zaaktype,
       toelichting: toelichting,
     }),
   });
