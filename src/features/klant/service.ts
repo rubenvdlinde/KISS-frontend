@@ -168,17 +168,18 @@ function updateContactgegevens({
   return fetchLoggedIn(url + "?fields[]=klantnummer&fields[]=bronorganisatie")
     .then(throwIfNotOk)
     .then(parseJson)
-    .then(({ klantnummer, bronorganisatie }) =>
+    .then((klant) =>
       fetchLoggedIn(url, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          telefoonnummers,
-          emails,
-          klantnummer,
-          bronorganisatie,
+          ...klant,
+          embedded: {
+            telefoonnummers,
+            emails,
+          },
         }),
       })
     )
