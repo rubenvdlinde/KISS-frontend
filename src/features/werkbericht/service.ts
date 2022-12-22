@@ -278,7 +278,7 @@ export async function readBericht(id: string): Promise<boolean> {
 
 export async function unreadBericht(id: string): Promise<boolean> {
   const res = await fetchLoggedIn(`${BERICHTEN_BASE_URI}/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
