@@ -39,6 +39,9 @@ In order of priority:
 - [ ] [`/src/helpers/validation.ts`](/src/helpers/validation.ts)
   - [ ] `parseDutchDate`: check for valid cases: `dd-MM-yyyy`, `d-MM-yyyy`, `dd-M-yyyy`, `dd/MM/yyyy`, `d/MM/yyyy`, `dd/M/yyyy`, `d/M/yyyy`, `ddMMyyyy`, as well as an invalid case
   - [ ] `parseBsn`: test for a list of known valid/invalid bsns
+- [ ] [`/src/nl-design-system/components/Pagination.vue`](/src/nl-design-system/components/Pagination.vue): test for each case handled by the component, such as an empty result, a single page, less than 5 pages, more than 5 pages, with the current page beeing the first, last, or somewhere in between.
+  
+
+## Less priority:
 - [ ] all code in [`/src/helpers`](/src/helpers)
 - [ ] all code in [`/src/features/shared`](/src/features/shared)
-- [ ] [`/src/nl-design-system/components/Pagination.vue`](/src/nl-design-system/components/Pagination.vue)
