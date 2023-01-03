@@ -64,10 +64,66 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+        - path: /admin
+          pathType: ImplementationSpecific
+          service: commonground-gateway
+          servicePort: 80
+        - path: /api
+          pathType: ImplementationSpecific
+          service: commonground-gateway
+          servicePort: 80
+        - path: /me
+          pathType: ImplementationSpecific
+          service: commonground-gateway
+          servicePort: 80
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+
+gateway:
+  config:
+    cache: true
+    cronRunner:
+      enabled: true
+    debug: 0
+    defaultBackUrl: chart-example.local
+    defaultRedirectUrl: chart-example.local
+  ingress:
+    hostname: chart-example.local
+    enabled: false
+  mailgun: mailgun_url
+  nginx:
+    tag: cleanup
+  php:
+    tag: cleanup
+  postgresql:
+    enabled: true
+  mongodb:
+    enabled: true
+    auth:
+      rootPassword: "!ChangeMe!"
+    updateStrategy:
+      type: Recreate
+
+gatewayui:
+  ingress:
+    annotations: {}
+    hostname: admin.chart-example.local
+    tls: []
+  pwa:
+    adminUrl: https://chart-example.local/admin
+    apiUrl: https://chart-example.local/api
+    baseUrl: https://chart-example.local
+    frontendUrl: https://chart-example.local
+    meUrl: https://chart-example.local/api
+    image:
+      tag: stag
+    organization: https://example.com
+    redirectUrl: vault
+
+
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

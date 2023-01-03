@@ -1,0 +1,12 @@
+dependencies:
+- name: commonground-gateway
+  repository: https://raw.githubusercontent.com/ConductionNL/commonground-gateway/feature-cleanup/api/helm/
+  version: 1.2.0
+- name: elasticstack
+  repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
+  version: 0.1.0
+- name: skeleton-app
+  repository: https://raw.githubusercontent.com/ConductionNL/gateway-ui/demo/helm/
+  version: 0.1.1
+digest: sha256:31ec171c7bc3e02490adbd914eb818f674c8f7f0929976e2562e0fc5754a09f5
+generated: "2023-01-03T15:23:39.934012308+01:00"
