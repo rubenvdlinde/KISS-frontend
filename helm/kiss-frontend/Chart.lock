@@ -4,9 +4,9 @@ dependencies:
   version: 1.2.0
 - name: elasticstack
   repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
-  version: 0.2.1
+  version: 0.2.2
 - name: skeleton-app
   repository: https://raw.githubusercontent.com/ConductionNL/gateway-ui/demo/helm/
   version: 0.1.1
-digest: sha256:06d617fea39670da72bee2c182628d9ef22117e277c6905eed60dfaa93a0c394
-generated: "2023-01-04T10:19:14.247087324+01:00"
+digest: sha256:c124196bf552dcbdff60b67e45ceaa34a68f61ccc553d5608b74f2f947762e6b
+generated: "2023-01-04T10:44:10.874778859+01:00"

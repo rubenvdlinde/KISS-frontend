@@ -30,7 +30,7 @@ dependencies:
     repository: https://raw.githubusercontent.com/ConductionNL/commonground-gateway/feature-cleanup/api/helm/
     condition: gateway.enabled
   - name: elasticstack
-    version: 0.2.1
+    version: 0.2.2
     repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
   - name: skeleton-app
     alias: gatewayui
@@ -39,3 +39,6 @@ dependencies:
 #  - name: dex
 #    repository: https://charts.dexidp.io
 #    version: 0.12.1
+#  - name: openldap
+#    repository: https://geek-cookbook.github.io/charts/
+#    version: 1.2.9
