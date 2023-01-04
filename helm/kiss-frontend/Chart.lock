@@ -8,5 +8,11 @@ dependencies:
 - name: skeleton-app
   repository: https://raw.githubusercontent.com/ConductionNL/gateway-ui/demo/helm/
   version: 0.1.1
-digest: sha256:c124196bf552dcbdff60b67e45ceaa34a68f61ccc553d5608b74f2f947762e6b
-generated: "2023-01-04T10:44:10.874778859+01:00"
+- name: dex
+  repository: https://charts.dexidp.io
+  version: 0.12.1
+- name: openldap
+  repository: https://jp-gouin.github.io/helm-openldap/
+  version: 2.0.4
+digest: sha256:e2bc9e26d485788f625fcbc1731366a8fb5a1bee5ae8d785a86463088aa392d5
+generated: "2023-01-04T10:53:04.723720776+01:00"

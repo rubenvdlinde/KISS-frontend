@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.0.1
+version: 1.0.2
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -36,9 +36,11 @@ dependencies:
     alias: gatewayui
     version: 0.1.1
     repository: https://raw.githubusercontent.com/ConductionNL/gateway-ui/demo/helm/
-#  - name: dex
-#    repository: https://charts.dexidp.io
-#    version: 0.12.1
-#  - name: openldap
-#    repository: https://geek-cookbook.github.io/charts/
-#    version: 1.2.9
+  - name: dex
+    repository: https://charts.dexidp.io
+    version: 0.12.1
+    condition: dex.enabled
+  - name: openldap
+    repository: https://jp-gouin.github.io/helm-openldap/
+    version: 2.0.4
+    condition: openldap.enabled
