@@ -4,7 +4,7 @@ dependencies:
   version: 1.2.0
 - name: elasticstack
   repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
-  version: 0.4.0
+  version: 0.4.1
 - name: skeleton-app
   repository: https://raw.githubusercontent.com/ConductionNL/gateway-ui/demo/helm/
   version: 0.1.1
@@ -14,5 +14,5 @@ dependencies:
 - name: openldap
   repository: https://jp-gouin.github.io/helm-openldap/
   version: 2.0.4
-digest: sha256:a80c3f020f169412df4020beb0726c2e8c81dae29a1761edb6c499d149e7b1d7
-generated: "2023-01-04T12:08:25.041646536+01:00"
+digest: sha256:62492aebabcd86d63c768afafdcec97a457cc7b74ba289f9b6adb4f796754d76
+generated: "2023-01-04T14:44:57.43748177+01:00"
