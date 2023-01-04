@@ -123,9 +123,11 @@ gatewayui:
     frontendUrl: https://chart-example.local
     meUrl: https://chart-example.local/api
     image:
+      image: ghcr.io/conductionnl/gateway-ui
       tag: stag
     organization: https://example.com
     redirectUrl: vault
+    
 dex:
   enabled: false
   config:
