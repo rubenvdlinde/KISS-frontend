@@ -30,7 +30,7 @@ dependencies:
     repository: https://raw.githubusercontent.com/ConductionNL/commonground-gateway/feature-cleanup/api/helm/
     condition: gateway.enabled
   - name: elasticstack
-    version: 0.2.2
+    version: 0.2.3
     repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
   - name: skeleton-app
     alias: gatewayui
