@@ -3,7 +3,38 @@ entries:
   kiss-frontend:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-04T14:50:40.758450925+01:00"
+    created: "2023-01-05T11:08:51.078764705+01:00"
+    dependencies:
+    - alias: gateway
+      condition: gateway.enabled
+      name: commonground-gateway
+      repository: https://raw.githubusercontent.com/ConductionNL/commonground-gateway/feature-cleanup/api/helm/
+      version: 1.2.1
+    - name: elasticstack
+      repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
+      version: 0.4.1
+    - alias: gatewayui
+      name: skeleton-app
+      repository: https://raw.githubusercontent.com/ConductionNL/gateway-ui/demo/helm/
+      version: 0.1.1
+    - condition: dex.enabled
+      name: dex
+      repository: https://charts.dexidp.io
+      version: 0.12.1
+    - condition: openldap.enabled
+      name: openldap
+      repository: https://jp-gouin.github.io/helm-openldap/
+      version: 2.0.4
+    description: A Helm chart for Kubernetes
+    digest: 3808a07f649423725461bfd89810c1949fe90ab7104a47821a792e51f87008ec
+    name: kiss-frontend
+    type: application
+    urls:
+    - kiss-frontend-1.0.6.tgz
+    version: 1.0.6
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2023-01-05T11:08:51.040109109+01:00"
     dependencies:
     - alias: gateway
       condition: gateway.enabled
@@ -34,7 +65,7 @@ entries:
     version: 1.0.5
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-04T14:50:40.707160564+01:00"
+    created: "2023-01-05T11:08:50.999323507+01:00"
     dependencies:
     - alias: gateway
       condition: gateway.enabled
@@ -65,7 +96,7 @@ entries:
     version: 1.0.4
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-04T14:50:40.643787229+01:00"
+    created: "2023-01-05T11:08:50.959138292+01:00"
     dependencies:
     - alias: gateway
       condition: gateway.enabled
@@ -96,7 +127,7 @@ entries:
     version: 1.0.3
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-04T14:50:40.59188812+01:00"
+    created: "2023-01-05T11:08:50.915178938+01:00"
     dependencies:
     - alias: gateway
       condition: gateway.enabled
@@ -127,7 +158,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-04T14:50:40.538293399+01:00"
+    created: "2023-01-05T11:08:50.84863112+01:00"
     dependencies:
     - alias: gateway
       condition: gateway.enabled
@@ -158,7 +189,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-04T14:50:40.482476093+01:00"
+    created: "2023-01-05T11:08:50.791304903+01:00"
     dependencies:
     - alias: gateway
       condition: gateway.enabled
@@ -181,7 +212,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 0.1.8
-    created: "2023-01-04T14:50:40.429417172+01:00"
+    created: "2023-01-05T11:08:50.735604848+01:00"
     description: A Helm chart for Kubernetes
     digest: 9a1722bdcc63d3a201f8d736251f31b120073800093efd8fcc05e25ff5926311
     name: kiss-frontend
@@ -191,7 +222,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: 0.1.7
-    created: "2023-01-04T14:50:40.425691223+01:00"
+    created: "2023-01-05T11:08:50.73171023+01:00"
     description: A Helm chart for Kubernetes
     digest: 95f320705b4b5cdf03e4938f6499c2fc3e86d33e3cdfcf03b9553956500a578d
     name: kiss-frontend
@@ -201,7 +232,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 0.1.6
-    created: "2023-01-04T14:50:40.422275266+01:00"
+    created: "2023-01-05T11:08:50.72774847+01:00"
     description: A Helm chart for Kubernetes
     digest: 9912bb338ba6afd0d56915ffd6c8fc80d0190c1a334e56767993a75be4f2a3c7
     name: kiss-frontend
@@ -211,7 +242,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 0.1.5
-    created: "2023-01-04T14:50:40.419308949+01:00"
+    created: "2023-01-05T11:08:50.724546833+01:00"
     description: A Helm chart for Kubernetes
     digest: 6cd87ea25b4f3c8c915e06af88cc3169ea0d3f8e6f4a92b11da699fa8290d138
     name: kiss-frontend
@@ -221,7 +252,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 0.1.3
-    created: "2023-01-04T14:50:40.415243392+01:00"
+    created: "2023-01-05T11:08:50.719223247+01:00"
     description: A Helm chart for Kubernetes
     digest: bad87a629e1ff53a1544013101020de24d8cde28d0df2a7aaca2c6accb84c8c4
     name: kiss-frontend
@@ -231,7 +262,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 0.1.2
-    created: "2023-01-04T14:50:40.411448386+01:00"
+    created: "2023-01-05T11:08:50.715060018+01:00"
     description: A Helm chart for Kubernetes
     digest: cd56ddc531f2690cebd170a17a5cc4553858cb79ec026ec21f5cadde4a260827
     name: kiss-frontend
@@ -241,7 +272,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.1.2
-    created: "2023-01-04T14:50:40.407352768+01:00"
+    created: "2023-01-05T11:08:50.709810118+01:00"
     description: A Helm chart for Kubernetes
     digest: 7533cf47752696221a6e34d6afe93b0226b789722336341568ba1c867bb917a1
     name: kiss-frontend
@@ -251,7 +282,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2023-01-04T14:50:40.404347413+01:00"
+    created: "2023-01-05T11:08:50.706103382+01:00"
     description: A Helm chart for Kubernetes
     digest: 5caac7f24fc53757078d8353a431f23e59fe3e9c051509cf89ade9e132b89489
     name: kiss-frontend
@@ -261,7 +292,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-01-04T14:50:40.401556577+01:00"
+    created: "2023-01-05T11:08:50.701419971+01:00"
     description: A Helm chart for Kubernetes
     digest: 23b0e1db8ffb0d2018f7cf87007b22a9fb3164ff09b2644e04bb57190b2be5ad
     name: kiss-frontend
@@ -269,4 +300,4 @@ entries:
     urls:
     - kiss-frontend-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-04T14:50:40.398427163+01:00"
+generated: "2023-01-05T11:08:50.69674419+01:00"

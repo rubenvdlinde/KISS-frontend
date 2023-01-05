@@ -1,7 +1,7 @@
 dependencies:
 - name: commonground-gateway
   repository: https://raw.githubusercontent.com/ConductionNL/commonground-gateway/feature-cleanup/api/helm/
-  version: 1.2.0
+  version: 1.2.1
 - name: elasticstack
   repository: https://raw.githubusercontent.com/Klantinteractie-Servicesysteem/Helm-Charts/feature/elastic-stack-chart/
   version: 0.4.1
@@ -14,5 +14,5 @@ dependencies:
 - name: openldap
   repository: https://jp-gouin.github.io/helm-openldap/
   version: 2.0.4
-digest: sha256:62492aebabcd86d63c768afafdcec97a457cc7b74ba289f9b6adb4f796754d76
-generated: "2023-01-04T14:44:57.43748177+01:00"
+digest: sha256:59e9aa78532a8f938ff2df5d93d8e4c5044406419524c7b3bbc9095cdfc73352
+generated: "2023-01-05T11:07:00.612139999+01:00"
