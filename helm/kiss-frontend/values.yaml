@@ -64,21 +64,23 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+          serviceName:
+          servicePort:
         - path: /admin
           pathType: ImplementationSpecific
-          service: commonground-gateway
+          serviceName: commonground-gateway
           servicePort: 80
         - path: /api
           pathType: ImplementationSpecific
-          service: commonground-gateway
+          serviceName: commonground-gateway
           servicePort: 80
         - path: /me
           pathType: ImplementationSpecific
-          service: commonground-gateway
+          serviceName: commonground-gateway
           servicePort: 80
         - path: /login
           pathType: ImplementationSpecific
-          service: commonground-gateway
+          serviceName: commonground-gateway
           servicePort: 80
   tls: []
   #  - secretName: chart-example-tls
