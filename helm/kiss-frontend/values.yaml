@@ -129,7 +129,7 @@ gatewayui:
       tag: stag
     organization: https://example.com
     redirectUrl: vault
-    
+
 dex:
   enabled: false
   config:
