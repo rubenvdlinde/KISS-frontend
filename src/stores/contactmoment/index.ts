@@ -16,6 +16,7 @@ export type ContactmomentZaak = { zaak: ZaakDetails; shouldStore: boolean };
 export type ContactmomentContactVerzoek = {
   url: string;
   medewerker: string;
+  afdeling: string;
   notitie: string;
   isActive: boolean;
 };
@@ -25,6 +26,7 @@ export type ContactmomentKlant = {
   voornaam: string;
   voorvoegselAchternaam?: string;
   achternaam: string;
+  bedrijfsnaam?: string;
   telefoonnummers: { telefoonnummer: string }[];
   emails: { email: string }[];
   hasContactInformation: boolean;
@@ -54,6 +56,7 @@ function initVraag(): Vraag {
     contactverzoek: {
       url: "",
       medewerker: "",
+      afdeling: "",
       notitie: "",
       isActive: false,
     },

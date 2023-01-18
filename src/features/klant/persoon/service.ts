@@ -44,11 +44,16 @@ export function persoonQuery<K extends PersoonSearchField>(
 
 const queryDictionary: PersoonQueryParams = {
   bsn: (search) => [["burgerservicenummer", search]],
-  geboortedatum: (search) => [["geboorte.datum.datum", formatIsoDate(search)]],
+  geboortedatum: (search) => [
+    ["embedded.geboorte.embedded.datum.datum", formatIsoDate(search)],
+  ],
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
-    ["verblijfplaats.postcode", `${postcode.numbers}${postcode.digits}`],
+    [
+      "embedded.verblijfplaats.postcode",
+      `${postcode.numbers}${postcode.digits}`,
+    ],
 
-    ["verblijfplaats.huisnummer", huisnummer],
+    ["embedded.verblijfplaats.huisnummer[int_compare]", huisnummer],
   ],
 };
 
@@ -100,7 +105,7 @@ function getPersoonSearchUrl<K extends PersoonSearchField>(
   });
   url.searchParams.set("extend[]", "all");
   if (page !== undefined && page !== 1) {
-    url.searchParams.set("page", page.toString());
+    url.searchParams.set("_page", page.toString());
   }
 
   return url.toString();

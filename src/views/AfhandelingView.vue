@@ -18,7 +18,7 @@
   <form v-else class="afhandeling" @submit.prevent="submit">
     <utrecht-heading :level="1" modelValue>Afhandeling</utrecht-heading>
 
-    <a @click="$router.back()" href="#"> terug </a>
+    <a @click="$router.back()" href="#">{{ "< Terug" }}</a>
 
     <application-message
       v-if="errorMessage != ''"
@@ -301,6 +301,27 @@
               <label />
 
               <div class="contactverzoek-container">
+                <div v-if="afdelingen.success && afdelingen.data.length">
+                  <label
+                    class="utrecht-form-label"
+                    :for="'verzoek-afdeling' + idx"
+                    >Afdeling</label
+                  >
+                  <select
+                    v-model="vraag.contactverzoek.afdeling"
+                    class="utrecht-select utrecht-select--html-select"
+                    :id="'verzoek-afdeling' + idx"
+                  >
+                    <option
+                      v-for="afdeling in afdelingen.data"
+                      :key="idx + afdeling.id"
+                      :value="afdeling.name"
+                    >
+                      {{ afdeling.name }}
+                    </option>
+                  </select>
+                </div>
+
                 <div>
                   <label
                     class="utrecht-form-label required"
@@ -441,7 +462,7 @@ import PromptModal from "@/components/PromptModal.vue";
 import { getFormattedUtcDate } from "@/services";
 import { nanoid } from "nanoid";
 import MedewerkerSearch from "../features/search/MedewerkerSearch.vue";
-import { saveContactverzoek } from "@/features/contactverzoek";
+import { saveContactverzoek, useAfdelingen } from "@/features/contactverzoek";
 
 const router = useRouter();
 const contactmomentStore = useContactmomentStore();
@@ -532,33 +553,44 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
   addNieuwsberichtToContactmoment(contactmoment, vraag);
   addWerkinstructiesToContactmoment(contactmoment, vraag);
 
+  let contactverzoekUrl: string | undefined;
+
   if (vraag.resultaat === "Contactverzoek gemaakt") {
     const contactverzoek = await saveContactverzoek({
       bronorganisatie: window.organisatieIds[0],
       todo: {
         name: "contactverzoek",
         description: vraag.contactverzoek.notitie,
-        attendees: [vraag.contactverzoek.medewerker],
+        attendees: [
+          vraag.contactverzoek.medewerker,
+          vraag.contactverzoek.afdeling,
+        ].filter(Boolean),
       },
       primaireVraagWeergave: vraag.primaireVraag?.title,
       afwijkendOnderwerp: vraag.afwijkendOnderwerp || undefined,
     });
 
-    koppelKlanten(vraag, contactverzoek.id);
+    await koppelKlanten(vraag, contactverzoek.id);
+
+    contactverzoekUrl = contactverzoek.url;
   }
 
-  return saveContactmoment(contactmoment).then((savedContactmoment) => {
-    const nextPromises: Promise<unknown>[] = [
-      zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
-      koppelKlanten(vraag, savedContactmoment.id),
-    ];
-    if (vraag.contactverzoek.url) {
-      nextPromises.push(
-        koppelContactverzoek(savedContactmoment.id, vraag.contactverzoek.url)
-      );
-    }
-    return Promise.all(nextPromises).then(() => savedContactmoment);
-  });
+  const savedContactmoment = await saveContactmoment(contactmoment);
+
+  const promises: Promise<any>[] = [
+    zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
+    koppelKlanten(vraag, savedContactmoment.id),
+  ];
+
+  if (contactverzoekUrl) {
+    promises.push(
+      koppelContactverzoek(savedContactmoment.id, contactverzoekUrl)
+    );
+  }
+
+  await Promise.all(promises);
+
+  return savedContactmoment;
 };
 
 const navigateToPersonen = () => router.push({ name: "personen" });
@@ -678,6 +710,8 @@ const toggleRemoveVraagDialog = async (vraagId: number) => {
     contactmomentStore.removeVraag(vraagId);
   });
 };
+
+const afdelingen = useAfdelingen();
 </script>
 
 <style scoped lang="scss">
