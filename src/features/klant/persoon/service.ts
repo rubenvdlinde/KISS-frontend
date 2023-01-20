@@ -45,7 +45,7 @@ export function persoonQuery<K extends PersoonSearchField>(
 const queryDictionary: PersoonQueryParams = {
   bsn: (search) => [["burgerservicenummer", search]],
   geboortedatum: (search) => [
-    ["embedded.geboorte.embedded.datum.datum", formatIsoDate(search)],
+    ["embedded.geboorte.embedded.datumOnvolledig.datum", formatIsoDate(search)],
   ],
   postcodeHuisnummer: ({ postcode, huisnummer }) => [
     [
@@ -65,7 +65,8 @@ function getQueryParams<K extends PersoonSearchField>(params: PersoonQuery<K>) {
 
 function mapPersoon(json: any): Persoon {
   const { verblijfplaats, naam, geboorte } = json?.embedded ?? {};
-  const { datum, plaats, land } = geboorte?.embedded ?? {};
+  const { plaats, land } = geboorte?.embedded ?? {};
+
   const {
     postcode,
     huisnummer,
@@ -74,8 +75,12 @@ function mapPersoon(json: any): Persoon {
     huisletter,
     huisnummertoevoeging,
   } = verblijfplaats ?? {};
+
+  const datum = geboorte?.embedded?.datumOnvolledig ?? {};
+
   const geboortedatum =
     datum && new Date(datum.jaar, datum.maand - 1, datum.dag);
+
   return {
     _typeOfKlant: "persoon",
     postcode: postcode,
