@@ -27,7 +27,7 @@ const bedrijfQueryDictionary: BedrijfQueryDictionary = {
   ],
   emailadres: (search) => [["emailAdres[like]", search]],
   telefoonnummer: (search) => [["telefoonnummer[like]", search]],
-  kvkNummer: (search) => [["kvknummer", search]],
+  kvkNummer: (search) => [["kvkNummer", search]],
   handelsnaam: (search) => [["eersteHandelsnaam[like]", search]],
 };
 
@@ -58,7 +58,7 @@ function mapHandelsRegister(json: any): Bedrijf {
     emailAdres,
     telefoonnummer,
     vestigingsnummer,
-    kvknummer,
+    kvkNummer,
     eersteHandelsnaam,
   } = json ?? {};
 
@@ -73,7 +73,7 @@ function mapHandelsRegister(json: any): Bedrijf {
 
   return {
     _typeOfKlant: "bedrijf",
-    kvknummer,
+    kvkNummer,
     vestigingsnummer,
     postcode,
     huisnummer: huisnummer.toString(),
