@@ -482,34 +482,27 @@ onMounted(() => {
   }
 });
 
-const zakenToevoegenAanContactmoment = (
+const zakenToevoegenAanContactmoment = async (
   vraag: Vraag,
   contactmomentId: string
 ) => {
-  const promises =
-    vraag.zaken
-      .filter(({ shouldStore }) => shouldStore)
-      .map(({ zaak }) =>
-        koppelObject({
-          contactmoment: contactmomentId,
-          object: zaak.self,
-          objectType: "zaak",
-        })
-      ) ?? [];
-  return Promise.all(promises);
+  for (const { zaak, shouldStore } of vraag.zaken) {
+    if (shouldStore) {
+      await koppelObject({
+        contactmoment: contactmomentId,
+        object: zaak.self,
+        objectType: "zaak",
+      });
+    }
+  }
 };
 
-const koppelKlanten = (vraag: Vraag, contactmomentId: string) => {
-  const promises =
-    vraag.klanten
-      .filter(({ shouldStore }) => shouldStore)
-      .map(({ klant }) =>
-        koppelKlant({
-          contactmomentId,
-          klantId: klant.id,
-        })
-      ) ?? [];
-  return Promise.all(promises);
+const koppelKlanten = async (vraag: Vraag, contactmomentId: string) => {
+  for (const { shouldStore, klant } of vraag.klanten) {
+    if (shouldStore) {
+      await koppelKlant({ contactmomentId, klantId: klant.id });
+    }
+  }
 };
 
 const koppelContactverzoek = (
@@ -576,19 +569,12 @@ const saveVraag = async (vraag: Vraag, gespreksId?: string) => {
   }
 
   const savedContactmoment = await saveContactmoment(contactmoment);
-
-  const promises: Promise<any>[] = [
-    zakenToevoegenAanContactmoment(vraag, savedContactmoment.id),
-    koppelKlanten(vraag, savedContactmoment.id),
-  ];
+  await zakenToevoegenAanContactmoment(vraag, savedContactmoment.id);
+  await koppelKlanten(vraag, savedContactmoment.id);
 
   if (contactverzoekUrl) {
-    promises.push(
-      koppelContactverzoek(savedContactmoment.id, contactverzoekUrl)
-    );
+    await koppelContactverzoek(savedContactmoment.id, contactverzoekUrl);
   }
-
-  await Promise.all(promises);
 
   return savedContactmoment;
 };
@@ -610,7 +596,9 @@ async function submit() {
       gespreksId = nanoid();
     }
 
-    await Promise.all(otherVragen.map((v) => saveVraag(v, gespreksId)));
+    for (const vraag of otherVragen) {
+      await saveVraag(vraag, gespreksId);
+    }
 
     //klaar
     contactmomentStore.stop();
